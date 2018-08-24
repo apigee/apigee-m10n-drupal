@@ -1,0 +1,13 @@
+## Ignore all hidden files except... ##
+.*
+!/.gitignore
+!/.gitattributes
+!/.editorconfig
+!.gitkeep
+
+## Ignore working copies of dist files ##
+phpcs.xml
+
+## Other ignored paths and files ##
+/vendor
+composer.lock
