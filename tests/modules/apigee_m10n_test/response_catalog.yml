@@ -1,0 +1,4 @@
+catalog_test:
+  status_code: 200
+  headers: []
+  body: '{"status": "success", "catalog_version": "1.0"}'
