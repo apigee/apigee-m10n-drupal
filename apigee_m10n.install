@@ -30,10 +30,10 @@ function apigee_m10n_requirements($phase) {
   $requirements = [];
 
   if ($phase === 'runtime') {
-    /** @var \Drupal\apigee_m10n\Monetization $monetization */
+    /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
     $monetization = \Drupal::service('apigee_m10n.monetization');
 
-    if (!$monetization->testConnection()) {
+    if (!$monetization->isMonetizationEnabled()) {
       $requirements['apigee_monetization_connection_error'] = [
         'title' => t('Apigee Monetization'),
         'value' => 'Unable to verify monetization status',

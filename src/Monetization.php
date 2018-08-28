@@ -5,7 +5,7 @@ namespace Drupal\apigee_m10n;
 use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Drupal\apigee_edge\SDKConnectorInterface;
 
-class Monetization {
+class Monetization implements MonetizationInterface {
 
   private $sdk_connector;
 
@@ -14,11 +14,9 @@ class Monetization {
   }
 
   /**
-   * Test whether the current organization has monetization enabled (a requirement for using this module).
-   *
-   * @return bool
+   * {@inheritdoc}
    */
-  public function testConnection() {
+  public function isMonetizationEnabled() {
     $org_controller = new OrganizationController($this->sdk_connector->getClient());
     $org_id = $this->sdk_connector->getOrganization();
     $org = $org_controller->load($org_id);
@@ -27,5 +25,4 @@ class Monetization {
 
     return $is_monetization_enabled;
   }
-
 }
