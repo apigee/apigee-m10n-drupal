@@ -16,13 +16,13 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function isMonetizationEnabled() {
+  public function isMonetizationEnabled(): bool {
     $org_controller = new OrganizationController($this->sdk_connector->getClient());
     $org_id = $this->sdk_connector->getOrganization();
     $org = $org_controller->load($org_id);
 
     $is_monetization_enabled = $org->getPropertyValue('features.isMonetizationEnabled');
 
-    return $is_monetization_enabled;
+    return (bool) $is_monetization_enabled;
   }
 }
