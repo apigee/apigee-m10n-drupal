@@ -24,6 +24,11 @@ use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 
+/**
+ * Apigee Monetization base service.
+ *
+ * @package Drupal\apigee_m10n
+ */
 class Monetization implements MonetizationInterface {
 
   /**
