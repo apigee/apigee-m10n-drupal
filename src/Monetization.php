@@ -20,9 +20,14 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Management\Controller\OrganizationController;
+use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Apigee Monetization base service.
@@ -86,4 +91,29 @@ class Monetization implements MonetizationInterface {
 
     return (bool) $is_monetization_enabled = $monetization_status === 'enabled' ? TRUE : FALSE;
   }
+
+  public function apiProductAssignmentAccess(EntityInterface $entity, AccountInterface $account): AccessResultInterface {
+    // Cache results for this request.
+    static $eligible_product_cache = [];
+    // The developer ID to check access for.
+    $developer_id = $account->getEmail();
+
+    if (!isset($eligible_product_cache[$developer_id])) {
+      // Instantiate an instance of the m10n ApiProduct controller.
+      $product_controller = new ApiProductController($this->sdk_connector->getOrganization(), $this->sdk_connector->getClient());
+      // Get a list of available products for the m10n developer.
+      $eligible_product_cache[$developer_id] = $product_controller->loadEligible($developer_id);
+    }
+
+    // Get just the IDs from the available products.
+    $product_ids = array_map(function ($product) {
+      return $product->id();
+    }, $eligible_product_cache[$developer_id]);
+
+    // Allow only if the id is in the eligible list.
+    return in_array(strtolower($entity->id()), $product_ids)
+      ? AccessResult::allowed()
+      : AccessResult::forbidden('Product is not eligible for this developer');
+  }
+
 }

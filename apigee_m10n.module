@@ -1,1 +1,20 @@
 <?php
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_api_product_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  // For the assignment operation a product must either be free or purchased.
+  if ($operation == 'assign') {
+    return \Drupal::service('apigee_m10n.monetization')
+      ->apiProductAssignmentAccess($entity, $account);
+  }
+
+  // No opinion on other operations.
+  return AccessResult::neutral();
+}
+
