@@ -13,7 +13,7 @@ interface MonetizationInterface {
    *
    * @return bool
    */
-  function isMonetizationEnabled();
+  function isMonetizationEnabled(): bool;
 
   /**
    * Checks access to a product for a given account.

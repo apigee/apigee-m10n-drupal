@@ -68,12 +68,16 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function isMonetizationEnabled(): bool {
+    // Get organization ID string.
     $org_id = $this->sdk_connector->getOrganization();
 
-    $monetization_status = $this->cache->get("apigee_m10n:org_monetization_status:{$org_id}");
+    // Use cached result if available.
+    $monetization_status_cache_entry = $this->cache->get("apigee_m10n:org_monetization_status:{$org_id}");
+    $monetization_status = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : null;
 
     if (!$monetization_status) {
 
+      // Load organization and populate cache.
       $org_controller = new OrganizationController($this->sdk_connector->getClient());
 
       try {
@@ -92,6 +96,9 @@ class Monetization implements MonetizationInterface {
     return (bool) $is_monetization_enabled = $monetization_status === 'enabled' ? TRUE : FALSE;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function apiProductAssignmentAccess(EntityInterface $entity, AccountInterface $account): AccessResultInterface {
     // Cache results for this request.
     static $eligible_product_cache = [];
