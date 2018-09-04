@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_test;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Site\Settings;
+use Drupal\Tests\apigee_m10n\Kernel\M10nKernelTestBase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -72,7 +73,7 @@ class MockHttpClientFactory extends ClientFactory {
       'headers' => [
         'User-Agent' => 'Drupal/' . \Drupal::VERSION . ' (+https://www.drupal.org/) ' . \GuzzleHttp\default_user_agent(),
       ],
-      'handler' => $this->mock_stack,
+      'handler' => !empty(getenv(M10nKernelTestBase::$APIGEE_INTEGRATION_ENABLE)) ? $this->stack : $this->mock_stack,
       // Security consideration: prevent Guzzle from using environment variables
       // to configure the outbound proxy.
       'proxy' => [

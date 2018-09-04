@@ -25,6 +25,12 @@ use Drupal\key\Entity\Key;
 
 class M10nKernelTestBase extends KernelTestBase {
 
+  public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
+  public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
+  public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';
+  public static $APIGEE_EDGE_PASSWORD       = 'APIGEE_EDGE_PASSWORD';
+  public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
+
   /**
    * {@inheritdoc}
    */
@@ -45,7 +51,7 @@ class M10nKernelTestBase extends KernelTestBase {
   protected $stack;
 
   /**
-   * @var Drupal\apigee_edge\SDKConnectorInterface
+   * @var \Drupal\apigee_edge\SDKConnectorInterface
    *
    * The SDK Connector client which should have it's http client stack replaced
    * with our mock.
@@ -55,15 +61,23 @@ class M10nKernelTestBase extends KernelTestBase {
   /**
    * Authentication key used by SDK Connector
    *
-   * @var Drupal\key\Entity\Key
+   * @var \Drupal\key\Entity\Key
    */
   private $auth_key;
+
+  /**
+   * Whether actual integration tests are enabled.
+   * @var boolean
+   */
+  protected $integration_enabled;
 
   /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
+
+    $this->integration_enabled = !empty(getenv(static::$APIGEE_INTEGRATION_ENABLE));
 
     // Create new Apigee Edge basic auth key with private file provider.
     $key = Key::create([
@@ -74,10 +88,10 @@ class M10nKernelTestBase extends KernelTestBase {
       'key_input'    => 'apigee_edge_basic_auth_input',
     ]);
     $key->setKeyValue(Json::encode([
-      'endpoint'     => getenv('APIGEE_EDGE_ENDPOINT'),
-      'organization' => getenv('APIGEE_EDGE_ORGANIZATION'),
-      'username'     => getenv('APIGEE_EDGE_USERNAME'),
-      'password'     => getenv('APIGEE_EDGE_PASSWORD'),
+      'endpoint'     => getenv(static::$APIGEE_EDGE_ENDPOINT),
+      'organization' => getenv(static::$APIGEE_EDGE_ORGANIZATION),
+      'username'     => getenv(static::$APIGEE_EDGE_USERNAME),
+      'password'     => getenv(static::$APIGEE_EDGE_PASSWORD),
     ]));
     $key->save();
 

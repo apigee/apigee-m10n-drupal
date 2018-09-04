@@ -75,6 +75,9 @@ EOF;
    */
   public function testMonetizationDisabled() {
 
+    if ($this->integration_enabled) {
+      $this->markTestSkipped('This test suite is expecting a monetization enabled org. Disable for integration testing.');
+    }
     // Response body representing a monetized organization.
     $response_body = <<< EOF
       {

@@ -18,7 +18,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Drupal\KernelTests\KernelTestBase;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Http\Message\Authentication\AutoBasicAuth;
 
@@ -27,25 +28,7 @@ use Http\Message\Authentication\AutoBasicAuth;
  *
  * @group apigee_m10n
  */
-class TestFrameworkKernelTest extends KernelTestBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static $modules = [
-    'key',
-    'apigee_edge',
-    'apigee_m10n',
-    'apigee_m10n_test',
-    'system',
-  ];
-
-  /**
-   * @var \Drupal\apigee_m10n_test\MockHandlerStack
-   *
-   * The mock handler stack is responsible for serving queued api responses.
-   */
-  protected $stack;
+class TestFrameworkKernelTest extends M10nKernelTestBase {
 
   /**
    * @var \Apigee\Edge\ClientInterface
@@ -61,21 +44,35 @@ class TestFrameworkKernelTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->stack = $this->container->get('apigee_m10n_test.mock_http_handler_stack');
-    // @todo: Fix `$sdk_connector->getClient` failure b/c key state is uninitialized.
-    $this->sdk_client = $this->container->get('apigee_edge.sdk_connector')
-      ->buildClient(new AutoBasicAuth());
+    if (!$this->integration_enabled) {
+      $this->sdk_client = $this->sdk_connector->buildClient(new AutoBasicAuth());
+    }
+  }
+
+  /**
+   * Tests that the service override is working properly.
+   */
+  public function testServiceModification() {
+    self::assertEquals(
+      (string) $this->container->getDefinition('apigee_edge.sdk_connector')->getArgument(0),
+      'apigee_m10n_test.mock_http_client_factory'
+    );
   }
 
   /**
    * Tests that api responses can be queued.
    */
   public function testInlineResponseQueue() {
+    if ($this->integration_enabled) {
+      static::markTestSkipped('Only test the response queue when running offline tests.');
+      return;
+    }
+
     // Queue a response from the mock server.
     $this->stack->append(new Response(200, [], "{\"status\": \"success\"}"));
 
     // Execute a client call.
-    $response = $this->sdk_client->get('/');
+    $response = $this->sdk_connector->buildClient(new AutoBasicAuth())->get('/');
 
     self::assertEquals("200", $response->getStatusCode());
     self::assertEquals('{"status": "success"}', (string) $response->getBody());
@@ -85,14 +82,34 @@ class TestFrameworkKernelTest extends KernelTestBase {
    * Tests that api responses can be queued from the default response file.
    */
   public function testResponseFile() {
+    if ($this->integration_enabled) {
+      static::markTestSkipped('Only test the response queue when running offline tests.');
+      return;
+    }
     // Queue a response from the mock server.
     $this->stack->queueFromResponseFile(['catalog_test']);
 
     // Execute a client call.
-    $response = $this->sdk_client->get('/');
+    $response = $this->sdk_connector->buildClient(new AutoBasicAuth())->get('/');
 
     self::assertEquals("200", $response->getStatusCode());
     self::assertEquals('{"status": "success", "catalog_version": "1.0"}', (string) $response->getBody());
+  }
+
+  /**
+   * Tests that the sdk client will be unaffected while integration is enabled.
+   */
+  public function testIntegrationToggle() {
+    $handler = $this->container
+      ->get('apigee_m10n_test.mock_http_client_factory')
+      ->fromOptions([])
+      ->getConfig('handler');
+
+    if ($this->integration_enabled) {
+      self::assertTrue(($handler instanceof HandlerStack));
+    } else {
+      self::assertTrue(($handler instanceof MockHandler));
+    }
   }
 
 }

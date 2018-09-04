@@ -40,5 +40,8 @@ class ApigeeM10nTestServiceProvider extends ServiceProviderBase {
     // Override the ClientFactory with our mock client factory.
     $container->getDefinition('apigee_edge.sdk_connector')
       ->replaceArgument(0, new Reference('apigee_m10n_test.mock_http_client_factory'));
+    // This middleware will block outgoing requests from KernelTestBase so we remove it.
+    // See: https://www.drupal.org/project/drupal/issues/2571475.
+    $container->removeDefinition('test.http_client.middleware');
   }
 }
