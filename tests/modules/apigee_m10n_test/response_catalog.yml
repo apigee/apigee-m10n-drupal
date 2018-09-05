@@ -2,3 +2,16 @@ catalog_test:
   status_code: 200
   headers: []
   body: '{"status": "success", "catalog_version": "1.0"}'
+get_eligible_products:
+  status_code: 200
+  headers:
+    content-type: application/json
+  body: '{
+    "totalRecords" : 1,
+    "product": [{
+      "status": "CREATED",
+      "id": ":name",
+      "organization": {},
+      "displayName": "bavifriwroguspon",
+      "name": ":name"
+    }]}'

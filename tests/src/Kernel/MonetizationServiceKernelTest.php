@@ -18,6 +18,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
+use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\Core\Access\AccessResultAllowed;
+use Drupal\Core\Access\AccessResultForbidden;
+use Drupal\Core\Session\AccountInterface;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -99,5 +103,34 @@ EOF;
 
 
     self::assertEquals($is_monetization_enabled, FALSE);
+  }
+
+  public function testApiProductAssignmentAccess() {
+    $test_product_name = $this->randomMachineName();
+    $email = $this->randomMachineName() . '@example.com';
+
+    $entity = ApiProduct::create(['name' => $test_product_name]);
+
+    $account = $this
+      ->getMockBuilder(AccountInterface::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $account->expects($this->any())
+      ->method('getEmail')
+      ->will($this->returnValue($email));
+
+    $this->stack->queueFromResponseFile(['get_eligible_products' => [':name' => strtolower($test_product_name)]]);
+    // Test that the user can access the API Product.
+    $access_result = $this->monetization->apiProductAssignmentAccess($entity, $account);
+
+    self::assertTrue($access_result instanceof AccessResultAllowed);
+
+    // Tests when a product isn't in the eligible list.
+    $test_product_name_2 = $this->randomMachineName();
+    $entity = ApiProduct::create(['name' => $test_product_name_2]);
+
+    // Test that the user can access the API Product.
+    $access_result = $this->monetization->apiProductAssignmentAccess($entity, $account);
+    self::assertTrue($access_result instanceof AccessResultForbidden);
   }
 }

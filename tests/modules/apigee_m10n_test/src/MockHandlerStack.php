@@ -32,17 +32,34 @@ class MockHandlerStack extends MockHandler {
    */
   protected $responses;
 
-  public function queueFromResponseFile ($response_ids) {
+  /**
+   * Queue a response that is in the catalog. Dynamic values can be passed and
+   * will be replaced in the response. For example `['foo' => [':bar' => 'baz']]`
+   * will load the catalog entry named `foo `and replace `:bar` with "baz" in the
+   * body text.
+   *
+   * @param string|array $response_ids
+   *   The response id to queue in one of the following formats:
+   *     - `'foo'`
+   *     - `['foo', 'bar']` // Queue multiple responses.
+   *     - `['foo' => [':bar' => 'baz']]` // w/ replacements for response body.
+   */
+  public function queueFromResponseFile($response_ids) {
     if (empty($this->responses)) {
       // Get the module path for this module.
       $module_path = \Drupal::moduleHandler()->getModule('apigee_m10n_test')->getPath();
       $this->responses = Yaml::parseFile($module_path . '/response_catalog.yml');
     }
-    foreach ($response_ids as $id) {
+    foreach ((array) $response_ids as $index => $item) {
+      // The catalog id should either be the item itself or the keys if an associative array has been passed.
+      $id = !is_array($item) ? $item : $index;
+      // Body text can have elements replaced in it for certain values. See: http://php.net/strtr
+      $replacements = is_array($item) ? $item : [];
+
       $this->append(new Response(
         $this->responses[$id]['status_code'],
         $this->responses[$id]['headers'],
-        $this->responses[$id]['body'])
+        strtr($this->responses[$id]['body'], $replacements))
       );
     }
   }
