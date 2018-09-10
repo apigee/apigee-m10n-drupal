@@ -36,6 +36,8 @@ use Drupal\Core\Session\AccountInterface;
  */
 class Monetization implements MonetizationInterface {
 
+  const MONETIZATION_DISABLED_ERROR_MESSAGE = 'Monetization is not enabled for your Apigee Edge organization.';
+
   /**
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */

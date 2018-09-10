@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\EventSubscriber;
 
+use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -42,7 +43,7 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
    */
   public function validateMonetizationEnabled() {
     if (!$this->monetization->isMonetizationEnabled()) {
-      $this->messenger->addError('Unable to verify that monetization is enabled for your Apigee Edge Organization.');
+      $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
     }
   }
 

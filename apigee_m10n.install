@@ -18,6 +18,10 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+use Drupal\apigee_m10n\Monetization;
+
+const MONETIZATION_DISABLED_ERROR_MESSAGE = 'Monetization is not enabled for your Apigee Edge organization.';
+
 /**
  * @file
  * Install, update and uninstall functions for Apigee Monetization.
@@ -29,6 +33,47 @@
 function apigee_m10n_requirements($phase) {
   $requirements = [];
 
+  // Verify that monetization is enabled before allowing user to install module.
+  if ($phase === 'install') {
+
+    $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
+    $org_id = $sdk_connector->getOrganization();
+
+    try {
+      $org_details = $sdk_connector->getClient()->get('/organizations/' . $org_id)->getBody()->getContents();
+      $org_details = json_decode($org_details);
+    }
+    catch (\Exception $e) {
+      $requirements['apigee_monetization_connection_error'] = [
+        'title' => t('Apigee Monetization'),
+        'description' => t(MONETIZATION_DISABLED_ERROR_MESSAGE),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+
+      return $requirements;
+    }
+
+    $monetization_enabled = false;
+
+    foreach ($org_details->properties->property as $property) {
+      if ($property->name === 'features.isMonetizationEnabled' && $property->value === 'true') {
+        $monetization_enabled = true;
+        break;
+      }
+    }
+
+    if (!$monetization_enabled) {
+      $requirements['apigee_monetization_connection_error'] = [
+        'title' => t('Apigee Monetization'),
+        'description' => t(MONETIZATION_DISABLED_ERROR_MESSAGE),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+
+    return $requirements;
+  }
+
+  // If monetization is disabled after module has been installed, show error on status page.
   if ($phase === 'runtime') {
     /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
     $monetization = \Drupal::service('apigee_m10n.monetization');
@@ -36,9 +81,8 @@ function apigee_m10n_requirements($phase) {
     if (!$monetization->isMonetizationEnabled()) {
       $requirements['apigee_monetization_connection_error'] = [
         'title' => t('Apigee Monetization'),
-        'value' => 'Unable to verify monetization status',
-        'description' => t('Unable to verify that monetization is enabled for your Apigee Edge Organization.'),
-        'severity' => REQUIREMENT_WARNING,
+        'description' => t(MONETIZATION_DISABLED_ERROR_MESSAGE),
+        'severity' => REQUIREMENT_ERROR,
       ];
     }
   }
