@@ -51,21 +51,8 @@ class MonetizationServiceKernelTest extends M10nKernelTestBase {
    */
   public function testMonetizationEnabled() {
 
-    // Response body representing a monetized organization.
-    $response_body = <<< EOF
-      {
-        "properties" : {
-          "property" : [ {
-              "name" : "features.isMonetizationEnabled",
-              "value" : "true"
-            }
-          ]
-        }
-      }
-EOF;
-
     // Queue a response from the mock server.
-    $this->stack->append(new Response(200, [], $response_body));
+    $this->stack->queueFromResponseFile(['get_monetized_org']);
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();
@@ -82,21 +69,9 @@ EOF;
     if ($this->integration_enabled) {
       $this->markTestSkipped('This test suite is expecting a monetization enabled org. Disable for integration testing.');
     }
-    // Response body representing a monetized organization.
-    $response_body = <<< EOF
-      {
-        "properties" : {
-          "property" : [ {
-              "name" : "features.isMonetizationEnabled",
-              "value" : "false"
-            }
-          ]
-        }
-      }
-EOF;
 
     // Queue a response from the mock server.
-    $this->stack->append(new Response(200, [], $response_body));
+    $this->stack->queueFromResponseFile(['get_non_monetized_org']);
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();

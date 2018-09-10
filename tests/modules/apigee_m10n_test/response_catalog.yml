@@ -15,3 +15,29 @@ get_eligible_products:
       "displayName": "bavifriwroguspon",
       "name": ":name"
     }]}'
+get_monetized_org:
+  status_code: 200
+  headers:
+    content-type: application/json
+  body: '{
+    "properties" : {
+      "property" : [ {
+          "name" : "features.isMonetizationEnabled",
+          "value" : "true"
+        }
+      ]
+    }
+  }'
+get_non_monetized_org:
+  status_code: 200
+  headers:
+    content-type: application/json
+  body: '{
+    "properties" : {
+      "property" : [ {
+          "name" : "features.isMonetizationEnabled",
+          "value" : "false"
+        }
+      ]
+    }
+  }'

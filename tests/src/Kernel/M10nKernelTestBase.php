@@ -104,8 +104,6 @@ class M10nKernelTestBase extends KernelTestBase {
 
     $this->stack         = $this->container->get('apigee_m10n_test.mock_http_handler_stack');
     $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
-
-    $this->sdk_connector->getClient();
   }
 
   /**
