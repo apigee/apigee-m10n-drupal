@@ -132,8 +132,19 @@ class Monetization implements MonetizationInterface {
     /** @todo use SDK when it's ready */
 
     try {
-      $url = '/mint/organizations/tsnow-mint/developers/' . rawurlencode($developer->getEmail()) . '/developer-balances';
-      $response = $this->sdk_connector->getClient()->get($url);
+      $url = '/mint/organizations/tsnow-mint/developers/' . rawurlencode($developer->getEmail()) . '/prepaid-developer-balance';
+
+      $month = date('F');
+      $year = date('Y');
+
+      $query_array = [
+          'billingMonth' => strtoupper($month),
+          'billingYear' => $year,
+          'supportedCurrencyId' => null,
+      ];
+
+      $query = http_build_query($query_array);
+      $response = $this->sdk_connector->getClient()->get($url . "?" . $query);
 
       $result = json_decode($response->getBody()->getContents());
     }

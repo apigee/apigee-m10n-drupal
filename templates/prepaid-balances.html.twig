@@ -26,13 +26,12 @@
                 <tr>
                     {% set currency = balance.supportedCurrency.name %}
                     <td>{{ currency }}</td>
-                    {# @todo how do we get previous balance, topups & tax? #}
                     {# @todo format currencies, probably in Monetization::getDeveloperPrepaidBalances #}
-                    <td>{{ 0 }}</td> {# balance.getPreviousBalance #}
-                    <td>{{ 0 }}</td> {# balance.getTopups #}
+                    <td>{{ balance.previousBalance }}</td>
+                    <td>{{ balance.topups }}</td>
                     <td>{{ balance.usage }}</td>
-                    <td>{{ 0 }}</td> {# balance.getTax #}
-                    <td>{{ balance.amount - balance.usage }}</td>
+                    <td>{{ balance.tax }}</td>
+                    <td>{{ balance.currentBalance }}</td>
                 </tr>
             {% endfor %}
         {% endif %}
