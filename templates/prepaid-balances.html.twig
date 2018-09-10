@@ -1,0 +1,40 @@
+{#
+/**
+ * Template for displaying current prepaid balances
+ *
+ * Available variables:
+ * - balances: @todo describe balances var once we switch from direct api call to sdk
+ *
+ * @see Drupal\apigee_m10n\Controller\BillingController
+ */
+#}
+<h3>{{ 'Current Prepaid Balance' |t }}</h3>
+<table>
+    <thead>
+        <tr>
+            <th>{{ 'Account Currency' | t }}</th>
+            <th>{{ 'Balance Brought Forward' | t }}</th>
+            <th>{{ 'Money Added to Account' | t }}</th>
+            <th>{{ 'Usage' | t }}</th>
+            <th>{{ 'Tax' | t }}</th>
+            <th>{{ 'Current Balance' | t }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if balances %}
+            {% for balance in balances %}
+                <tr>
+                    {% set currency = balance.supportedCurrency.name %}
+                    <td>{{ currency }}</td>
+                    {# @todo how do we get previous balance, topups & tax? #}
+                    {# @todo format currencies, probably in Monetization::getDeveloperPrepaidBalances #}
+                    <td>{{ 0 }}</td> {# balance.getPreviousBalance #}
+                    <td>{{ 0 }}</td> {# balance.getTopups #}
+                    <td>{{ balance.usage }}</td>
+                    <td>{{ 0 }}</td> {# balance.getTax #}
+                    <td>{{ balance.amount - balance.usage }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table>

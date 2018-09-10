@@ -35,3 +35,14 @@ function apigee_m10n_api_product_access(EntityInterface $entity, $operation, Acc
   return AccessResult::neutral();
 }
 
+/**
+ * Implements hook_theme().
+ */
+function apigee_m10n_theme($existing, $type, $theme, $path) {
+  return [
+    'prepaid_balances' => [
+      'variables' => ['balances' => NULL],
+      'template' => 'prepaid-balances',
+    ]
+  ];
+}

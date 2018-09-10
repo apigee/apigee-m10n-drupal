@@ -1,0 +1,6 @@
+apigee_m10n.billing:
+  path: /users/{user_id}/monetization/billing
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalanceAction
+  requirements:
+    _role: 'authenticated'

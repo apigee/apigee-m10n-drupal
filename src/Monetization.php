@@ -123,4 +123,24 @@ class Monetization implements MonetizationInterface {
       : AccessResult::forbidden('Product is not eligible for this developer');
   }
 
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloperPrepaidBalances(AccountInterface $developer): ?array {
+
+    /** @todo use SDK when it's ready */
+
+    try {
+      $url = '/mint/organizations/tsnow-mint/developers/' . rawurlencode($developer->getEmail()) . '/developer-balances';
+      $response = $this->sdk_connector->getClient()->get($url);
+
+      $result = json_decode($response->getBody()->getContents());
+    }
+    catch (\Exception $e) {
+      return null;
+    }
+
+    return $result->developerBalance ?? null;
+  }
 }
