@@ -23,7 +23,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\key\Entity\Key;
 
-class M10nKernelTestBase extends KernelTestBase {
+class MometizationKernelTestBase extends KernelTestBase {
 
   public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
   public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
@@ -39,12 +39,12 @@ class M10nKernelTestBase extends KernelTestBase {
     'file',
     'apigee_edge',
     'apigee_m10n',
-    'apigee_m10n_test',
+    'apigee_mock_client',
     'system',
   ];
 
   /**
-   * @var \Drupal\apigee_m10n_test\MockHandlerStack
+   * @var \Drupal\apigee_mock_client\MockHandlerStack
    *
    * The mock handler stack is responsible for serving queued api responses.
    */
@@ -102,7 +102,7 @@ class M10nKernelTestBase extends KernelTestBase {
                                                'active_key_oauth_token' => '',
                     ]);
 
-    $this->stack         = $this->container->get('apigee_m10n_test.mock_http_handler_stack');
+    $this->stack         = $this->container->get('apigee_mock_client.mock_http_handler_stack');
     $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
   }
 

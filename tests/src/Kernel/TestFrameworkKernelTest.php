@@ -28,7 +28,7 @@ use Http\Message\Authentication\AutoBasicAuth;
  *
  * @group apigee_m10n
  */
-class TestFrameworkKernelTest extends M10nKernelTestBase {
+class TestFrameworkKernelTest extends MometizationKernelTestBase {
 
   /**
    * @var \Apigee\Edge\ClientInterface
@@ -55,7 +55,7 @@ class TestFrameworkKernelTest extends M10nKernelTestBase {
   public function testServiceModification() {
     self::assertEquals(
       (string) $this->container->getDefinition('apigee_edge.sdk_connector')->getArgument(0),
-      'apigee_m10n_test.mock_http_client_factory'
+      'apigee_mock_client.mock_http_client_factory'
     );
   }
 
@@ -101,7 +101,7 @@ class TestFrameworkKernelTest extends M10nKernelTestBase {
    */
   public function testIntegrationToggle() {
     $handler = $this->container
-      ->get('apigee_m10n_test.mock_http_client_factory')
+      ->get('apigee_mock_client.mock_http_client_factory')
       ->fromOptions([])
       ->getConfig('handler');
 

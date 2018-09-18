@@ -10,7 +10,7 @@ get_eligible_products:
     "totalRecords" : 1,
     "product": [{
       "status": "CREATED",
-      "id": ":name",
+      "id": ":id",
       "organization": {},
       "displayName": "bavifriwroguspon",
       "name": ":name"

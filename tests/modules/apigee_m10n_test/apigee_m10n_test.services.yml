@@ -1,6 +1,0 @@
-services:
-  apigee_m10n_test.mock_http_handler_stack:
-    class: Drupal\apigee_m10n_test\MockHandlerStack
-  apigee_m10n_test.mock_http_client_factory:
-    class: Drupal\apigee_m10n_test\MockHttpClientFactory
-    arguments: ['@http_handler_stack', '@apigee_m10n_test.mock_http_handler_stack']

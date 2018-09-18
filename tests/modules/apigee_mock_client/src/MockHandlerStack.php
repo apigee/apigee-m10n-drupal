@@ -17,7 +17,7 @@
  * MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_test;
+namespace Drupal\apigee_mock_client;
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
@@ -47,7 +47,7 @@ class MockHandlerStack extends MockHandler {
   public function queueFromResponseFile($response_ids) {
     if (empty($this->responses)) {
       // Get the module path for this module.
-      $module_path = \Drupal::moduleHandler()->getModule('apigee_m10n_test')->getPath();
+      $module_path = \Drupal::moduleHandler()->getModule('apigee_mock_client')->getPath();
       $this->responses = Yaml::parseFile($module_path . '/response_catalog.yml');
     }
     foreach ((array) $response_ids as $index => $item) {

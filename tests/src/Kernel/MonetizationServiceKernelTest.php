@@ -29,7 +29,7 @@ use GuzzleHttp\Psr7\Response;
  *
  * @group apigee_m10n
  */
-class MonetizationServiceKernelTest extends M10nKernelTestBase {
+class MonetizationServiceKernelTest extends MometizationKernelTestBase {
 
   /**
    * @var \Drupal\apigee_m10n\MonetizationInterface
@@ -94,7 +94,11 @@ class MonetizationServiceKernelTest extends M10nKernelTestBase {
       ->method('getEmail')
       ->will($this->returnValue($email));
 
-    $this->stack->queueFromResponseFile(['get_eligible_products' => [':name' => strtolower($test_product_name)]]);
+    $this->stack->queueFromResponseFile(['get_eligible_products' => [
+      ':id' => strtolower($test_product_name),
+      ':name' => $test_product_name,
+    ]]);
+
     // Test that the user can access the API Product.
     $access_result = $this->monetization->apiProductAssignmentAccess($entity, $account);
 
