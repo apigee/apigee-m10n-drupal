@@ -111,7 +111,7 @@ class Monetization implements MonetizationInterface {
       // Instantiate an instance of the m10n ApiProduct controller.
       $product_controller = new ApiProductController($this->sdk_connector->getOrganization(), $this->sdk_connector->getClient());
       // Get a list of available products for the m10n developer.
-      $eligible_product_cache[$developer_id] = $product_controller->loadEligible($developer_id);
+      $eligible_product_cache[$developer_id] = $product_controller->getEligibleProductsByDeveloper($developer_id);
     }
 
     // Get just the IDs from the available products.

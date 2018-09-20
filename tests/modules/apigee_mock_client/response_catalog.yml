@@ -7,14 +7,15 @@ get_eligible_products:
   headers:
     content-type: application/json
   body: '{
-    "totalRecords" : 1,
     "product": [{
       "status": "CREATED",
       "id": ":id",
       "organization": {},
       "displayName": "bavifriwroguspon",
       "name": ":name"
-    }]}'
+    }],
+    "totalRecords" : 1
+  }'
 get_monetized_org:
   status_code: 200
   headers:

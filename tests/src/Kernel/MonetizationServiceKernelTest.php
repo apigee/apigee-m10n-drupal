@@ -80,6 +80,11 @@ class MonetizationServiceKernelTest extends MometizationKernelTestBase {
     self::assertEquals($is_monetization_enabled, FALSE);
   }
 
+  /**
+   * @covers \Drupal\apigee_m10n\Monetization::apiProductAssignmentAccess
+   *
+   * @todo: Fix this test so it will pass in integration mode.
+   */
   public function testApiProductAssignmentAccess() {
     $test_product_name = $this->randomMachineName();
     $email = $this->randomMachineName() . '@example.com';
