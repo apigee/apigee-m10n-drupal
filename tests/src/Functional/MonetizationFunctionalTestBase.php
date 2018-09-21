@@ -24,7 +24,7 @@ use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
 use Drupal\Tests\BrowserTestBase;
 
-class M10nFunctionalTestBase extends BrowserTestBase {
+class MonetizationFunctionalTestBase extends BrowserTestBase {
 
   use ApigeeEdgeTestTrait;
 

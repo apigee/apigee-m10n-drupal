@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-class PrepaidBalanceTest extends M10nFunctionalTestBase {
+class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
   protected function setUp() {
     parent::setUp();
