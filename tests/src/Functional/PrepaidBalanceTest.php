@@ -19,6 +19,12 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
+/**
+ * Class PrepaidBalanceTest
+ *
+ * @package Drupal\Tests\apigee_m10n\Functional
+ * @group apigee_m10n
+ */
 class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
   protected function setUp() {
@@ -36,6 +42,10 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 //      'user_id' => 1
 //    ]));
 
-    $page = $this->drupalGet('/users/me/monetization/billing');
+    $page = $this->drupalGet('users/me/monetization/billing');
+
+    $this->assertSession()->responseNotContains('Access denied');
+    $this->assertSession()->responseNotContains('502 Bad Gateway');
+    $this->assertSession()->responseNotContains('Page not found');
   }
 }
