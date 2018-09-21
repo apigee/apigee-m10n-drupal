@@ -29,7 +29,7 @@ use GuzzleHttp\Psr7\Response;
  *
  * @group apigee_m10n
  */
-class MonetizationServiceKernelTest extends MometizationKernelTestBase {
+class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
 
   /**
    * @var \Drupal\apigee_m10n\MonetizationInterface

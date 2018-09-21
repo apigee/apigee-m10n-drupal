@@ -23,7 +23,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\key\Entity\Key;
 
-class MometizationKernelTestBase extends KernelTestBase {
+class MonetizationKernelTestBase extends KernelTestBase {
 
   public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
   public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';

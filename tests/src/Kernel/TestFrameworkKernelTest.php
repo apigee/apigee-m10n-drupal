@@ -28,7 +28,7 @@ use Http\Message\Authentication\AutoBasicAuth;
  *
  * @group apigee_m10n
  */
-class TestFrameworkKernelTest extends MometizationKernelTestBase {
+class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
   /**
    * @var \Apigee\Edge\ClientInterface
