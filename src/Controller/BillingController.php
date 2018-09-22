@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
+use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
@@ -43,12 +44,16 @@ class BillingController extends ControllerBase {
    *
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    */
-  public function __construct(MonetizationInterface $monetization) {
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization) {
+    $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
   }
 
   public static function create(ContainerInterface $container) {
-    return new static($container->get('apigee_m10n.monetization'));
+    return new static(
+      $container->get('apigee_edge.sdk_connector'),
+      $container->get('apigee_m10n.monetization')
+    );
   }
 
   /**
@@ -68,7 +73,9 @@ class BillingController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    $balances = $this->monetization->getDeveloperPrepaidBalances($user);
+    $org_id = $this->sdk_connector->getOrganization();
+
+    $balances = $this->monetization->getDeveloperPrepaidBalances($org_id, $user);
 
     return [
       'prepaid_balances' => [
