@@ -30,7 +30,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
 
   protected static $modules = [
     'apigee_edge_test',
-//    'apigee_mock_client',
+    'apigee_mock_client',
     'system'
   ];
 

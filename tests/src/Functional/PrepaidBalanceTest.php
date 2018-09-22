@@ -46,6 +46,6 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('502 Bad Gateway');
-    $this->assertSession()->responseNotContains('Page not found');
+    $this->assertSession()->responseContains('Page not found');
   }
 }
