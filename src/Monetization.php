@@ -129,12 +129,12 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDeveloperPrepaidBalances(AccountInterface $developer): ?array {
+  public function getDeveloperPrepaidBalances(string $org_id, AccountInterface $developer): ?array {
 
     /** @todo use SDK when it's ready */
 
     try {
-      $url = '/mint/organizations/tsnow-mint/developers/' . rawurlencode($developer->getEmail()) . '/prepaid-developer-balance';
+      $url = '/mint/organizations/' . $org_id . '/developers/' . rawurlencode($developer->getEmail()) . '/prepaid-developer-balance';
 
       $month = date('F');
       $year = date('Y');
