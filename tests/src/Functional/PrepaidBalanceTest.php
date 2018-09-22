@@ -27,12 +27,17 @@ namespace Drupal\Tests\apigee_m10n\Functional;
  */
 class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
+  /**
+   * Drupal user.
+   *
+   * @var $account
+   */
+  protected $account;
+
   protected function setUp() {
     parent::setUp();
-  }
-
-  protected function tearDown() {
-    parent::tearDown();
+    $this->account = $this->createAccount([]);
+    $this->drupalLogin($this->account);
   }
 
   public function testPrepaidBalances() {

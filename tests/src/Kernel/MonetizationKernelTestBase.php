@@ -59,13 +59,6 @@ class MonetizationKernelTestBase extends KernelTestBase {
   protected $sdk_connector;
 
   /**
-   * Authentication key used by SDK Connector
-   *
-   * @var \Drupal\key\Entity\Key
-   */
-  private $auth_key;
-
-  /**
    * Whether actual integration tests are enabled.
    * @var boolean
    */
@@ -79,7 +72,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
 
     $this->integration_enabled = !empty(getenv(static::$APIGEE_INTEGRATION_ENABLE));
 
-    // Create new Apigee Edge basic auth key with private file provider.
+    // Create new Apigee Edge basic auth key.
     $key = Key::create([
       'id'           => 'apigee_m10n_test_auth',
       'label'        => 'Apigee M10n Test Authorization',
@@ -95,24 +88,13 @@ class MonetizationKernelTestBase extends KernelTestBase {
     ]));
     $key->save();
 
-    $this->auth_key = $key;
-
-    $this->container->get('state')
-                    ->set('apigee_edge.auth', ['active_key'             => 'apigee_m10n_test_auth',
-                                               'active_key_oauth_token' => '',
-                    ]);
+    $this->container->get('state')->set('apigee_edge.auth', [
+      'active_key' => 'apigee_m10n_test_auth',
+      'active_key_oauth_token' => '',
+    ]);
 
     $this->stack         = $this->container->get('apigee_mock_client.mock_http_handler_stack');
     $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function tearDown() {
-    $this->auth_key->delete();
-
-    parent::tearDown();
   }
 
 }

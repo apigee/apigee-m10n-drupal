@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Component\Serialization\Json;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
 use Drupal\Tests\BrowserTestBase;
@@ -28,27 +28,45 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
 
   use ApigeeEdgeTestTrait;
 
+  public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
+  public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
+  public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';
+  public static $APIGEE_EDGE_PASSWORD       = 'APIGEE_EDGE_PASSWORD';
+  public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
+
   protected static $modules = [
     'apigee_edge_test',
+    'apigee_m10n',
     'apigee_mock_client',
     'system'
   ];
 
+  /**
+   * Whether actual integration tests are enabled.
+   * @var boolean
+   */
+  protected $integration_enabled;
+
   protected function setUp() {
     parent::setUp();
+
+    $this->integration_enabled = !empty(getenv(static::$APIGEE_INTEGRATION_ENABLE));
+
+    // Create new Apigee Edge basic auth key.
     $key = Key::create([
-      'id' => 'test',
-      'label' => 'test',
-      'key_type' => 'apigee_edge_basic_auth',
-      'key_provider' => 'apigee_edge_environment_variables',
-      'key_input' => 'apigee_edge_basic_auth_input',
+      'id'           => 'test',
+      'label'        => 'Apigee M10n Test Authorization',
+      'key_type'     => 'apigee_edge_basic_auth',
+      'key_provider' => 'config',
+      'key_input'    => 'apigee_edge_basic_auth_input',
     ]);
-    try {
-      $key->save();
-    }
-    catch (EntityStorageException $exception) {
-      self::fail('Could not create key for testing.');
-    }
+    $key->setKeyValue(Json::encode([
+      'endpoint'     => getenv(static::$APIGEE_EDGE_ENDPOINT),
+      'organization' => getenv(static::$APIGEE_EDGE_ORGANIZATION),
+      'username'     => getenv(static::$APIGEE_EDGE_USERNAME),
+      'password'     => getenv(static::$APIGEE_EDGE_PASSWORD),
+    ]));
+    $key->save();
 
     $this->container->get('state')->set('apigee_edge.auth', [
       'active_key' => 'test',
