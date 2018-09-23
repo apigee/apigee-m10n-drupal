@@ -23,7 +23,12 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInt
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\user\UserInterface;
 
-class ApigeeSdkControllerFactory {
+/**
+ * The `apigee_m10n.sdk_controller_factory` service class.
+ *
+ * @package Drupal\apigee_m10n
+ */
+class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface {
 
   /**
    * @var \Drupal\apigee_edge\SDKConnectorInterface

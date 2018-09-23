@@ -21,6 +21,11 @@ namespace Drupal\apigee_m10n;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Drupal\user\UserInterface;
 
+/**
+ * Interface for the `apigee_m10n.sdk_controller_factory` service.
+ *
+ * @package Drupal\apigee_m10n
+ */
 interface ApigeeSdkControllerFactoryInterface {
 
   /**

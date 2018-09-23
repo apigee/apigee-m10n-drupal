@@ -19,11 +19,10 @@
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\user\UserInterface;
 
 /**
- * Class ApigeeSdkControllerFactory
- *
  * Tests the `apigee_m10n.sdk_controller_factory` service.
  *
  * @package Drupal\Tests\apigee_m10n\Kernel
@@ -33,7 +32,7 @@ use Drupal\user\UserInterface;
  *
  * @coversDefaultClass \Drupal\apigee_m10n\ApigeeSdkControllerFactory
  */
-class ApigeeSdkControllerFactory extends MonetizationKernelTestBase {
+class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
 
 
   /**
@@ -52,6 +51,7 @@ class ApigeeSdkControllerFactory extends MonetizationKernelTestBase {
     parent::setUp();
 
     $this->controller_factory = $this->container->get('apigee_m10n.sdk_controller_factory');
+    static::assertInstanceOf(ApigeeSdkControllerFactoryInterface::class, $this->controller_factory);
   }
 
   /**
