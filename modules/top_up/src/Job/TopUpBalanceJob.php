@@ -19,8 +19,10 @@
 namespace Drupal\apigee_m10n_top_up\Job;
 
 use Drupal\apigee_edge\Job\EdgeJob;
+use Drupal\apigee_m10n\Controller\BillingController;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\UserInterface;
 
@@ -109,6 +111,7 @@ class TopUpBalanceJob extends EdgeJob {
       try {
         // Top up by the adjustment amount.
         $updated_balance = $controller->topUpBalance((float) $adjustment->getAmount()->getNumber(), $currency_code);
+        Cache::invalidateTags([BillingController::$cachePrefix  . ':user:' . $this->developer->id()]);
       } catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.
         $this->getLogger()->error((string) $t);
