@@ -33,6 +33,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class BillingController extends ControllerBase {
 
   /**
+   * Cache prefix that is used for cache tags for this controller.
+   *
+   * @var string
+   */
+  public static $cachePrefix = 'apigee.monetization.billing';
+
+  /**
    * Apigee Monetization utility service.
    *
    * @var \Drupal\apigee_m10n\MonetizationInterface
@@ -81,6 +88,9 @@ class BillingController extends ControllerBase {
       'prepaid_balances' => [
         '#theme' => 'prepaid_balances',
         '#balances' => $balances,
+        '#cache' => [
+          'tags' => [static::$cachePrefix . ':user:' . $user->id()],
+        ],
       ]
     ];
   }
