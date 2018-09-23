@@ -86,6 +86,13 @@ function apigee_m10n_top_up_entity_bundle_field_info(EntityTypeInterface $entity
 /**
  * Implements hook_form_FORM_ID_alter().
  */
+function apigee_m10n_top_up_form_commerce_product_type_add_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  apigee_m10n_top_up_form_commerce_product_type_edit_form_alter($form,  $form_state, $form_id);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
 function apigee_m10n_top_up_form_commerce_product_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\commerce_product\Entity\ProductTypeInterface $product_type */
   $default_value = (($product_type = $form_state->getFormObject()->getEntity())
