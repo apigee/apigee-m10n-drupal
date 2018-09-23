@@ -19,8 +19,10 @@
 
 namespace Drupal\apigee_mock_client;
 
+use Apigee\Edge\Exception\ClientErrorException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class MockHandlerStack extends MockHandler {
@@ -56,11 +58,38 @@ class MockHandlerStack extends MockHandler {
       // Body text can have elements replaced in it for certain values. See: http://php.net/strtr
       $replacements = is_array($item) ? $item : [];
 
+      // Add the default headers if headers aren't defined in the response catalog.
+      $headers = isset($this->responses[$id]['headers']) ? $this->responses[$id]['headers'] : [
+        'content-type' => 'application/json;charset=utf-8'
+      ];
+      // Set the default status code.
+      $status_code = !empty($this->responses[$id]['status_code']) ? $this->responses[$id]['status_code'] : 200;
+      $status_code = !empty($replacements['status_code']) ? $replacements['status_code'] : $status_code;
+      // Make replacements inside the response body and append the response.
       $this->append(new Response(
-        $this->responses[$id]['status_code'],
-        $this->responses[$id]['headers'],
-        strtr($this->responses[$id]['body'], $replacements))
-      );
+        $status_code,
+        $headers,
+        strtr($this->responses[$id]['body'], $replacements)
+      ));
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __invoke(RequestInterface $request, array $options) {
+    try {
+      /** @var \Psr\Http\Message\ResponseInterface $response */
+      return parent::__invoke($request, $options);
+    } catch (\Exception $ex) {
+      // Fake a client error so the error gets reported during testing. The
+      // `apigee_edge_user_presave` is catching errors in a way that this error
+      // never gets reported to PHPUnit. This won't work for all use cases.
+      //
+      // @todo: Find another way to ensure an exception gets registered with PHPUnit.
+      throw new ClientErrorException(new Response(500, [
+        'Content-Type' => 'application/json',
+      ], '{"code": "4242", "message": "'.$ex->getMessage().'"}'), $request, $ex->getMessage(), $ex->getCode(), $ex);
     }
   }
 }

@@ -1,0 +1,15 @@
+name: Apigee Monetization Top Up
+description: Allows Developers to top up their balances.
+package: Apigee
+
+type: module
+core: 8.x
+
+dependencies:
+  - apigee_m10n:apigee_m10n
+  - commerce:commerce_product
+  - commerce:commerce_payment
+  - commerce:commerce_price
+  - commerce:commerce_order
+
+php: "7.1"

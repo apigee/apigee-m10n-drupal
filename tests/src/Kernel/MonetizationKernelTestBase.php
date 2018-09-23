@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright 2018 Google Inc.
  *
@@ -22,6 +21,10 @@ namespace Drupal\Tests\apigee_m10n\Kernel;
 use Drupal\Component\Serialization\Json;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\key\Entity\Key;
+use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
+use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
+use GuzzleHttp\Psr7\Response;
 
 class MonetizationKernelTestBase extends KernelTestBase {
 
@@ -30,6 +33,8 @@ class MonetizationKernelTestBase extends KernelTestBase {
   public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';
   public static $APIGEE_EDGE_PASSWORD       = 'APIGEE_EDGE_PASSWORD';
   public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
+
+  use ApigeeEdgeTestTrait;
 
   /**
    * {@inheritdoc}
@@ -66,6 +71,8 @@ class MonetizationKernelTestBase extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Exception
    */
   protected function setUp() {
     parent::setUp();
@@ -97,4 +104,86 @@ class MonetizationKernelTestBase extends KernelTestBase {
     $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
   }
 
+  /**
+   * Makes sure no HTTP Client exceptions have been logged.
+   */
+  public function assertNoClientError() {
+    $exceptions = $this->sdk_connector->getClient()->getJournal()->getLastException();
+    static::assertEmpty(
+      $exceptions,
+      'A HTTP error has been logged in the Journal.'
+    );
+  }
+
+  /**
+   * Queues up a mock developer response.
+   *
+   * @param \Drupal\user\UserInterface $developer
+   *   The developer user to get properties from.
+   * @param null $response_code
+   *   Add a response code to override the default.
+   */
+  protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL) {
+    $replacements = empty($response_code) ? [] : ['status_code' => $response_code];
+
+    $replacements[':email']       = $developer->getEmail();
+    $replacements[':developerId'] = $developer->uuid();
+    $replacements[':firstName']   = $developer->first_name->value;
+    $replacements[':lastName']    = $developer->last_name->value;
+    $replacements[':userName']    = $developer->getAccountName();
+
+    $this->stack->queueFromResponseFile(['get_developer' => $replacements]);
+  }
+
+  /**
+   * We override this function from `ApigeeEdgeTestTrait` so we can queue the
+   * appropriate response upon account creation.
+   *
+   * {@inheritdoc}
+   *
+   * @throws \Exception
+   */
+  protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = ''): ?UserInterface {
+    $rid = NULL;
+    if ($permissions) {
+      $rid = $this->createRole($permissions);
+      $this->assertTrue($rid, 'Role created');
+    }
+
+    $edit = [
+      'first_name' => $this->randomMachineName(),
+      'last_name' => $this->randomMachineName(),
+      'name' => $this->randomMachineName(),
+      'pass' => user_password(),
+      'status' => $status,
+    ];
+    if ($rid) {
+      $edit['roles'][] = $rid;
+    }
+    if ($prefix) {
+      $edit['mail'] = "{$prefix}.{$edit['name']}@example.com";
+    }
+    else {
+      $edit['mail'] = "{$edit['name']}@example.com";
+    }
+
+    $account = User::create($edit);
+
+    // Queue up a created response.
+    $this->queueDeveloperResponse($account, 201);
+    $this->stack->append(new Response(204, [], ''));
+
+    // Save the user.
+    $account->save();
+
+    $this->assertTrue($account->id(), 'User created.');
+    if (!$account->id()) {
+      return NULL;
+    }
+
+    // This is here to make drupalLogin() work.
+    $account->passRaw = $edit['pass'];
+
+    return $account;
+  }
 }

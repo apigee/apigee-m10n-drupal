@@ -1,0 +1,6 @@
+services:
+  apigee_m10n_top_up.payment_transition_subscriber:
+    class: Drupal\apigee_m10n_top_up\EventSubscriber\CommerceOrderTransitionSubscriber
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_edge.job_executor']
+    tags:
+      - { name: event_subscriber }

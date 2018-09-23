@@ -1,11 +1,6 @@
 catalog_test:
-  status_code: 200
-  headers: []
   body: '{"status": "success", "catalog_version": "1.0"}'
 get_eligible_products:
-  status_code: 200
-  headers:
-    content-type: application/json
   body: '{
     "product": [{
       "status": "CREATED",
@@ -17,9 +12,6 @@ get_eligible_products:
     "totalRecords" : 1
   }'
 get_monetized_org:
-  status_code: 200
-  headers:
-    content-type: application/json
   body: '{
     "properties" : {
       "property" : [ {
@@ -30,9 +22,6 @@ get_monetized_org:
     }
   }'
 get_non_monetized_org:
-  status_code: 200
-  headers:
-    content-type: application/json
   body: '{
     "properties" : {
       "property" : [ {
@@ -42,10 +31,30 @@ get_non_monetized_org:
       ]
     }
   }'
+get_developer:
+  body: '{
+    "apps" : [ ],
+    "companies" : [ ],
+    "email" : ":email",
+    "developerId" : ":developerId",
+    "firstName" : ":firstName",
+    "lastName" : ":lastName",
+    "userName" : ":userName",
+    "organizationName" : "tsnow-mint",
+    "status" : "active",
+    "attributes" : [ {
+      "name" : "MINT_BILLING_TYPE",
+      "value" : "PREPAID"
+    }, {
+      "name" : "MINT_DEVELOPER_TYPE",
+      "value" : "UNTRUSTED"
+    } ],
+    "createdAt" : 1537547358558,
+    "createdBy" : "jaesin+apigee@chapterthree.com",
+    "lastModifiedAt" : 1537547358558,
+    "lastModifiedBy" : "jaesin+apigee@chapterthree.com"
+  }'
 get_prepaid_balances:
-  status_code: 200
-  headers:
-    content-type: application/json
   body: '{
     "developerBalance": [
       {
@@ -81,4 +90,43 @@ get_prepaid_balances:
       }
     ],
     "totalRecords": 2
+  }'
+get_developer_balances:
+  body: '{
+    "developerBalance" : [ {
+      "amount" : :amount_usd,
+      "chargePerUsage" : false,
+      "id" : "f4a7b31b-90e3-4cfc-910c-517f36ea3477",
+      "isRecurring" : false,
+      "supportedCurrency" : {
+        "description" : "United States Dollars",
+        "displayName" : "United States Dollars",
+        "id" : "usd",
+        "minimumTopupAmount" : 10.0000,
+        "name" : "USD",
+        "organization" : {},
+        "status" : "ACTIVE",
+        "virtualCurrency" : false
+      },
+      "usage" : 0
+    } ],
+    "totalRecords" : 1
+  }'
+post_developer_balances:
+  body: '{
+    "amount" : :amount,
+    "chargePerUsage" : false,
+    "id" : "9f258a67-b4e7-408c-85cd-3f03ac2587ad",
+    "isRecurring" : false,
+    "supportedCurrency" : {
+      "description" : "United States Dollars",
+      "displayName" : "United States Dollars",
+      "id" : "usd",
+      "minimumTopupAmount" : 10.0000,
+      "name" : "USD",
+      "organization" : {},
+      "status" : "ACTIVE",
+      "virtualCurrency" : false
+    },
+    "usage" : 0
   }'
