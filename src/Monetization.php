@@ -55,7 +55,7 @@ class Monetization implements MonetizationInterface {
    */
   private $cache;
 
-  /**Ò
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector

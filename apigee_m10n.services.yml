@@ -2,6 +2,9 @@ services:
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
     arguments: ['@apigee_edge.sdk_connector', '@messenger', '@cache.default']
+  apigee_m10n.sdk_controller_factory:
+    class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
+    arguments: ['@apigee_edge.sdk_connector']
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
     arguments: ['@apigee_m10n.monetization', '@messenger']

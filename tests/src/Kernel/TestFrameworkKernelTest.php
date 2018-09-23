@@ -27,6 +27,7 @@ use Http\Message\Authentication\AutoBasicAuth;
  * Tests the testing framework for testing offline.
  *
  * @group apigee_m10n
+ * @group apigee_m10n_kernel
  */
 class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
