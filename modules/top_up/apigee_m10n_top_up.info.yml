@@ -1,5 +1,5 @@
 name: Apigee Monetization Top Up
-description: Allows Developers to top up their balances.
+description: Provides the ability to create a Drupal Commerce top up product.
 package: Apigee
 
 type: module
