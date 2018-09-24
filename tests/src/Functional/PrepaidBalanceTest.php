@@ -19,6 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
+use Drupal\Core\Url;
+
 /**
  * Class PrepaidBalanceTest
  *
@@ -34,23 +36,55 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
    */
   protected $account;
 
-  protected function setUp() {
-    parent::setUp();
+  public function testPrepaidBalancesAccessDenied() {
+
+    // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
     $this->account = $this->createAccount([]);
     $this->drupalLogin($this->account);
+
+    $this->drupalGet(Url::fromRoute('apigee_monitization.billing', [
+      'user_id' => 58
+    ]));
+
+    $this->assertSession()->statusCodeEquals(403);
   }
 
-  public function testPrepaidBalances() {
+  public function testPrepaidBalancesAccessGranted() {
 
+    // If the user does have the "view mint prepaid reports" permission, they should get a 200 response.
+    $this->account = $this->createAccount([
+      'view mint prepaid reports'
+    ]);
+    $this->drupalLogin($this->account);
 
-//    $page = $this->drupalGet(Url::fromRoute('apigee_m10n.billing', [
-//      'user_id' => 1
-//    ]));
+    $this->drupalGet(Url::fromRoute('apigee_monitization.billing', [
+      'user_id' => 58
+    ]));
 
-    $page = $this->drupalGet('users/me/monetization/billing');
+    $this->assertSession()->statusCodeEquals(200);
+  }
+
+  public function testPrepaidBalancesView() {
+
+    if (!$this->integration_enabled) {
+      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
+      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
+      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
+      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
+    }
+
+    // If the user has "view mint prepaid reports" permission, they should be able to see some prepaid balances.
+    $this->account = $this->createAccount([
+      'view mint prepaid reports'
+    ]);
+    $this->drupalLogin($this->account);
+
+    $this->drupalGet(Url::fromRoute('apigee_monitization.billing', [
+      // If real integration tests are enabled, use a user id that exists on the dev site,
+      // otherwise use the generated account id.
+      'user_id' => $this->integration_enabled ? 58 : $this->account->id()
+    ]));
 
     $this->assertSession()->responseNotContains('Access denied');
-    $this->assertSession()->responseNotContains('502 Bad Gateway');
-    $this->assertSession()->responseContains('Page not found');
   }
 }

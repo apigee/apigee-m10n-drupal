@@ -22,7 +22,7 @@ namespace Drupal\apigee_mock_client;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Site\Settings;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\Tests\apigee_m10n\MonetizationTestEnvironmentVariables;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -73,7 +73,8 @@ class MockHttpClientFactory extends ClientFactory {
       'headers' => [
         'User-Agent' => 'Drupal/' . \Drupal::VERSION . ' (+https://www.drupal.org/) ' . \GuzzleHttp\default_user_agent(),
       ],
-      'handler' => !empty(getenv(MonetizationKernelTestBase::$APIGEE_INTEGRATION_ENABLE)) ? $this->stack : $this->mock_stack,
+      // @todo replace with state api b/c functional tests don't have access to environment variables (as far as I can tell).
+      'handler' => !empty(getenv('APIGEE_INTEGRATION_ENABLE')) ? $this->stack : $this->mock_stack,
       // Security consideration: prevent Guzzle from using environment variables
       // to configure the outbound proxy.
       'proxy' => [

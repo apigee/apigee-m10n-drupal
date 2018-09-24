@@ -22,18 +22,13 @@ use Drupal\Component\Serialization\Json;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
+use Drupal\Tests\apigee_m10n\MonetizationTestEnvironmentVariables;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use GuzzleHttp\Psr7\Response;
 
 class MonetizationKernelTestBase extends KernelTestBase {
-
-  public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
-  public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
-  public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';
-  public static $APIGEE_EDGE_PASSWORD       = 'APIGEE_EDGE_PASSWORD';
-  public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
 
   use ApigeeEdgeTestTrait;
   use UserCreationTrait;
@@ -80,7 +75,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->integration_enabled = !empty(getenv(static::$APIGEE_INTEGRATION_ENABLE));
+    $this->integration_enabled = !empty(getenv('APIGEE_INTEGRATION_ENABLE'));
 
     // Create new Apigee Edge basic auth key.
     $key = Key::create([
@@ -91,10 +86,10 @@ class MonetizationKernelTestBase extends KernelTestBase {
       'key_input'    => 'apigee_edge_basic_auth_input',
     ]);
     $key->setKeyValue(Json::encode([
-      'endpoint'     => getenv(static::$APIGEE_EDGE_ENDPOINT),
-      'organization' => getenv(static::$APIGEE_EDGE_ORGANIZATION),
-      'username'     => getenv(static::$APIGEE_EDGE_USERNAME),
-      'password'     => getenv(static::$APIGEE_EDGE_PASSWORD),
+      'endpoint'     => getenv('APIGEE_EDGE_ENDPOINT'),
+      'organization' => getenv('APIGEE_EDGE_ORGANIZATION'),
+      'username'     => getenv('APIGEE_EDGE_USERNAME'),
+      'password'     => getenv('APIGEE_EDGE_PASSWORD'),
     ]));
     $key->save();
 

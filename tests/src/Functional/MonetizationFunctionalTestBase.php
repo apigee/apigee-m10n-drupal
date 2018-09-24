@@ -22,24 +22,26 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 use Drupal\Component\Serialization\Json;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
+use Drupal\Tests\apigee_m10n\MonetizationTestEnvironmentVariables;
 use Drupal\Tests\BrowserTestBase;
 
 class MonetizationFunctionalTestBase extends BrowserTestBase {
 
   use ApigeeEdgeTestTrait;
 
-  public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
-  public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
-  public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';
-  public static $APIGEE_EDGE_PASSWORD       = 'APIGEE_EDGE_PASSWORD';
-  public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
-
   protected static $modules = [
-    'apigee_edge_test',
+    'apigee_edge',
     'apigee_m10n',
     'apigee_mock_client',
     'system'
   ];
+
+  /**
+   * @var \Drupal\apigee_mock_client\MockHandlerStack
+   *
+   * The mock handler stack is responsible for serving queued api responses.
+   */
+  protected $stack;
 
   /**
    * Whether actual integration tests are enabled.
@@ -50,7 +52,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->integration_enabled = !empty(getenv(static::$APIGEE_INTEGRATION_ENABLE));
+    $this->integration_enabled = !empty(getenv('APIGEE_INTEGRATION_ENABLE'));
 
     // Create new Apigee Edge basic auth key.
     $key = Key::create([
@@ -61,10 +63,10 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
       'key_input'    => 'apigee_edge_basic_auth_input',
     ]);
     $key->setKeyValue(Json::encode([
-      'endpoint'     => getenv(static::$APIGEE_EDGE_ENDPOINT),
-      'organization' => getenv(static::$APIGEE_EDGE_ORGANIZATION),
-      'username'     => getenv(static::$APIGEE_EDGE_USERNAME),
-      'password'     => getenv(static::$APIGEE_EDGE_PASSWORD),
+      'endpoint'     => getenv('APIGEE_EDGE_ENDPOINT'),
+      'organization' => getenv('APIGEE_EDGE_ORGANIZATION'),
+      'username'     => getenv('APIGEE_EDGE_USERNAME'),
+      'password'     => getenv('APIGEE_EDGE_PASSWORD'),
     ]));
     $key->save();
 
@@ -73,6 +75,8 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
       'active_key_oauth_token' => '',
     ]);
     $this->container->get('state')->resetCache();
+
+    $this->stack = $this->container->get('apigee_mock_client.mock_http_handler_stack');
   }
 
 }
