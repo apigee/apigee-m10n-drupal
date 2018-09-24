@@ -43,4 +43,26 @@ interface MonetizationInterface {
    */
   public function apiProductAssignmentAccess(EntityInterface $entity, AccountInterface $account): AccessResultInterface ;
 
+  /**
+   * Takes in a developer UUID or email address, and a date specifying the report month and year,
+   * and returns an array of prepaid balances.
+   *
+   * @param string $developer_id
+   * @param \DateTimeImmutable $billingDate
+   *
+   * @return array|null
+   */
+  public function getDeveloperPrepaidBalances(string $developer_id, \DateTimeImmutable $billingDate): ?array;
+
+  /**
+   * Takes in a company name, and a date specifying the report month and year,
+   * and returns an array of prepaid balances.
+   *
+   * @param string $company_id
+   * @param \DateTimeImmutable $billingDate
+   *
+   * @return array|null
+   */
+  public function getCompanyPrepaidBalances(string $company_id, \DateTimeImmutable $billingDate): ?array;
+
 }

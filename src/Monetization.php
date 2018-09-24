@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
+use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -44,6 +45,11 @@ class Monetization implements MonetizationInterface {
   private $sdk_connector;
 
   /**
+   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
+   */
+  private $sdk_controller_factory;
+
+  /**
    * Drupal core messenger service (for adding flash messages).
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
@@ -60,10 +66,11 @@ class Monetization implements MonetizationInterface {
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MessengerInterface $messenger, CacheBackendInterface $cache) {
-    $this->sdk_connector = $sdk_connector;
-    $this->messenger     = $messenger;
-    $this->cache         = $cache;
+  public function __construct(SDKConnectorInterface $sdk_connector, ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MessengerInterface $messenger, CacheBackendInterface $cache) {
+    $this->sdk_connector          = $sdk_connector;
+    $this->sdk_controller_factory = $sdk_controller_factory;
+    $this->messenger              = $messenger;
+    $this->cache                  = $cache;
   }
 
   /**
@@ -75,7 +82,7 @@ class Monetization implements MonetizationInterface {
 
     // Use cached result if available.
     $monetization_status_cache_entry = $this->cache->get("apigee_m10n:org_monetization_status:{$org_id}");
-    $monetization_status = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : null;
+    $monetization_status             = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : NULL;
 
     if (!$monetization_status) {
 
@@ -125,35 +132,41 @@ class Monetization implements MonetizationInterface {
       : AccessResult::forbidden('Product is not eligible for this developer');
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloperPrepaidBalances(string $developer_id, \DateTimeImmutable $billingDate): ?array {
+    $balance_controller = $this->sdk_controller_factory->developerBalanceController($developer_id);
+    return $this->getPrepaidBalances($balance_controller, $billingDate);
+  }
 
   /**
    * {@inheritdoc}
    */
-  public function getDeveloperPrepaidBalances(string $org_id, AccountInterface $developer): ?array {
+  public function getCompanyPrepaidBalances(string $company_id, \DateTimeImmutable $billingDate): ?array {
+    $balance_controller = $this->sdk_controller_factory->companyBalanceController($company_id);
+    return $this->getPrepaidBalances($balance_controller, $billingDate);
+  }
 
-    /** @todo use SDK when it's ready */
+
+  /**
+   * Uses a prepaid balance controller to return prepaid balances for a
+   * specified month and year.
+   *
+   * @param \Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface $balance_controller
+   * @param \DateTimeImmutable $billingDate
+   *
+   * @return array|null
+   */
+  protected function getPrepaidBalances(PrepaidBalanceControllerInterface $balance_controller, \DateTimeImmutable $billingDate): ?array {
 
     try {
-      $url = '/mint/organizations/' . $org_id . '/developers/' . rawurlencode($developer->getEmail()) . '/prepaid-developer-balance';
-
-      $month = date('F');
-      $year = date('Y');
-
-      $query_array = [
-          'billingMonth' => strtoupper($month),
-          'billingYear' => $year,
-          'supportedCurrencyId' => null,
-      ];
-
-      $query = http_build_query($query_array);
-      $response = $this->sdk_connector->getClient()->get($url . "?" . $query);
-
-      $result = json_decode($response->getBody()->getContents());
-    }
-    catch (\Exception $e) {
-      return null;
+      $result = $balance_controller->getPrepaidBalance($billingDate);
+    } catch (\Exception $e) {
+      $this->messenger->addWarning('Unable to retrieve prepaid balances.');
+      return NULL;
     }
 
-    return $result->developerBalance ?? null;
+    return $result;
   }
 }
