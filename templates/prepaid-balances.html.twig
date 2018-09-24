@@ -24,9 +24,7 @@
         {% if balances %}
             {% for balance in balances %}
                 <tr>
-                    {% set currency = balance.supportedCurrency.name %}
-                    <td>{{ currency }}</td>
-                    {# @todo format currencies, probably in Monetization::getDeveloperPrepaidBalances #}
+                    <td>{{ balance.currency.name }}</td>
                     <td>{{ balance.previousBalance }}</td>
                     <td>{{ balance.topups }}</td>
                     <td>{{ balance.usage }}</td>
