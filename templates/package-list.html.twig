@@ -1,0 +1,16 @@
+{#
+/**
+ * Template for displaying a package list.
+ *
+ * Available variables:
+ * - package_list: A list of packages retrieved from the apigee sdk.
+ *
+ * @see Drupal\apigee_m10n\Controller\PackageController
+ */
+#}
+<h3>{{ 'Packages' |t }}</h3>
+<ul>
+    {% for package in package_list %}
+        {{ package }}
+    {% endfor %}
+</ul>

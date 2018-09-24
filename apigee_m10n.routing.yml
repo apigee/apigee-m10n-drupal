@@ -4,3 +4,31 @@ apigee_m10n.billing:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalanceAction
   requirements:
     _role: 'authenticated'
+
+apigee_monitization.my_packages:
+  path: /user/monetization/packages
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
+  requirements:
+    _permission: 'access monitization packages'
+
+apigee_monitization.packages:
+  path: /user/{user}/monetization/packages
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
+  requirements:
+    _permission: 'access monitization packages'
+
+apigee_monitization.my_purchased:
+  path: /user/monetization/packages/purchased
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PackagesController::myPurchased
+  requirements:
+    _permission: 'access purchased monitization packages'
+
+apigee_monitization.purchased:
+  path: /user/{user}/monetization/packages/purchased
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PackagesController::purchasedPage
+  requirements:
+    _permission: 'access purchased monitization packages'

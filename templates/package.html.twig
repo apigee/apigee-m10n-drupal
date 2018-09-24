@@ -1,0 +1,19 @@
+{#
+/**
+ * Template for displaying monitization packages.
+ *
+ * Available variables:
+ * - package: An package from the monitization SDK.
+ *
+ * @see \Apigee\Edge\Api\Monetization\Controller\ApiPackageController
+ */
+#}
+<div class="apigee-sdk-package">
+    <strong>{{ package.displayName }}</strong>
+    <div class="apigee-sdk-product-list">
+        <em>Products: </em>
+        {% for product in package.apiProducts %}
+            <span class="apigee-sdk-product">{{ product.displayName }}{% if not loop.last %},{% endif %}</span>
+        {% endfor %}
+    </div>
+</div>

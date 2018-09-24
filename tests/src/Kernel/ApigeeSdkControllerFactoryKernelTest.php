@@ -18,6 +18,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
+use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\user\UserInterface;
@@ -77,4 +78,19 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
 
     static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
   }
+
+  /**
+   * Tests the developer balance controller.
+   *
+   * @covers ::apiPackageController
+   */
+  public function testApiPackageController() {
+    /** @var ApiPackageControllerInterface $controller */
+    $controller  = $this->controller_factory->apiPackageController();
+
+    static::assertInstanceOf(ApiPackageControllerInterface::class, $controller);
+
+    static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
+  }
+
 }

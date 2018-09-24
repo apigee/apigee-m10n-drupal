@@ -22,6 +22,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use GuzzleHttp\Psr7\Response;
@@ -35,6 +36,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
   public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
 
   use ApigeeEdgeTestTrait;
+  use UserCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -45,6 +47,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
     'apigee_edge',
     'apigee_m10n',
     'apigee_mock_client',
+    'user',
     'system',
   ];
 

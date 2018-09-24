@@ -43,6 +43,27 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'prepaid_balances' => [
       'variables' => ['balances' => NULL],
       'template' => 'prepaid-balances',
-    ]
+    ],
+    'package_list' => [
+      'variables' => ['package_list' => NULL],
+      'template' => 'package-list',
+    ],
+    'package' => [
+      'variables' => ['package' => NULL],
+      'template' => 'package',
+    ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function apigee_m10n_preprocess_package_list(&$variables, $hook) {
+  // Convert the package list into individual renderable items.
+  array_walk($variables['package_list'], function (&$package){
+    $package = [
+      '#theme' => 'package',
+      '#package' => $package,
+    ];
+  });
 }
