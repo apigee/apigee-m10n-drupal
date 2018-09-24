@@ -69,12 +69,13 @@ class BillingController extends ControllerBase {
    * @var $user_id string
    *
    * @return array|Response
+   * @throws \Exception
    */
   public function prepaidBalanceAction(string $user_id) {
 
-    // @todo permissions?
+    /** @todo Drupal 7 version uses company id if it's available. Implement when company context is ironed out. */
 
-    $user = ($user_id === 'me') ? \Drupal::currentUser() : User::load($user_id);
+    $user = User::load($user_id);
 
     if (!$user) {
       throw new NotFoundHttpException();
@@ -82,7 +83,7 @@ class BillingController extends ControllerBase {
 
     $org_id = $this->sdk_connector->getOrganization();
 
-    $balances = $this->monetization->getDeveloperPrepaidBalances($org_id, $user);
+    $balances = $this->monetization->getDeveloperPrepaidBalances($org_id, $user->getEmail(), new \DateTimeImmutable('now'));
 
     return [
       'prepaid_balances' => [
