@@ -24,7 +24,7 @@
         {% if balances %}
             {% for balance in balances %}
                 <tr>
-                    <td>{{ balance.currency.name }}</td>
+                    <td>{{ balance.currencyName }}</td>
                     <td>{{ balance.previousBalance }}</td>
                     <td>{{ balance.topups }}</td>
                     <td>{{ balance.usage }}</td>

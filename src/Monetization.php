@@ -169,4 +169,8 @@ class Monetization implements MonetizationInterface {
 
     return $result;
   }
+
+  public function formatCurrency(float $amount, string $currecnyId) {
+
+  }
 }

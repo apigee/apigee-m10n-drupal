@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Controller;
 
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n\FormattedBalance;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
@@ -82,6 +83,10 @@ class BillingController extends ControllerBase {
 
     // Retrieve the prepaid balances for this user for the current month and year.
     $balances = $this->monetization->getDeveloperPrepaidBalances($user->getEmail(), new \DateTimeImmutable('now'));
+
+    foreach ($balances as $index => $balance) {
+      $balances[$index] = new FormattedBalance($balance, $this->monetization);
+    }
 
     return [
       'prepaid_balances' => [
