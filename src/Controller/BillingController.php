@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\Controller;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\FormattedBalance;
 use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\commerce_price\CurrencyFormatter;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -48,19 +49,26 @@ class BillingController extends ControllerBase {
   private $monetization;
 
   /**
+   * @var \Drupal\commerce_price\CurrencyFormatter
+   */
+  private $currency_formatter;
+
+  /**
    * BillingController constructor.
    *
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization) {
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, CurrencyFormatter $currency_formatter) {
     $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
+    $this->currency_formatter = $currency_formatter;
   }
 
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('apigee_edge.sdk_connector'),
-      $container->get('apigee_m10n.monetization')
+      $container->get('apigee_m10n.monetization'),
+      $container->get('commerce_price.currency_formatter')
     );
   }
 
@@ -85,7 +93,7 @@ class BillingController extends ControllerBase {
     $balances = $this->monetization->getDeveloperPrepaidBalances($user->getEmail(), new \DateTimeImmutable('now'));
 
     foreach ($balances as $index => $balance) {
-      $balances[$index] = new FormattedBalance($balance, $this->monetization);
+      $balances[$index] = new FormattedBalance($balance, $this->currency_formatter);
     }
 
     return [

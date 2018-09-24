@@ -24,11 +24,11 @@ class FormattedBalance {
 
   private $balance;
 
-  private $monetization;
+  private $currency_formatter;
 
-  public function __construct($balance, $monetization) {
+  public function __construct($balance, $currency_formatter) {
     $this->balance = $balance;
-    $this->monetization = $monetization;
+    $this->currency_formatter = $currency_formatter;
   }
 
   public function getCurrencyName() {
@@ -56,6 +56,6 @@ class FormattedBalance {
   }
 
   private function format(float $num) {
-    return $this->monetization->formatCurrency($num, $this->getCurrencyName());
+    return $this->currency_formatter->format($num, $this->balance->getCurrency()->getName());
   }
 }

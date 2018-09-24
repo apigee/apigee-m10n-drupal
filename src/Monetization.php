@@ -66,7 +66,12 @@ class Monetization implements MonetizationInterface {
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MessengerInterface $messenger, CacheBackendInterface $cache) {
+  public function __construct(
+    SDKConnectorInterface $sdk_connector,
+    ApigeeSdkControllerFactoryInterface $sdk_controller_factory,
+    MessengerInterface $messenger,
+    CacheBackendInterface $cache
+  ) {
     $this->sdk_connector          = $sdk_connector;
     $this->sdk_controller_factory = $sdk_controller_factory;
     $this->messenger              = $messenger;
@@ -170,7 +175,4 @@ class Monetization implements MonetizationInterface {
     return $result;
   }
 
-  public function formatCurrency(float $amount, string $currecnyId) {
-
-  }
 }
