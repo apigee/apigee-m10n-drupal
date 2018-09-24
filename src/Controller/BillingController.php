@@ -74,23 +74,25 @@ class BillingController extends ControllerBase {
   public function prepaidBalanceAction(string $user_id) {
 
     /** @todo Drupal 7 version uses company id if it's available. Implement when company context is ironed out. */
-
     $user = User::load($user_id);
 
     if (!$user) {
       throw new NotFoundHttpException();
     }
 
-    $org_id = $this->sdk_connector->getOrganization();
-
-    $balances = $this->monetization->getDeveloperPrepaidBalances($org_id, $user->getEmail(), new \DateTimeImmutable('now'));
+    // Retrieve the prepaid balances for this user for the current month and year.
+    $balances = $this->monetization->getDeveloperPrepaidBalances($user->getEmail(), new \DateTimeImmutable('now'));
 
     return [
       'prepaid_balances' => [
         '#theme' => 'prepaid_balances',
         '#balances' => $balances,
         '#cache' => [
+          // Add a custom cache tag so that this page can be invalidated by code that updates prepaid balances.
           'tags' => [static::$cachePrefix . ':user:' . $user->id()],
+          // Cache by path for up to 10 minutes
+          'contexts' => ['url.path'],
+          'max-age' => 600
         ],
       ]
     ];
