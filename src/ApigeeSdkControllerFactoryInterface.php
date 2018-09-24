@@ -19,8 +19,8 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
-use Drupal\user\UserInterface;
 
 /**
  * Interface for the `apigee_m10n.sdk_controller_factory` service.
@@ -32,13 +32,21 @@ interface ApigeeSdkControllerFactoryInterface {
   /**
    * Creates a developer prepaid balance controller.
    *
-   * @param \Drupal\user\UserInterface $developer
-   *   The developer drupal user.
+   * @param string $developer_id
+   *    Developer UUID or email address
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface
-   *   The controller.
    */
-  public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface;
+  public function developerBalanceController(string $developer_id): DeveloperPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates a company prepaid balance controller.
+   *
+   * @param string $company_id
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface
+   */
+  public function companyBalanceController(string $company_id): CompanyPrepaidBalanceControllerInterface;
 
   /**
    * Creates a package controller.
@@ -47,5 +55,5 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The controller.
    */
   public function apiPackageController(): ApiPackageControllerInterface;
-
+  
 }
