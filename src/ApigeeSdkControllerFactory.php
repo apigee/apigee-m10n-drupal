@@ -20,8 +20,11 @@ namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
+use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\user\UserInterface;
 
@@ -69,6 +72,18 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
     return
       new DeveloperPrepaidBalanceController(
         $developer->getEmail(),
+        $this->org,
+        $this->client
+      );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
+    return
+      new CompanyPrepaidBalanceController(
+        $company->getLegalName(),
         $this->org,
         $this->client
       );
