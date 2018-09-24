@@ -1,9 +1,9 @@
-apigee_m10n.billing:
+apigee_monitization.billing:
   path: /users/{user_id}/monetization/billing
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalanceAction
   requirements:
-    _role: 'authenticated'
+    _permission: 'view mint prepaid reports'
 
 apigee_monitization.my_packages:
   path: /user/monetization/packages
