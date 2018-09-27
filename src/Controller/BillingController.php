@@ -26,6 +26,7 @@ use Drupal\commerce_price\CurrencyFormatter;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -73,17 +74,31 @@ class BillingController extends ControllerBase {
   }
 
   /**
+   * Redirect to the user's prepaid balances page.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   */
+  public function myPrepaidBalance(): RedirectResponse {
+    return $this->redirect(
+      'apigee_monitization.billing',
+      ['user' => \Drupal::currentUser()->id()],
+      ['absolute' => TRUE]
+    );
+  }
+
+
+  /**
    *  View prepaid balance and account statements, add money to prepaid balance.
    *
-   * @var $user_id string
+   * @var $user string
    *
    * @return array|Response
    * @throws \Exception
    */
-  public function prepaidBalanceAction(string $user_id) {
+  public function prepaidBalancePage(string $user) {
 
     /** @todo Drupal 7 version uses company id if it's available. Implement when company context is ironed out. */
-    $user = User::load($user_id);
+    $user = User::load($user);
 
     if (!$user) {
       throw new NotFoundHttpException();

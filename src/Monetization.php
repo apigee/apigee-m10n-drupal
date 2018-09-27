@@ -168,6 +168,7 @@ class Monetization implements MonetizationInterface {
     try {
       $result = $balance_controller->getPrepaidBalance($billingDate);
     } catch (\Exception $e) {
+      // @todo add logging
       $this->messenger->addWarning('Unable to retrieve prepaid balances.');
       return NULL;
     }
