@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n;
 use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -29,6 +30,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Apigee Monetization base service.
@@ -140,16 +142,16 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getDeveloperPrepaidBalances(string $developer_id, \DateTimeImmutable $billingDate): ?array {
-    $balance_controller = $this->sdk_controller_factory->developerBalanceController($developer_id);
+  public function getDeveloperPrepaidBalances(UserInterface $developer, \DateTimeImmutable $billingDate): ?array {
+    $balance_controller = $this->sdk_controller_factory->developerBalanceController($developer);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getCompanyPrepaidBalances(string $company_id, \DateTimeImmutable $billingDate): ?array {
-    $balance_controller = $this->sdk_controller_factory->companyBalanceController($company_id);
+  public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array {
+    $balance_controller = $this->sdk_controller_factory->companyBalanceController($company);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
@@ -176,4 +178,7 @@ class Monetization implements MonetizationInterface {
     return $result;
   }
 
+  public function formatCurrency($amount, $currency_id) {
+
+  }
 }

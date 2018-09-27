@@ -20,9 +20,11 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
 
 interface MonetizationInterface {
 
@@ -47,22 +49,22 @@ interface MonetizationInterface {
    * Takes in a developer UUID or email address, and a date specifying the report month and year,
    * and returns an array of prepaid balances.
    *
-   * @param string $developer_id
+   * @param \Drupal\user\UserInterface $developer
    * @param \DateTimeImmutable $billingDate
    *
    * @return array|null
    */
-  public function getDeveloperPrepaidBalances(string $developer_id, \DateTimeImmutable $billingDate): ?array;
+  public function getDeveloperPrepaidBalances(UserInterface $developer, \DateTimeImmutable $billingDate): ?array;
 
   /**
    * Takes in a company name, and a date specifying the report month and year,
    * and returns an array of prepaid balances.
    *
-   * @param string $company_id
+   * @param \Apigee\Edge\Api\Monetization\Entity\CompanyInterface $company
    * @param \DateTimeImmutable $billingDate
    *
    * @return array|null
    */
-  public function getCompanyPrepaidBalances(string $company_id, \DateTimeImmutable $billingDate): ?array;
+  public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array;
 
 }

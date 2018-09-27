@@ -105,7 +105,7 @@ class BillingController extends ControllerBase {
     }
 
     // Retrieve the prepaid balances for this user for the current month and year.
-    $balances = $this->monetization->getDeveloperPrepaidBalances($user->getEmail(), new \DateTimeImmutable('now'));
+    $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
 
     foreach ($balances as $index => $balance) {
       $balances[$index] = new FormattedBalance($balance, $this->currency_formatter);
