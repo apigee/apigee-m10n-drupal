@@ -24,7 +24,9 @@ use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\user\UserInterface;
 
 /**
  * The `apigee_m10n.sdk_controller_factory` service class.
@@ -66,10 +68,10 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function developerBalanceController(string $developer_id): DeveloperPrepaidBalanceControllerInterface {
+  public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface {
     return
       new DeveloperPrepaidBalanceController(
-        $developer_id,
+        $developer->getEmail(),
         $this->org,
         $this->client
       );
@@ -78,10 +80,10 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function companyBalanceController(string $company_id): CompanyPrepaidBalanceControllerInterface {
+  public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
     return
       new CompanyPrepaidBalanceController(
-        $company_id,
+        $company->getLegalName(),
         $this->org,
         $this->client
       );
