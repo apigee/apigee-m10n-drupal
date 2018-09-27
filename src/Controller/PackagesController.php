@@ -61,7 +61,7 @@ class PackagesController extends ControllerBase {
    */
   public function myCatalog(): RedirectResponse {
     return $this->redirect(
-      'apigee_monitization.packages',
+      'apigee_monetization.packages',
       ['user' => \Drupal::currentUser()->id()],
       ['absolute' => TRUE]
     );
@@ -74,7 +74,7 @@ class PackagesController extends ControllerBase {
    */
   public function myPurchased(): RedirectResponse {
     return $this->redirect(
-      'apigee_monitization.purchased',
+      'apigee_monetization.purchased',
       ['user' => \Drupal::currentUser()->id()],
       ['absolute' => TRUE]
     );

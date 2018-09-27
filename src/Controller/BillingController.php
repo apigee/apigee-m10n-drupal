@@ -80,7 +80,7 @@ class BillingController extends ControllerBase {
    */
   public function myPrepaidBalance(): RedirectResponse {
     return $this->redirect(
-      'apigee_monitization.billing',
+      'apigee_monetization.billing',
       ['user' => \Drupal::currentUser()->id()],
       ['absolute' => TRUE]
     );

@@ -42,7 +42,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     $this->account = $this->createAccount([]);
     $this->drupalLogin($this->account);
 
-    $this->drupalGet(Url::fromRoute('apigee_monitization.billing', [
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user_id' => 58
     ]));
 
@@ -57,7 +57,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     ]);
     $this->drupalLogin($this->account);
 
-    $this->drupalGet(Url::fromRoute('apigee_monitization.billing', [
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user_id' => 58
     ]));
 
@@ -79,7 +79,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     ]);
     $this->drupalLogin($this->account);
 
-    $this->drupalGet(Url::fromRoute('apigee_monitization.billing', [
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       // If real integration tests are enabled, use a user id that exists on the dev site,
       // otherwise use the generated account id.
       'user_id' => $this->integration_enabled ? 58 : $this->account->id()

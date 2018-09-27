@@ -1,41 +1,41 @@
-apigee_monitization.my_billing:
+apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::myPrepaidBalance
   requirements:
     _permission: 'view mint prepaid reports'
 
-apigee_monitization.billing:
+apigee_monetization.billing:
   path: /user/{user}/monetization/billing
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalancePage
   requirements:
     _permission: 'view mint prepaid reports'
 
-apigee_monitization.my_packages:
+apigee_monetization.my_packages:
   path: /user/monetization/packages
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: 'access monitization packages'
+    _permission: 'access monetization packages'
 
-apigee_monitization.packages:
+apigee_monetization.packages:
   path: /user/{user}/monetization/packages
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
   requirements:
-    _permission: 'access monitization packages'
+    _permission: 'access monetization packages'
 
-apigee_monitization.my_purchased:
+apigee_monetization.my_purchased:
   path: /user/monetization/packages/purchased
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myPurchased
   requirements:
-    _permission: 'access purchased monitization packages'
+    _permission: 'access purchased monetization packages'
 
-apigee_monitization.purchased:
+apigee_monetization.purchased:
   path: /user/{user}/monetization/packages/purchased
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::purchasedPage
   requirements:
-    _permission: 'access purchased monitization packages'
+    _permission: 'access purchased monetization packages'
