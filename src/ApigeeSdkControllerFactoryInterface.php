@@ -19,7 +19,9 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -39,6 +41,15 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The controller.
    */
   public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates a company prepaid balance controller.
+   *
+   * @param \Apigee\Edge\Api\Monetization\Entity\CompanyInterface $company
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface
+   */
+  public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface;
 
   /**
    * Creates a package controller.
