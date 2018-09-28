@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n_top_up\EventSubscriber;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_edge\JobExecutor;
 use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n_top_up\Job\TopUpBalanceJob;
+use Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
@@ -112,12 +112,11 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
           $user = user_load_by_mail($account_id);
           // Create a new job update the account balance. Use a custom adjustment
           // type because it can support a credit or a debit.
-          $job = new TopUpBalanceJob($user, new Adjustment([
+          $job = new BalanceAdjustmentJob($user, new Adjustment([
             'type' => 'top_up',
             'label' => 'Top Up Adjustment',
             'amount' => $top_up_total,
           ]));
-          $job->setTag('developer_balance_update_wait');
           // Save and execute the job.
           $this->getExecutor()->call($job);
         }

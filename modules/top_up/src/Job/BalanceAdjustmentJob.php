@@ -18,6 +18,7 @@
 
 namespace Drupal\apigee_m10n_top_up\Job;
 
+use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\BillingController;
 use Drupal\commerce_order\Adjustment;
@@ -38,15 +39,21 @@ use Drupal\user\UserInterface;
  *
  * @package Drupal\apigee_m10n_top_up\Job
  */
-class TopUpBalanceJob extends EdgeJob {
+class BalanceAdjustmentJob extends EdgeJob {
 
   /**
-   * The developer account email or a company account name to whom a balance
-   * adjustment is to be made.
+   * The developer account to whom a balance adjustment is to be made.
    *
    * @var \Drupal\user\UserInterface
    */
   protected $developer;
+
+  /**
+   * The company to whom a balance adjustment is to be made.
+   *
+   * @var \Apigee\Edge\Api\Management\Entity\CompanyInterface
+   */
+  protected $company;
 
   /**
    * Co-opt the commerce adjustment since this module requires it anyway. For the
@@ -71,12 +78,14 @@ class TopUpBalanceJob extends EdgeJob {
     if ($company_or_user instanceof UserInterface) {
       // A developer was passed.
       $this->developer = $company_or_user;
+    } elseif ($company_or_user instanceof CompanyInterface) {
+      // A company was passed.
+      $this->company = $company_or_user;
     }
-    // TODO: Handle topping up a company.
 
     $this->adjustment = $adjustment;
 
-    $this->setTag('developer_balance_update_wait');
+    $this->setTag('prepaid_balance_update_wait');
   }
 
   /**
@@ -89,8 +98,7 @@ class TopUpBalanceJob extends EdgeJob {
     $currency_code = $adjustment->getAmount()->getCurrencyCode();
 
     // Grab the current balances.
-    if (!empty($this->developer)) {
-      $controller = $this->getBalanceController();
+    if ($controller = $this->getBalanceController()) {
       // The controller doesn't deal well if there is no balance for a given
       // currency so we have to catch the error.
       try {
@@ -191,12 +199,19 @@ class TopUpBalanceJob extends EdgeJob {
   /**
    * Gets the developer balance controller for the developer user.
    *
-   * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController
+   * @return \Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface|FALSE
    *   The developer balance controller
    */
   protected function getBalanceController() {
-    return \Drupal::service('apigee_m10n.sdk_controller_factory')
-      ->developerBalanceController($this->developer);
+    // Return the appropriate controller for the operational entity type.
+    if (!empty($this->developer)) {
+      return \Drupal::service('apigee_m10n.sdk_controller_factory')
+        ->developerBalanceController($this->developer);
+    } elseif (!empty($this->company)) {
+      return \Drupal::service('apigee_m10n.sdk_controller_factory')
+        ->companyBalanceController($this->company);
+    }
+    return FALSE;
   }
 
   /**

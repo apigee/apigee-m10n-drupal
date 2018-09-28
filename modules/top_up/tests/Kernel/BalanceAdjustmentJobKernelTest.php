@@ -21,7 +21,7 @@ namespace Drupal\Tests\apigee_m10n_top_up\Kernel;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Drupal\apigee_edge\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
-use Drupal\apigee_m10n_top_up\Job\TopUpBalanceJob;
+use Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
@@ -35,9 +35,9 @@ use GuzzleHttp\Psr7\Response;
  * @group apigee_m10n_top_up
  * @group apigee_m10n_top_up_kernel
  *
- * @coversDefaultClass \Drupal\apigee_m10n_top_up\Job\TopUpBalanceJob
+ * @coversDefaultClass \Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob
  */
-class TopUpBalanceJobKernelTest extends MonetizationKernelTestBase {
+class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
   use JobCreatorTrait;
 
@@ -123,7 +123,7 @@ class TopUpBalanceJobKernelTest extends MonetizationKernelTestBase {
   public function testExecuteRequest() {
     // Create a new job update the account balance. Use a custom adjustment
     // type because it can support a credit or a debit.
-    $job = new TopUpBalanceJob($this->developer, new Adjustment([
+    $job = new BalanceAdjustmentJob($this->developer, new Adjustment([
       'type' => 'top_up',
       'label' => 'Top Up Adjustment',
       'amount' => new Price('19.99', 'USD'),
@@ -157,7 +157,7 @@ class TopUpBalanceJobKernelTest extends MonetizationKernelTestBase {
      * another user that cannot be removed because of holding a developer
      * balance. Err: `Cannot delete Developer [xxxxx] used in Developer_Balance`
      */
-    $job = new TopUpBalanceJob($this->developer, new Adjustment([
+    $job = new BalanceAdjustmentJob($this->developer, new Adjustment([
       'type' => 'top_up',
       'label' => 'Top Up Adjustment',
       'amount' => new Price('19.99', 'USD'),
