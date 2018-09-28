@@ -19,7 +19,9 @@
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\user\UserInterface;
 
@@ -75,6 +77,30 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
     $controller  = $this->controller_factory->developerBalanceController($account);
 
     static::assertInstanceOf(DeveloperPrepaidBalanceControllerInterface::class, $controller);
+
+    static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
+  }
+
+  /**
+   * Tests the company balance controller.
+   *
+   * @covers ::companyBalanceController
+   */
+  public function testCompanyBalanceController() {
+    $company_name = $this->randomMachineName();
+
+    $company = $this
+      ->getMockBuilder(Company::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    $company->expects($this->any())
+            ->method('getLegalName')
+            ->will($this->returnValue($company_name));
+
+    /** @var CompanyPrepaidBalanceControllerInterface $controller */
+    $controller  = $this->controller_factory->companyBalanceController($company);
+
+    static::assertInstanceOf(CompanyPrepaidBalanceControllerInterface::class, $controller);
 
     static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
   }
