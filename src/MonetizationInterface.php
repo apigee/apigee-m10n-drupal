@@ -67,4 +67,14 @@ interface MonetizationInterface {
    */
   public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array;
 
+  /**
+   * Use the commerceguys internationalization library to format a currency based on a currency id.
+   *
+   * @param string $amount
+   * @param string $currency_id
+   *  Currency ID as defined by commerceguys/intl @see CommerceGuys\Intl\Currency\CurrencyRepository::getBaseDefinitions
+   *
+   * @return string
+   */
+  public function formatCurrency(string $amount, string $currency_id): string;
 }

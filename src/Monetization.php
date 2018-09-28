@@ -23,6 +23,9 @@ use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\Formatter\CurrencyFormatter;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -64,6 +67,11 @@ class Monetization implements MonetizationInterface {
   private $cache;
 
   /**
+   * @var \CommerceGuys\Intl\Formatter\CurrencyFormatter;
+   */
+  private $numberFormatter;
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -78,6 +86,12 @@ class Monetization implements MonetizationInterface {
     $this->sdk_controller_factory = $sdk_controller_factory;
     $this->messenger              = $messenger;
     $this->cache                  = $cache;
+
+    $numberFormatRepository = new NumberFormatRepository();
+    $currencyRepository = new CurrencyRepository();
+
+    $this->currencyFormatter = new CurrencyFormatter($numberFormatRepository, $currencyRepository);
+
   }
 
   /**
@@ -178,7 +192,10 @@ class Monetization implements MonetizationInterface {
     return $result;
   }
 
-  public function formatCurrency($amount, $currency_id) {
-
+  /**
+   * {@inheritdoc}
+   */
+  public function formatCurrency(string $amount, string $currency_id): string {
+    return $this->currencyFormatter->format($amount, $currency_id);
   }
 }

@@ -7,6 +7,5 @@ core: 8.x
 
 dependencies:
   - apigee_edge:apigee_edge
-  - commerce:commerce_price
 
 php: "7.1"

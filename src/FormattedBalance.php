@@ -18,44 +18,74 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Monetization\Entity\Balance;
+use Apigee\Edge\Api\Monetization\Entity\PrepaidBalance;
 
+/**
+ * Helper class to add formatting to Apigee\Edge\Api\Monetization\Entity\PrepaidBalance
+ * currency methods.
+ */
 class FormattedBalance {
 
+  /**
+   * @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalance
+   */
   private $balance;
 
-  private $currency_formatter;
+  /**
+   * @var \Drupal\apigee_m10n\Monetization
+   */
+  private $monetization;
 
-  public function __construct($balance, $currency_formatter) {
+  public function __construct(PrepaidBalance $balance, Monetization $monetization) {
     $this->balance = $balance;
-    $this->currency_formatter = $currency_formatter;
+    $this->monetization = $monetization;
   }
 
-  public function getCurrencyName() {
-    return $this->balance->getCurrency()->getName();
+  public function getApproxTaxRate(): int {
+    return $this->balance->getApproxTaxRate();
   }
 
-  public function getPreviousBalance() {
-    return $this->format($this->balance->getPreviousBalance());
-  }
-
-  public function getTopups() {
-    return $this->format($this->balance->getTopups());
-  }
-
-  public function getUsage() {
-    return $this->format($this->balance->getUsage());
-  }
-
-  public function getTax() {
-    return $this->format($this->balance->getTax());
-  }
-
-  public function getCurrentBalance() {
+  public function getCurrentBalance(): string {
     return $this->format($this->balance->getCurrentBalance());
   }
 
+  public function getCurrentTotalBalance(): string {
+    return $this->format($this->balance->getCurrentTotalBalance());
+  }
+
+  public function getCurrentUsage(): string {
+    return $this->format($this->balance->getCurrentUsage());
+  }
+
+  public function getMonth(): string {
+    return $this->balance->getMonth();
+  }
+
+  public function getPreviousBalance(): string {
+    return $this->format($this->balance->getPreviousBalance());
+  }
+
+  public function getTax(): string {
+    return $this->format($this->balance->getTax());
+  }
+
+  public function getTopups(): string {
+    return $this->format($this->balance->getTopups());
+  }
+
+  public function getUsage(): string {
+    return $this->format($this->balance->getUsage());
+  }
+
+  public function getYear(): int {
+    return $this->balance->getYear();
+  }
+
+  public function getCurrencyName(): string {
+    return $this->balance->getCurrency()->getName();
+  }
+
   private function format(float $num) {
-    return $this->currency_formatter->format($num, $this->balance->getCurrency()->getName());
+    return $this->monetization->formatCurrency($num, $this->balance->getCurrency()->getName());
   }
 }
