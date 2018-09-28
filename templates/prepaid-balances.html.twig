@@ -24,12 +24,14 @@
         {% if balances %}
             {% for balance in balances %}
                 <tr>
-                    <td>{{ balance.currencyName }}</td>
-                    <td>{{ balance.previousBalance }}</td>
-                    <td>{{ balance.topups }}</td>
-                    <td>{{ balance.usage }}</td>
-                    <td>{{ balance.tax }}</td>
-                    <td>{{ balance.currentBalance }}</td>
+                    {% set currency_code = balance.currency.name %}
+
+                    <td>{{ balance.currency.name }}</td>
+                    <td>{{ balance.previousBalance | apigee_m10n_format_currency(currency_code) }}</td>
+                    <td>{{ balance.topups | apigee_m10n_format_currency(currency_code) }}</td>
+                    <td>{{ balance.usage | apigee_m10n_format_currency(currency_code) }}</td>
+                    <td>{{ balance.tax | apigee_m10n_format_currency(currency_code) }}</td>
+                    <td>{{ balance.currentBalance | apigee_m10n_format_currency(currency_code) }}</td>
                 </tr>
             {% endfor %}
         {% endif %}

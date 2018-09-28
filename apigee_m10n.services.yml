@@ -10,3 +10,7 @@ services:
     arguments: ['@apigee_m10n.monetization', '@messenger']
     tags:
       - {name: event_subscriber}
+  apigee_m10n.format_currency_twig_extension:
+    class: Drupal\apigee_m10n\TwigExtension\FormatCurrencyTwigExtension
+    tags:
+    - { name: twig.extension }

@@ -70,11 +70,14 @@ class Monetization implements MonetizationInterface {
    * @var \CommerceGuys\Intl\Formatter\CurrencyFormatter;
    */
   private $numberFormatter;
-
+  
   /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
