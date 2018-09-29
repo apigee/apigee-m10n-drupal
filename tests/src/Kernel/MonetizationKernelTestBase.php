@@ -22,7 +22,6 @@ use Drupal\Component\Serialization\Json;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
-use Drupal\Tests\apigee_m10n\MonetizationTestEnvironmentVariables;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
@@ -120,15 +119,14 @@ class MonetizationKernelTestBase extends KernelTestBase {
    *   The developer user to get properties from.
    * @param null $response_code
    *   Add a response code to override the default.
+   *
+   * @throws \Exception
    */
   protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL) {
     $replacements = empty($response_code) ? [] : ['status_code' => $response_code];
 
-    $replacements[':email']       = $developer->getEmail();
-    $replacements[':developerId'] = $developer->uuid();
-    $replacements[':firstName']   = $developer->first_name->value;
-    $replacements[':lastName']    = $developer->last_name->value;
-    $replacements[':userName']    = $developer->getAccountName();
+    $replacements['developer'] = $developer;
+    $replacements['org_name'] = $this->sdk_connector->getOrganization();
 
     $this->stack->queueFromResponseFile(['get_developer' => $replacements]);
   }

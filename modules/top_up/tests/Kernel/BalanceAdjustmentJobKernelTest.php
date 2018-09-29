@@ -136,14 +136,14 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     // Queue an empty balance response because this is what you get with a new user.
     $this->stack->append(new Response(200, ['Content-Type' => 'application/json;charset=utf-8'], '{"developerBalance" : [ ],"totalRecords" : 0}'));
     // Queue a developer balance response for the top up (POST).
-    $this->stack->queueFromResponseFile(['post_developer_balances' => [':amount' => '19.99']]);
+    $this->stack->queueFromResponseFile(['post_developer_balances' => ['amount' => '19.99']]);
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile(['get_developer_balances' => [':amount_usd' => '19.99']]);
+    $this->stack->queueFromResponseFile(['get_developer_balances' => ['amount_usd' => '19.99']]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
     // The new balance should be 19.99.
     static::assertSame(19.99, $new_balance->getAmount());
@@ -167,16 +167,16 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Job::IDLE, $job->getStatus());
 
     // Queue an empty balance response because this is what you get with a new user.
-    $this->stack->queueFromResponseFile(['get_developer_balances' => [':amount_usd' => '19.99']]);
+    $this->stack->queueFromResponseFile(['get_developer_balances' => ['amount_usd' => '19.99']]);
     // Queue a developer balance response for the top up (POST).
-    $this->stack->queueFromResponseFile(['post_developer_balances' => [':amount' => '39.98']]);
+    $this->stack->queueFromResponseFile(['post_developer_balances' => ['amount' => '39.98']]);
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile(['get_developer_balances' => [':amount_usd' => '39.98']]);
+    $this->stack->queueFromResponseFile(['get_developer_balances' => ['amount_usd' => '39.98']]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
     // The new balance should be 19.99.
     static::assertSame(39.98, $new_balance->getAmount());

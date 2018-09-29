@@ -35,6 +35,25 @@ class MockHandlerStack extends MockHandler {
   protected $responses;
 
   /**
+   * The twig environment for getting response data.
+   *
+   * @var \Twig_Environment
+   */
+  protected $twig;
+
+  /**
+   * Constructs a new ClientFactory instance.
+   *
+   * @param \GuzzleHttp\HandlerStack $stack
+   *   The handler stack.
+   */
+  public function __construct(\Twig_Environment $twig) {
+    $this->twig = $twig;
+
+    parent::__construct();
+  }
+
+  /**
    * Queue a response that is in the catalog. Dynamic values can be passed and
    * will be replaced in the response. For example `['foo' => [':bar' => 'baz']]`
    * will load the catalog entry named `foo `and replace `:bar` with "baz" in the
@@ -45,12 +64,15 @@ class MockHandlerStack extends MockHandler {
    *     - `'foo'`
    *     - `['foo', 'bar']` // Queue multiple responses.
    *     - `['foo' => [':bar' => 'baz']]` // w/ replacements for response body.
+   *
+   * @throws \Exception
+   *   Possible twig exception.
    */
   public function queueFromResponseFile($response_ids) {
     if (empty($this->responses)) {
       // Get the module path for this module.
       $module_path = \Drupal::moduleHandler()->getModule('apigee_mock_client')->getPath();
-      $this->responses = Yaml::parseFile($module_path . '/response_catalog.yml');
+      $this->responses = Yaml::parseFile($module_path . '/response_catalog.yml')['responses'];
     }
     foreach ((array) $response_ids as $index => $item) {
       // The catalog id should either be the item itself or the keys if an associative array has been passed.
@@ -69,7 +91,7 @@ class MockHandlerStack extends MockHandler {
       $this->append(new Response(
         $status_code,
         $headers,
-        strtr($this->responses[$id]['body'], $replacements)
+        $this->twig->render(str_replace('_', '-', $id) . '.json.twig', $replacements)
       ));
     }
   }

@@ -84,7 +84,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
   /**
    * @covers \Drupal\apigee_m10n\Monetization::apiProductAssignmentAccess
    *
-   * @todo: Fix this test so it will pass in integration mode.
+   * @throws \Exception
    */
   public function testApiProductAssignmentAccess() {
     $test_product_name = $this->randomMachineName();
@@ -101,8 +101,8 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
       ->will($this->returnValue($email));
 
     $this->stack->queueFromResponseFile(['get_eligible_products' => [
-      ':id' => strtolower($test_product_name),
-      ':name' => $test_product_name,
+      'id' => strtolower($test_product_name),
+      'name' => $test_product_name,
     ]]);
 
     // Test that the user can access the API Product.
