@@ -18,7 +18,6 @@
 
 namespace Drupal\Tests\apigee_m10n_top_up\Kernel;
 
-use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Drupal\apigee_edge\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob;

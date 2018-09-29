@@ -105,8 +105,9 @@ class BalanceAdjustmentJob extends EdgeJob {
         // Get existing balance with the same currency code.
         $balance = $controller->getByCurrency($currency_code);
       } catch (\TypeError $err) {
-        $this->getLogger()->info('Apigee User ({email}) has no balance for ({currency}).', [
-          'email' => $this->developer->getEmail(),
+        $this->getLogger()->info($this->getMessage('balance_error_message'), [
+          'email' => !empty($this->developer) ? $this->developer->getEmail() : '',
+          'team_name' => !empty($this->company) ? $this->company->label() : '',
           'currency' => $currency_code,
         ]);
       }
@@ -131,23 +132,20 @@ class BalanceAdjustmentJob extends EdgeJob {
         && !empty($updated_balance->getAmount())
         && ($new_balance->getNumber() === (string) $updated_balance->getAmount())
       ) {
-        // Set the log message and action.
-        $report  = 'Adjustment applied to `{email}`. <br />' . PHP_EOL;
+        // Set the log action.
         $log_action = 'info';
       } else {
         // TODO: Send an email to an administrator if the calculations don't work out.
         // Something is fishy here, we should log as an error.
-        $report  = 'Calculation discrepancy applying adjustment to `{email}`.<br />' . PHP_EOL;
         $log_action = 'error';
       }
 
-      $report .= '  Previous Balance: `{previous}`.<br />' . PHP_EOL;
-      $report .= '  Amount Applied:   `{adjustment}`.<br />' . PHP_EOL;
-      $report .= '  New Balance:      `{new_balance}`.<br />' . PHP_EOL;
+      $report_text = $this->getMessage("report_text_{$log_action}_header") . $this->getMessage('report_text');
 
       // Report the transaction.
-      $this->getLogger()->{$log_action}($report, [
-        'email'       => $this->developer->getEmail(),
+      $this->getLogger()->{$log_action}($report_text, [
+        'email'       => !empty($this->developer) ? $this->developer->getEmail() : '',
+        'team_name'   => !empty($this->company) ? $this->company->label() : '',
         'previous'    => $this->formatPrice($existing_balance),
         'adjustment'  => $this->formatPrice($adjustment->getAmount()),
         'new_balance' => $this->formatPrice($new_balance),
@@ -242,4 +240,50 @@ class BalanceAdjustmentJob extends EdgeJob {
       ]
     );
   }
+
+  /**
+   * Helper to determine if this is a developer adjustment. Otherwise, this is a
+   * company adjustment.
+   *
+   * @return bool
+   */
+  protected function isDeveloperAdjustment(): bool {
+    return !empty($this->developer);
+  }
+
+  /**
+   * A lookup for messages that depends on the type of adjustment we are dealing
+   * with here.
+   *
+   * @param $message_id
+   *  An identifier for the message.
+   *
+   * @return string
+   *   The message.
+   */
+  protected function getMessage($message_id) {
+    $type = $this->isDeveloperAdjustment() ? 'developer' : 'company';
+
+    $messages = [
+      'developer' => [
+        'balance_error_message' => 'Apigee User ({email}) has no balance for ({currency}).',
+        'report_text_error_header' => 'Calculation discrepancy applying adjustment to developer `{email}. <br />' . PHP_EOL,
+        'report_text_info_header' =>  'Adjustment applied to developer: `{email}`. <br />' . PHP_EOL,
+        'report_text' =>              'Previous Balance: `{previous}`.<br />' . PHP_EOL .
+                                      'Amount Applied:   `{adjustment}`.<br />' . PHP_EOL .
+                                      'New Balance:      `{new_balance}`.<br />' . PHP_EOL,
+      ],
+      'company' => [
+        'balance_error_message' => 'Apigee team ({team_name}) has no balance for ({currency}).',
+        'report_text_error_header' => 'Calculation discrepancy applying adjustment to team `{team_name}. <br />' . PHP_EOL,
+        'report_text_info_header' =>  'Adjustment applied to team: `{team_name}`. <br />' . PHP_EOL,
+        'report_text' =>              'Previous Balance: `{previous}`.<br />' . PHP_EOL .
+                                      'Amount Applied:   `{adjustment}`.<br />' . PHP_EOL .
+                                      'New Balance:      `{new_balance}`.<br />' . PHP_EOL,
+      ],
+    ];
+
+    return $messages[$type][$message_id];
+  }
+
 }
