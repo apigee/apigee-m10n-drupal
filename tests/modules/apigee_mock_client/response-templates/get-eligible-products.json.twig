@@ -2,7 +2,7 @@
     "product": [{
         "status": "CREATED",
         "id": "{{ id }}",
-        "organization": {},
+        "organization": {% include 'org.json.twig' %},
         "displayName": "{{ name }}",
         "name": "{{ name }}"
     }],
