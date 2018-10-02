@@ -1,35 +1,37 @@
 {
     "developerBalance": [
         {
+            "id": "abc123",
             "approxTaxRate": 0,
-            "currentBalance": 16.0000,
-            "currentTotalBalance": 16.0000,
-            "currentUsage": 0,
-            "previousBalance": 0,
+            "currentBalance": {{ currentBalance | default(16.0000) }},
+            "currentTotalBalance": {{ currentTotalBalance | default(16.0000) }},
+            "currentUsage": {{ currentUsage | default(0) }},
+            "previousBalance": {{ previousBalance | default(0) }},
             "supportedCurrency": {
                 "displayName": "Australia Dollars",
                 "id": "aud",
                 "minimumTopupAmount": 10.0000,
-                "name": "AUD",
+                "name": "AUD"
             },
             "tax": 0.0000,
-            "topups": 16.0000,
-            "usage": 0.0000,
+            "topups": {{ topups | default(16.0000) }},
+            "usage": {{ usage | default(0) }}
         }, {
+            "id": "abc124",
             "approxTaxRate": 0,
-            "currentBalance": 72.2000,
-            "currentTotalBalance": 120.0200,
-            "currentUsage": 47.8200,
-            "previousBalance": 0,
+            "currentBalance": {{ currentBalance | default(72.2000) }},
+            "currentTotalBalance": {{ currentTotalBalance | default(120.0200) }},
+            "currentUsage": {{ currentUsage | default(47.8200) }},
+            "previousBalance": {{ previousBalance | default(0) }},
             "supportedCurrency": {
                 "displayName": "United States Dollars",
                 "id": "usd",
                 "minimumTopupAmount": 10.0000,
-                "name": "USD",
+                "name": "USD"
             },
             "tax": 0.0000,
-            "topups": 30.0200,
-            "usage": 47.8200,
+            "topups": {{ topups | default(30.0200) }},
+            "usage": {{ usage | default(47.8200) }}
         }
     ],
     "totalRecords": 2
