@@ -66,25 +66,45 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
   public function testPrepaidBalancesView() {
 
-    if (!$this->integration_enabled) {
-      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
-      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
-      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
-      $this->stack->queueFromResponseFile(['get_prepaid_balances']);
-    }
+    $this->stack->queueFromResponseFile(['post_developers']);
 
     // If the user has "view mint prepaid reports" permission, they should be able to see some prepaid balances.
     $this->account = $this->createAccount([
       'view mint prepaid reports'
     ]);
+
+    $this->stack->queueFromResponseFile(['get_organization' => [
+      'org_name' => 'tsnow-mint',
+      'isMonetizationEnabled' => 'true'
+    ]]);
+
     $this->drupalLogin($this->account);
 
+    $this->stack->queueFromResponseFile(['get-prepaid-balances' => [
+      "currentBalance" => 72.2000,
+      "currentTotalBalance" => 120.0200,
+      "currentUsage" => 47.8200,
+      "previousBalance" => 0,
+      "topups" => 30.0200,
+      "usage" => 47.8200
+    ]]);
+
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      // If real integration tests are enabled, use a user id that exists on the dev site,
-      // otherwise use the generated account id.
-      'user_id' => $this->integration_enabled ? 58 : $this->account->id()
+      'user' => $this->account->id()
     ]));
 
     $this->assertSession()->responseNotContains('Access denied');
+
+    $this->assertSession()->responseContains("<td>AUD</td>");
+    $this->assertSession()->responseContains("<td>A$0.00</td>");
+    $this->assertSession()->responseContains("<td>A$30.02</td>");
+    $this->assertSession()->responseContains("<td>A$47.82</td>");
+    $this->assertSession()->responseContains("<td>A$0.00</td>");
+
+    $this->assertSession()->responseContains("<td>USD</td>");
+    $this->assertSession()->responseContains("<td>$0.00</td>");
+    $this->assertSession()->responseContains("<td>$30.02</td>");
+    $this->assertSession()->responseContains("<td>$47.82</td>");
+    $this->assertSession()->responseContains("<td>$0.00</td>");
   }
 }
