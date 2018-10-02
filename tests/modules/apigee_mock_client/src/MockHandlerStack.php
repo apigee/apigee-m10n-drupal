@@ -20,17 +20,19 @@
 namespace Drupal\apigee_mock_client;
 
 use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\Core\Queue\QueueFactory;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class MockHandlerStack extends MockHandler {
 
   /**
-   * @var array
-   *
    * Responses that have been loaded from the response file.
+   *
+   * @var array
    */
   protected $responses;
 
@@ -42,13 +44,17 @@ class MockHandlerStack extends MockHandler {
   protected $twig;
 
   /**
-   * Constructs a new ClientFactory instance.
-   *
-   * @param \GuzzleHttp\HandlerStack $stack
-   *   The handler stack.
+   * @var \Drupal\Core\Queue\QueueInterface
    */
-  public function __construct(\Twig_Environment $twig) {
+  protected $database_queue;
+
+  /**
+   * @param \Twig_Environment $twig
+   * @param \Drupal\Core\Queue\QueueFactory $queue_factory
+   */
+  public function __construct(\Twig_Environment $twig, QueueFactory $queue_factory) {
     $this->twig = $twig;
+    $this->database_queue = $queue_factory->get('apigee_m10n_mock_responses', TRUE);
 
     parent::__construct();
   }
@@ -101,7 +107,16 @@ class MockHandlerStack extends MockHandler {
    */
   public function __invoke(RequestInterface $request, array $options) {
     try {
-      /** @var \Psr\Http\Message\ResponseInterface $response */
+
+      // Grab an item from the database queue and append it to the in-memory queue.
+      $item = $this->database_queue->claimItem();
+      parent::append(new Response(
+        $item->data['status'],
+        $item->data['headers'],
+        $item->data['body']
+      ));
+      $this->database_queue->deleteItem($item);
+
       return parent::__invoke($request, $options);
     } catch (\Exception $ex) {
       // Fake a client error so the error gets reported during testing. The
@@ -112,6 +127,24 @@ class MockHandlerStack extends MockHandler {
       throw new ClientErrorException(new Response(500, [
         'Content-Type' => 'application/json',
       ], '{"code": "4242", "message": "'.$ex->getMessage().'"}'), $request, $ex->getMessage(), $ex->getCode(), $ex);
+    }
+  }
+
+  public function append() {
+    foreach (func_get_args() as $value) {
+      if ($value instanceof ResponseInterface) {
+
+        // Append items to a database queue so they can be accessed in process isolated environments (functional tests).
+        $this->database_queue->createItem([
+          'status' => $value->getStatusCode(),
+          'headers' => $value->getHeaders(),
+          'body' => (string) $value->getBody()
+        ]);
+
+      } else {
+        throw new \InvalidArgumentException('Expected a response. '
+                                            . 'Found ' . \GuzzleHttp\describe_type($value));
+      }
     }
   }
 }
