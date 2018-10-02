@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ *   Austrailian currency include file. Use this for supportedCurrency.
+ *
+ * Usage:
+ *   @code
+ *   {% include 'currency-aud.json.twig' %}
+ *   @endcode
+ */
+#}
+{
+    "description": "Australia Dollars",
+    "displayName": "Australia Dollars",
+    "id": "aud",
+    "minimumTopupAmount": 10.0000,
+    "name": "AUD",
+    "organization": {% include 'org.json.twig' %},
+    "status": "ACTIVE",
+    "virtualCurrency": false
+}

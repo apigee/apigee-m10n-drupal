@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ *   USD currency include file. Use this for supportedCurrency.
+ *
+ * Usage:
+ *   @code
+ *   {% include 'currency-usd.json.twig' %}
+ *   @endcode
+ */
+#}
+{
+    "description": "United States Dollars",
+    "displayName": "United States Dollars",
+    "id": "usd",
+    "minimumTopupAmount": 10.0000,
+    "name": "USD",
+    "organization": {% include 'org.json.twig' %},
+    "status": "ACTIVE",
+    "virtualCurrency": false
+}

@@ -1,20 +1,35 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org}/developers/{developer}/developer-balances
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - amount_aud: The AUD amount for the total balance.
+ * - amount_usd: The USD amount for the total balance.
+ */
+#}
 {
-    "developerBalance" : [ {
-        "amount" : "{{ amount_usd }}",
-        "chargePerUsage" : false,
-        "id" : "f4a7b31b-90e3-4cfc-910c-517f36ea3477",
-        "isRecurring" : false,
-        "supportedCurrency" : {
-            "description" : "United States Dollars",
-            "displayName" : "United States Dollars",
-            "id" : "usd",
-            "minimumTopupAmount" : 10.0000,
-            "name" : "USD",
-            "organization" : {% include 'org.json.twig' %},
-            "status" : "ACTIVE",
-            "virtualCurrency" : false
+    "developerBalance" : [
+        {
+            "amount" : {{ amount_aud | default("16.0000") }},
+            "chargePerUsage" : false,
+            "id" : "f4a7b31b-90e3-4cfc-910c-517f36ea3477",
+            "isRecurring" : false,
+            "supportedCurrency" : {% include 'currency-aud.json.twig' %},
+            "transaction": {},
+            "usage" : 0
         },
-        "usage" : 0
-    } ],
-    "totalRecords" : 1
+        {
+            "amount" : {{ amount_usd | default("16.0000") }},
+            "chargePerUsage" : false,
+            "id" : "f4a7b31b-90e3-4cfc-910c-517f36ea3477",
+            "isRecurring" : false,
+            "supportedCurrency" : {% include 'currency-usd.json.twig' %},
+            "transaction": {},
+            "usage" : 0
+        }
+    ],
+    "totalRecords" : 2
 }
