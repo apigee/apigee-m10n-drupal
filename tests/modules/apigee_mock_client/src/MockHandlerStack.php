@@ -71,20 +71,27 @@ class MockHandlerStack extends MockHandler {
    *     - `['foo', 'bar']` // Queue multiple responses.
    *     - `['foo' => [':bar' => 'baz']]` // w/ replacements for response body.
    *
-   * @throws \Exception
-   *   Possible twig exception.
+   * @return $this
+   *
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   public function queueFromResponseFile($response_ids) {
+    $org_name = \Drupal::service('apigee_edge.sdk_connector')->getOrganization();
+
     if (empty($this->responses)) {
       // Get the module path for this module.
       $module_path = \Drupal::moduleHandler()->getModule('apigee_mock_client')->getPath();
       $this->responses = Yaml::parseFile($module_path . '/response_catalog.yml')['responses'];
     }
+    // Loop through responses and add each one.
     foreach ((array) $response_ids as $index => $item) {
       // The catalog id should either be the item itself or the keys if an associative array has been passed.
       $id = !is_array($item) ? $item : $index;
       // Body text can have elements replaced in it for certain values. See: http://php.net/strtr
-      $replacements = is_array($item) ? $item : [];
+      $context = is_array($item) ? $item : [];
+      $context['org_name'] = isset($context['org_name']) ? $context['org_name'] : $org_name;
 
       // Add the default headers if headers aren't defined in the response catalog.
       $headers = isset($this->responses[$id]['headers']) ? $this->responses[$id]['headers'] : [
@@ -92,14 +99,16 @@ class MockHandlerStack extends MockHandler {
       ];
       // Set the default status code.
       $status_code = !empty($this->responses[$id]['status_code']) ? $this->responses[$id]['status_code'] : 200;
-      $status_code = !empty($replacements['status_code']) ? $replacements['status_code'] : $status_code;
+      $status_code = !empty($context['status_code']) ? $context['status_code'] : $status_code;
       // Make replacements inside the response body and append the response.
       $this->append(new Response(
         $status_code,
         $headers,
-        $this->twig->render(str_replace('_', '-', $id) . '.json.twig', $replacements)
+        $this->twig->render(str_replace('_', '-', $id) . '.json.twig', $context)
       ));
     }
+
+    return $this;
   }
 
   /**
