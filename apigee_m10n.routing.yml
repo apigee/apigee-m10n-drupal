@@ -1,3 +1,11 @@
+apigee_m10n.admin_config:
+  path: /admin/config/apigee-edge/monetization
+  defaults:
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
+    _title: Monetization
+  requirements:
+    _permission: 'administer apigee monetization'
+
 apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:

@@ -1,0 +1,4 @@
+system.admin_apigee_m10n:
+  title: 'Monetization'
+  parent: system.admin_config_edge
+  route_name: apigee_m10n.admin_config
