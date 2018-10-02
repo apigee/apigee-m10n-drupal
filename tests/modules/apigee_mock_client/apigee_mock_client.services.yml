@@ -1,7 +1,7 @@
 services:
   apigee_mock_client.mock_http_handler_stack:
     class: Drupal\apigee_mock_client\MockHandlerStack
-    arguments: ['@apigee_mock_client_twig']
+    arguments: ['@apigee_mock_client_twig', '@queue']
   apigee_mock_client.mock_http_client_factory:
     class: Drupal\apigee_mock_client\MockHttpClientFactory
     arguments: ['@http_handler_stack', '@apigee_mock_client.mock_http_handler_stack']
