@@ -1,0 +1,20 @@
+{#
+/**
+ * @file
+ *   - GET /v1/mint/organizations/{org}/monetization-packages
+ *   - GET /v1/mint/organizations/{org}/developers/{developer}/monetization-packages
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - packages: The packages to include.
+ */
+#}
+{
+    "monetizationPackage" : [
+        {% for package in packages %}
+            {% include 'package.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "totalRecords" : {{ packages|length }}
+}

@@ -18,6 +18,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
+use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
+use Apigee\Edge\Api\Monetization\Entity\ApiProduct;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -120,5 +122,48 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
 
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
     static::assertSame('http://localhost/user/'.$this->account->id().'/monetization/packages/purchased', $response->headers->get('location'));
+  }
+
+  /**
+   * Tests the `monetization-packages` response.
+   */
+  public function testPackageResponse() {
+    $packages = [];
+    $package_names = [
+      $this->randomMachineName(),
+      $this->randomMachineName(),
+      $this->randomMachineName(),
+    ];
+
+    foreach ($package_names as $name) {
+      $product_name = $name . 'Product';
+
+      $packages[] = new ApiPackage([
+        'id' => strtolower($name),
+        'name' => $name,
+        'description' => $name . ' description.',
+        'displayName' => $name . ' display name',
+        'apiProducts' => [new ApiProduct([
+          'id' => strtolower($product_name),
+          'name' => $product_name,
+          'description' => $product_name . ' description.',
+          'displayName' => $product_name . ' display name',
+        ])]
+      ]);
+    }
+
+    $this->stack
+      ->queueFromResponseFile(['get_monetization_packages' => ['packages' => $packages]]);
+
+    $response = (string) $this->sdk_connector->getClient()->get('get-monetization-packages')->getBody();
+
+    foreach ($package_names as $name) {
+      static::assertContains($name, $response);
+      static::assertContains($name . ' display name', $response);
+      static::assertContains(strtolower($name), $response);
+      static::assertContains($name . 'Product', $response);
+      static::assertContains($name . 'Product display name', $response);
+      static::assertContains(strtolower($name . 'Product'), $response);
+    }
   }
 }

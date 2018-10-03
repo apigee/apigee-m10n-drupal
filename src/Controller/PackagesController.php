@@ -90,10 +90,13 @@ class PackagesController extends ControllerBase {
    *   The pager render array.
    */
   public function catalogPage(UserInterface $user = NULL) {
+    // Get the package controller.
     $package_controller = $this->sdkControllerFactory->apiPackageController();
-    $purchased_packages = $package_controller->getAvailableApiPackages($user->getEmail());
+    // Get all packages.
     $all_packages = $package_controller->getEntities();
-
+    // Load purchased packages for comparison.
+    $purchased_packages = $package_controller->getAvailableApiPackages($user->getEmail());
+    // We don't want to show packages that have already been purchased split the difference.
     $available_packages = array_diff_key($all_packages, $purchased_packages);
 
     return [

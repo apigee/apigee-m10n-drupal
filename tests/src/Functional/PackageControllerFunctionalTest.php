@@ -18,6 +18,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
+use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
+use Apigee\Edge\Api\Monetization\Entity\ApiProduct;
+use Drupal\Core\Url;
+
 /**
  * Functional tests for the package controller.
  *
@@ -47,18 +51,60 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalTestBase {
       'access monetization packages',
       'access purchased monetization packages',
     ]);
+    $this->queueOrg();
     $this->drupalLogin($this->account);
   }
 
   /**
-   * Test the catalog page controller.
-   * TODO: Add mock API responses and test package contents.
    *
    * @throws \Behat\Mink\Exception\ResponseTextException
    */
-  public function testCatalogPage() {
-    $this->drupalGet('user/'.$this->account->id().'/monetization/packages');
 
-    $this->assertSession()->pageTextContains('Packages');
+  /**
+   * Test the catalog page controller.
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  public function testCatalogPage() {
+    $packages = [];
+    $package_names = [
+      $this->randomMachineName(),
+      $this->randomMachineName(),
+      $this->randomMachineName(),
+    ];
+
+    foreach ($package_names as $name) {
+      $product_name = $name . 'Product';
+
+      $packages[] = new ApiPackage([
+        'id' => strtolower($name),
+        'name' => $name,
+        'description' => $name . ' description.',
+        'displayName' => $name . ' display name',
+        'apiProducts' => [new ApiProduct([
+          'id' => strtolower($product_name),
+          'name' => $product_name,
+          'description' => $product_name . ' description.',
+          'displayName' => $product_name . ' display name',
+        ])]
+      ]);
+    }
+
+    $this->stack
+      ->queueFromResponseFile(['get_monetization_packages' => ['packages' => $packages]])
+      ->queueFromResponseFile(['get_monetization_packages' => ['packages' => array_slice($packages, -1)]]);
+
+    $this->drupalGet(Url::fromRoute('apigee_monetization.packages', [
+      'user' => $this->account->id(),
+    ]));
+
+    $this->assertSession()->elementTextContains('css', 'h3.apigee-package-list', 'Packages');
+    $this->assertSession()->elementTextContains('css', 'div.apigee-sdk-package', $packages[0]->getDisplayName());
+    $this->assertSession()->elementTextContains('css', 'div.apigee-sdk-package:nth-child(2)', $packages[1]->getDisplayName());
+    $this->assertSession()->elementTextContains('css', 'span.apigee-sdk-product', $packages[0]->getApiProducts()[0]->getDisplayName());
+    $this->assertSession()->elementTextContains('css', 'div.apigee-sdk-package:nth-child(2) span.apigee-sdk-product', $packages[1]->getApiProducts()[0]->getDisplayName());
   }
 }
