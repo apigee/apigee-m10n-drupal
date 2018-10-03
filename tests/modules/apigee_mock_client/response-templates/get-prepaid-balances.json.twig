@@ -9,27 +9,31 @@
 {
     "developerBalance": [
         {
-            "id": "abc123",
             "approxTaxRate": 0,
-            "currentBalance": {{ currentBalance | default(16.0000) }},
-            "currentTotalBalance": {{ currentTotalBalance | default(16.0000) }},
-            "currentUsage": {{ currentUsage | default(0) }},
-            "previousBalance": {{ previousBalance | default(0) }},
+            "currentBalance": {{ current_aud | default('16.0000') }},
+            "currentTotalBalance": {{ current_total_aud | default('16.0000') }},
+            "currentUsage": {{ current_usage_aud | default('0') }},
+            "id": "074e3f75-b7d6-403d-9971-29d3456f48ca",
+            "month": "{{ "now"|date("F")|upper }}",
+            "previousBalance": 0,
             "supportedCurrency": {% include 'currency-aud.json.twig' %},
             "tax": 0.0000,
-            "topups": {{ topups | default(16.0000) }},
-            "usage": {{ usage | default(0) }}
+            "topups": {{ topups_aud | default('16.0000') }},
+            "usage": {{ current_usage_aud | default('0.0000') }},
+            "year": {{ "now"|date("Y") }}
         }, {
-            "id": "abc124",
             "approxTaxRate": 0,
-            "currentBalance": {{ currentBalance | default(72.2000) }},
-            "currentTotalBalance": {{ currentTotalBalance | default(120.0200) }},
-            "currentUsage": {{ currentUsage | default(47.8200) }},
-            "previousBalance": {{ previousBalance | default(0) }},
+            "currentBalance": {{ current_usd | default('72.2000') }},
+            "currentTotalBalance": {{ current_total_usd | default('120.0200') }},
+            "currentUsage": {{ current_usage_usd | default('47.8200') }},
+            "id": "4640cad7-0584-4396-9c37-38b8c88e2fb1",
+            "month": "{{ "now"|date("F")|upper }}",
+            "previousBalance": 0,
             "supportedCurrency": {% include 'currency-usd.json.twig' %},
             "tax": 0.0000,
-            "topups": {{ topups | default(30.0200) }},
-            "usage": {{ usage | default(47.8200) }}
+            "topups": {{ topups_usd | default('30.0200') }},
+            "usage": {{ current_usage_usd | default('47.8200') }},
+            "year": {{ "now"|date("Y") }}
         }
     ],
     "totalRecords": 2

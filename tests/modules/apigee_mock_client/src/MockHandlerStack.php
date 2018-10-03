@@ -116,15 +116,15 @@ class MockHandlerStack extends MockHandler {
    */
   public function __invoke(RequestInterface $request, array $options) {
     try {
-
       // Grab an item from the database queue and append it to the in-memory queue.
-      $item = $this->database_queue->claimItem();
-      parent::append(new Response(
-        $item->data['status'],
-        $item->data['headers'],
-        $item->data['body']
-      ));
-      $this->database_queue->deleteItem($item);
+      if ($item = $this->database_queue->claimItem()) {
+        parent::append(new Response(
+          $item->data['status'],
+          $item->data['headers'],
+          $item->data['body']
+        ));
+        $this->database_queue->deleteItem($item);
+      }
 
       return parent::__invoke($request, $options);
     } catch (\Exception $ex) {

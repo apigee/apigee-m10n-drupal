@@ -23,9 +23,8 @@
     <tbody>
         {% if balances %}
             {% for balance in balances %}
-                <tr>
-                    {% set currency_code = balance.currency.name %}
-
+                {% set currency_code = balance.currency.name %}
+                <tr class="apigee-balance-row-{{ currency_code | lower }}">
                     <td>{{ balance.currency.name }}</td>
                     <td>{{ balance.previousBalance | apigee_m10n_format_currency(currency_code) }}</td>
                     <td>{{ balance.topups | apigee_m10n_format_currency(currency_code) }}</td>

@@ -40,34 +40,21 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
     // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
     $this->account = $this->createAccount([]);
-    $this->drupalLogin($this->account);
 
+    $this->stack
+      ->queueFromResponseFile(['get_organization' => [
+        'org_name' => 'tsnow-mint',
+        'monetization_enabled' => 'true',
+      ]]);
+    $this->drupalLogin($this->account);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user_id' => 58
+      'user' => $this->account->id(),
     ]));
 
-    $this->assertSession()->statusCodeEquals(403);
-  }
-
-  public function testPrepaidBalancesAccessGranted() {
-
-    // If the user does have the "view mint prepaid reports" permission, they should get a 200 response.
-    $this->account = $this->createAccount([
-      'view mint prepaid reports'
-    ]);
-    $this->drupalLogin($this->account);
-
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user_id' => 58
-    ]));
-
-    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->responseContains('Access denied');
   }
 
   public function testPrepaidBalancesView() {
-
-    $this->stack->queueFromResponseFile(['post_developers']);
-
     // If the user has "view mint prepaid reports" permission, they should be able to see some prepaid balances.
     $this->account = $this->createAccount([
       'view mint prepaid reports'
@@ -75,36 +62,45 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
     $this->stack->queueFromResponseFile(['get_organization' => [
       'org_name' => 'tsnow-mint',
-      'isMonetizationEnabled' => 'true'
+      'monetization_enabled' => 'true',
     ]]);
 
     $this->drupalLogin($this->account);
 
     $this->stack->queueFromResponseFile(['get-prepaid-balances' => [
-      "currentBalance" => 72.2000,
-      "currentTotalBalance" => 120.0200,
-      "currentUsage" => 47.8200,
-      "previousBalance" => 0,
-      "topups" => 30.0200,
-      "usage" => 47.8200
+      "current_aud" => 100.0000,
+      "current_total_aud" => 200.0000,
+      "current_usage_aud" => 50.0000,
+      "topups_aud" => 50.0000,
+      "current_usage_aud" => 50.0000,
+
+      "current_usd" => 72.2000,
+      "current_total_usd" => 120.0200,
+      "current_usage_usd" => 47.8200,
+      "topups_usd" => 30.0200,
+      "current_usage_usd" => 47.8200,
     ]]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->account->id()
     ]));
 
+    sleep(20);
     $this->assertSession()->responseNotContains('Access denied');
 
-    $this->assertSession()->responseContains("<td>AUD</td>");
-    $this->assertSession()->responseContains("<td>A$0.00</td>");
-    $this->assertSession()->responseContains("<td>A$30.02</td>");
-    $this->assertSession()->responseContains("<td>A$47.82</td>");
-    $this->assertSession()->responseContains("<td>A$0.00</td>");
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(1)', 'AUD');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(2)', 'A$0.00');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(3)', 'A$50.00');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(4)', 'A$50.00');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(5)', 'A$0.00');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(6)', 'A$100.00');
 
-    $this->assertSession()->responseContains("<td>USD</td>");
-    $this->assertSession()->responseContains("<td>$0.00</td>");
-    $this->assertSession()->responseContains("<td>$30.02</td>");
-    $this->assertSession()->responseContains("<td>$47.82</td>");
-    $this->assertSession()->responseContains("<td>$0.00</td>");
+
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(1)', 'USD');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(2)', '$0.00');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(3)', '$30.02');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(4)', '$47.82');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(5)', '$0.00');
+    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(6)', '72.20');
   }
 }

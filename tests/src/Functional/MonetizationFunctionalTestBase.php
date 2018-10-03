@@ -19,15 +19,13 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\Component\Serialization\Json;
-use Drupal\key\Entity\Key;
-use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
-use Drupal\Tests\apigee_m10n\MonetizationTestEnvironmentVariables;
+use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
+use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\Tests\BrowserTestBase;
 
 class MonetizationFunctionalTestBase extends BrowserTestBase {
 
-  use ApigeeEdgeTestTrait;
+  use ApigeeMonetizationTestTrait;
 
   protected static $modules = [
     'apigee_edge',
@@ -49,35 +47,16 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
    */
   protected $integration_enabled;
 
+  /**
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
   protected function setUp() {
     parent::setUp();
 
-    $this->integration_enabled = !empty(getenv('APIGEE_INTEGRATION_ENABLE'));
+    $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
-    $key = Key::create([
-      'id'           => 'test',
-      'label'        => 'Apigee M10n Test Authorization',
-      'key_type'     => 'apigee_edge_basic_auth',
-      'key_provider' => 'config',
-      'key_input'    => 'apigee_edge_basic_auth_input',
-    ]);
-    $key->setKeyValue(Json::encode([
-      'endpoint'     => getenv('APIGEE_EDGE_ENDPOINT'),
-      'organization' => getenv('APIGEE_EDGE_ORGANIZATION'),
-      'username'     => getenv('APIGEE_EDGE_USERNAME'),
-      'password'     => getenv('APIGEE_EDGE_PASSWORD'),
-    ]));
-    $key->save();
-
-    $this->container->get('state')->set('apigee_edge.auth', [
-      'active_key' => 'test',
-      'active_key_oauth_token' => '',
-    ]);
-    $this->container->get('state')->resetCache();
-
-    $this->stack = $this->container->get('apigee_mock_client.mock_http_handler_stack');
+    $this->init();
   }
 
 }
-

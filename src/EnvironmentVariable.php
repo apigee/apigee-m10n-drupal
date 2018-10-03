@@ -16,9 +16,14 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n;
+namespace Drupal\apigee_m10n;
 
-abstract class MonetizationTestEnvironmentVariables {
+/**
+ * Environment variable keys.
+ *
+ * @package Drupal\apigee_m10n
+ */
+abstract class EnvironmentVariable {
   public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
   public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
   public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';

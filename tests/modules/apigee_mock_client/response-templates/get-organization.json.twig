@@ -1,3 +1,15 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org}
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - org_name:              The name of the org.
+ * - monetization_enabled:  (string) "true"|"false" Whether monetizaiton is enabled.
+ */
+#}
 {
     "createdAt": 1502328769129,
     "createdBy": "user@example.com",
@@ -19,7 +31,7 @@
             },
             {
                 "name": "features.isMonetizationEnabled",
-                "value": "{{ isMonetizationEnabled }}"
+                "value": "{{ monetization_enabled }}"
             },
             {
                 "name": "features.isConnectorsEnabled",
