@@ -41,11 +41,8 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
     $this->account = $this->createAccount([]);
 
-    $this->stack
-      ->queueFromResponseFile(['get_organization' => [
-        'org_name' => 'tsnow-mint',
-        'monetization_enabled' => 'true',
-      ]]);
+    $this->queueOrg();
+
     $this->drupalLogin($this->account);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->account->id(),
@@ -60,10 +57,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
       'view mint prepaid reports'
     ]);
 
-    $this->stack->queueFromResponseFile(['get_organization' => [
-      'org_name' => 'tsnow-mint',
-      'monetization_enabled' => 'true',
-    ]]);
+    $this->queueOrg();
 
     $this->drupalLogin($this->account);
 
