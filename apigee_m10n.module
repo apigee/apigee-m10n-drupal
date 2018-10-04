@@ -49,8 +49,17 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'template' => 'package-list',
     ],
     'package' => [
-      'variables' => ['package' => NULL],
+      'variables' => [
+        'package' => NULL,
+        'product_list' => NULL,
+      ],
       'template' => 'package',
+    ],
+    'product_list' => [
+      'variables' => ['product_list' => NULL],
+    ],
+    'api_product' => [
+      'variables' => ['api_product' => NULL],
     ],
   ];
 }
@@ -58,12 +67,36 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_preprocess_HOOK().
  */
-function apigee_m10n_preprocess_package_list(&$variables, $hook) {
+function apigee_m10n_preprocess_package_list(&$variables) {
   // Convert the package list into individual renderable items.
   array_walk($variables['package_list'], function (&$package){
     $package = [
       '#theme' => 'package',
       '#package' => $package,
+    ];
+  });
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function apigee_m10n_preprocess_package(&$variables) {
+  /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct[] $products */
+  // Convert apigee monetization products to product entities.
+  $variables['product_list'] = [
+    '#theme' => 'product_list',
+    '#product_list' => $variables['package']->getApiProducts(),
+  ];
+}
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function apigee_m10n_preprocess_product_list(&$variables) {
+  // Convert the package list into individual renderable items.
+  array_walk($variables['product_list'], function (&$api_product){
+    $api_product = [
+      '#theme' => 'api_product',
+      '#api_product' => $api_product,
     ];
   });
 }

@@ -8,9 +8,10 @@
  * @see Drupal\apigee_m10n\Controller\PackageController
  */
 #}
-<h3 class="apigee-package-list">{{ 'Packages' |t }}</h3>
-<ul>
+<ul class="apigee-package-list">
     {% for package in package_list %}
-        {{ package }}
+        <li class="apigee-sdk-package">
+            {{ package }}
+        </li>
     {% endfor %}
 </ul>

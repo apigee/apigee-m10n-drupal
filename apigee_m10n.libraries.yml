@@ -1,0 +1,11 @@
+package:
+  version: 1.0
+  css:
+    theme:
+      css/package.css: {}
+  js:
+    js/package.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal

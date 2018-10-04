@@ -2,7 +2,7 @@ apigee_m10n.admin_config:
   path: /admin/config/apigee-edge/monetization
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
-    _title: Monetization
+    _title: "Monetization"
   requirements:
     _permission: 'administer apigee monetization'
 
@@ -31,6 +31,7 @@ apigee_monetization.packages:
   path: /user/{user}/monetization/packages
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
+    _title: "Packages"
   requirements:
     _permission: 'access monetization packages'
 
@@ -45,5 +46,6 @@ apigee_monetization.purchased:
   path: /user/{user}/monetization/packages/purchased
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::purchasedPage
+    _title: "Purchased Packages"
   requirements:
     _permission: 'access purchased monetization packages'

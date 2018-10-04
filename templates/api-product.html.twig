@@ -1,0 +1,33 @@
+{#
+/**
+ * Template for displaying monetization products.
+ * @todo: REplace with win drupal entity API Rendering.
+ *
+ * Available variables:
+ * - api_product: An product from the monetization SDK.
+ *   @see:\Apigee\Edge\Api\Monetization\Entity\ApiProduct
+ *
+ *   - api_product.id               ID of the API product.
+ *   - api_product.displayName      User-friendly display name of the API product.
+ *   - api_product.name             Name of the API product.
+ *   - api_product.description      Description of API product.
+ *   - api_product.status           Status indicator for the API product. Valid values include: CREATED, ACTIVE, INACTIVE.
+ *   - api_product.organization     The organizaiton the product belongs to.
+ */
+#}
+<div class="apigee-sdk-product">
+    <div class="apigee-product-details">
+        <div  class="apigee-product-display-name">
+            <h3 class="label id-label">{{ api_product.displayName }}</h3>
+        </div>
+        <div  class="apigee-product-id">
+            <em class="label id-label">{{ 'ID:'|t }}</em> {{ api_product.id }}
+        </div>
+        <div  class="apigee-product-name">
+            <em class="label name-label">{{ 'Product Name:'|t }}</em> {{ api_product.name }}
+        </div>
+        <div  class="apigee-product-description">
+            <em class="label description-label">{{ 'Description:'|t }}</em> {{ api_product.description }}
+        </div>
+    </div>
+</div>

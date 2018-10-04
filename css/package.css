@@ -1,0 +1,60 @@
+ul.apigee-package-list {
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  padding: 0;
+  width: 85%;
+}
+
+li.apigee-sdk-package {
+  list-style-type: none;
+  border-bottom: 1px solid #e3e3e3;
+  padding: 10px 15px 5px;
+}
+li.apigee-sdk-package:last-child {
+  padding-bottom: 10px;
+  border-bottom: none;
+}
+li.apigee-sdk-package:nth-child(even) {
+  background-color: #f9f9f9;
+}
+div.apigee-sdk-package-basic {
+  display: flex;
+}
+div.apigee-package-label {
+  font-weight: bold;
+  width: 33%;
+}
+li.apigee-sdk-package.expanded div.apigee-sdk-product-list-basic {
+  display: none;
+}
+div.apigee-sdk-product-list {
+  margin-top: 10px;
+}
+div.product-list-label {
+  display: block;
+  margin-bottom: 5px;
+}
+div.apigee-sdk-product-entity-list li.apigee-sdk-product {
+  background-color: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  padding: 10px 15px 5px;
+  margin-bottom: 15px;
+  list-style-type: none;
+}
+div.apigee-sdk-product-entity-list li.apigee-sdk-product:last-child {
+  margin-bottom: 5px;
+}
+li.apigee-sdk-package div.apigee-package-details {
+  display: none;
+}
+li.apigee-sdk-package div.apigee-package-details > div {
+  padding-left: 10px;
+}
+li.apigee-sdk-package.expanded div.apigee-package-details {
+  display: inherit;
+}
+div.apigee-package-id {
+  margin-top: 5px;
+}

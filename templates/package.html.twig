@@ -3,17 +3,47 @@
  * Template for displaying monetization packages.
  *
  * Available variables:
- * - package: An package from the monetization SDK.
+ * - package: An package from the monetization SDK. @see: \Apigee\Edge\Api\Monetization\Entity\ApiPackage
+ *
+ *   - package.description:     Description of API package.
+ *   - package.displayName:     User-friendly display name of the API package.
+ *   - package.id:              ID of the API product.
+ *   - package.name:            Name of the API product.
+ *   - package.organization:    The organizaiton the product belongs to.
+ *   - package.apiProducts:     A list of included product entities.
+ *   - package.status:          Status indicator for the API product. Valid values include: CREATED, ACTIVE, INACTIVE.
+ *
+ * - product_list: A renerable list of products in this package.
  *
  * @see \Apigee\Edge\Api\Monetization\Controller\ApiPackageController
  */
 #}
 <div class="apigee-sdk-package">
-    <strong>{{ package.displayName }}</strong>
-    <div class="apigee-sdk-product-list">
-        <em>Products: </em>
-        {% for product in package.apiProducts %}
-            <span class="apigee-sdk-product">{{ product.displayName }}{% if not loop.last %},{% endif %}</span>
-        {% endfor %}
+    <div class="apigee-sdk-package-basic">
+        <div class="apigee-package-label">{{ package.displayName }}</div>
+        <div class="apigee-sdk-product-list-basic">(
+            {% for product in package.apiProducts %}
+                <span class="apigee-sdk-product">{{ product.displayName }}{% if not loop.last %},{% endif %}</span>
+            {% endfor %}
+        )</div>
+    </div>
+    <div class="apigee-package-details">
+        <div class="apigee-package-id">
+            <em class="label id-label">{{ 'ID:'|t }}</em> {{ package.id }}
+        </div>
+        <div  class="apigee-package-name">
+            <em class="label name-label">{{ 'Plan Name:'|t }}</em> {{ package.name }}
+        </div>
+        <div  class="apigee-package-description">
+            <em class="label description-label">{{ 'Description:'|t }}</em> {{ package.description }}
+        </div>
+        <div  class="apigee-package-status">
+            <em class="label status-label">{{ 'Status:'|t }}</em> {{ package.status }}
+        </div>
+        <div class="apigee-sdk-product-list">
+            <div class="label product-list-label"><em>{{ 'Included products:'|t }}</em></div>
+            <div class="apigee-sdk-product-entity-list">{{ product_list }}</div>
+        </div>
     </div>
 </div>
+{{ attach_library('apigee_m10n/package') }}
