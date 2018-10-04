@@ -175,4 +175,16 @@ trait ApigeeMonetizationTestTrait {
         'monetization_enabled' => $monetized ? 'true' : 'false',
       ]]);
   }
+
+  /**
+   * Helper for testing element text by css selector.
+   *
+   * @param $selector
+   * @param $text
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   */
+  protected function assertElementContains($selector, $text) {
+    $this->assertSession()->elementTextContains('css', $selector, $text);
+  }
 }

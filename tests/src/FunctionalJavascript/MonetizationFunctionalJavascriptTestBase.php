@@ -16,13 +16,13 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n\Functional;
+namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
 
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
 use Drupal\apigee_m10n\EnvironmentVariable;
-use Drupal\Tests\BrowserTestBase;
 
-class MonetizationFunctionalTestBase extends BrowserTestBase {
+class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
 
   use ApigeeMonetizationTestTrait;
 

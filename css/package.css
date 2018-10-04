@@ -11,6 +11,9 @@ li.apigee-sdk-package {
   border-bottom: 1px solid #e3e3e3;
   padding: 10px 15px 5px;
 }
+li.apigee-sdk-package:hover:not(.expanded) {
+  background-color: #fff;
+}
 li.apigee-sdk-package:last-child {
   padding-bottom: 10px;
   border-bottom: none;
@@ -20,6 +23,9 @@ li.apigee-sdk-package:nth-child(even) {
 }
 div.apigee-sdk-package-basic {
   display: flex;
+}
+div.apigee-sdk-package-basic:hover {
+  cursor: pointer;
 }
 div.apigee-package-label {
   font-weight: bold;
