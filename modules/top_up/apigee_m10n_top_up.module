@@ -22,6 +22,21 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Entity\ProductType;
 
+
+/**
+ * Implements hook_mail().
+ */
+function apigee_m10n_top_up_mail($key, &$message, $params) {
+  switch($key) {
+    case 'balance_adjustment_error_report':
+      $options = ['langcode' => $message['langcode']];
+      $params['@site'] = \Drupal::config('system.site')->get('name');
+      $message['subject'] = t('Developer account recharge error from @site', $params, $options);
+      $message['body'][0] = t("There was an error applying a recharge to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error", $params, $options);
+      break;
+  }
+}
+
 /**
  * When an order item is created, we need to check to see if the product is a
  * top up item. If it is, we should store a reference to the developer that we

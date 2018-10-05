@@ -1,6 +1,6 @@
 apigee_m10n_top_up.config:
   type: config_object
-  label: 'Apigee Top Up'
+  label: 'Apigee top up config'
   mapping:
     mail_on_error:
       type: boolean
