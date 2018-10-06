@@ -23,6 +23,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Site\Settings;
 use Drupal\apigee_m10n\EnvironmentVariable;
+use Drupal\Core\State\StateInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -45,14 +46,33 @@ class MockHttpClientFactory extends ClientFactory {
   protected $mock_stack;
 
   /**
+   * Whether or not integration is currently enabled.
+   *
+   * @var bool
+   */
+  protected $integration_enabled;
+
+  /**
    * Constructs a new ClientFactory instance.
    *
    * @param \GuzzleHttp\HandlerStack $stack
    *   The handler stack.
+   * @param \GuzzleHttp\Handler\MockHandler $mock_stack
+   * @param \Drupal\Core\State\StateInterface $state
    */
-  public function __construct(HandlerStack $stack, MockHandler $mock_stack) {
+  public function __construct(HandlerStack $stack, MockHandler $mock_stack, StateInterface $state) {
     $this->stack = $stack;
     $this->mock_stack = $mock_stack;
+
+    // Check for the integration enabled environment variable.
+    if ($enabled = getenv(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE)) {
+      $this->integration_enabled = !empty($enabled);
+      // Callbacks won't have access to the same environment variables so save
+      // the flag to state.
+      $state->set(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE, $enabled);
+    } else {
+      $this->integration_enabled = !empty($state->get(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE, FALSE));
+    }
 
     parent::__construct($stack);
   }
@@ -74,7 +94,7 @@ class MockHttpClientFactory extends ClientFactory {
         'User-Agent' => 'Drupal/' . \Drupal::VERSION . ' (+https://www.drupal.org/) ' . \GuzzleHttp\default_user_agent(),
       ],
       // @todo replace with state api b/c functional tests don't have access to environment variables (as far as I can tell).
-      'handler' => !empty(getenv(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE)) ? $this->stack : $this->mock_stack,
+      'handler' => $this->integration_enabled ? $this->stack : $this->mock_stack,
       // Security consideration: prevent Guzzle from using environment variables
       // to configure the outbound proxy.
       'proxy' => [

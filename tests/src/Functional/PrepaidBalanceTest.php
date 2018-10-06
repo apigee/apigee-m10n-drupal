@@ -79,7 +79,6 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
       'user' => $this->account->id()
     ]));
 
-    sleep(20);
     $this->assertSession()->responseNotContains('Access denied');
 
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(1)', 'AUD');
