@@ -16,11 +16,11 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n_top_up\Kernel;
+namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
 use Drupal\apigee_edge\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
-use Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob;
+use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
@@ -31,10 +31,10 @@ use GuzzleHttp\Psr7\Response;
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
- * @group apigee_m10n_top_up
- * @group apigee_m10n_top_up_kernel
+ * @group apigee_m10n_add_credit
+ * @group apigee_m10n_add_credit_kernel
  *
- * @coversDefaultClass \Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob
+ * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob
  */
 class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
@@ -67,7 +67,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     'apigee_mock_client',
     'system',
     // Modules for this test.
-    'apigee_m10n_top_up',
+    'apigee_m10n_add_credit',
     'commerce_order',
     'commerce_price',
     'commerce',
@@ -87,7 +87,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'apigee_edge',
-      'apigee_m10n_top_up',
+      'apigee_m10n_add_credit',
       'user',
       'system',
     ]);
@@ -131,8 +131,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     // Create a new job update the account balance. Use a custom adjustment
     // type because it can support a credit or a debit.
     $job = new BalanceAdjustmentJob($this->developer, new Adjustment([
-      'type' => 'top_up',
-      'label' => 'Top Up Adjustment',
+      'type' => 'apigee_balance',
+      'label' => 'Apigee credit adjustment',
       'amount' => new Price('19.99', 'USD'),
     ]));
 
@@ -172,8 +172,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    */
   public function testExecuteRequestWithExistingBalance() {
     $job = new BalanceAdjustmentJob($this->developer, new Adjustment([
-      'type' => 'top_up',
-      'label' => 'Top Up Adjustment',
+      'type' => 'apigee_balance',
+      'label' => 'Apigee credit adjustment',
       'amount' => new Price('19.99', 'USD'),
     ]));
 
@@ -214,8 +214,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    */
   public function testExecuteRequestWithError() {
     $job = new BalanceAdjustmentJob($this->developer, new Adjustment([
-      'type' => 'top_up',
-      'label' => 'Top Up Adjustment',
+      'type' => 'apigee_balance',
+      'label' => 'Apigee credit adjustment',
       'amount' => new Price('19.99', 'USD'),
     ]));
 
@@ -255,7 +255,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertContains('There was an error applying a recharge to an account.', $emails[0]['body']);
     $nl = PHP_EOL;
     static::assertContains("Calculation discrepancy applying adjustment to developer{$nl}`{$this->developer->getEmail()}`.", $emails[0]['body']);
-    static::assertContains('Existing top up ('.date('F').'):        `$19.99`', $emails[0]['body']);
+    static::assertContains('Existing credit added ('.date('F').'):  `$19.99`', $emails[0]['body']);
     static::assertContains('Amount Applied:                   `$19.99`.', $emails[0]['body']);
     static::assertContains('New Balance:                      `Error retrieving the new balance.`.', $emails[0]['body']);
     static::assertContains('Expected New Balance:             `$39.98`.', $emails[0]['body']);

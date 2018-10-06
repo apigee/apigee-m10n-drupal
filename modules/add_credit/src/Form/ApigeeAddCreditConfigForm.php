@@ -1,21 +1,37 @@
 <?php
+/**
+ * Copyright 2018 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-namespace Drupal\apigee_m10n_top_up\Form;
+namespace Drupal\apigee_m10n_add_credit\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class ApigeeTopUpConfigForm.
+ * Class ApigeeAddCreditConfigForm.
  */
-class ApigeeTopUpConfigForm extends ConfigFormBase {
+class ApigeeAddCreditConfigForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
     return [
-      'apigee_m10n_top_up.config',
+      'apigee_m10n_add_credit.config',
     ];
   }
 
@@ -23,14 +39,14 @@ class ApigeeTopUpConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'apigee_top_up_config_form';
+    return 'apigee_add_credit_config_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('apigee_m10n_top_up.config');
+    $config = $this->config('apigee_m10n_add_credit.config');
 
     // Use the site default if an email hasn't been saved.
     $default_email = $config->get('error_recipient');
@@ -76,7 +92,7 @@ class ApigeeTopUpConfigForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $this->config('apigee_m10n_top_up.config')
+    $this->config('apigee_m10n_add_credit.config')
       ->set('mail_on_error', $form_state->getValue('mail_on_error'))
       ->set('error_recipient', $form_state->getValue('error_recipient'))
       ->save();

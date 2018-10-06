@@ -16,10 +16,11 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_top_up\Job;
+namespace Drupal\apigee_m10n_add_credit\Job;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
+use Apigee\Edge\Exception\ApiResponseException;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\BillingController;
 use Drupal\commerce_order\Adjustment;
@@ -32,7 +33,7 @@ use Drupal\user\UserInterface;
 
 /**
  * The job is responsible for updating the account balance for a developer or
- * company. It is usually initiated after a top up product is purchased.
+ * company. It is usually initiated after an add credit product is purchased.
  *
  * Execute should not return anything if the job was successful. Throwing an
  * error will let the job runner know that the request was unsuccessful and will
@@ -40,7 +41,7 @@ use Drupal\user\UserInterface;
  *
  * TODO: Handle refunds when the monetization API supports it.
  *
- * @package Drupal\apigee_m10n_top_up\Job
+ * @package Drupal\apigee_m10n_add_credit\Job
  */
 class BalanceAdjustmentJob extends EdgeJob {
 
@@ -71,7 +72,7 @@ class BalanceAdjustmentJob extends EdgeJob {
   protected $adjustment;
 
   /**
-   * Creates a top up balance job.
+   * Creates an Apigee balance adjustment (add credit) job.
    *
    * @param \Drupal\Core\Entity\EntityInterface $company_or_user
    * @param \Drupal\commerce_order\Adjustment $adjustment
@@ -103,12 +104,13 @@ class BalanceAdjustmentJob extends EdgeJob {
     $currency_code = $adjustment->getAmount()->getCurrencyCode();
     // Grab the current balances.
     if ($controller = $this->getBalanceController()) {
+      // Get existing balance with the same currency code.
       $balance = $this->getPrepaidBalance($controller, $currency_code);
 
-      $existing_top_up_amount = new Price(!empty($balance) ? (string) $balance->getTopUps() : '0', $currency_code);
+      $existing_add_credit_amount = new Price(!empty($balance) ? (string) $balance->getTopUps() : '0', $currency_code);
 
       // Calculate the expected new balance.
-      $expected_balance = $existing_top_up_amount->add($adjustment->getAmount());
+      $expected_balance = $existing_add_credit_amount->add($adjustment->getAmount());
 
       try {
         // Top up by the adjustment amount.
@@ -141,7 +143,7 @@ class BalanceAdjustmentJob extends EdgeJob {
       $context = [
         'email'             => !empty($this->developer) ? $this->developer->getEmail() : '',
         'team_name'         => !empty($this->company) ? $this->company->label() : '',
-        'existing'          => $this->formatPrice($existing_top_up_amount),
+        'existing'          => $this->formatPrice($existing_add_credit_amount),
         'adjustment'        => $this->formatPrice($adjustment->getAmount()),
         'new_balance'       => isset($new_balance) ? $this->formatPrice($new_balance) : 'Error retrieving the new balance.',
         'expected_balance'  => $this->formatPrice($expected_balance),
@@ -162,7 +164,7 @@ class BalanceAdjustmentJob extends EdgeJob {
         // Add the report text to the message context.
         $message_context['report_text'] = $report_text;
         $message_context['@error'] = (string) $thrown;
-        $module_config = \Drupal::config('apigee_m10n_top_up.config');
+        $module_config = \Drupal::config('apigee_m10n_add_credit.config');
         // Get config and send email if necessary.
         if (!empty($module_config->get('mail_on_error'))) {
           $recipient = !empty($module_config->get('error_recipient'))
@@ -170,7 +172,7 @@ class BalanceAdjustmentJob extends EdgeJob {
             :  \Drupal::config('system.site')->get('mail');
           $recipient = !empty($recipient) ? $recipient : ini_get('sendmail_from');
           \Drupal::service('plugin.manager.mail')->mail(
-            'apigee_m10n_top_up',
+            'apigee_m10n_add_credit',
             'balance_adjustment_error_report',
             $recipient,
             Language::LANGCODE_DEFAULT,
@@ -225,6 +227,7 @@ class BalanceAdjustmentJob extends EdgeJob {
   protected function getPrepaidBalance(PrepaidBalanceControllerInterface $controller, $currency_code) {
     /** @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[] $balances */
     $balances = $controller->getPrepaidBalance(new \DateTimeImmutable());
+
     if (!empty($balances)) {
       $balances = array_combine(array_map(function ($balance) {return $balance->getCurrency()->getName();}, $balances), $balances);
     }
@@ -238,7 +241,7 @@ class BalanceAdjustmentJob extends EdgeJob {
    *   The Psr7 logger.
    */
   protected function getLogger() {
-    return \Drupal::logger('apigee_monetization_top_up');
+    return \Drupal::logger('apigee_monetization_add_credit');
   }
 
   /**
@@ -316,7 +319,7 @@ class BalanceAdjustmentJob extends EdgeJob {
         'balance_error_message' => 'Apigee User ({email}) has no balance for ({currency}).',
         'report_text_error_header' => 'Calculation discrepancy applying adjustment to developer `{email}`. <br />' . PHP_EOL . PHP_EOL,
         'report_text_info_header' =>  'Adjustment applied to developer:  `{email}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text' =>              'Existing top up ({month}):        `{existing}`.<br />' . PHP_EOL .
+        'report_text' =>              'Existing credit added ({month}):  `{existing}`.<br />' . PHP_EOL .
                                       'Amount Applied:                   `{adjustment}`.<br />' . PHP_EOL .
                                       'New Balance:                      `{new_balance}`.<br />' . PHP_EOL .
                                       'Expected New Balance:             `{expected_balance}`.<br />' . PHP_EOL,
@@ -324,11 +327,11 @@ class BalanceAdjustmentJob extends EdgeJob {
       'company' => [
         'balance_error_message' => 'Apigee team ({team_name}) has no balance for ({currency}).',
         'report_text_error_header' => 'Calculation discrepancy applying adjustment to team `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text_info_header' =>  'Adjustment applied to team: `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text' =>              'Existing top up ({month}):  `{existing}`.<br />' . PHP_EOL .
-                                      'Amount Applied:             `{adjustment}`.<br />' . PHP_EOL .
-                                      'New Balance:                `{new_balance}`.<br />' . PHP_EOL .
-                                      'Expected New Balance:       `{expected_balance}`.<br />' . PHP_EOL,
+        'report_text_info_header' =>  'Adjustment applied to team:       `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text' =>              'Existing credit added ({month}):  `{existing}`.<br />' . PHP_EOL .
+                                      'Amount Applied:                   `{adjustment}`.<br />' . PHP_EOL .
+                                      'New Balance:                      `{new_balance}`.<br />' . PHP_EOL .
+                                      'Expected New Balance:              `{expected_balance}`.<br />' . PHP_EOL,
       ],
     ];
 

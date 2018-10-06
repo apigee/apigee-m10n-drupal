@@ -16,12 +16,12 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_top_up\EventSubscriber;
+namespace Drupal\apigee_m10n_add_credit\EventSubscriber;
 
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_edge\JobExecutor;
 use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n_top_up\Job\BalanceAdjustmentJob;
+use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
@@ -32,7 +32,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * A state transition subscriber for `commerce_order` entities. See:
  * <https://docs.drupalcommerce.org/commerce2/developer-guide/orders/react-to-workflow-transitions>
  *
- * @package Drupal\apigee_m10n_top_up\EventSubscriber
+ * @package Drupal\apigee_m10n_add_credit\EventSubscriber
  */
 class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
   use JobCreatorTrait;
@@ -72,8 +72,8 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Checks if the order is completed and checks for Apigee Top Up products that
-   * need to be applied to a developer.
+   * Checks if the order is completed and checks for Apigee add credit products
+   * that need to be applied to a developer.
    *
    * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
    *  The transition event.
@@ -86,36 +86,36 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
     // Make sure this transition is to the `completed` state.
     if ($order->getState()->value === 'completed') {
       // Create a new price for the tally.
-      /** @var Price[] $top_up_totals */
-      $top_up_totals = [];
+      /** @var Price[] $add_credit_totals */
+      $add_credit_totals = [];
       // We need to loop through all of the products
       foreach ($order->getItems() as $order_item) {
         /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $varient */
         $variant = $order_item->getPurchasedEntity();
         // Get the product from the line item variant.
         $product = $variant instanceof ProductVariationInterface ? $variant->getProduct() : FALSE;
-        // Check to see if this is a top up product.
-        if ($product && !empty($product->apigee_top_up_enabled->value)) {
-          // Since this is a top up product, we add the line item total to the
-          // tally.
-          $recipient_id = $order_item->getData('top_up_account');
-          $top_up_totals[$recipient_id] = !empty($top_up_totals[$recipient_id])
-            ? $top_up_totals[$recipient_id]->add($order_item->getTotalPrice())
+        // Check to see if this is an add credit product.
+        if ($product && !empty($product->apigee_add_credit_enabled->value)) {
+          // Since this is an add credit product, we add the line item total to
+          // the tally.
+          $recipient_id = $order_item->getData('add_credit_account');
+          $add_credit_totals[$recipient_id] = !empty($add_credit_totals[$recipient_id])
+            ? $add_credit_totals[$recipient_id]->add($order_item->getTotalPrice())
             : $order_item->getTotalPrice();
         }
       }
-      // Checks to see if there are any top up totals that need to be applied to
+      // Checks to see if there are any add credit totals that need to be applied to
       // a developer's account balance.
-      foreach ($top_up_totals as $account_id => $top_up_total) {
-        if (!empty((double) $top_up_total->getNumber())) {
-          // Load the user this top up item is for. TODO: Handle companies here.
+      foreach ($add_credit_totals as $account_id => $add_credit_total) {
+        if (!empty((double) $add_credit_total->getNumber())) {
+          // Load the user this add credit item is for. TODO: Handle teams here.
           $user = user_load_by_mail($account_id);
           // Create a new job update the account balance. Use a custom adjustment
           // type because it can support a credit or a debit.
           $job = new BalanceAdjustmentJob($user, new Adjustment([
-            'type' => 'top_up',
-            'label' => 'Top Up Adjustment',
-            'amount' => $top_up_total,
+            'type' => 'apigee_balance',
+            'label' => 'Apigee balance adjustment',
+            'amount' => $add_credit_total,
           ]));
           // Save and execute the job.
           $this->getExecutor()->call($job);

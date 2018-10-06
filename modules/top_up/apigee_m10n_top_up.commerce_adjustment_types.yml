@@ -1,6 +1,0 @@
-top_up:
-  label: 'Top Up Adjustment'
-  singular_label: 'top up adjustment'
-  plural_label: 'top up adjustments'
-  has_ui: false
-  weight: 10

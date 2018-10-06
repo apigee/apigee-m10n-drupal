@@ -1,5 +1,5 @@
-name: Apigee Monetization Top Up
-description: Provides the ability to create a Drupal Commerce top up product.
+name: Apigee Monetization Add Credit
+description: Provides the ability to create a Drupal Commerce "Add Credit" product.
 package: Apigee
 
 type: module

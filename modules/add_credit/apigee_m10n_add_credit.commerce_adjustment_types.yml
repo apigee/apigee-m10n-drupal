@@ -1,0 +1,6 @@
+apigee_balance:
+  label: 'Apigee balance adjustment'
+  singular_label: 'Apigee balance adjustment'
+  plural_label: 'Apigee balance adjustments'
+  has_ui: false
+  weight: 10

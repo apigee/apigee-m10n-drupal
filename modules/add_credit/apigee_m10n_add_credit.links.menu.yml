@@ -1,6 +1,6 @@
-apigee_m10n_top_up.apigee_top_up_config_form:
+apigee_m10n_add_credit.apigee_add_credit_config_form:
   title: 'Recharge settings'
-  route_name: apigee_m10n_top_up.apigee_top_up_config_form
+  route_name: apigee_m10n_add_credit.apigee_add_credit_config_form
   description: 'Settings for drupal commerce recharge integration.'
   parent: system.admin_apigee_m10n
   weight: 99
