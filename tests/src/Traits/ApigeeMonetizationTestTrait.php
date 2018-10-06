@@ -187,4 +187,16 @@ trait ApigeeMonetizationTestTrait {
   protected function assertElementContains($selector, $text) {
     $this->assertSession()->elementTextContains('css', $selector, $text);
   }
+
+  /**
+   * Makes sure no HTTP Client exceptions have been logged.
+   */
+  public function assertNoClientError() {
+    $exceptions = $this->sdk_connector->getClient()->getJournal()->getLastException();
+    static::assertEmpty(
+      $exceptions,
+      'A HTTP error has been logged in the Journal.'
+    );
+  }
+
 }

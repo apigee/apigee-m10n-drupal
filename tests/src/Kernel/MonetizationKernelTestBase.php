@@ -59,15 +59,4 @@ class MonetizationKernelTestBase extends KernelTestBase {
 
     $this->init();
   }
-
-  /**
-   * Makes sure no HTTP Client exceptions have been logged.
-   */
-  public function assertNoClientError() {
-    $exceptions = $this->sdk_connector->getClient()->getJournal()->getLastException();
-    static::assertEmpty(
-      $exceptions,
-      'A HTTP error has been logged in the Journal.'
-    );
-  }
 }
