@@ -31,8 +31,8 @@ function apigee_m10n_add_credit_mail($key, &$message, $params) {
     case 'balance_adjustment_error_report':
       $options = ['langcode' => $message['langcode']];
       $params['@site'] = \Drupal::config('system.site')->get('name');
-      $message['subject'] = t('Developer account recharge error from @site', $params, $options);
-      $message['body'][0] = t("There was an error applying a recharge to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error", $params, $options);
+      $message['subject'] = t('Developer account add credit error from @site', $params, $options);
+      $message['body'][0] = t("There was an error applying a credit to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error", $params, $options);
       break;
   }
 }

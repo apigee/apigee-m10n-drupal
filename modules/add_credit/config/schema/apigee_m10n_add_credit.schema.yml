@@ -4,7 +4,7 @@ apigee_m10n_add_credit.config:
   mapping:
     mail_on_error:
       type: boolean
-      label: 'Whether or not to sent an email if there is an error applying a recharge.'
+      label: 'Whether or not to sent an email if there is an error adding credit.'
     error_recipient:
       type: string
       label: 'The email address to send errors to.'

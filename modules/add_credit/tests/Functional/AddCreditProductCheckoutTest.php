@@ -153,7 +153,7 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    * @covers ::executeRequest
    */
-  public function testRechargeAccount() {
+  public function testAddCreditToAccount() {
     // Go to the product page.
     $this->drupalGet('product/1');
     $this->assertElementContains('h1.page-title', $this->product->label());

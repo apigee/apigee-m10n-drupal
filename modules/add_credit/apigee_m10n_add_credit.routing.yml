@@ -1,5 +1,5 @@
 apigee_m10n_add_credit.apigee_add_credit_config_form:
-  path: '/admin/config/apigee-edge/monetization/recharge-settings'
+  path: '/admin/config/apigee-edge/monetization/add-credit-settings'
   defaults:
     _form: '\Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm'
     _title: 'Apigee Add Credit Configuration'

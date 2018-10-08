@@ -52,11 +52,11 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
     $default_email = $config->get('error_recipient');
     $default_email = $default_email ?: $this->configFactory()->get('system.site')->get('mail');
 
-    // Whether or not to sent an email if there is an error applying a recharge.
+    // Whether or not to sent an email if there is an error adding credit.
     $form['mail_on_error'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Mail on error?'),
-      '#description' => $this->t('Send an email if an error occurs while apply the recharge to the developer\'s account.'),
+      '#description' => $this->t('Send an email if an error occurs while adding credit to the developer\'s account.'),
       '#default_value' => $config->get('mail_on_error'),
     ];
     // Allow an email address to be set for the error report.
