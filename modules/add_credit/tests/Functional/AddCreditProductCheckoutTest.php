@@ -100,6 +100,7 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
   public function setUp() {
     parent::setUp();
     // Create the developer account.
+    // @todo: Restrict this to a what a developers permissions would be.
     $this->developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
     $this->queueOrg();
     $this->drupalLogin($this->developer);
@@ -107,13 +108,13 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     $this->assertNoClientError();
 
     $this->store = $this->createStore(NULL, $this->config('system.site')->get('mail'));
+    $this->store->save();
 
     // Enable add credit for the product type.
     $product_type = ProductType::load('default');
     $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
     $product_type->save();
 
-    $this->store->save();
     $variation = ProductVariation::create([
       'type' => 'default',
       'sku' => 'TEST_' . strtolower($this->randomMachineName()),
@@ -156,20 +157,20 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
   public function testAddCreditToAccount() {
     // Go to the product page.
     $this->drupalGet('product/1');
-    $this->assertElementContains('h1.page-title', $this->product->label());
-    $this->assertElementContains('div.product--variation-field--variation_price__1', '$12.00');
+    $this->assertCssElementContains('h1.page-title', $this->product->label());
+    $this->assertCssElementContains('div.product--variation-field--variation_price__1', '$12.00');
 
     // Add the product to cart.
     $this->submitForm([], 'Add to cart', 'commerce-order-item-add-to-cart-form-commerce-product-1');
-    $this->assertElementContains('h1.page-title', $this->product->label());
-    $this->assertElementContains('div.messages--status', $this->product->label() . ' added to your cart');
+    $this->assertCssElementContains('h1.page-title', $this->product->label());
+    $this->assertCssElementContains('div.messages--status', $this->product->label() . ' added to your cart');
     // Go to the cart.
     $this->clickLink('your cart');
-    $this->assertElementContains('h1.page-title', 'Shopping cart');
-    $this->assertElementContains('.view-commerce-cart-form td:nth-child(1)', $this->product->label());
+    $this->assertCssElementContains('h1.page-title', 'Shopping cart');
+    $this->assertCssElementContains('.view-commerce-cart-form td:nth-child(1)', $this->product->label());
     // Precede to checkout.
     $this->submitForm([], 'Checkout');
-    $this->assertElementContains('h1.page-title', 'Order information');
+    $this->assertCssElementContains('h1.page-title', 'Order information');
     // Submit payment information.
     $this->submitForm([
       'payment_information[add_payment_method][payment_details][security_code]' => '123',
@@ -180,9 +181,9 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
       'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'CA',
       'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94105',
     ], 'Continue to review');
-    $this->assertElementContains('h1.page-title', 'Review');
-    $this->assertElementContains('.view-commerce-checkout-order-summary', "1 x");
-    $this->assertElementContains('.view-commerce-checkout-order-summary', $this->product->label());
+    $this->assertCssElementContains('h1.page-title', 'Review');
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "1 x");
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', $this->product->label());
 
     // Before finalizing the payment, we have to add a couple of responses to the queue.
     $this->stack
@@ -194,9 +195,9 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     // Finalize the payment.
     $this->submitForm([], 'Pay and complete purchase');
 
-    $this->assertElementContains('h1.page-title', 'Complete');
-    $this->assertElementContains('div.checkout-complete', 'Your order number is 1.');
-    $this->assertElementContains('div.checkout-complete', 'You can view your order on your account page when logged in.');
+    $this->assertCssElementContains('h1.page-title', 'Complete');
+    $this->assertCssElementContains('div.checkout-complete', 'Your order number is 1.');
+    $this->assertCssElementContains('div.checkout-complete', 'You can view your order on your account page when logged in.');
 
     // Load all jobs.
     $query = \Drupal::database()->select('apigee_edge_job', 'j')->fields('j');

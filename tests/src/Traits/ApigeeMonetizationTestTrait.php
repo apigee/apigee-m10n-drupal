@@ -184,8 +184,20 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Behat\Mink\Exception\ElementTextException
    */
-  protected function assertElementContains($selector, $text) {
+  protected function assertCssElementContains($selector, $text) {
     $this->assertSession()->elementTextContains('css', $selector, $text);
+  }
+
+  /**
+   * Helper for testing the lack of element text by css selector.
+   *
+   * @param $selector
+   * @param $text
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   */
+  protected function assertCssElementNotContains($selector, $text) {
+    $this->assertSession()->elementTextNotContains('css', $selector, $text);
   }
 
   /**
