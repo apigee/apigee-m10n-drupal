@@ -68,7 +68,7 @@ function apigee_m10n_add_credit_entity_base_field_info(EntityTypeInterface $enti
     // allocated but the option to enable will be hidden and unused unless enabled
     // for that bundle.
     $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('This is an Apigee add credit product.'))
+      ->setLabel(t('This is an Apigee add credit product'))
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
       ->setDefaultValue(FALSE);
@@ -93,6 +93,7 @@ function apigee_m10n_add_credit_entity_bundle_field_info(EntityTypeInterface $en
     $add_credit_base_def
       ->setDefaultValue(TRUE)
       ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('form', ['weight' => 25])
       ->setDisplayConfigurable('view', TRUE);
     return ['apigee_add_credit_enabled' => $add_credit_base_def];
   }
