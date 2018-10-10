@@ -115,7 +115,10 @@ class BalanceAdjustmentJob extends EdgeJob {
       try {
         // Top up by the adjustment amount.
         $updated_balance = $controller->topUpBalance((float) $adjustment->getAmount()->getNumber(), $currency_code);
-        $new_balance = new Price((string) ($updated_balance->getAmount() - $updated_balance->getUsage()), $currency_code);
+        // The data returned from `topUpBalance` doesn't get us the new top up
+        // total so we have to grab that from the balance controller again.
+        $balance_after = $this->getPrepaidBalance($controller, $currency_code);
+        $new_balance = new Price((string) ($balance_after->getTopUps()), $currency_code);
         Cache::invalidateTags([BillingController::$cachePrefix  . ':user:' . $this->developer->id()]);
       } catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.
