@@ -23,6 +23,7 @@ use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultForbidden;
 use Drupal\Core\Session\AccountInterface;
 use GuzzleHttp\Psr7\Response;
+use Psr\Log\LoggerInterface;
 
 /**
  * Tests the testing framework for testing offline.
@@ -117,5 +118,15 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     // Test that the user can access the API Product.
     $access_result = $this->monetization->apiProductAssignmentAccess($entity, $account);
     self::assertTrue($access_result instanceof AccessResultForbidden);
+  }
+
+  /**
+   * Test the module logger.
+   *
+   * @throws \Exception
+   */
+  public function testLogger() {
+    $logger = $this->container->get('logger.channel.apigee_m10n');
+    static::assertInstanceOf(LoggerInterface::class, $logger);
   }
 }
