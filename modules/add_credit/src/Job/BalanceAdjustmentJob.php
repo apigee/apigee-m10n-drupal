@@ -115,14 +115,14 @@ class BalanceAdjustmentJob extends EdgeJob {
       // Get existing balance with the same currency code.
       $balance = $this->getPrepaidBalance($controller, $currency_code);
 
-      $existing_add_credit_amount = new Price(!empty($balance) ? (string) $balance->getTopUps() : '0', $currency_code);
+      $existing_top_ups = new Price(!empty($balance) ? (string) $balance->getTopUps() : '0', $currency_code);
 
       // Calculate the expected new balance.
-      $expected_balance = $existing_add_credit_amount->add($adjustment->getAmount());
+      $expected_balance = $existing_top_ups->add($adjustment->getAmount());
 
       try {
         // Top up by the adjustment amount.
-        $updated_balance = $controller->topUpBalance((float) $adjustment->getAmount()->getNumber(), $currency_code);
+        $controller->topUpBalance((float) $adjustment->getAmount()->getNumber(), $currency_code);
         // The data returned from `topUpBalance` doesn't get us the new top up
         // total so we have to grab that from the balance controller again.
         $balance_after = $this->getPrepaidBalance($controller, $currency_code);
@@ -135,9 +135,9 @@ class BalanceAdjustmentJob extends EdgeJob {
       }
 
       // Check the balance again to make sure the amount is correct.
-      if (!empty($updated_balance)
-        && !empty($updated_balance->getAmount())
-        && ($expected_balance->getNumber() === (string) $updated_balance->getAmount())
+      if (!empty($new_balance)
+        && !empty($new_balance->getNumber())
+        && ($expected_balance->getNumber() === $new_balance->getNumber())
       ) {
         // Set the log action.
         $log_action = 'info';
@@ -153,7 +153,7 @@ class BalanceAdjustmentJob extends EdgeJob {
       $context = [
         'email'             => !empty($this->developer) ? $this->developer->getEmail() : '',
         'team_name'         => !empty($this->company) ? $this->company->label() : '',
-        'existing'          => $this->formatPrice($existing_add_credit_amount),
+        'existing'          => $this->formatPrice($existing_top_ups),
         'adjustment'        => $this->formatPrice($adjustment->getAmount()),
         'new_balance'       => isset($new_balance) ? $this->formatPrice($new_balance) : 'Error retrieving the new balance.',
         'expected_balance'  => $this->formatPrice($expected_balance),
