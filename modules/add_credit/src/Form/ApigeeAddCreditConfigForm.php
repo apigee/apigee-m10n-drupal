@@ -108,6 +108,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
       '#maxlength' => 64,
       '#size' => 64,
       '#default_value' => $default_email,
+      '#required' => TRUE,
     ];
     // Add a note about configuring notifications in drupal commerce.
     $note = '<div class="apigee-add-credit-notification-note"><strong><em>Note:</em></strong><br />
