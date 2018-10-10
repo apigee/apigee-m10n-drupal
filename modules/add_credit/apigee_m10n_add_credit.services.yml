@@ -7,3 +7,6 @@ services:
   apigee_m10n.add_credit:
     class: Drupal\apigee_m10n_add_credit\AddCreditService
     arguments: ['@config.factory', '@current_user']
+  logger.channel.apigee_m10n_add_credit:
+    parent: logger.channel_base
+    arguments: ['apigee_monetization_add_credit']

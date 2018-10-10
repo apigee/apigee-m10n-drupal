@@ -254,7 +254,7 @@ class BalanceAdjustmentJob extends EdgeJob {
    *   The Psr7 logger.
    */
   protected function getLogger() {
-    return \Drupal::logger('apigee_monetization_add_credit');
+    return \Drupal::service('logger.channel.apigee_m10n_add_credit');
   }
 
   /**
