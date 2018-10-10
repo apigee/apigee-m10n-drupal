@@ -42,8 +42,6 @@ use GuzzleHttp\Psr7\Response;
  * @group apigee_m10n_functional
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_functional
- *
- * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob
  */
 class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
   use StoreCreationTrait;
@@ -152,7 +150,22 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
    * Tests the job will update the developer balance.
    *
    * @throws \Exception
-   * @covers ::executeRequest
+   *
+   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::mail
+   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::commerceOrderItemCreate
+   * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::__construct
+   * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::getSubscribedEvents
+   * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::handleOrderStateChange
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::__construct
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::executeRequest
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::getPrepaidBalance
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::getLogger
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::getBalanceController
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::currencyFormatter
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::formatPrice
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::isDeveloperAdjustment
+   * @covers \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob::getMessage
+   *
    */
   public function testAddCreditToAccount() {
     // Go to the product page.
@@ -190,7 +203,13 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
       // We should now have no existing balance .
       ->queueFromResponseFile(['get_prepaid_balances_empty'])
       // Queue a developer balance response for the top up (POST).
-      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '12.00']]);
+      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '12.00']])
+      // Queue an updated balance response.
+      ->queueFromResponseFile(['get_prepaid_balances' => [
+        'amount_usd' => '12.00',
+        'topups_usd' => '12.00',
+        'current_usage_usd' => '0',
+      ]]);
 
     // Finalize the payment.
     $this->submitForm([], 'Pay and complete purchase');

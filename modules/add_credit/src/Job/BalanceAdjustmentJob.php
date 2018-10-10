@@ -20,9 +20,9 @@ namespace Drupal\apigee_m10n_add_credit\Job;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
-use Apigee\Edge\Exception\ApiResponseException;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\BillingController;
+use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Cache\Cache;
@@ -72,6 +72,12 @@ class BalanceAdjustmentJob extends EdgeJob {
   protected $adjustment;
 
   /**
+   * The `apigee_m10n_add_credit` module config.
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
+  protected $module_config;
+
+  /**
    * Creates an Apigee balance adjustment (add credit) job.
    *
    * @param \Drupal\Core\Entity\EntityInterface $company_or_user
@@ -90,6 +96,8 @@ class BalanceAdjustmentJob extends EdgeJob {
     }
 
     $this->adjustment = $adjustment;
+
+    $this->module_config = \Drupal::config(ApigeeAddCreditConfigForm::$CONFIG_NAME);
 
     $this->setTag('prepaid_balance_update_wait');
   }
@@ -134,7 +142,6 @@ class BalanceAdjustmentJob extends EdgeJob {
         // Set the log action.
         $log_action = 'info';
       } else {
-        // TODO: Send an email to an administrator if the calculations don't work out.
         // Something is fishy here, we should log as an error.
         $log_action = 'error';
       }
@@ -156,34 +163,37 @@ class BalanceAdjustmentJob extends EdgeJob {
       // Report the transaction.
       $this->getLogger()->{$log_action}($report_text, $context);
 
+      /** @var \Drupal\Core\Logger\LogMessageParser $message_parser */
+      $message_parser = \Drupal::service('logger.log_message_parser');
+      // Strip br html tags.
+      $report_text = str_replace('<br />', '', $report_text);
+      // The message parser strips out empty values so we may need to re-add
+      // some empty values for formatting.
+      $all_placeholders = [
+        '@email' => '',
+        '@team_name' => '',
+        '@existing' => '',
+        '@adjustment' => '',
+        '@new_balance' => '',
+        '@expected_balance' => '',
+        '@month' => '',
+      ];
+      // Format the message using the log message parser.
+      $message_context = $message_parser->parseMessagePlaceholders($report_text, $context);
+      // Re-add empty values to message context.
+      $message_context = $message_context + $all_placeholders;
+      // Add the report text to the message context.
+      $message_context['report_text'] = $report_text;
+
       // If there were any errors or exceptions, they still need to be thrown.
       if (isset($thrown)) {
-        /** @var \Drupal\Core\Logger\LogMessageParser $message_parser */
-        $message_parser = \Drupal::service('logger.log_message_parser');
-        // Strip br html tags.
-        $report_text = str_replace('<br />', '', $report_text);
-        // Format the message using the log message parser.
-        $message_context =  $message_parser->parseMessagePlaceholders($report_text, $context);
-        // Add the report text to the message context.
-        $message_context['report_text'] = $report_text;
         $message_context['@error'] = (string) $thrown;
-        $module_config = \Drupal::config('apigee_m10n_add_credit.config');
-        // Get config and send email if necessary.
-        if (!empty($module_config->get('mail_on_error'))) {
-          $recipient = !empty($module_config->get('error_recipient'))
-            ? $module_config->get('error_recipient')
-            :  \Drupal::config('system.site')->get('mail');
-          $recipient = !empty($recipient) ? $recipient : ini_get('sendmail_from');
-          \Drupal::service('plugin.manager.mail')->mail(
-            'apigee_m10n_add_credit',
-            'balance_adjustment_error_report',
-            $recipient,
-            Language::LANGCODE_DEFAULT,
-            $message_context
-          );
-        }
+        // Sent the notification.
+        $this->sendNotification('balance_adjustment_error_report', $message_context);
 
         throw $thrown;
+      } elseif ($this->module_config->get('notify_on') == ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS) {
+        $this->sendNotification('balance_adjustment_report', $message_context);
       }
     }
   }
@@ -341,4 +351,18 @@ class BalanceAdjustmentJob extends EdgeJob {
     return $messages[$type][$message_id];
   }
 
+  protected function sendNotification($notificaiotn_type, $message_context) {
+    // Email the error to an administrator.
+    $recipient = !empty($this->module_config->get('notification_recipient'))
+      ? $this->module_config->get('notification_recipient')
+      :  \Drupal::config('system.site')->get('mail');
+    $recipient = !empty($recipient) ? $recipient : ini_get('sendmail_from');
+    \Drupal::service('plugin.manager.mail')->mail(
+      'apigee_m10n_add_credit',
+      $notificaiotn_type,
+      $recipient,
+      Language::LANGCODE_DEFAULT,
+      $message_context
+    );
+  }
 }

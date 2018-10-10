@@ -20,6 +20,7 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
 use Drupal\apigee_edge\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
+use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
@@ -33,8 +34,6 @@ use GuzzleHttp\Psr7\Response;
  * @group apigee_m10n_kernel
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_kernel
- *
- * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob
  */
 class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
@@ -125,7 +124,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    * Tests the job will update the developer balance.
    *
    * @throws \Exception
-   * @covers ::executeRequest
    */
   public function testExecuteRequest() {
     // Create a new job update the account balance. Use a custom adjustment
@@ -145,7 +143,13 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       // Queue an empty balance response because this is what you get with a new user.
       ->queueFromResponseFile('get_prepaid_balances_empty')
       // Queue a developer balance response for the top up (POST).
-      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '19.99']]);
+      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '19.99']])
+      // Queue an updated balance response.
+      ->queueFromResponseFile(['get_prepaid_balances' => [
+        'amount_usd' => '19.99',
+        'topups_usd' => '19.99',
+        'current_usage_usd' => '0',
+      ]]);
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);
@@ -159,6 +163,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
     $this->assertNoClientError();
     static::assertEmpty($this->stack->count());
+
+    // Make sure no emails were sent.
+    $emails = \Drupal::state()->get('system.test_mail_collector');
+    static::assertEmpty($emails, 'No emails were sent.');
   }
 
   /**
@@ -168,7 +176,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    * balance. Err: `Cannot delete Developer [xxxxx] used in Developer_Balance`
    *
    * @throws \Exception
-   * @covers ::executeRequest
    */
   public function testExecuteRequestWithExistingBalance() {
     $job = new BalanceAdjustmentJob($this->developer, new Adjustment([
@@ -184,9 +191,19 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
     $this->stack
       // We should now have an existing balance of 19.99.
-      ->queueFromResponseFile(['get_prepaid_balances' => ['amount_usd' => '19.99']])
+      ->queueFromResponseFile(['get_prepaid_balances' => [
+        'amount_usd' => '19.99',
+        'topups_usd' => '19.99',
+        'current_usage_usd' => '0',
+      ]])
       // Queue a developer balance response for the top up (POST).
-      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '39.98']]);
+      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '39.98']])
+      // Queue an updated balance response.
+      ->queueFromResponseFile(['get_prepaid_balances' => [
+        'amount_usd' => '39.98',
+        'topups_usd' => '39.98',
+        'current_usage_usd' => '0',
+      ]]);
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);
@@ -202,6 +219,32 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
+   * Run another test to check for success notifications.
+   * @throws \Exception
+   */
+  public function testSuccessfulNotification() {
+    $this->config(ApigeeAddCreditConfigForm::$CONFIG_NAME)
+      ->set('notify_on', ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS)
+      ->save();
+
+    $this->testExecuteRequestWithExistingBalance();
+
+    $emails = \Drupal::state()->get('system.test_mail_collector');
+    static::assertCount(1, $emails, 'An email has been captured.');
+
+    $developer_mail = $this->developer->getEmail();
+    static::assertSame($this->site_mail, $emails[0]['to']);
+    static::assertSame($this->site_mail, $emails[0]['from']);
+    static::assertSame('balance_adjustment_report', $emails[0]['key']);
+    static::assertSame("Add Credit successfully applied to account ({$developer_mail}) from example site", $emails[0]['subject']);
+    static::assertContains("Adjustment applied to developer:  `{$developer_mail}`.", $emails[0]['body']);
+    static::assertContains('Existing credit added ('.date('F').'):  `$19.99`', $emails[0]['body']);
+    static::assertContains('Amount Applied:                   `$19.99`.', $emails[0]['body']);
+    static::assertContains('New Balance:                      `$39.98`.', $emails[0]['body']);
+    static::assertContains('Expected New Balance:             `$39.98`.', $emails[0]['body']);
+  }
+
+  /**
    * Tests the job will update the developer balance.
    *
    * Run the test again with the same users to test adding to an existing
@@ -210,7 +253,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    * balance. Err: `Cannot delete Developer [xxxxx] used in Developer_Balance`
    *
    * @throws \Exception
-   * @covers ::executeRequest
    */
   public function testExecuteRequestWithError() {
     $job = new BalanceAdjustmentJob($this->developer, new Adjustment([

@@ -1,1 +1,1 @@
-mail_on_error: true
+notify_on: "error_only"

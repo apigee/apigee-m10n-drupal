@@ -18,6 +18,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
+use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_store\StoreCreationTrait;
 use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
@@ -29,8 +30,6 @@ use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
  * @group apigee_m10n_functional
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_functional
- *
- * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob
  */
 class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
   use StoreCreationTrait;
@@ -97,10 +96,14 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
   }
 
   /**
-   * Tests the job will update the developer balance.
+   * Tests the UI for setting up an Add credit product.
    *
    * @throws \Exception
-   * @covers ::executeRequest
+   *
+   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::entityBaseFieldInfo
+   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::entityBundleFieldInfo
+   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::formCommerceProductTypeEditFormAlter
+   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::formCommerceProductTypeSubmit
    */
   public function testSetUpAddCreditProduct() {
     // Edit the product type.
@@ -141,5 +144,40 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
     $product = Product::load(1);
     static::assertSame($title, $product->getTitle());
     static::assertSame('1', $product->apigee_add_credit_enabled->value);
+  }
+
+  /**
+   * Tests the UI for setting up an Add credit product.
+   *
+   * @throws \Exception
+   *
+   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::buildForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::getEditableConfigNames
+   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::getFormId
+   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::validateForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::submitForm
+   */
+  public function testNotificationAdminUI() {
+    $this->drupalGet('admin/config/apigee-edge/monetization/add-credit-settings');
+    // Check the title.
+    $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
+    // Check the default values.
+    $this->assertSession()->checkboxNotChecked('Always');
+    $this->assertSession()->checkboxChecked('Only on error');
+    $site_mail = $this->config('system.site')->get('mail');
+    static::assertNotEmpty($site_mail);
+    $this->assertSession()->fieldValueEquals('Email address', $site_mail);
+    // Check the note about configuring commerce notifications.
+    $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'It is possible to configure drupal commerce to send an email to the purchaser upon order completion.');
+    $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation for more information.');
+
+    // Change to always notify.
+    $this->submitForm(['notify_on' => ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS], 'Save configuration');
+    $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
+    $this->assertCssElementContains('div.messages--status', ' The configuration options have been saved.');
+    // Load the saved config and test the changes.
+    $settings = $this->config(ApigeeAddCreditConfigForm::$CONFIG_NAME);
+    static::assertSame(ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS, $settings->get('notify_on'));
+    static::assertSame($site_mail, $settings->get('notification_recipient'));
   }
 }

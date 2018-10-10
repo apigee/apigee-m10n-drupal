@@ -65,7 +65,13 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function mail ($key, &$message, $params) {
+    $params['@site'] = $this->config->get('system.site')->get('name');
     switch($key) {
+      case 'balance_adjustment_report':
+        $options = ['langcode' => $message['langcode']];
+        $message['subject'] = t('Add Credit successfully applied to account (@email@team_name) from @site', $params, $options);
+        $message['body'][0] = t($params['report_text'], $params, $options);
+        break;
       case 'balance_adjustment_error_report':
         $options = ['langcode' => $message['langcode']];
         $params['@site'] = $this->config->get('system.site')->get('name');
