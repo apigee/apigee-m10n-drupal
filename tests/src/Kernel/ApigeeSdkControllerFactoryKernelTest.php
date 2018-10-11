@@ -21,6 +21,7 @@ namespace Drupal\Tests\apigee_m10n\Kernel;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\user\UserInterface;
@@ -32,8 +33,6 @@ use Drupal\user\UserInterface;
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
- *
- * @coversDefaultClass \Drupal\apigee_m10n\ApigeeSdkControllerFactory
  */
 class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
 
@@ -59,8 +58,6 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
 
   /**
    * Tests the developer balance controller.
-   *
-   * @covers ::developerBalanceController
    */
   public function testDeveloperBalanceController() {
     $email = $this->randomMachineName() . '@example.com';
@@ -83,8 +80,6 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
 
   /**
    * Tests the company balance controller.
-   *
-   * @covers ::companyBalanceController
    */
   public function testCompanyBalanceController() {
     $company_name = $this->randomMachineName();
@@ -107,14 +102,21 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
 
   /**
    * Tests the developer balance controller.
-   *
-   * @covers ::apiPackageController
    */
   public function testApiPackageController() {
     /** @var ApiPackageControllerInterface $controller */
     $controller  = $this->controller_factory->apiPackageController();
 
     static::assertInstanceOf(ApiPackageControllerInterface::class, $controller);
+
+    static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
+  }
+
+  public function testPackageRatePlanController() {
+    /** @var \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface $controller */
+    $controller  = $this->controller_factory->packageRatePlanController($this->randomString());
+
+    static::assertInstanceOf(RatePlanControllerInterface::class, $controller);
 
     static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
   }

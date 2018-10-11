@@ -24,6 +24,8 @@ use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\user\UserInterface;
@@ -95,6 +97,18 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function apiPackageController(): ApiPackageControllerInterface {
     return
       new ApiPackageController(
+        $this->org,
+        $this->client
+      );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function packageRatePlanController($package_id): RatePlanControllerInterface {
+    return
+      new RatePlanController(
+        $package_id,
         $this->org,
         $this->client
       );
