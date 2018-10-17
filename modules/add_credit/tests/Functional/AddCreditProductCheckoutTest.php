@@ -181,7 +181,7 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     $this->clickLink('your cart');
     $this->assertCssElementContains('h1.page-title', 'Shopping cart');
     $this->assertCssElementContains('.view-commerce-cart-form td:nth-child(1)', $this->product->label());
-    // Precede to checkout.
+    // Proceed to checkout.
     $this->submitForm([], 'Checkout');
     $this->assertCssElementContains('h1.page-title', 'Order information');
     // Submit payment information.

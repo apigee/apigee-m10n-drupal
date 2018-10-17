@@ -34,6 +34,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\user\UserInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Apigee Monetization base service.
@@ -67,10 +68,15 @@ class Monetization implements MonetizationInterface {
   private $cache;
 
   /**
+   * @var \Psr\Log\LoggerInterface
+   */
+  private $logger;
+
+  /**
    * @var \CommerceGuys\Intl\Formatter\CurrencyFormatter;
    */
   private $numberFormatter;
-  
+
   /**
    * Monetization constructor.
    *
@@ -78,17 +84,20 @@ class Monetization implements MonetizationInterface {
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   * @param \Psr\Log\LoggerInterface $logger
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
     ApigeeSdkControllerFactoryInterface $sdk_controller_factory,
     MessengerInterface $messenger,
-    CacheBackendInterface $cache
+    CacheBackendInterface $cache,
+    LoggerInterface $logger
   ) {
     $this->sdk_connector          = $sdk_connector;
     $this->sdk_controller_factory = $sdk_controller_factory;
     $this->messenger              = $messenger;
     $this->cache                  = $cache;
+    $this->logger                 = $logger;
 
     $numberFormatRepository = new NumberFormatRepository();
     $currencyRepository = new CurrencyRepository();
@@ -187,8 +196,8 @@ class Monetization implements MonetizationInterface {
     try {
       $result = $balance_controller->getPrepaidBalance($billingDate);
     } catch (\Exception $e) {
-      // @todo add logging
       $this->messenger->addWarning('Unable to retrieve prepaid balances.');
+      $this->logger->warning('Unable to retrieve prepaid balances: ' . $e->getMessage());
       return NULL;
     }
 
