@@ -55,6 +55,8 @@ class MonetizationKernelTestBase extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
+    $this->installConfig(['apigee_edge', 'apigee_m10n']);
+
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE));
 
     $this->init();

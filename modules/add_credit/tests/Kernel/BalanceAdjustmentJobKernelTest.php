@@ -85,7 +85,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->installSchema('apigee_edge', ['apigee_edge_job']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
-      'apigee_edge',
       'apigee_m10n_add_credit',
       'user',
       'system',

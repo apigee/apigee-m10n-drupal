@@ -54,7 +54,6 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
-      'apigee_edge',
     ]);
 
     $this->account = $this->createAccount([
