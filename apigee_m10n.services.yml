@@ -4,7 +4,7 @@ services:
     arguments: ['apigee_monetization']
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
-    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default']
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n']
   apigee_m10n.sdk_controller_factory:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
     arguments: ['@apigee_edge.sdk_connector']
