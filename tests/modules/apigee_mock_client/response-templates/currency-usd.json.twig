@@ -7,15 +7,8 @@
  *   @code
  *   {% include 'currency-usd.json.twig' %}
  *   @endcode
+ *
+ * @see: currency.json.twig
  */
 #}
-{
-    "description": "United States Dollars",
-    "displayName": "United States Dollars",
-    "id": "usd",
-    "minimumTopupAmount": 10.0000,
-    "name": "USD",
-    "organization": {% include 'org.json.twig' %},
-    "status": "ACTIVE",
-    "virtualCurrency": false
-}
+{% include 'currency.json.twig' %}

@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ *   Currency include file.
+ *
+ * Usage:
+ *   @code
+ *   {% include 'currency.json.twig' %}
+ *   @endcode
+ *
+ * Variables:
+ * - description:          Description of the supported currency.
+ * - displayName:          Name displayed in the UI.
+ * - id:                   ID of the supported currency.
+ * - minimumTopupAmount:   The minimum topup amount in that currency.
+ * - name:                 <https://en.wikipedia.org/wiki/ISO_4217>ISO 4217 code for the currency, such as `usd` for United States dollar.
+ * - organization:         The org object.
+ * - status:               Status of the currency. Valid values include:ACTIVE: The currency is available for use. INACTIVE: The currency is not available for use.
+ * - virtualCurrency:      Flag that specifies whether or not the currency is virtual currency.
+ */
+#}
+{
+    "description": "{{ description|default('United States Dollars') }}",
+    "displayName": "{{ displayName|default('United States Dollars') }}",
+    "id": "{{ id|default('usd') }}",
+    "minimumTopupAmount": {{ minimumTopupAmount|default('10.0000') }},
+    "name": "{{ name|default('USD') }}",
+    "organization": {% include 'org.json.twig' %},
+    "status": "{{ status|default('ACTIVE') }}",
+    "virtualCurrency": {{ virtualCurrency|default('false') }}
+}

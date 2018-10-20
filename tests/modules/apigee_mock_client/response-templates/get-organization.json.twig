@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- *   GET /v1/mint/organizations/{org}
+ *   GET /v1/organizations/{org}
  *
  * Response Code: 200
  *
@@ -13,7 +13,7 @@
 {
     "createdAt": 1502328769129,
     "createdBy": "user@example.com",
-    "displayName": "{{ org_name }}",
+    "displayName": "{{ org_name|default('example') }}",
     "environments": [
         "prod",
         "dev",
@@ -22,7 +22,7 @@
     ],
     "lastModifiedAt": 1533757994970,
     "lastModifiedBy": "user@example.com",
-    "name": "{{ org_name }}",
+    "name": "{{ org_name|default('example') }}",
     "properties": {
         "property": [
             {
@@ -31,7 +31,7 @@
             },
             {
                 "name": "features.isMonetizationEnabled",
-                "value": "{{ monetization_enabled }}"
+                "value": "{{ monetization_enabled|default('false') }}"
             },
             {
                 "name": "features.isConnectorsEnabled",

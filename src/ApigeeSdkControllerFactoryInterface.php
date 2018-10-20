@@ -18,6 +18,7 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
@@ -31,6 +32,14 @@ use Drupal\user\UserInterface;
  * @package Drupal\apigee_m10n
  */
 interface ApigeeSdkControllerFactoryInterface {
+
+  /**
+   * Gets and org controller.
+   *
+   * @return \Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface
+   *   The organization controller.
+   */
+  public function organizationController(): OrganizationControllerInterface;
 
   /**
    * Creates a developer prepaid balance controller.

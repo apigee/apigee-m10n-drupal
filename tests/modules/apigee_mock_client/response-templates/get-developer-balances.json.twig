@@ -8,6 +8,7 @@
  * Variables:
  * - amount_aud: The AUD amount for the total balance.
  * - amount_usd: The USD amount for the total balance.
+ * - developer: The developer user accound (used  by `transaction.json.twig`).
  */
 #}
 {
@@ -18,7 +19,7 @@
             "id" : "f4a7b31b-90e3-4cfc-910c-517f36ea3477",
             "isRecurring" : false,
             "supportedCurrency" : {% include 'currency-aud.json.twig' %},
-            "transaction": {},
+            "transaction": {% include 'transaction.json.twig' with { "currency": "AUD" } %},
             "usage" : 0
         },
         {
@@ -26,8 +27,8 @@
             "chargePerUsage" : false,
             "id" : "f4a7b31b-90e3-4cfc-910c-517f36ea3477",
             "isRecurring" : false,
-            "supportedCurrency" : {% include 'currency-usd.json.twig' %},
-            "transaction": {},
+            "supportedCurrency" : {% include 'currency-usd.json.twig' with { "currency": "USD" } %},
+            "transaction": {% include 'transaction.json.twig' %},
             "usage" : 0
         }
     ],

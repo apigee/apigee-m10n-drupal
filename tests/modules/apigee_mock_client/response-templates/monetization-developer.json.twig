@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ *   Developer
+ *
+ * Usage:
+ *   @code {% include 'monetization-developer.json.twig' %} @endcode
+ *
+ * Variables:
+ * - developer: The user account for the developer.
+ */
+#}
+{
+    "address" : [ ],
+    "billingType" : "PREPAID",
+    "broker" : false,
+    "customAttributes" : [ ],
+    "email" : "{{ developer.mail.value }}",
+    "id" : "{{ developer.uuid.value }}",
+    "isCompany" : false,
+    "name" : "Chris Novak",
+    "organization" : {% include 'org.json.twig' %},
+    "status" : "ACTIVE",
+    "type" : "UNTRUSTED"
+}

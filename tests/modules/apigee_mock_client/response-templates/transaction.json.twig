@@ -1,0 +1,33 @@
+{#
+/**
+ * @file
+ *   Organization include file. Use this whenever an org is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'transaction.json.twig' %} @endcode
+ *
+ * Variables:
+ *   - currency: The currency ID.
+ *   - developer: The developer user account.
+ */
+#}
+{
+    "batchSize": 1,
+    "currency": "{{ currency|default('USD') }}",
+    "custAtt1": "5555555555",
+    "developer": {% include 'monetization-developer.json.twig' %},
+    "endTime": "2018-08-01 18:36:29",
+    "environment": "dev",
+    "id": "foo",
+    "isVirtualCurrency": false,
+    "notes": "Notes: etsi habet haec Stoicorum ratio",
+    "providerTxId": "12345678910",
+    "rate": 10.0000,
+    "revenueShareAmount": 0,
+    "startTime": "2018-08-01 18:36:29",
+    "status": "SUCCESS",
+    "txProviderStatus": "SUCCESS",
+    "type": "PROVIDER_AUDIT",
+    "utcEndTime": "2018-08-01 18:36:29",
+    "utcStartTime": "2018-08-01 18:36:29"
+}

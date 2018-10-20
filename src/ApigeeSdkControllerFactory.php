@@ -18,6 +18,8 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Management\Controller\OrganizationController;
+use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
@@ -65,6 +67,16 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
     $this->sdk_connector  = $sdk_connector;
     $this->org            = $sdk_connector->getOrganization();
     $this->client         = $sdk_connector->getClient();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function organizationController(): OrganizationControllerInterface {
+    return
+      new OrganizationController(
+        $this->client
+      );
   }
 
   /**
