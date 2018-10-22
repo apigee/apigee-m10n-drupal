@@ -7,15 +7,16 @@
  *   @code
  *   {% include 'currency-aud.json.twig' %}
  *   @endcode
+ *
+ * @see: currency.json.twig
  */
 #}
-{
+{% include 'currency.json.twig' with {
     "description": "Australia Dollars",
     "displayName": "Australia Dollars",
     "id": "aud",
     "minimumTopupAmount": 10.0000,
     "name": "AUD",
-    "organization": {% include 'org.json.twig' %},
     "status": "ACTIVE",
     "virtualCurrency": false
-}
+} %}

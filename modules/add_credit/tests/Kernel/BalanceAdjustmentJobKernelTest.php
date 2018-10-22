@@ -85,7 +85,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->installSchema('apigee_edge', ['apigee_edge_job']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
-      'apigee_edge',
       'apigee_m10n_add_credit',
       'user',
       'system',
@@ -156,7 +155,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile(['get_developer_balances' => ['amount_usd' => '19.99']]);
+    $this->stack->queueFromResponseFile(['get_developer_balances' => [
+      'amount_usd' => '19.99',
+      'developer' => $this->developer,
+    ]]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
     // The new balance should be 19.99.
     static::assertSame(19.99, $new_balance->getAmount());
@@ -210,7 +212,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile(['get_developer_balances' => ['amount_usd' => '39.98']]);
+    $this->stack->queueFromResponseFile(['get_developer_balances' => [
+      'amount_usd' => '39.98',
+      'developer' => $this->developer,
+    ]]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
     // The new balance should be 19.99.
     static::assertSame(39.98, $new_balance->getAmount());

@@ -28,7 +28,10 @@ use GuzzleHttp\Psr7\Response;
 
 trait ApigeeMonetizationTestTrait {
 
-  use ApigeeEdgeTestTrait;
+  use ApigeeEdgeTestTrait {
+    setUp as edgeSetup;
+    createAccount as edgeCreateAccount;
+  }
 
   /**
    * @var \Drupal\apigee_mock_client\MockHandlerStack
@@ -58,7 +61,7 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Initialize SDK connector state.
+   * Initialize SDK connector.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
@@ -80,13 +83,10 @@ trait ApigeeMonetizationTestTrait {
     ]));
     $key->save();
 
-    /** @var  \Drupal\Core\State\StateInterface $state */
-    $state = $this->container->get('state');
-    $state->set('apigee_edge.auth', [
-      'active_key' => 'apigee_m10n_test_auth',
-      'active_key_oauth_token' => '',
-    ]);
-    $state->resetCache();
+    $this->config('apigee_edge.auth')
+      ->set('active_key', 'apigee_m10n_test_auth')
+      ->set('active_key_oauth_token', '')
+      ->save();
   }
 
   /**

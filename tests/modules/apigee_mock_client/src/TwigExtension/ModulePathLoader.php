@@ -35,6 +35,6 @@ class ModulePathLoader extends \Twig_Loader_Filesystem {
    *   The module handler service.
    */
   public function __construct($module_name, ModuleHandlerInterface $module_handler) {
-    parent::__construct($module_handler->getModule($module_name)->getPath() . '/response-templates');
+    parent::__construct($module_handler->getModule($module_name)->getPath() . '/tests/response-templates');
   }
 }

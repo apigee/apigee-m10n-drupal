@@ -228,7 +228,10 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile(['get_developer_balances' => ['amount_usd' => '12.00']]);
+    $this->stack->queueFromResponseFile(['get_developer_balances' => [
+      'amount_usd' => '12.00',
+      'developer' => $this->developer,
+    ]]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
     // The new balance should be 12.00.
     static::assertSame(12.00, $new_balance->getAmount());

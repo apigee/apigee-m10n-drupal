@@ -54,7 +54,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
   public function testMonetizationEnabled() {
 
     // Queue a response from the mock server.
-    $this->stack->queueFromResponseFile(['get_monetized_org']);
+    $this->stack->queueFromResponseFile(['get_organization' => ['monetization_enabled' => 'true']]);
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();
@@ -73,7 +73,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     }
 
     // Queue a response from the mock server.
-    $this->stack->queueFromResponseFile(['get_non_monetized_org']);
+    $this->stack->queueFromResponseFile('get_organization');
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();

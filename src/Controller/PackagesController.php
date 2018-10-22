@@ -95,7 +95,7 @@ class PackagesController extends ControllerBase {
     // Get all packages.
     $all_packages = $package_controller->getEntities();
     // Load purchased packages for comparison.
-    $purchased_packages = $package_controller->getAvailableApiPackages($user->getEmail());
+    $purchased_packages = $package_controller->getAvailableApiPackagesByDeveloper($user->getEmail());
     // We don't want to show packages that have already been purchased split the difference.
     $available_packages = array_diff_key($all_packages, $purchased_packages);
 

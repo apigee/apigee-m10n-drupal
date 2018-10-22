@@ -100,11 +100,16 @@ class MockHandlerStack extends MockHandler {
       // Set the default status code.
       $status_code = !empty($this->responses[$id]['status_code']) ? $this->responses[$id]['status_code'] : 200;
       $status_code = !empty($context['status_code']) ? $context['status_code'] : $status_code;
+
+      // Render the response content.
+      $template = str_replace('_', '-', $id) . '.json.twig';
+      $content = $this->twig->getLoader()->exists($template) ? $this->twig->render($template, $context) : '';
+
       // Make replacements inside the response body and append the response.
       $this->append(new Response(
         $status_code,
         $headers,
-        $this->twig->render(str_replace('_', '-', $id) . '.json.twig', $context)
+        $content
       ));
     }
 
