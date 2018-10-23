@@ -90,7 +90,7 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
       $add_credit_totals = [];
       // We need to loop through all of the products
       foreach ($order->getItems() as $order_item) {
-        /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $varient */
+        /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variant */
         $variant = $order_item->getPurchasedEntity();
         // Get the product from the line item variant.
         $product = $variant instanceof ProductVariationInterface ? $variant->getProduct() : FALSE;

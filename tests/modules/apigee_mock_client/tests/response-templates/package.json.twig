@@ -19,12 +19,12 @@
 {
     "description" : "{{ package.description|default('All about the Foo.') }}",
     "displayName" : "{{ package.displayName|default('The Foo') }}",
-    "id" : "{{ package.id|default('foo') }}",
+    "id" : "{{ package.id|default(package.name|default(random())|lower) }}",
     "name" : "{{ package.name|default('Foo') }}",
     "organization" : {% include 'org.json.twig' %},
     "product" : [
         {% for product in package.apiProducts %}
-            {% include 'product.json.twig' %}{{ loop.last ? '' : ',' }}
+            {% include 'api-product-mint.json.twig' %}{{ loop.last ? '' : ',' }}
         {% endfor %}
     ],
     "status" : "{{ package.status|default('ACTIVE') }}"

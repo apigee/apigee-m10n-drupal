@@ -24,7 +24,9 @@ use Drupal\Tests\BrowserTestBase;
 
 class MonetizationFunctionalTestBase extends BrowserTestBase {
 
-  use ApigeeMonetizationTestTrait;
+  use ApigeeMonetizationTestTrait {
+    setUp as baseSetUp;
+  }
 
   protected static $modules = [
     'apigee_edge',
@@ -55,7 +57,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
-    $this->init();
+    $this->baseSetUp();
   }
 
 }

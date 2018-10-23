@@ -25,7 +25,9 @@ use Drupal\Tests\user\Traits\UserCreationTrait;
 
 class MonetizationKernelTestBase extends KernelTestBase {
 
-  use ApigeeMonetizationTestTrait;
+  use ApigeeMonetizationTestTrait {
+   setUp as baseSetUp;
+  }
   use UserCreationTrait;
 
   /**
@@ -59,6 +61,6 @@ class MonetizationKernelTestBase extends KernelTestBase {
 
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE));
 
-    $this->init();
+    $this->baseSetUp();
   }
 }

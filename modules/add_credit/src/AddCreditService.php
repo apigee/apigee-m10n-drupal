@@ -123,8 +123,8 @@ class AddCreditService implements AddCreditServiceInterface {
   function entityBundleFieldInfo(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
     // Make sure we are dealing with a product bundle that has Apigee add credit enabled.
     if ($entity_type->id() === 'commerce_product'
-      && ($prooduct_type = ProductType::load($bundle))
-      && $prooduct_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit')
+      && ($product_type = ProductType::load($bundle))
+      && $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit')
     ) {
       // Apigee add credit enabled products will automatically update a developer's
       // balance upon payment completion. This adds a base field to the bundle to

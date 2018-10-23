@@ -204,7 +204,7 @@ class BalanceAdjustmentJob extends EdgeJob {
   public function shouldRetry(\Exception $exception): bool {
     // We aren't retrying requests ATM. If we can confirm that the payment
     // wasn't applied, we could return true here and the top-up would be retried.
-    // TODO: Return true once we can determine the payment wasn't applied (fosho).
+    // TODO: Return true once we can determine the payment wasn't applied.
 
     return FALSE;
   }
@@ -351,7 +351,7 @@ class BalanceAdjustmentJob extends EdgeJob {
     return $messages[$type][$message_id];
   }
 
-  protected function sendNotification($notificaiotn_type, $message_context) {
+  protected function sendNotification($notification_type, $message_context) {
     // Email the error to an administrator.
     $recipient = !empty($this->module_config->get('notification_recipient'))
       ? $this->module_config->get('notification_recipient')
@@ -359,7 +359,7 @@ class BalanceAdjustmentJob extends EdgeJob {
     $recipient = !empty($recipient) ? $recipient : ini_get('sendmail_from');
     \Drupal::service('plugin.manager.mail')->mail(
       'apigee_m10n_add_credit',
-      $notificaiotn_type,
+      $notification_type,
       $recipient,
       Language::LANGCODE_DEFAULT,
       $message_context
