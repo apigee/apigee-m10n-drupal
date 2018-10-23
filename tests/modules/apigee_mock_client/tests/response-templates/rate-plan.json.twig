@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ *   Rate plan include file. Use this whenever a rate  plan is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'rate-plan.json.twig' %} @endcode
+ *
+ * Variables:
+ * Variables:
+ * - plan: The package rate plan.
+ *   - advance                  :
+ *   - currency                 :
+ *   - customPaymentTerm        :
+ *   - description              :
+ *   - displayName              :
+ *   - earlyTerminationFee      :
+ *   - frequencyDuration        :
+ *   - frequencyDurationType    :
+ *   - id                       :
+ *   - isPrivate                :
+ *   - keepOriginalStartDate    :
+ *   - monetizationPackage      :
+ *   - name                     :
+ *   - organization             :
+ *   - parentRatePlan:          :
+ *   - prorate                  :
+ *   - published                :
+ *   - ratePlanDetails          :
+ *   - recurringFee             :
+ *   - recurringStartUnit       :
+ *   - recurringType            :
+ *   - setUpFee                 :
+ *   - startDate                :
+ *   - type                     :
+ */
+#}
+{
+    "advance":                  {{ plan.advance|default(1) ? 'true' : 'false' }},
+    "currency":                 {% include 'currency.json.twig' with { "currency":  plan.currency } %},
+    "customPaymentTerm":        {{ plan.customPaymentTerm|default(1) ? 'true' : 'false' }},
+    "description":              "{{ plan.description|default('Foo description') }}",
+    "displayName":              "{{ plan.displayName|default('Foo displayName') }}",
+    "earlyTerminationFee":      {{ plan.earlyTerminationFee|default('2.0000') }},
+    "frequencyDuration":        {{ plan.frequencyDuration|default('1') }},
+    "frequencyDurationType":    "{{ plan.frequencyDurationType|default('MONTH') }}",
+    "id":                       "{{ plan.id|default('foo-id') }}",
+    "isPrivate":                {{ plan.isPrivate|default(0) ? 'true' : 'false' }},
+    "keepOriginalStartDate":    {{ plan.keepOriginalStartDate|default(0) ? 'true' : 'false' }},
+    "monetizationPackage":      {% include 'package.json.twig' with { "package": plan.package } %},
+    "name":                     "{{ plan.name|default('Foo name') }}",
+    "organization":             {% include 'org.json.twig' %},
+    {% if plan.parentRatePlan %}
+        "parentRatePlan" : {% include 'rate-plan.json.twig' with { "plan": plan.parentRatePlan } %},
+    {% endif %}
+    "paymentDueDays":           "{{ plan.paymentDueDays|default('30') }}",
+    "prorate":                  {{ plan.prorate|default(0) ? 'true' : 'false' }},
+    "published":                {{ plan.published|default(1) ? 'true' : 'false' }},
+    "ratePlanDetails" : [
+        {% for detail in plan.ratePlanDetails %}
+            {% include 'rate-plan-detail.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "recurringFee":             {{ plan.recurringFee|default('3.0000') }},
+    "recurringStartUnit":       {{ plan.recurringStartUnit|default('1') }},
+    "recurringType":            "{{ plan.recurringType|default('CALENDAR') }}",
+    "setUpFee":                 {{ plan.setUpFee|default('1.0000') }},
+    "startDate":                "{{ plan.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "type":                     "{{ plan.type|default('STANDARD') }}"
+}

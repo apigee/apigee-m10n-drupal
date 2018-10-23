@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ *   - GET /v1/mint/organizations/{org}/monetization-packages/{package_name}/rate-plans
+ *
+ * Response Code: 200
+ *
+ * Variables:
+  * - plans: A list of plans for this package. @see: `rate-plan.json.twig`
+ */
+#}
+{
+    "ratePlan": [
+        {% for plan in plans %}
+            {% include 'rate-plan.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "totalRecords": {{ plans|length }}
+}

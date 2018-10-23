@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ *   Rate include file. Use this whenever a rate plan rate is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'rate-plan-rate.json.twig' %} @endcode
+ *
+ * Variables:
+ * - rate:
+ *   - endUnit:     .
+ *   - id:          .
+ *   - rate:        .
+ *   - startUnit:   .
+ *   - type:        .
+ */
+#}
+{
+    "endUnit":      {{ rate.endUnit|default('15') }},
+    "id":           "{{ rate.id|default('foo') }}",
+    "rate":         {{ rate.rate|default('0.1000') }},
+    "startUnit":    0,
+    {#"startUnit":    {{ rate.startUnit|default('0') }},#}
+    "type":         "{{ rate.type|default('RATECARD') }}"
+}

@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ *   Rate plan details include file. This is used by `rate-plan.json.twig`.
+ *
+ * Usage:
+ *   @code {% include 'rate-plan.json.twig' %} @endcode
+ *
+ * Variables:
+ * - detail
+ *   - id:
+ *   - ratePlanRates:
+ *   - aggregateFreemiumCounters:
+ *   - aggregateStandardCounters:
+ *   - aggregateTransactions:
+ *   - currency:
+ *   - customPaymentTerm:
+ *   - duration:
+ *   - durationType:
+ *   - freemiumDuration:
+ *   - freemiumDurationType:
+ *   - freemiumUnit:
+ *   - meteringType:
+ *   - organization:
+ *   - paymentDueDays:
+ *   - ratingParameter:
+ *   - type:
+ */
+#}
+{
+    "aggregateFreemiumCounters":    {{ detail.aggregateFreemiumCounters|default(1) ? 'true' : 'false' }},
+    "aggregateStandardCounters":    {{ detail.aggregateStandardCounters|default(1) ? 'true' : 'false' }},
+    "aggregateTransactions":        {{ detail.aggregateTransactions|default(1) ? 'true' : 'false' }},
+    "currency":                     {% include 'currency.json.twig' %},
+    "customPaymentTerm":            {{ detail.customPaymentTerm|default(1) ? 'true' : 'false' }},
+    "duration":                     {{ detail.duration|default('1') }},
+    "durationType":                 "{{ detail.durationType|default('MONTH') }}",
+    "freemiumDuration":             {{ detail.freemiumDuration|default('0') }},
+    "freemiumDurationType":         "{{ detail.freemiumDurationType|default('MONTH') }}",
+    "freemiumUnit":                 {{ detail.freemiumUnit|default('5') }},
+    "id":                           "{{ detail.id|default('foo') }}",
+    "meteringType":                 "{{ detail.meteringType|default('VOLUME') }}",
+    "organization":                 {% include 'org.json.twig' %},
+    "paymentDueDays":               "{{ detail.paymentDueDays|default('30') }}",
+    "ratePlanRates": [
+        {% for rate in detail.ratePlanRates %}
+            {% include 'rate-plan-rate.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "ratingParameter":              "{{ detail.ratingParameter|default('VOLUME') }}",
+    "type":                         "{{ detail.type|default('RATECARD') }}"
+}
