@@ -1,0 +1,7 @@
+apigee_m10n.rate_plan.config:
+  type: config_object
+  label: 'Rate plan settings'
+  mapping:
+    product_rate_plan_view_mode:
+      type: string
+      label: 'View mode to use when viewing rate plans within packages.'

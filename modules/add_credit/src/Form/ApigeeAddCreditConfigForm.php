@@ -34,21 +34,21 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
    *
    * @var string
    */
-  public static $CONFIG_NAME = 'apigee_m10n_add_credit.config';
+  public const CONFIG_NAME = 'apigee_m10n_add_credit.config';
 
   /**
    * The "Always" value for `apigee_m10n_add_credit.config.notify_on`.
    *
    * @var string
    */
-  public static $NOTIFY_ALWAYS = 'always';
+  public const NOTIFY_ALWAYS = 'always';
 
   /**
    * The "Only on error" value for `apigee_m10n_add_credit.config.notify_on`.
    *
    * @var string
    */
-  public static $NOTIFY_ON_ERROR = 'error_only';
+  public const NOTIFY_ON_ERROR = 'error_only';
 
   /**
    * {@inheritdoc}
@@ -68,7 +68,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config(static::$CONFIG_NAME);
+    $config = $this->config(static::CONFIG_NAME);
 
     // Use the site default if an email hasn't been saved.
     $default_email = $config->get('notification_recipient');
@@ -92,8 +92,8 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('When to notify an administrator'),
       '#options' => [
-        static::$NOTIFY_ALWAYS => $this->t('Always'),
-        static::$NOTIFY_ON_ERROR => $this->t('Only on error'),
+        static::NOTIFY_ALWAYS => $this->t('Always'),
+        static::NOTIFY_ON_ERROR => $this->t('Only on error'),
       ],
       '#description' => $this->t($description, [
         '%add_credit' => 'Add credit',
@@ -139,7 +139,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $this->config(static::$CONFIG_NAME)
+    $this->config(static::CONFIG_NAME)
       ->set('notify_on', $form_state->getValue('notify_on'))
       ->set('notification_recipient', $form_state->getValue('notification_recipient'))
       ->save();

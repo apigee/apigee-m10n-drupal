@@ -99,7 +99,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->installEntitySchema('user');
     \Drupal::service('commerce_price.currency_importer')->importByCountry('US');
 
-    $this->developer = $this->createAccount([]);
+    $this->developer = $this->createAccount();
 
     $this->assertNoClientError();
 
@@ -110,20 +110,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       ->set('mail', $this->site_mail)
       ->set('name', 'example site')
       ->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function tearDown() {
-    // Prepare for deleting the developer.
-    $this->queueDeveloperResponse($this->developer);
-    $this->queueDeveloperResponse($this->developer);
-
-    // We have to remove the developer we created so it is removed from Apigee.
-    $this->developer->delete();
-
-    parent::tearDown();
   }
 
   /**
@@ -247,8 +233,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testSuccessfulNotification() {
-    $this->config(ApigeeAddCreditConfigForm::$CONFIG_NAME)
-      ->set('notify_on', ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS)
+    $this->config(ApigeeAddCreditConfigForm::CONFIG_NAME)
+      ->set('notify_on', ApigeeAddCreditConfigForm::NOTIFY_ALWAYS)
       ->save();
 
     $this->testExecuteRequestWithExistingBalance();

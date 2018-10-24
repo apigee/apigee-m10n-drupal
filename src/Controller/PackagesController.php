@@ -19,7 +19,11 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
+use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
+use Drupal\apigee_m10n\Entity\RatePlan;
+use Drupal\apigee_m10n\Form\RatePlanConfigForm;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -37,22 +41,23 @@ class PackagesController extends ControllerBase {
    *
    * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
    */
-  protected $sdkControllerFactory;
+  protected $controller_factory;
 
   /**
-   * Constructs a new ExampleController object.
+   * PackagesController constructor.
+   *
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
+   *   The SDK controller factory.
    */
   public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory) {
-    $this->sdkControllerFactory = $sdk_controller_factory;
+    $this->controller_factory = $sdk_controller_factory;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('apigee_m10n.sdk_controller_factory')
-    );
+    return new static($container->get('apigee_m10n.sdk_controller_factory'));
   }
 
   /**
@@ -94,19 +99,30 @@ class PackagesController extends ControllerBase {
    */
   public function catalogPage(UserInterface $user = NULL) {
     // Get the package controller.
-    $package_controller = $this->sdkControllerFactory->apiPackageController();
-    // Get all packages.
-    $all_packages = $package_controller->getEntities();
+    $package_controller = $this->controller_factory->apiPackageController();
     // Load purchased packages for comparison.
-    $purchased_packages = $package_controller->getAvailableApiPackagesByDeveloper($user->getEmail());
-    // We don't want to show packages that have already been purchased split the
-    // difference.
-    $available_packages = array_diff_key($all_packages, $purchased_packages);
+    $packages = $package_controller->getAvailableApiPackagesByDeveloper($user->getEmail(), TRUE, TRUE);
+
+    // Get the view mode to use for rate plans.
+    $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('product_rate_plan_view_mode');
+    // Get an entity view builder for rate plans.
+    $rate_plan_view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan', $view_mode);
+
+    // Load plans for each package.
+    $plans = array_map(function($package) use ($rate_plan_view_builder) {
+      // Load the rate plans.
+      $package_rate_plans = RatePlan::loadPackageRatePlans($package->id());
+      if (!empty($package_rate_plans)) {
+        // Return a render-able list of rate plans.
+        return $rate_plan_view_builder->viewMultiple($package_rate_plans);
+      }
+    }, $packages);
 
     return [
       'package_list' => [
         '#theme' => 'package_list',
-        '#package_list' => $available_packages,
+        '#package_list' => $packages,
+        '#plan_list' => $plans,
       ],
     ];
   }
@@ -124,4 +140,23 @@ class PackagesController extends ControllerBase {
     return ['#markup' => $this->t('Hello World')];
   }
 
+  /**
+   * Get a rate plan controller.
+   *
+   * @param $package_id
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
+   *   The rate plan controller.
+   */
+  protected function packageRatePlanController($package_id): RatePlanControllerInterface {
+    // Use static caching.
+    static $controllers;
+
+    // Controlelrs should be cached per package id.
+    if (!isset($controllers[$package_id])) {
+      $controllers[$package_id] = $this->controller_factory->packageRatePlanController($package_id);
+    }
+
+    return $controllers[$package_id];
+  }
 }

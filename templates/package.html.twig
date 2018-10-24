@@ -44,6 +44,12 @@
             <div class="label product-list-label"><em>{{ 'Included products:'|t }}</em></div>
             <div class="apigee-sdk-product-entity-list">{{ product_list }}</div>
         </div>
+        {% if plan_list %}
+        <div class="apigee-package-rate-plan-list">
+            <div class="label package-rate-plan-list-label"><em>{{ 'Available rate plans:'|t }}</em></div>
+            <div class="rate-plan-entity-list">{{ plan_list }}</div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {{ attach_library('apigee_m10n/package') }}

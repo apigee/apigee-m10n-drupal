@@ -107,7 +107,7 @@ class BalanceAdjustmentJob extends EdgeJob {
 
     $this->adjustment = $adjustment;
 
-    $this->module_config = \Drupal::config(ApigeeAddCreditConfigForm::$CONFIG_NAME);
+    $this->module_config = \Drupal::config(ApigeeAddCreditConfigForm::CONFIG_NAME);
 
     $this->setTag('prepaid_balance_update_wait');
   }

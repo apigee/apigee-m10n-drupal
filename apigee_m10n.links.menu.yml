@@ -14,3 +14,10 @@ apigee_m10n.packages:
   route_name: apigee_monetization.my_packages
   menu_name: account
   weight: -20
+apigee_m10n.rate_plan:
+  title: 'Rate Plans'
+  route_name: apigee_m10n.settings.rate_plan
+  description: 'Configure rate plans.'
+  parent: system.admin_apigee_m10n
+  weight: 99
+

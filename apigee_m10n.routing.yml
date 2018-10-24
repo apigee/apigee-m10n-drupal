@@ -7,12 +7,15 @@ apigee_m10n.settings:
     _permission: 'administer apigee monetization'
 
 apigee_m10n.settings.rate_plan:
-  path: admin/config/apigee-edge/monetization/plan-settings'
+  path: 'admin/config/apigee-edge/monetization/rate-plan-settings'
   defaults:
-    _form: '\Drupal\apigee_edge\Form\PlanSettingsForm'
-    _title: 'Plan Settings'
+    _form: '\Drupal\apigee_m10n\Form\RatePlanConfigForm'
+    _title: 'Rate plan settings'
   requirements:
     _permission: 'administer apigee m10n'
+  options:
+    _admin_route: TRUE
+
 
 apigee_monetization.my_billing:
   path: /user/monetization/billing

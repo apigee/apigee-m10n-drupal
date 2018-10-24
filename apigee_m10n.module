@@ -92,13 +92,14 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'template' => 'prepaid-balances',
     ],
     'package_list' => [
-      'variables' => ['package_list' => NULL],
+      'variables' => ['package_list' => NULL, 'plan_list' => NULL],
       'template' => 'package-list',
     ],
     'package' => [
       'variables' => [
         'package' => NULL,
         'product_list' => NULL,
+        'plan_list' => NULL,
       ],
       'template' => 'package',
     ],
@@ -116,10 +117,11 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
  */
 function apigee_m10n_preprocess_package_list(&$variables) {
   // Convert the package list into individual renderable items.
-  array_walk($variables['package_list'], function (&$package) {
+  array_walk($variables['package_list'], function (&$package) use ($variables) {
     $package = [
       '#theme' => 'package',
       '#package' => $package,
+      '#plan_list' => $variables['plan_list'][$package->id()],
     ];
   });
 }

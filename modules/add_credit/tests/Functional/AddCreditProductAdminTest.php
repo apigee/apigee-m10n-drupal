@@ -181,12 +181,12 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
     $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation for more information.');
 
     // Change to always notify.
-    $this->submitForm(['notify_on' => ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS], 'Save configuration');
+    $this->submitForm(['notify_on' => ApigeeAddCreditConfigForm::NOTIFY_ALWAYS], 'Save configuration');
     $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
     $this->assertCssElementContains('div.messages--status', ' The configuration options have been saved.');
     // Load the saved config and test the changes.
-    $settings = $this->config(ApigeeAddCreditConfigForm::$CONFIG_NAME);
-    static::assertSame(ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS, $settings->get('notify_on'));
+    $settings = $this->config(ApigeeAddCreditConfigForm::CONFIG_NAME);
+    static::assertSame(ApigeeAddCreditConfigForm::NOTIFY_ALWAYS, $settings->get('notify_on'));
     static::assertSame($site_mail, $settings->get('notification_recipient'));
   }
 

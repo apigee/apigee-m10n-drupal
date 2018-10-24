@@ -1,0 +1,5 @@
+apigee_m10n.settings.rate_plan:
+  route_name: apigee_m10n.settings.rate_plan
+  title: 'Rate plan settings'
+  base_route: apigee_m10n.settings.rate_plan
+  weight: -10

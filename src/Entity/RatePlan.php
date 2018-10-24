@@ -54,7 +54,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   },
  *   permission_granularity = "entity_type",
  *   admin_permission = "administer rate_plan",
- *   field_ui_base_route = "apigee_m10n.settings",
+ *   field_ui_base_route = "apigee_m10n.settings.rate_plan",
  * )
  */
 class RatePlan extends MonetizationRatePlan implements RatePlanInterface {

@@ -174,12 +174,12 @@ trait ApigeeMonetizationTestTrait {
 
     $this->cleanup_queue[] = [
       'weight' => 99,
-      'callback' =>     function () {
+      'callback' => function () use ($account) {
         // Prepare for deleting the developer.
-        $this->queueDeveloperResponse($this->account);
-        $this->queueDeveloperResponse($this->account);
+        $this->queueDeveloperResponse($account);
+        $this->queueDeveloperResponse($account);
         // Delete it.
-        $this->account->delete();
+        $account->delete();
       }
     ];
 
@@ -201,17 +201,17 @@ trait ApigeeMonetizationTestTrait {
       'approvalType'  => ApiProduct::APPROVAL_TYPE_AUTO,
     ]);
     // Need to queue the management spi product.
-    $this->stack->queueFromResponseFile(['api_product' => ['product' => $product]]);
+    $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
     $product->save();
 
-    $this->stack->queueFromResponseFile(['api_product_mint' => ['product' => $product]]);
+    $this->stack->queueMockResponse(['api_product_mint' => ['product' => $product]]);
     $controller = $this->controller_factory->apiProductController();
 
     // Remove the product in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 20,
       'callback' => function () use ($product) {
-        $this->stack->queueFromResponseFile(['api_product' => ['product' => $product]]);
+        $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
         $product->delete();
       }
     ];
@@ -240,14 +240,14 @@ trait ApigeeMonetizationTestTrait {
     // Get a package controller from the package controller factory.
     $package_controller = $this->controller_factory->apiPackageController();
     $this->stack
-      ->queueFromResponseFile(['get_monetization_package' => ['package' => $package]]);
+      ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
     $package_controller->create($package);
 
     // Remove the packages in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 10,
       'callback' => function () use ($package, $package_controller) {
-        $this->stack->queueFromResponseFile('no_content');
+        $this->stack->queueMockResponse('no_content');
         $package_controller->delete($package->id());
       }
     ];
@@ -266,12 +266,12 @@ trait ApigeeMonetizationTestTrait {
 
     // Load the org profile.
     $org_controller = new OrganizationProfileController($org_name, $client);
-    $this->stack->queueFromResponseFile('get_organization_profile');
+    $this->stack->queueMockResponse('get_organization_profile');
     $org = $org_controller->load();
 
     // The usd currency should be available by default.
     $currency_controller = new SupportedCurrencyController($org_name, $this->sdk_connector->getClient());
-    $this->stack->queueFromResponseFile('get_supported_currency');
+    $this->stack->queueMockResponse('get_supported_currency');
     $currency = $currency_controller->load('usd');
 
     /** @var RatePlanInterface $rate_plan */
@@ -325,7 +325,7 @@ trait ApigeeMonetizationTestTrait {
     $rate_plan->setPackage($package);
 
     $this->stack
-      ->queueFromResponseFile(['rate_plan' => ['plan' => $rate_plan]]);
+      ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
     $rate_plan->save();
 
     /**
@@ -348,7 +348,7 @@ trait ApigeeMonetizationTestTrait {
     $this->cleanup_queue[] = [
       'weight' => 9,
       'callback' => function () use ($rate_plan) {
-        $this->stack->queueFromResponseFile('no_content');
+        $this->stack->queueMockResponse('no_content');
         $rate_plan->delete();
       }
     ];
