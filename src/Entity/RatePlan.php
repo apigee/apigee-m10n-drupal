@@ -85,75 +85,22 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
    */
   protected static function propertyToFieldStaticMap(): array {
     return [
-      'startDate'       => 'timestamp',
-      'endDate'         => 'timestamp',
-//      'ratePlanDetails' => '',
-
-//      'advance'               =>  'boolean',
+      'startDate'             => 'timestamp',
+      'endDate'               => 'timestamp',
       'contractDuration'      =>  'integer',
-//      'contractDurationType'  =>  'string',
       'currency'              =>  'apigee_currency',
       'earlyTerminationFee'   =>  'decimal',
       'freemiumDuration'      =>  'integer',
-//      'freemiumDurationType'  =>  'string',
+      'freemiumDurationType'  =>  'string',
       'freemiumUnit'          =>  'integer',
       'frequencyDuration'     =>  'integer',
-//      'frequencyDurationType  =>  'string',
-//      'id'                    =>  'string',
-//      'name'                  =>  'string',
       'organization'          =>  'apigee_organization',
       'package'               =>  'apigee_api_package',
       'paymentDueDays'        =>  'integer',
-//      'private'               =>  'boolean',
-//      'prorate'               =>  'boolean',
-//      'published'             =>  'boolean',
       'ratePlanDetails'       =>  'apigee_rate_plan_detail',
       'recurringFee'          =>  'decimal',
       'recurringStartUnit'    =>  'integer',
-//      'recurringType'         =>  'string',
       'setUpFee'              =>  'decimal',
-
-
-//      "address_country",
-//      "address_zone",
-//      "address",
-//      "app_callback_url",
-//      "comment",
-//      "commerce_plugin_item:commerce_condition",
-//      "commerce_plugin_item:commerce_promotion_offer",
-//      "commerce_remote_id",
-//      "commerce_adjustment",
-//      "commerce_price",
-//      "datetime",
-//      "entity_reference_revisions",
-//      "file_uri",
-//      "file",
-//      "image",
-//      "link",
-//      "list_string",
-//      "list_integer",
-//      "list_float",
-//      "path",
-//      "state",
-//      "text_with_summary",
-//      "text",
-//      "text_long",
-//      "uuid",
-//      "entity_reference",
-//      "map",
-//      "string_long",
-//      "changed",
-//      "created",
-//      "timestamp",
-//      "decimal",
-//      "boolean",
-//      "integer",
-//      "email",
-//      "uri",
-//      "string",
-//      "language",
-//      "float",
-//      "password",
     ];
   }
 
@@ -179,7 +126,7 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
       'private' => 'boolean',
       'prorate' => 'boolean',
       'published' => 'boolean',
-//keepOriginalStartDate
+      'keepOriginalStartDate' => 'boolean',
     ] + $properties;
 
     return $properties;
@@ -238,7 +185,7 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
         $value = call_user_func([$this, $getter]);
       } catch (\TypeError $t) {
         \Drupal::service('logger.channel.apigee_m10n')
-          ->error('Type Error while trying to get original value. \n\n @err', ['@err' => $t]);
+          ->error('Type Error while trying to get original value. \n\n @err', ['@err' => (string) $t]);
       }
     }
 
@@ -249,7 +196,6 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
   public function isDefaultRevision($new_value = NULL) {
     return TRUE;
   }
-
 
   /**
    * {@inheritdoc}
