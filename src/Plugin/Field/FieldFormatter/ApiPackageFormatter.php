@@ -25,7 +25,7 @@ namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
  *   id = "apigee_api_package",
  *   label = @Translation("Api package formatter"),
  *   field_types = {
- *     "apigee_rate_plan_detail"
+ *     "apigee_api_package"
  *   }
  * )
  */
