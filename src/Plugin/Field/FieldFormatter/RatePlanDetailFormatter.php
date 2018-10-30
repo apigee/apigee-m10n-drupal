@@ -18,6 +18,7 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\FieldFilteredMarkup;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
@@ -87,10 +88,9 @@ class RatePlanDetailFormatter extends FormatterBase {
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
-    // @todo: Implement a detailed list formatter.
     /** @var \Apigee\Edge\Entity\Property\NamePropertyInterface $apigee_object */
-    $apigee_object = $item->getValue();
-    return $apigee_object->getName();
+    $apigee_object = $item->value;
+    return FieldFilteredMarkup::create($apigee_object->getId());
   }
 
 }
