@@ -111,16 +111,6 @@ trait FieldableMonetizationEntityBaseTrait {
     $this->get($field_name)->setValue($fieldValue, $notify);
     // Save field's value to the its related property (if there is one).
     $this->setPropertyValue($field_name, $value);
-    // If there is no property setter found for the field then save field's
-    // value as an attribute. (In that case setPropertyValue() above did not
-    // find a property for sure.)
-    $setter = 'set' . ucfirst($field_name);
-    if (!method_exists($this, $setter)) {
-      $attribute_name = static::getAttributeName($field_name);
-      if (($formatter = $this->findAttributeStorageFormatter($field_name))) {
-        $this->attributes->add($attribute_name, $formatter->encode($value));
-      }
-    }
 
     return $this;
   }
