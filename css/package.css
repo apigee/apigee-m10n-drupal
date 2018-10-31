@@ -1,3 +1,8 @@
+apigee-m10 {
+  --border: 1px solid #e3e3e3;
+  --border-radius: 4px;
+}
+
 ul.apigee-package-list {
   background-color: #f5f5f5;
   border: 1px solid #e3e3e3;
@@ -78,5 +83,12 @@ div.apigee-package-id {
   background-color: #fff;
   border: 1px solid #e3e3e3;
   border-radius: 4px;
+  padding: 10px;
+}
+.rate-plan-detail {
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background: #f5f5f5;
+  margin-bottom: 5px;
   padding: 10px;
 }
