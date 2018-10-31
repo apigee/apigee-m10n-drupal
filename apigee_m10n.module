@@ -109,6 +109,10 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'api_product' => [
       'variables' => ['api_product' => NULL],
     ],
+    'rate_plan_detail' => [
+      'variables' => ['detail' => NULL],
+      'template' => 'rate-plan-detail',
+    ],
   ];
 }
 

@@ -72,25 +72,12 @@ class RatePlanDetailFormatter extends FormatterBase {
     $elements = [];
 
     foreach ($items as $delta => $item) {
-      $elements[$delta] = ['#markup' => $this->viewValue($item)];
+      $elements[$delta] = array(
+        '#theme' => 'rate_plan_detail',
+        '#detail' => $item->value,
+      );
     }
 
     return $elements;
   }
-
-  /**
-   * Generate the output appropriate for one field item.
-   *
-   * @param \Drupal\Core\Field\FieldItemInterface $item
-   *   One field item.
-   *
-   * @return string
-   *   The textual output generated.
-   */
-  protected function viewValue(FieldItemInterface $item) {
-    /** @var \Apigee\Edge\Entity\Property\NamePropertyInterface $apigee_object */
-    $apigee_object = $item->value;
-    return FieldFilteredMarkup::create($apigee_object->getId());
-  }
-
 }
