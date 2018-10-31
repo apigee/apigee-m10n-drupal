@@ -95,8 +95,8 @@
 <div class="rate-plan-detail">
 {% for detail_field in detail_fields %}
   {% if detail_field.value %}
-  <div>
-    <strong>{{ detail_field.label }}:</strong> <span>{{ detail_field.value }}</span>
+  <div class="field--label-inline">
+    <label class="field__label">{{ detail_field.label }}</label> <span>{{ detail_field.value }}</span>
   </div>
   {% endif %}
 {% endfor %}
