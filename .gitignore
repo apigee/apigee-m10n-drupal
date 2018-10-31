@@ -3,7 +3,7 @@
 !/.gitignore
 !/.gitattributes
 !/.editorconfig
-!.gitkeep
+!/.circleci
 
 ## Ignore working copies of dist files ##
 phpcs.xml
