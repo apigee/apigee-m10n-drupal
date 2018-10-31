@@ -15,7 +15,7 @@ apigee_m10n.packages:
   menu_name: account
   weight: -20
 apigee_m10n.rate_plan:
-  title: 'Rate Plans'
+  title: 'Rate plans'
   route_name: apigee_m10n.settings.rate_plan
   description: 'Configure rate plans.'
   parent: system.admin_apigee_m10n
