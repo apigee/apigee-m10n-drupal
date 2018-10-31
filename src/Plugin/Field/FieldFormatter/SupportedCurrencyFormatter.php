@@ -25,7 +25,7 @@ namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
  *   id = "apigee_currency",
  *   label = @Translation("Supported currency name"),
  *   field_types = {
- *     "apigee_organization"
+ *     "apigee_currency"
  *   }
  * )
  */
