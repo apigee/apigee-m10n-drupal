@@ -11,3 +11,4 @@ phpcs.xml
 ## Other ignored paths and files ##
 /vendor
 composer.lock
+tests/src/Behat/behat.local.yml
