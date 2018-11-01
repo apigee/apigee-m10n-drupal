@@ -63,6 +63,8 @@ update_dependencies: &update_dependencies
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
           ./update-dependencies.sh apigee_m10n
 
     - save_cache: *save_cache
@@ -85,6 +87,8 @@ unit_kernel_tests: &unit_kernel_tests
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           ./test.sh apigee_m10n
 
     - store_test_results:
@@ -105,6 +109,8 @@ functional_tests: &functional_tests
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           ./test-functional.sh apigee_m10n
 
     - store_test_results:
@@ -125,6 +131,8 @@ functional_js_tests: &functional_js_tests
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           ./test-functional-js.sh apigee_m10n
 
     - store_test_results:
@@ -144,6 +152,8 @@ behat_tests: &behat_tests
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           ./behat.sh apigee_m10n
 
     - store_artifacts:
@@ -161,6 +171,8 @@ code_sniffer: &code_sniffer
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           ./code-sniffer.sh apigee_m10n
 
     - store_test_results:
@@ -180,6 +192,8 @@ code_coverage: &code_coverage
     - run:
         working_directory: /var/www/html
         command: |
+          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           ./code-coverage-stats.sh apigee_m10n
     - store_artifacts:
         path: /var/www/html/artifacts
