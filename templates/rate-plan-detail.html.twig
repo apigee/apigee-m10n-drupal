@@ -29,76 +29,39 @@
 
 {% set detail_fields = [
   {
-    'label': "ID",
-    'value': detail.id
+    'label': "Renewal Period",
+    'value': detail.duration ~ ' ' ~ detail.durationType|lower
   },
   {
-    'label': "Aggregate Freemium Counters",
-    'value': detail.aggregateFreemiumCounters
+    'label': "Operator",
+    'value': detail.organization.description,
   },
   {
-    'label': "Aggregate Standard Counters",
-    'value': detail.aggregateStandardCounters
+    'label': "Country",
+    'value': detail.organization.country,
   },
   {
-    'label': "Aggregate Transactions",
-    'value': detail.aggregateTransactions
-  },  {
-    'label': "Custom Payment Term",
-    'value': detail.customPaymentTerm
+    'label': "Currency",
+    'value': detail.currency.name,
   },
   {
-    'label': "Duration",
-    'value': detail.duration
-  },  {
-    'label': "Duration Type",
-    'value': detail.durationType
+    'label': "Pricing Type",
+    'value': detail.revenueType|lower|capitalize
   },
   {
-    'label': "Freemium Duration",
-    'value': detail.freemiumDuration
+    'label': "Rev Share %",
+    'value': detail.ratePlanRates.RevShare,
+    'suffix': '%'
   },
-  {
-    'label': "Freemium Duration Type",
-    'value': detail.freemiumDurationType
-  },
-  {
-    'label': "Freemium Unit",
-    'value': detail.freemiumUnit
-  },  {
-    'label': "Metering Type",
-    'value': detail.meteringType
-  },
-  {
-    'label': "Payment Due Days",
-    'value': detail.paymentDueDays
-  },
-  {
-    'label': "Rating Parameter",
-    'value': detail.ratingParameter
-  },
-  {
-    'label': "Rating Parameter Unit",
-    'value': detail.ratingParameterUnit
-  },  {
-    'label': "Revenue Type",
-    'value': detail.revenueType
-  },
-  {
-    'label': "Type",
-    'value': detail.type
-  },
+
 ]%}
 
-{# @todo  detail.ratePlanRates {id, revShare, startUnit}, detail.currency {id, displayName, description, displayName}, detail.organization #}
-
-<div class="rate-plan-detail">
+<table class="rate-plan-detail">
 {% for detail_field in detail_fields %}
   {% if detail_field.value %}
-  <div class="field--label-inline">
-    <label class="field__label">{{ detail_field.label }}</label> <span>{{ detail_field.value }}</span>
-  </div>
+  <tr class="field--label-inline">
+    <td><label class="field__label">{{ detail_field.label }}</label></td> <td><span>{{ detail_field.value }} {{ (detail_field.suffix) ? '%' }}</span></td>
+  </tr>
   {% endif %}
 {% endfor %}
-</div>
-
+</table>
