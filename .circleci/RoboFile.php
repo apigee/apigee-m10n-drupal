@@ -410,6 +410,9 @@ class RoboFile extends \Robo\Tasks
 
       $config->require->{"apigee/apigee-client-php"} = "dev-mint as 2.0";
 
+      // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
+      $config->require->{"drupal/commerce"} = "~2.0";
+
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
 
       $this->io()->text(json_encode($config,JSON_PRETTY_PRINT));
