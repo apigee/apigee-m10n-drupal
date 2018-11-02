@@ -75,14 +75,14 @@ class PackagesController extends ControllerBase {
   }
 
   /**
-   * Redirect to the users purchased page.
+   * Redirect to the users subscriptions page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   A redirect to the current user's purchased plan page.
+   *   A redirect to the current user's subscriptions page.
    */
-  public function myPurchased(): RedirectResponse {
+  public function mySubscriptions(): RedirectResponse {
     return $this->redirect(
-      'apigee_monetization.purchased',
+      'apigee_monetization.subscriptions',
       ['user' => \Drupal::currentUser()->id()],
       ['absolute' => TRUE]
     );
@@ -128,16 +128,52 @@ class PackagesController extends ControllerBase {
   }
 
   /**
-   * Gets a list of purchased packages for this user.
+   * Gets a list of purchased subscriptions for this user.
    *
-   * @param \Drupal\user\UserInterface|null $user
+   * @param \Drupal\user\UserInterface|NULL $user
    *   The drupal user/developer.
    *
    * @return array
    *   The pager render array.
    */
-  public function purchasedPage(UserInterface $user = NULL) {
-    return ['#markup' => $this->t('Hello World')];
+  public function subscriptionsPage(UserInterface $user = NULL) {
+
+    $subscriptions = [];
+
+    // Attempt to load accepted plans (i.e. subscriptions)
+    try {
+      $subscriptions = RatePlan::loadDeveloperSubscriptions($user->getEmail());
+    }
+    catch (\Exception $e) {
+      $this->loggerFactory->get('apigee_monetization')->error($e->getMessage());
+      $this->messenger->addError('Unable to retrieve subscriptions: ' . $e->getMessage());
+    }
+
+    $render = [
+      'subscription_list' => [
+        '#type' => 'table',
+        '#header' => [
+          'status' => 'asdf',
+          'package' => 'asdf',
+          'products' => 'asdf',
+          'plan' => 'asdf',
+          'start_date' => 'asdf',
+          'end_date' => 'asdf',
+          'plan_end_date' => 'asdf',
+          'renewal_date' => 'asdf',
+          'actions' => 'asdf'
+        ]
+      ]
+    ];
+
+    for ($i = 0; $i < count($subscriptions); $i++) {
+      $render['subscriptions_list']['#rows'][$i]['status'] = 'qwer';
+      $render['subscriptions_list']['#rows'][$i]['package'] = 'qwer';
+      $render['subscriptions_list']['#rows'][$i]['products'] = 'qwer';
+    }
+
+    return $render;
+
   }
 
   /**

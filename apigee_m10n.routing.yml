@@ -46,17 +46,17 @@ apigee_monetization.packages:
   requirements:
     _permission: 'access monetization packages'
 
-apigee_monetization.my_purchased:
-  path: /user/monetization/packages/purchased
+apigee_monetization.my_subscriptions:
+  path: /user/monetization/subscriptions
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PackagesController::myPurchased
+    _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:
-    _permission: 'access purchased monetization packages'
+    _permission: 'access subscriptions'
 
-apigee_monetization.purchased:
-  path: /user/{user}/monetization/packages/purchased
+apigee_monetization.subscriptions:
+  path: /user/{user}/monetization/subscriptions
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PackagesController::purchasedPage
-    _title: "Purchased Packages"
+    _controller: \Drupal\apigee_m10n\Controller\PackagesController::subscriptionsPage
+    _title: "Subscriptions"
   requirements:
-    _permission: 'access purchased monetization packages'
+    _permission: 'access subscriptions'

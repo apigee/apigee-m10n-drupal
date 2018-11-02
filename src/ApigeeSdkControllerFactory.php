@@ -27,6 +27,7 @@ use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
@@ -107,9 +108,9 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function apiProductController(): ApiProductControllerInterface {
     return new ApiProductController(
-        $this->getOrganization(),
-        $this->getClient()
-      );
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
@@ -128,6 +129,18 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function packageRatePlanController($package_id): RatePlanControllerInterface {
     return new RatePlanController(
       $package_id,
+      $this->getOrganization(),
+      $this->getClient()
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerAcceptedRatePlanController(string $developer_email): DeveloperAcceptedRatePlanController {
+    return
+      new DeveloperAcceptedRatePlanController(
+        $developer_email,
         $this->getOrganization(),
         $this->getClient()
       );

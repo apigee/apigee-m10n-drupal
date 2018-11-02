@@ -109,6 +109,25 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
     return $entities;
   }
 
+  public function loadDeveloperSubscriptions(string $developer_email): array {
+    if (!\Drupal::service('email.validator')->isValid($developer_email)) {
+      throw new \InvalidArgumentException('Developer email must be valid');
+    }
+
+    $sdk_entities = $this->controllerFactory()
+      ->developerAcceptedRatePlanController($developer_email)
+      ->getAllAcceptedRatePlans();
+
+    $entities = array_map(function($sdk_entity) {
+      // can't call self::convertToDrupalEntity b/c StandardRatePlan and AcceptedRatePlan don't implement a common interface.
+      return EntityConvertAwareTrait::convertToDrupalEntity($sdk_entity->getRatePlan(), RatePlan::class);
+    }, $sdk_entities);
+
+    $this->setPersistentCache($entities);
+
+    return $entities;
+  }
+
   /**
    * {@inheritdoc}
    */
