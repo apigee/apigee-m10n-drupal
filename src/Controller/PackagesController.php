@@ -140,37 +140,50 @@ class PackagesController extends ControllerBase {
 
     $subscriptions = [];
 
+    $sort = \Drupal::request()->getQueryString();
+
     // Attempt to load accepted plans (i.e. subscriptions)
     try {
       $subscriptions = RatePlan::loadDeveloperSubscriptions($user->getEmail());
     }
     catch (\Exception $e) {
-      $this->loggerFactory->get('apigee_monetization')->error($e->getMessage());
-      $this->messenger->addError('Unable to retrieve subscriptions: ' . $e->getMessage());
+      $this->getLogger('apigee_monetization')->error($e->getMessage());
+      $this->messenger()->addError('Unable to retrieve subscriptions: ' . $e->getMessage());
     }
 
     $render = [
       'subscription_list' => [
         '#type' => 'table',
         '#header' => [
-          'status' => 'asdf',
-          'package' => 'asdf',
-          'products' => 'asdf',
-          'plan' => 'asdf',
-          'start_date' => 'asdf',
-          'end_date' => 'asdf',
-          'plan_end_date' => 'asdf',
-          'renewal_date' => 'asdf',
-          'actions' => 'asdf'
+          'status' => ['data' => $this->t('status'), 'field' => 'status'],
+          'package' => ['data' => $this->t('package'), 'field' => 'package', 'sort' => 'desc'],
+          'products' => ['data' => $this->t('products'), 'field' => 'products'],
+          'plan' => ['data' => $this->t('plan'), 'field' => 'plan'],
+          'start_date' => ['data' => $this->t('start_date'), 'field' => 'start_date'],
+          'end_date' => ['data' => $this->t('end_date'), 'field' => 'end_date'],
+          'plan_end_date' => ['data' => $this->t('plan_end_date'), 'field' => 'plan_end_date'],
+          'renewal_date' => ['data' => $this->t('renewal_date'), 'field' => 'renewal_date'],
+          'actions' =>['data' => $this->t('actions')]
         ]
       ]
     ];
 
-    for ($i = 0; $i < count($subscriptions); $i++) {
-      $render['subscriptions_list']['#rows'][$i]['status'] = 'qwer';
-      $render['subscriptions_list']['#rows'][$i]['package'] = 'qwer';
-      $render['subscriptions_list']['#rows'][$i]['products'] = 'qwer';
+    foreach ($subscriptions as $key => $subscription) {
+      $details = $subscription->getRatePlanDetails();
+      $package = $subscription->getPackage();
+
+      $render['subscription_list']['#rows'][$key]['status'] = 'qqwer';
+      $render['subscription_list']['#rows'][$key]['package'] = $subscription->getPackage()->getDisplayName();
+      $render['subscription_list']['#rows'][$key]['products'] = 'qwer';
+      $render['subscription_list']['#rows'][$key]['plan'] = count($subscription->getRatePlanDetails());
+      $render['subscription_list']['#rows'][$key]['start_date'] = ($start = $subscription->getStartDate()) ? $start->format('Y-m-d') : '';
+      $render['subscription_list']['#rows'][$key]['end_date'] = ($end = $subscription->getEndDate()) ? $end->format('Y-m-d') : '';
+      $render['subscription_list']['#rows'][$key]['plan_end_date'] = '?';
+      $render['subscription_list']['#rows'][$key]['renewal_date'] = '?';
+      $render['subscription_list']['#rows'][$key]['actions'] = 'qwer';
     }
+
+    $render['subscription_list']['#empty'] = $this->t('No subscriptions found for this developer.');
 
     return $render;
 
