@@ -144,7 +144,7 @@ class PackagesController extends ControllerBase {
 
     // Attempt to load accepted plans (i.e. subscriptions)
     try {
-      $subscriptions = RatePlan::loadDeveloperSubscriptions($user->getEmail());
+//      $subscriptions = RatePlan::loadDeveloperSubscriptions($user->getEmail());
     }
     catch (\Exception $e) {
       $this->getLogger('apigee_monetization')->error($e->getMessage());
