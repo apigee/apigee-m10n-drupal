@@ -226,20 +226,6 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *   Thrown if the storage handler couldn't be loaded.
    */
-  public static function loadDeveloperSubscriptions(string $developer_email): array {
-    return \Drupal::entityTypeManager()
-      ->getStorage('rate_plan')
-      ->loadDeveloperSubscriptions($developer_email);
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   *   Thrown if the entity type doesn't exist.
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   *   Thrown if the storage handler couldn't be loaded.
-   */
   public static function loadById(string $package_name, string $id): RatePlanInterface {
     return \Drupal::entityTypeManager()
       ->getStorage('rate_plan')
