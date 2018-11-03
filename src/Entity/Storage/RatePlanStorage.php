@@ -174,15 +174,7 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
    * {@inheritdoc}
    */
   public function controllerFactory(): ApigeeSdkControllerFactoryInterface {
-    // Use static caching.
-    static $factory;
-
-    if (!isset($factory)) {
-      // Load the factory service.
-      $factory = \Drupal::service('apigee_m10n.sdk_controller_factory');
-    }
-
-    return $factory;
+    return \Drupal::service('apigee_m10n.sdk_controller_factory');
   }
 
   /**
