@@ -28,18 +28,21 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 interface SubscriptionStorageInterface extends FieldableMonetizationEntityStorageInterface {
 
   /**
-   * @param string $developer_email
+   * Load Subscriptions by developer ID.
+   *
+   * @param string $developer_id
+   *  Either the developer UUID or email address.
    *
    * @return array
    */
-  public function loadSubscriptionsByDeveloperEmail(string $developer_email): array;
+  public function loadByDeveloperId(string $developer_id): array;
 
   /**
-   * @param string $developer_email
+   * @param string $developer_id
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
    */
-  public function getController(string $developer_email): AcceptedRatePlanControllerInterface;
+  public function getController(string $developer_id): AcceptedRatePlanControllerInterface;
 
   /**
    * Since entity storage classes are used during install, this is used instead

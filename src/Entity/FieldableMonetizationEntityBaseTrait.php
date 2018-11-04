@@ -105,9 +105,10 @@ trait FieldableMonetizationEntityBaseTrait {
         }
       }
     }
-    $this->get($field_name)->setValue($fieldValue, $notify);
     // Save field's value to the its related property (if there is one).
     $this->setPropertyValue($field_name, $value);
+
+    $this->get($field_name)->setValue($fieldValue, $notify);
 
     return $this;
   }

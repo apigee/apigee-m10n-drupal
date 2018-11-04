@@ -55,6 +55,7 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
 
   use FieldableMonetizationEntityBaseTrait {
     baseFieldDefinitions as traitBaseFieldDefinitions;
+    set as traitSet;
   }
 
   /**
@@ -75,12 +76,12 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
       'endDate' => 'timestamp',
       'created' => 'timestamp',
       'quotaTarget' => 'integer',
-      'ratePlan' => 'decimal',
+      'ratePlan' => 'entity_reference',
       'updated' => 'timestamp',
       'renewalDate' => 'timestamp',
       'nextCycleStartDate' => 'timestamp',
-      '$nextRecurringFeeDate' => 'timestamp',
-      '$prevRecurringFeeDate' => 'timestamp',
+      'nextRecurringFeeDate' => 'timestamp',
+      'prevRecurringFeeDate' => 'timestamp',
     ];
   }
 
@@ -90,10 +91,28 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $definitions */
     $definitions = self::traitBaseFieldDefinitions($entity_type);
-    // The rate plan details are many-to-one.
-    $definitions['ratePlanDetails']->setCardinality(-1);
 
     return $definitions;
+  }
+
+  /**
+   * @param string $field_name
+   * @param mixed $value
+   * @param bool $notify
+   *
+   * @return $this|\Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @throws \Drupal\Core\TypedData\Exception\ReadOnlyException
+   */
+  public function set($field_name, $value, $notify = TRUE) {
+    if ($field_name === 'ratePlan') {
+      $rate_plan_entity = RatePlan::loadById($value->getPackage()->id(), $value->id());
+      $this->ratePlan = $rate_plan_entity;
+    }
+    else {
+      $this->traitSet($field_name, $value, $notify);
+    }
+
+    return $this;
   }
 
   /**

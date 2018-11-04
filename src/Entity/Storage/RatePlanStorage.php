@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
-use Apigee\Edge\Api\Monetization\Entity\StandardRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface as ApigeeRatePlanInterface;
 use Drupal\apigee_edge\Entity\EntityConvertAwareTrait;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
@@ -211,25 +211,23 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
    * Converts a drupal entity to it's SDK entity.
    *
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $drupal_entity
-   *   The drupal entity.
    *
-   * @return \Apigee\Edge\Api\Monetization\Entity\StandardRatePlan
-   *   A SDK rate plan entity.
+   * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface
    */
-  protected function convertToSdkEntity(RatePlanInterface $drupal_entity): StandardRatePlanInterface {
+  protected function convertToSdkEntity(RatePlanInterface $drupal_entity): ApigeeRatePlanInterface {
     return EntityConvertAwareTrait::convertToSdkEntity($drupal_entity, StandardRatePlan::class);
   }
 
   /**
    * Converts a SDK entity to a drupal entity.
    *
-   * @param \Apigee\Edge\Api\Monetization\Entity\StandardRatePlan $sdk_entity
+   * @param \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $sdk_entity
    *   The SDK entity as it would  be loaded from the SDK entity controller.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A drupal rate plan entity.
    */
-  protected function convertToDrupalEntity(StandardRatePlan $sdk_entity): RatePlanInterface {
+  protected function convertToDrupalEntity(ApigeeRatePlanInterface $sdk_entity): RatePlanInterface {
     return EntityConvertAwareTrait::convertToDrupalEntity($sdk_entity, RatePlan::class);
   }
 

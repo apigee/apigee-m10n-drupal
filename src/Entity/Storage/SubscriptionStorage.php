@@ -75,12 +75,19 @@ class SubscriptionStorage extends FieldableMonetizationEntityStorageBase impleme
   }
 
   /**
-   * @param string $developer_email
-   *
-   * @return array
+   * {@inheritdoc}
    */
-  public function loadSubscriptionsByDeveloperEmail(string $developer_email): array {
-    // TODO: Implement loadSubscriptionsByDeveloperEmail() method.
+  public function loadByDeveloperId(string $developer_id): array {
+    $sdk_entities =  $this->getController($developer_id)->getAllAcceptedRatePlans();
+
+    // Convert
+    $entities = array_map(function($sdk_entity) {
+      return EntityConvertAwareTrait::convertToDrupalEntity($sdk_entity, Subscription::class);
+    }, $sdk_entities);
+
+    $this->setPersistentCache($entities);
+
+    return $entities;
   }
 
   /**
@@ -100,15 +107,16 @@ class SubscriptionStorage extends FieldableMonetizationEntityStorageBase impleme
   /**
    * {@inheritdoc}
    */
-  public function getController(string $developer_email): AcceptedRatePlanControllerInterface {
+  public function getController(string $developer_id): AcceptedRatePlanControllerInterface {
     // Cache controllers per developer.
     static $controllers = [];
 
-    if (!isset($controllers[$developer_email])) {
-      $controllers[$developer_email] = $this->controllerFactory()->developerAcceptedRatePlanController($developer_email);
+    if (!isset($controllers[$developer_id])) {
+      $controllers[$developer_id] = $this->controllerFactory()->developerAcceptedRatePlanController($developer_id);
     }
 
-    return $controllers[$developer_email];
+    /** @var \Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController */
+    return $controllers[$developer_id];
   }
 
   /**

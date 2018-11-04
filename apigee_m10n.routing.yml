@@ -56,8 +56,8 @@ apigee_monetization.my_subscriptions:
 entity.subscription.collection_by_developer:
   path: '/user/{user}/monetization/subscriptions'
   defaults:
-    _controller: '\Drupal\apigee_m10n\SubscriptionListBuilderForDeveloper::render'
-    _title_callback: '\Drupal\apigee_m10n\SubscriptionListBuilderForDeveloper::getPageTitle'
+    _controller: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render'
+    _title_callback: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle'
   requirements:
     user: '\d+'
     _permission: 'access subscriptions'
