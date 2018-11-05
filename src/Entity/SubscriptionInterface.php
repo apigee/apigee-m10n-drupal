@@ -28,6 +28,21 @@ use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 interface SubscriptionInterface extends AcceptedRatePlanInterface, FieldableEdgeEntityInterface {
 
   /**
+   * Status text for ended subscriptions.
+   */
+  const STATUS_ENDED = 'Ended';
+
+  /**
+   * Status text for future subscriptions.
+   */
+  const STATUS_FUTURE = 'Future';
+
+  /**
+   * Status text for active subscriptions.
+   */
+  const STATUS_ACTIVE = 'Active';
+
+  /**
    * Loads subscriptions by developer email.
    *
    * @param string $developer_email
