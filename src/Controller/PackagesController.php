@@ -128,36 +128,6 @@ class PackagesController extends ControllerBase {
   }
 
   /**
-   * Gets a list of purchased subscriptions for this user.
-   *
-   * @param \Drupal\user\UserInterface|NULL $user
-   *   The drupal user/developer.
-   *
-   * @return array
-   *   The pager render array.
-   */
-  public function subscriptionsPage(UserInterface $user = NULL) {
-
-    $subscriptions = [];
-
-    $sort = \Drupal::request()->getQueryString();
-
-    // Attempt to load accepted plans (i.e. subscriptions)
-    try {
-//      $subscriptions = RatePlan::loadDeveloperSubscriptions($user->getEmail());
-    }
-    catch (\Exception $e) {
-      $this->getLogger('apigee_monetization')->error($e->getMessage());
-      $this->messenger()->addError('Unable to retrieve subscriptions: ' . $e->getMessage());
-    }
-
-    $render = ['#markup' => 'todo'];
-
-    return $render;
-
-  }
-
-  /**
    * Get a rate plan controller.
    *
    * @param string $package_id
