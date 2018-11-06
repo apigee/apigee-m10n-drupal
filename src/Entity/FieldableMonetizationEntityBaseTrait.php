@@ -53,7 +53,7 @@ trait FieldableMonetizationEntityBaseTrait {
     // Do not try to set values of fields that does not exists.
     // Also blacklisted properties does not have a field in Drupal and their
     // value changes should not be saved on entity properties either.
-    if (!$this->hasField($field_name) || static::isBackListedProperty(static::getAttributeName($field_name))) {
+    if (!$this->hasField($field_name)) {
       return $this;
     }
 
