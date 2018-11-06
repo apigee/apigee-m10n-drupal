@@ -24,6 +24,13 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
+  ratePlanDetails:
+    type: apigee_rate_plan_detail
+    weight: 2
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
 hidden:
   advance: true
   contractDuration: true
@@ -44,7 +51,6 @@ hidden:
   private: true
   prorate: true
   published: true
-  ratePlanDetails: true
   recurringFee: true
   recurringStartUnit: true
   recurringType: true

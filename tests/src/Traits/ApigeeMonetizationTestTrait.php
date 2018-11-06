@@ -58,6 +58,7 @@ trait ApigeeMonetizationTestTrait {
    * The SDK Connector client.
    *
    * This will have it's http client stack replaced a mock stack.
+   * mock.
    *
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
@@ -74,8 +75,9 @@ trait ApigeeMonetizationTestTrait {
    * The clean up queue.
    *
    * @var array
-   *   An associative array with a `callback` and a `weight` key. Some items will
-   *   need to be called before others which is the reason for the weight system.
+   *   An associative array with a `callback` and a `weight` key. Some items
+   *   will need to be called before others which is the reason for the weight
+   *   system.
    */
   protected $cleanup_queue;
 
@@ -85,8 +87,8 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
-    $this->stack              = $this->container->get('apigee_mock_client.mock_http_handler_stack');
-    $this->sdk_connector      = $this->container->get('apigee_edge.sdk_connector');
+    $this->stack = $this->container->get('apigee_mock_client.mock_http_handler_stack');
+    $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
 
     $this->initAuth();
     // `::initAuth` has to happen before getting the controller factory.
@@ -180,7 +182,7 @@ trait ApigeeMonetizationTestTrait {
         $this->queueDeveloperResponse($account);
         // Delete it.
         $account->delete();
-      }
+      },
     ];
 
     return $account;
@@ -274,7 +276,7 @@ trait ApigeeMonetizationTestTrait {
     $this->stack->queueMockResponse('get_supported_currency');
     $currency = $currency_controller->load('usd');
 
-    /** @var RatePlanInterface $rate_plan */
+    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = RatePlan::create([
       'advance'               => TRUE,
       'customPaymentTerm'     => TRUE,
@@ -287,7 +289,6 @@ trait ApigeeMonetizationTestTrait {
       'freemiumUnit'          => 1,
       'id'                    => strtolower($this->randomMachineName()),
       'isPrivate'             => 'false',
-      //'monetizationPackage'   => {},
       'name'                  => $this->randomMachineName(),
       'paymentDueDays'        => '30',
       'prorate'               => FALSE,
@@ -311,8 +312,8 @@ trait ApigeeMonetizationTestTrait {
           'ratePlanRates'             => [],
           "ratingParameter"           => "VOLUME",
           "type"                      => "RATECARD",
-        ])
-       ],
+        ]),
+      ],
       'recurringFee'          => '3.0000',
       'recurringStartUnit'    => '1',
       'recurringType'         => 'CALENDAR',
@@ -340,8 +341,10 @@ trait ApigeeMonetizationTestTrait {
      * @code
      */
     $rate_plan->getRatePlanDetails()[0]->setRatePlanRates([
-      'id'        => strtolower($this->randomMachineName()),
-      'rate'      => rand(5,20),
+      new RatePlanRateRateCard([
+        'id'        => strtolower($this->randomMachineName()),
+        'rate'      => rand(5,20),
+      ]),
     ]);
 
     // Remove the rate plan in the cleanup queue.
