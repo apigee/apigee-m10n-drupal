@@ -75,8 +75,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function __construct(SDKConnectorInterface $sdk_connector) {
     $this->sdk_connector = $sdk_connector;
-    $this->org = $sdk_connector->getOrganization();
-    $this->client = $sdk_connector->getClient();
   }
 
   /**
@@ -92,8 +90,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface {
     return new DeveloperPrepaidBalanceController(
       $developer->getEmail(),
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
@@ -103,8 +101,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
     return new CompanyPrepaidBalanceController(
       $company->getLegalName(),
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
@@ -113,8 +111,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function apiPackageController(): ApiPackageControllerInterface {
     return new ApiPackageController(
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
@@ -124,8 +122,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function packageRatePlanController($package_id): RatePlanControllerInterface {
     return new RatePlanController(
       $package_id,
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
@@ -158,6 +156,30 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       $this->org,
       $this->client
     );
+  }
+
+  /**
+   * Gets the org from the SDK connector.
+   *
+   * @return string
+   *   The organization id.
+   */
+  protected function getOrganization() {
+    $this->org = $this->org ?? $this->sdk_connector->getOrganization();
+
+    return $this->org;
+  }
+
+  /**
+   * Get the SDK client from the SDK connector.
+   *
+   * @return \Apigee\Edge\ClientInterface
+   *   The sdk client.
+   */
+  protected function getClient() {
+    $this->client = $this->client ?? $this->sdk_connector->getClient();
+
+    return $this->client;
   }
 
 }
