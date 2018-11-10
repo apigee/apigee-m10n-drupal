@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlan;
+use Drupal\apigee_edge\Entity\FieldableEdgeEntityBaseTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
@@ -114,6 +115,34 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
 
     return $this;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toArray() {
+    $values = [];
+
+    foreach ($this->getFields() as $name => $property) {
+      if ($property->getFieldDefinition()->getType() === 'entity_reference') {
+        $values[$name] = \Drupal::entityTypeManager()->getStorage('rate_plan')->convertToSdkEntity($property->entity);
+      }
+      else {
+        /** @var \Drupal\Core\Field\FieldItemListInterface $property */
+        $values[$name] = $property->value;
+      }
+    }
+
+    // Keep the original values and only add new values from fields.
+    // This order is important because for example the array from traitToArray
+    // contains date properties as proper DateTimeImmutable objects but the new
+    // one contains them as timestamps. Because this function called by
+    // DrupalEntityControllerAwareTrait::convertToSdkEntity() that missmatch
+    // could cause errors.
+    $return = array_merge($values, $this->traitToArray());
+    $return['ratePlan'] = $values['ratePlan'];
+    return $return;
+  }
+
 
   /**
    * Array of properties that should not be exposed as base fields.

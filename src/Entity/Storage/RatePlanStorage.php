@@ -214,7 +214,7 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface
    */
-  protected function convertToSdkEntity(RatePlanInterface $drupal_entity): ApigeeRatePlanInterface {
+  public function convertToSdkEntity(RatePlanInterface $drupal_entity): ApigeeRatePlanInterface {
     return EntityConvertAwareTrait::convertToSdkEntity($drupal_entity, StandardRatePlan::class);
   }
 

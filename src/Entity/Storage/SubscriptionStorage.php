@@ -20,7 +20,13 @@
 namespace Drupal\apigee_m10n\Entity\Storage;
 
 use Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
+use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlan;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
 use Drupal\apigee_edge\Entity\EntityConvertAwareTrait;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
@@ -101,7 +107,51 @@ class SubscriptionStorage extends FieldableMonetizationEntityStorageBase impleme
    * {@inheritdoc}
    */
   protected function doSave($id, EntityInterface $entity) {
-    throw new \Exception('Not yet implemented');
+    $result = static::SAVED_UNKNOWN;
+
+    // Convert Drupal entity back to an SDK entity and with that:
+    // - prevent sending additional Drupal-only properties to Apigee Edge
+    // - prevent serialization/normalization errors
+    //   (CircularReferenceException) caused by TypedData objects on Drupal
+    //   entities.
+    $controller = $this->getController($entity->developerId);
+    $rate_plan_storage = \Drupal::entityTypeManager('rate_plan')->getStorage('rate_plan');
+    $rate_plan = $rate_plan_storage->convertToSdkEntity($entity->getRatePlan());
+
+    if ($entity->isNew()) {
+      // @TODO double check Subscription entity properties against the parameters accepted by `acceptRatePlan`...
+      // For instance, is `nextCycleStartDate` only manageable via edge UI?
+      // @see \Drupal\apigee_m10n\Entity\Subscription::propertyToFieldStaticMap
+      $controller->acceptRatePlan($rate_plan, $entity->getStartDate(), $entity->getEndDate(), $entity->getQuotaTarget());
+      $result = SAVED_NEW;
+    }
+    else {
+      // @TODO make sure this works with Company Accepted rate plans as well.
+      $controller->updateSubscription($this->convertDeveloperAcceptedRatePlanToSdkEntity($entity));
+      $result = SAVED_UPDATED;
+    }
+
+    return $result;
+  }
+
+  /**
+   * Had to override doPreSave because it tries to call self::loadMultiple which doesn't make sense without
+   * a developer ID for context (since edge api provides no way of loading accepted rateplans w/o developer ID
+   * even though they're using uuids so it should be possible).
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The saved entity.
+   *
+   * @return int|string
+   *   The processed entity identifier.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   *   If the entity identifier is invalid.
+   */
+  protected function doPreSave(EntityInterface $entity) {
+    $entity->original = $entity;
+
+    return parent::doPreSave($entity);
   }
 
   /**
@@ -151,22 +201,33 @@ class SubscriptionStorage extends FieldableMonetizationEntityStorageBase impleme
   /**
    * Converts a drupal entity to it's SDK entity.
    *
-   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $drupal_entity
+   * @param \Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface $drupal_entity
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface
    */
-  protected function convertToSdkEntity(RatePlanInterface $drupal_entity): AcceptedRatePlanInterface {
-    return EntityConvertAwareTrait::convertToSdkEntity($drupal_entity, AcceptedRatePlanInterface::class);
+  protected function convertDeveloperAcceptedRatePlanToSdkEntity(AcceptedRatePlanInterface $drupal_entity): AcceptedRatePlanInterface {
+    return EntityConvertAwareTrait::convertToSdkEntity($drupal_entity, DeveloperAcceptedRatePlan::class);
+  }
+
+  /**
+   * Converts a drupal entity to it's SDK entity.
+   *
+   * @param \Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface $drupal_entity
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface
+   */
+  protected function convertCompanyAcceptedRatePlanToSdkEntity(AcceptedRatePlanInterface $drupal_entity): AcceptedRatePlanInterface {
+    return EntityConvertAwareTrait::convertToSdkEntity($drupal_entity, CompanyAcceptedRatePlan::class);
   }
 
   /**
    * Converts a SDK entity to a drupal entity.
    *
-   * @param \Apigee\Edge\Api\Monetization\Entity\StandardRatePlan $sdk_entity
+   * @param \Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface $sdk_entity
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface
    */
-  protected function convertToDrupalEntity(StandardRatePlan $sdk_entity): AcceptedRatePlanInterface {
+  protected function convertToDrupalEntity(AcceptedRatePlanInterface $sdk_entity): AcceptedRatePlanInterface {
     return EntityConvertAwareTrait::convertToDrupalEntity($sdk_entity, Subscription::class);
   }
 
