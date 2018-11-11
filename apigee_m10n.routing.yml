@@ -16,7 +16,6 @@ apigee_m10n.settings.rate_plan:
   options:
     _admin_route: TRUE
 
-
 apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:

@@ -18,7 +18,7 @@
                 "isCompany": "{{ subscription_one.isCompany|default(false) }}",
                 "legalName": "{{ subscription_one.legalName|default('Test Testerson') }}",
                 "name": "{{ subscription_one.name|default('Test Testerson') }}",
-                "organization": {% include org.json.twig %},
+                "organization": {% include 'org.json.twig' %},
                 "status": "{{ subscription_one.status|default('ACTIVE') }}",
                 "type": "{{ subscription_one.type|default('UNTRUSTED') }}"
             },
@@ -26,7 +26,7 @@
             "id": "{{ subscription_one.id|default("4321dcba-1234abcd") }}",
             "nextCycleStartDate": "{{ subscription_one.nextCycleStartDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "nextRecurringFeeDate": "{{ subscription_one.nextRecurringFeeDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
-            "ratePlan": {% include rate-plan.json.twig %},
+            "ratePlan": {% include 'rate-plan.json.twig' %},
             "startDate": "{{ subscription_one.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "updated": "{{ subscription_one.updated|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}"
         },
@@ -40,7 +40,7 @@
                 "isCompany": "{{ subscription_two.isCompany|default(false) }}",
                 "legalName": "{{ subscription_two.legalName|default('Test Testerson') }}",
                 "name": "{{ subscription_two.name|default('Test Testerson') }}",
-                "organization": {% include org.json.twig %},
+                "organization": {% include 'org.json.twig' %},
                 "status": "{{ subscription_two.status|default('ACTIVE') }}",
                 "type": "{{ subscription_two.type|default('UNTRUSTED') }}"
             },
@@ -48,7 +48,7 @@
             "id": "{{ subscription_two.id|default("4321dcba-1234abcd") }}",
             "nextCycleStartDate": "{{ subscription_two.nextCycleStartDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "nextRecurringFeeDate": "{{ subscription_two.nextRecurringFeeDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
-            "ratePlan": {% include rate-plan.json.twig %},
+            "ratePlan": {% include 'rate-plan.json.twig' %},
             "startDate": "{{ subscription_two.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "updated": "{{ subscription_two.updated|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}"
         },

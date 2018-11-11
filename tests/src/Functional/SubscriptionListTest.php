@@ -53,23 +53,23 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   public function testSubscriptionListView() {
     // If the user has "access subscriptions" permission, they should be able to see some prepaid balances.
     $this->account = $this->createAccount([
-      'view mint prepaid reports'
+      'access subscriptions'
     ]);
 
     $this->queueOrg();
 
     $this->drupalLogin($this->account);
 
-    $subscriptions = [
-      $this->createSubscription(),
-      $this->createSubscription(),
-    ];
+    $this->queueDeveloperResponse($this->account);
 
-    $this->stack->queueFromResponseFile(['get-prepaid-balances']);
+    $this->stack->queueFromResponseFile('get-subscriptions');
 
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->account->id()
+    $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
+      'user' => $this->account->id(),
     ]));
+
+//    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(1)', 'AUD');
+
 
   }
 }
