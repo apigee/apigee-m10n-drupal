@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -32,10 +33,11 @@ use Http\Message\Authentication\AutoBasicAuth;
 class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
   /**
-   * @var \Apigee\Edge\ClientInterface
+   * The SDK Connector.
    *
-   * The SDK Connector client which should have it's http client stack replaced
-   * with our mock.
+   * A client which should have it's http client stack replaced with our mock.
+   *
+   * @var \Apigee\Edge\ClientInterface
    */
   protected $sdk_client;
 
@@ -108,7 +110,8 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
     if ($this->integration_enabled) {
       self::assertTrue(($handler instanceof HandlerStack));
-    } else {
+    }
+    else {
       self::assertTrue(($handler instanceof MockHandler));
     }
   }

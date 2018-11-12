@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -70,8 +71,8 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
       ->method('getEmail')
       ->will($this->returnValue($email));
 
-    /** @var DeveloperPrepaidBalanceControllerInterface $controller */
-    $controller  = $this->controller_factory->developerBalanceController($account);
+    /** @var \Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface $controller */
+    $controller = $this->controller_factory->developerBalanceController($account);
 
     static::assertInstanceOf(DeveloperPrepaidBalanceControllerInterface::class, $controller);
 
@@ -89,11 +90,11 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
       ->disableOriginalConstructor()
       ->getMock();
     $company->expects($this->any())
-            ->method('getLegalName')
-            ->will($this->returnValue($company_name));
+      ->method('getLegalName')
+      ->will($this->returnValue($company_name));
 
-    /** @var CompanyPrepaidBalanceControllerInterface $controller */
-    $controller  = $this->controller_factory->companyBalanceController($company);
+    /** @var \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface $controller */
+    $controller = $this->controller_factory->companyBalanceController($company);
 
     static::assertInstanceOf(CompanyPrepaidBalanceControllerInterface::class, $controller);
 
@@ -104,17 +105,20 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
    * Tests the developer balance controller.
    */
   public function testApiPackageController() {
-    /** @var ApiPackageControllerInterface $controller */
-    $controller  = $this->controller_factory->apiPackageController();
+    /** @var \Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface $controller */
+    $controller = $this->controller_factory->apiPackageController();
 
     static::assertInstanceOf(ApiPackageControllerInterface::class, $controller);
 
     static::assertSame($this->sdk_connector->getOrganization(), $controller->getOrganisationName());
   }
 
+  /**
+   * Test the package rate plan controller.
+   */
   public function testPackageRatePlanController() {
     /** @var \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface $controller */
-    $controller  = $this->controller_factory->packageRatePlanController($this->randomString());
+    $controller = $this->controller_factory->packageRatePlanController($this->randomString());
 
     static::assertInstanceOf(RatePlanControllerInterface::class, $controller);
 

@@ -20,19 +20,18 @@
 namespace Drupal\apigee_m10n\Controller;
 
 use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n\FormattedBalance;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- *  Controller for billing related routes.
+ * Controller for billing related routes.
  */
-class BillingController extends ControllerBase {
+class BillingController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
    * Cache prefix that is used for cache tags for this controller.
@@ -49,20 +48,28 @@ class BillingController extends ControllerBase {
   private $monetization;
 
   /**
-   * @var \Drupal\commerce_price\CurrencyFormatter
+   * The Apigee SDK connector.
+   *
+   * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
-  private $currency_formatter;
+  protected $sdk_connector;
 
   /**
    * BillingController constructor.
    *
+   * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
+   *   The `apigee_edge.sdk_connector` service.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The `apigee_m10n.monetization` service.
    */
   public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization) {
     $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('apigee_edge.sdk_connector'),
@@ -74,6 +81,7 @@ class BillingController extends ControllerBase {
    * Redirect to the user's prepaid balances page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   Gets a redirect to the users's balance page.
    */
   public function myPrepaidBalance(): RedirectResponse {
     return $this->redirect(
@@ -83,25 +91,28 @@ class BillingController extends ControllerBase {
     );
   }
 
-
   /**
-   *  View prepaid balance and account statements, add money to prepaid balance.
+   * View prepaid balance and account statements, add money to prepaid balance.
    *
-   * @var $user string
+   * @param string $user
+   *   The user id.
    *
-   * @return array|Response
+   * @todo: Use the user object.
+   *
+   * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+   *   A render array or a redirect response.
+   *
    * @throws \Exception
    */
   public function prepaidBalancePage(string $user) {
-
-    /** @todo Drupal 7 version uses company id if it's available. Implement when company context is ironed out. */
     $user = User::load($user);
 
     if (!$user) {
       throw new NotFoundHttpException();
     }
 
-    // Retrieve the prepaid balances for this user for the current month and year.
+    // Retrieve the prepaid balances for this user for the current month and
+    // year.
     $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
 
     return [
@@ -109,13 +120,15 @@ class BillingController extends ControllerBase {
         '#theme' => 'prepaid_balances',
         '#balances' => $balances,
         '#cache' => [
-          // Add a custom cache tag so that this page can be invalidated by code that updates prepaid balances.
+          // Add a custom cache tag so that this page can be invalidated by code
+          // that updates prepaid balances.
           'tags' => [static::$cachePrefix . ':user:' . $user->id()],
-          // Cache by path for up to 10 minutes
+          // Cache by path for up to 10 minutes.
           'contexts' => ['url.path'],
-          'max-age' => 600
+          'max-age' => 600,
         ],
-      ]
+      ],
     ];
   }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -37,14 +38,17 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
   /**
    * Drupal user.
    *
-   * @var $account
+   * @var \Drupal\Core\Session\AccountInterface
    */
   protected $account;
 
   /**
-   * (@inheritdoc}
+   * {@inheritdoc}
    *
-   * @throws \Exception
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   protected function setUp() {
     parent::setUp();
@@ -81,12 +85,14 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
         'name' => $name,
         'description' => $name . ' description.',
         'displayName' => $name . ' display name',
-        'apiProducts' => [new ApiProduct([
-          'id' => strtolower($product_name),
-          'name' => $product_name,
-          'description' => $product_name . ' description.',
-          'displayName' => $product_name . ' display name',
-        ])]
+        'apiProducts' => [
+          new ApiProduct([
+            'id' => strtolower($product_name),
+            'name' => $product_name,
+            'description' => $product_name . ' description.',
+            'displayName' => $product_name . ' display name',
+          ]),
+        ],
       ]);
     }
 
@@ -105,19 +111,19 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
 
     // Click to view product details.
     $this->click("$prefix div.apigee-sdk-package-basic");
-    $this->assertCssElementContains("{$prefix} div.apigee-package-id",           $packages[0]->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-name",         $packages[0]->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-description",  $packages[0]->getDescription());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-status",       $packages[0]->getStatus());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-id", $packages[0]->id());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-name", $packages[0]->getName());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-description", $packages[0]->getDescription());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-status", $packages[0]->getStatus());
     // Set the selector prefix for the 1st product of the 1st package.
     $prefix = 'ul.apigee-package-list > li:nth-child(1) ul.apigee-product-list li:nth-child(1)';
     // Get the product.
     /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct $product */
     $product = $packages[0]->getApiProducts()[0];
     $this->assertCssElementContains("{$prefix} div.apigee-product-display-name", $product->getDisplayName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-id",           $product->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-name",  $product->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-description",  $product->getDescription());
+    $this->assertCssElementContains("{$prefix} div.apigee-product-id", $product->id());
+    $this->assertCssElementContains("{$prefix} div.apigee-product-name", $product->getName());
+    $this->assertCssElementContains("{$prefix} div.apigee-product-description", $product->getDescription());
 
     // Make necessary assertions for the second row.
     $prefix = 'ul.apigee-package-list > li:nth-child(2)';
@@ -126,18 +132,19 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
 
     // Click to view product details.
     $this->click("$prefix div.apigee-sdk-package-basic");
-    $this->assertCssElementContains("{$prefix} div.apigee-package-id",           $packages[1]->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-name",         $packages[1]->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-description",  $packages[1]->getDescription());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-status",       $packages[1]->getStatus());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-id", $packages[1]->id());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-name", $packages[1]->getName());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-description", $packages[1]->getDescription());
+    $this->assertCssElementContains("{$prefix} div.apigee-package-status", $packages[1]->getStatus());
     // Set the selector prefix for the 1st product of the 1st package.
     $prefix = 'ul.apigee-package-list > li:nth-child(2) ul.apigee-product-list li:nth-child(1)';
     // Get the product.
     /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct $product */
     $product = $packages[1]->getApiProducts()[0];
     $this->assertCssElementContains("{$prefix} div.apigee-product-display-name", $product->getDisplayName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-id",           $product->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-name",  $product->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-description",  $product->getDescription());
+    $this->assertCssElementContains("{$prefix} div.apigee-product-id", $product->id());
+    $this->assertCssElementContains("{$prefix} div.apigee-product-name", $product->getName());
+    $this->assertCssElementContains("{$prefix} div.apigee-product-description", $product->getDescription());
   }
+
 }

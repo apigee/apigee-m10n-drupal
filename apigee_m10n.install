@@ -53,11 +53,11 @@ function apigee_m10n_requirements($phase) {
       return $requirements;
     }
 
-    $monetization_enabled = false;
+    $monetization_enabled = FALSE;
 
     foreach ($org_details->properties->property as $property) {
       if ($property->name === 'features.isMonetizationEnabled' && $property->value === 'true') {
-        $monetization_enabled = true;
+        $monetization_enabled = TRUE;
         break;
       }
     }

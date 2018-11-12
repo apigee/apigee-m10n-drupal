@@ -46,11 +46,15 @@ class Monetization implements MonetizationInterface {
   const MONETIZATION_DISABLED_ERROR_MESSAGE = 'Monetization is not enabled for your Apigee Edge organization.';
 
   /**
+   * The Apigee Edge SDK connector.
+   *
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
   private $sdk_connector;
 
   /**
+   * The SDK controller factory.
+   *
    * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
    */
   private $sdk_controller_factory;
@@ -63,28 +67,39 @@ class Monetization implements MonetizationInterface {
   private $messenger;
 
   /**
+   * The Cache backend.
+   *
    * @var \Drupal\Core\Cache\CacheBackendInterface
    */
   private $cache;
 
   /**
+   * The logger.
+   *
    * @var \Psr\Log\LoggerInterface
    */
   private $logger;
 
   /**
-   * @var \CommerceGuys\Intl\Formatter\CurrencyFormatter;
+   * The currency formatter.
+   *
+   * @var \CommerceGuys\Intl\Formatter\CurrencyFormatter
    */
-  private $numberFormatter;
+  private $currencyFormatter;
 
   /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
+   *   The Apigee Edge SDK connector.
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
+   *   The SDK controller factory.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Drupal core messenger service (for adding flash messages).
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   *   The Cache backend.
    * @param \Psr\Log\LoggerInterface $logger
+   *   The logger.
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
@@ -103,7 +118,6 @@ class Monetization implements MonetizationInterface {
     $currencyRepository = new CurrencyRepository();
 
     $this->currencyFormatter = new CurrencyFormatter($numberFormatRepository, $currencyRepository);
-
   }
 
   /**
@@ -124,7 +138,8 @@ class Monetization implements MonetizationInterface {
 
       try {
         $org = $org_controller->load($org_id);
-      } catch (\Exception $e) {
+      }
+      catch (\Exception $e) {
         $this->messenger->addError($e->getMessage());
         return $is_monetization_enabled = FALSE;
       }
@@ -181,21 +196,26 @@ class Monetization implements MonetizationInterface {
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
-
   /**
+   * Gets the prepaid balances.
+   *
    * Uses a prepaid balance controller to return prepaid balances for a
    * specified month and year.
    *
    * @param \Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface $balance_controller
+   *   The balance controller.
    * @param \DateTimeImmutable $billingDate
+   *   The time to get the report for.
    *
-   * @return array|null
+   * @return \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[]|null
+   *   The balance list or null if no balances are available.
    */
   protected function getPrepaidBalances(PrepaidBalanceControllerInterface $balance_controller, \DateTimeImmutable $billingDate): ?array {
 
     try {
       $result = $balance_controller->getPrepaidBalance($billingDate);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->messenger->addWarning('Unable to retrieve prepaid balances.');
       $this->logger->warning('Unable to retrieve prepaid balances: ' . $e->getMessage());
       return NULL;
@@ -210,4 +230,5 @@ class Monetization implements MonetizationInterface {
   public function formatCurrency(string $amount, string $currency_id): string {
     return $this->currencyFormatter->format($amount, $currency_id);
   }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -22,7 +23,6 @@ use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultForbidden;
 use Drupal\Core\Session\AccountInterface;
-use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -34,6 +34,8 @@ use Psr\Log\LoggerInterface;
 class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
 
   /**
+   * The monetization service.
+   *
    * @var \Drupal\apigee_m10n\MonetizationInterface
    */
   protected $monetization;
@@ -48,8 +50,11 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Tests that monetization service correctly identifies a monetized
-   * organization.
+   * Tests that monetization service can identifies a monetized organization.
+   *
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   public function testMonetizationEnabled() {
 
@@ -59,12 +64,14 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();
 
-
     self::assertEquals($is_monetization_enabled, TRUE);
   }
 
   /**
-   * Tests that the monetization service correctly identifies an organization without monetization enabled.
+   * Tests a org without monetization enabled.
+   *
+   * Tests that the monetization service correctly identifies an organization
+   * without monetization enabled.
    */
   public function testMonetizationDisabled() {
 
@@ -77,7 +84,6 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();
-
 
     self::assertEquals($is_monetization_enabled, FALSE);
   }
@@ -101,10 +107,12 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
       ->method('getEmail')
       ->will($this->returnValue($email));
 
-    $this->stack->queueFromResponseFile(['get_eligible_products' => [
-      'id' => strtolower($test_product_name),
-      'name' => $test_product_name,
-    ]]);
+    $this->stack->queueFromResponseFile([
+      'get_eligible_products' => [
+        'id' => strtolower($test_product_name),
+        'name' => $test_product_name,
+      ],
+    ]);
 
     // Test that the user can access the API Product.
     $access_result = $this->monetization->apiProductAssignmentAccess($entity, $account);
@@ -129,4 +137,5 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     $logger = $this->container->get('logger.channel.apigee_m10n');
     static::assertInstanceOf(LoggerInterface::class, $logger);
   }
+
 }

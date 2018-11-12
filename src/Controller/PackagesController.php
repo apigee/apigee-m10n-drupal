@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -58,6 +59,7 @@ class PackagesController extends ControllerBase {
    * Redirect to the users catalog page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   A redirect to the current user's packages page.
    */
   public function myCatalog(): RedirectResponse {
     return $this->redirect(
@@ -71,6 +73,7 @@ class PackagesController extends ControllerBase {
    * Redirect to the users purchased page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   A redirect to the current user's purchased plan page.
    */
   public function myPurchased(): RedirectResponse {
     return $this->redirect(
@@ -83,7 +86,7 @@ class PackagesController extends ControllerBase {
   /**
    * Gets a list of available packages for this user.
    *
-   * @param \Drupal\user\UserInterface|NULL $user
+   * @param \Drupal\user\UserInterface|null $user
    *   The drupal user/developer.
    *
    * @return array
@@ -96,21 +99,22 @@ class PackagesController extends ControllerBase {
     $all_packages = $package_controller->getEntities();
     // Load purchased packages for comparison.
     $purchased_packages = $package_controller->getAvailableApiPackagesByDeveloper($user->getEmail());
-    // We don't want to show packages that have already been purchased split the difference.
+    // We don't want to show packages that have already been purchased split the
+    // difference.
     $available_packages = array_diff_key($all_packages, $purchased_packages);
 
     return [
       'package_list' => [
         '#theme' => 'package_list',
         '#package_list' => $available_packages,
-      ]
+      ],
     ];
   }
 
   /**
    * Gets a list of purchased packages for this user.
    *
-   * @param \Drupal\user\UserInterface|NULL $user
+   * @param \Drupal\user\UserInterface|null $user
    *   The drupal user/developer.
    *
    * @return array
@@ -119,4 +123,5 @@ class PackagesController extends ControllerBase {
   public function purchasedPage(UserInterface $user = NULL) {
     return ['#markup' => $this->t('Hello World')];
   }
+
 }

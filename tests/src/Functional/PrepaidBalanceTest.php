@@ -22,7 +22,7 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 use Drupal\Core\Url;
 
 /**
- * Class PrepaidBalanceTest
+ * Functional test for prepaid balance report.
  *
  * @package Drupal\Tests\apigee_m10n\Functional
  * @group apigee_m10n
@@ -32,10 +32,18 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
   /**
    * Drupal user.
    *
-   * @var $account
+   * @var \Drupal\Core\Session\AccountInterface
    */
   protected $account;
 
+  /**
+   * Test access.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
   public function testPrepaidBalancesAccessDenied() {
 
     // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
@@ -51,32 +59,40 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseContains('Access denied');
   }
 
+  /**
+   * Test the prepaid balance response.
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   * @throws \Behat\Mink\Exception\ExpectationException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
   public function testPrepaidBalancesView() {
-    // If the user has "view mint prepaid reports" permission, they should be able to see some prepaid balances.
-    $this->account = $this->createAccount([
-      'view mint prepaid reports'
-    ]);
+    // If the user has "view mint prepaid reports" permission, they should be
+    // able to see some prepaid balances.
+    $this->account = $this->createAccount(['view mint prepaid reports']);
 
     $this->queueOrg();
 
     $this->drupalLogin($this->account);
 
-    $this->stack->queueFromResponseFile(['get-prepaid-balances' => [
-      "current_aud" => 100.0000,
-      "current_total_aud" => 200.0000,
-      "current_usage_aud" => 50.0000,
-      "topups_aud" => 50.0000,
-      "current_usage_aud" => 50.0000,
+    $this->stack->queueFromResponseFile([
+      'get-prepaid-balances' => [
+        "current_aud" => 100.0000,
+        "current_total_aud" => 200.0000,
+        "current_usage_aud" => 50.0000,
+        "topups_aud" => 50.0000,
 
-      "current_usd" => 72.2000,
-      "current_total_usd" => 120.0200,
-      "current_usage_usd" => 47.8200,
-      "topups_usd" => 30.0200,
-      "current_usage_usd" => 47.8200,
-    ]]);
+        "current_usd" => 72.2000,
+        "current_total_usd" => 120.0200,
+        "current_usage_usd" => 47.8200,
+        "topups_usd" => 30.0200,
+      ],
+    ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->account->id()
+      'user' => $this->account->id(),
     ]));
 
     $this->assertSession()->responseNotContains('Access denied');
@@ -88,7 +104,6 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(5)', 'A$0.00');
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(6)', 'A$100.00');
 
-
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(1)', 'USD');
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(2)', '$0.00');
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(3)', '$30.02');
@@ -96,4 +111,5 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(5)', '$0.00');
     $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-usd > td:nth-child(6)', '72.20');
   }
+
 }

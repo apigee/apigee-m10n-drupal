@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -26,6 +27,9 @@ use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use GuzzleHttp\Psr7\Response;
 
+/**
+ * Setup helpers for monetization tests.
+ */
 trait ApigeeMonetizationTestTrait {
 
   use ApigeeEdgeTestTrait {
@@ -34,17 +38,18 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * @var \Drupal\apigee_mock_client\MockHandlerStack
-   *
    * The mock handler stack is responsible for serving queued api responses.
+   *
+   * @var \Drupal\apigee_mock_client\MockHandlerStack
    */
   protected $stack;
 
   /**
-   * @var \Drupal\apigee_edge\SDKConnectorInterface
+   * The SDK Connector client.
    *
-   * The SDK Connector client which should have it's http client stack replaced
-   * with our mock.
+   * This will have it's http client stack replaced a mock stack.
+   *
+   * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
   protected $sdk_connector;
 
@@ -90,6 +95,8 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
+   * Create an account.
+   *
    * We override this function from `ApigeeEdgeTestTrait` so we can queue the
    * appropriate response upon account creation.
    *
@@ -146,7 +153,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @param \Drupal\user\UserInterface $developer
    *   The developer user to get properties from.
-   * @param null $response_code
+   * @param string|null $response_code
    *   Add a response code to override the default.
    *
    * @throws \Exception
@@ -164,23 +171,24 @@ trait ApigeeMonetizationTestTrait {
    * Helper function to queue up an org response since every test will need it,.
    *
    * @param bool $monetized
-   *  Whether or not the org is monetized.
+   *   Whether or not the org is monetized.
+   *
    * @throws \Twig_Error_Loader
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
   protected function queueOrg($monetized = TRUE) {
     $this->stack
-      ->queueFromResponseFile(['get_organization' => [
-        'monetization_enabled' => $monetized ? 'true' : 'false',
-      ]]);
+      ->queueFromResponseFile(['get_organization' => ['monetization_enabled' => $monetized ? 'true' : 'false']]);
   }
 
   /**
    * Helper for testing element text by css selector.
    *
-   * @param $selector
-   * @param $text
+   * @param string $selector
+   *   The css selector.
+   * @param string $text
+   *   The test to look for.
    *
    * @throws \Behat\Mink\Exception\ElementTextException
    */
@@ -191,8 +199,10 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Helper for testing the lack of element text by css selector.
    *
-   * @param $selector
-   * @param $text
+   * @param string $selector
+   *   The css selector.
+   * @param string $text
+   *   The test to look for.
    *
    * @throws \Behat\Mink\Exception\ElementTextException
    */

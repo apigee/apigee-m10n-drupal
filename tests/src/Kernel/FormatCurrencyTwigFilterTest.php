@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -31,13 +32,20 @@ namespace Drupal\Tests\apigee_m10n\Kernel;
 class FormatCurrencyTwigFilterTest extends MonetizationKernelTestBase {
 
   /**
+   * The monetization service.
+   *
    * @var \Drupal\apigee_m10n\MonetizationInterface
    */
   protected $monetization;
 
+  /**
+   * Test template.
+   *
+   * @var array
+   */
   protected $template = [
     '#type' => 'inline_template',
-    '#template' => ''
+    '#template' => '',
   ];
 
   /**
@@ -50,9 +58,9 @@ class FormatCurrencyTwigFilterTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * @covers ::formatCurrency
+   * Test rendering USD.
    */
-  public function testRenderFloatAsUSD() {
+  public function testRenderFloatAsUsd() {
     $this->template['#template'] = "{{ 10.50 | apigee_m10n_format_currency('USD') }}";
 
     $output = (string) \Drupal::service('renderer')->renderPlain($this->template);
@@ -61,9 +69,9 @@ class FormatCurrencyTwigFilterTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * @covers ::formatCurrency
+   * Test rendering UAD.
    */
-  public function testRenderStringAsAUD() {
+  public function testRenderStringAsAud() {
     $this->template['#template'] = "{{ '10.50' | apigee_m10n_format_currency('AUD') }}";
 
     $output = (string) \Drupal::service('renderer')->renderPlain($this->template);

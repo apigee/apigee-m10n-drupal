@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Copyright 2018 Google Inc.
@@ -69,7 +70,7 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
  */
 function apigee_m10n_preprocess_package_list(&$variables) {
   // Convert the package list into individual renderable items.
-  array_walk($variables['package_list'], function (&$package){
+  array_walk($variables['package_list'], function (&$package) {
     $package = [
       '#theme' => 'package',
       '#package' => $package,
@@ -88,12 +89,13 @@ function apigee_m10n_preprocess_package(&$variables) {
     '#product_list' => $variables['package']->getApiProducts(),
   ];
 }
+
 /**
  * Implements hook_preprocess_HOOK().
  */
 function apigee_m10n_preprocess_product_list(&$variables) {
   // Convert the package list into individual renderable items.
-  array_walk($variables['product_list'], function (&$api_product){
+  array_walk($variables['product_list'], function (&$api_product) {
     $api_product = [
       '#theme' => 'api_product',
       '#api_product' => $api_product,

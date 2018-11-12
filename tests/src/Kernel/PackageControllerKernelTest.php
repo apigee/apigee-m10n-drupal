@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -39,12 +40,12 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
   /**
    * Drupal user.
    *
-   * @var \Drupal\user\UserInterface $account
+   * @var \Drupal\user\UserInterface
    */
   protected $account;
 
   /**
-   * (@inheritdoc}
+   * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
@@ -95,9 +96,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
    * @covers ::myPurchased
    */
   public function testMyRedirects() {
-    /**
-     * ## Test the packages redirect. ##
-     */
+    // Test the packages redirect.
     // Queue up a monetized org response.
     $this->stack->queueFromResponseFile('get_monetized_org');
     $request = Request::create('/user/monetization/packages', 'GET');
@@ -107,11 +106,9 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $response = $kernel->handle($request);
 
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame('http://localhost/user/'.$this->account->id().'/monetization/packages', $response->headers->get('location'));
+    static::assertSame('http://localhost/user/' . $this->account->id() . '/monetization/packages', $response->headers->get('location'));
 
-    /**
-     * ## Test the purchased packages redirect. ##
-     */
+    // Test the purchased packages redirect.
     // Queue up a monetized org response.
     $request = Request::create('/user/monetization/packages/purchased', 'GET');
 
@@ -120,7 +117,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $response = $kernel->handle($request);
 
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame('http://localhost/user/'.$this->account->id().'/monetization/packages/purchased', $response->headers->get('location'));
+    static::assertSame('http://localhost/user/' . $this->account->id() . '/monetization/packages/purchased', $response->headers->get('location'));
   }
 
   /**
@@ -142,12 +139,14 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
         'name' => $name,
         'description' => $name . ' description.',
         'displayName' => $name . ' display name',
-        'apiProducts' => [new ApiProduct([
-          'id' => strtolower($product_name),
-          'name' => $product_name,
-          'description' => $product_name . ' description.',
-          'displayName' => $product_name . ' display name',
-        ])]
+        'apiProducts' => [
+          new ApiProduct([
+            'id' => strtolower($product_name),
+            'name' => $product_name,
+            'description' => $product_name . ' description.',
+            'displayName' => $product_name . ' display name',
+          ]),
+        ],
       ]);
     }
 
@@ -165,4 +164,5 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
       static::assertContains(strtolower($name . 'Product'), $response);
     }
   }
+
 }
