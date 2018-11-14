@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -64,20 +65,23 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function mail ($key, &$message, $params) {
+  public function mail($key, &$message, $params) {
     $params['@site'] = $this->config->get('system.site')->get('name');
-    switch($key) {
+    switch ($key) {
       case 'balance_adjustment_report':
         $options = ['langcode' => $message['langcode']];
         $message['subject'] = t('Add Credit successfully applied to account (@email@team_name) from @site', $params, $options);
         $message['body'][0] = t($params['report_text'], $params, $options);
         break;
+
       case 'balance_adjustment_error_report':
         $options = ['langcode' => $message['langcode']];
         $params['@site'] = $this->config->get('system.site')->get('name');
         $message['subject'] = t('Developer account add credit error from @site', $params, $options);
-        $message['body'][0] = t("There was an error applying a credit to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error", $params, $options);
+        $body = "There was an error applying a credit to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error";
+        $message['body'][0] = t($body, $params, $options);
         break;
+
     }
   }
 
@@ -102,11 +106,11 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
+  public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
     if ($entity_type->id() === 'commerce_product') {
-      // The base field needs to be added to all product types for the storage to be
-      // allocated but the option to enable will be hidden and unused unless enabled
-      // for that bundle.
+      // The base field needs to be added to all product types for the storage
+      // to be allocated but the option to enable will be hidden and unused
+      // unless enabled for that bundle.
       $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
         ->setLabel(t('This is an Apigee add credit product'))
         ->setRevisionable(TRUE)
@@ -120,15 +124,17 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  function entityBundleFieldInfo(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
-    // Make sure we are dealing with a product bundle that has Apigee add credit enabled.
+  public function entityBundleFieldInfo(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+    // Make sure we are dealing with a product bundle that has Apigee add credit
+    // enabled.
     if ($entity_type->id() === 'commerce_product'
       && ($product_type = ProductType::load($bundle))
       && $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit')
     ) {
-      // Apigee add credit enabled products will automatically update a developer's
-      // balance upon payment completion. This adds a base field to the bundle to
-      // allow add credit to be enabled for products of the bundle individually.
+      // Apigee add credit enabled products will automatically update a
+      // developer's balance upon payment completion. This adds a base field to
+      // the bundle to allow add credit to be enabled for products of the bundle
+      // individually.
       $add_credit_base_def = clone $base_field_definitions['apigee_add_credit_enabled'];
       $add_credit_base_def
         ->setDefaultValue(TRUE)
@@ -160,11 +166,15 @@ class AddCreditService implements AddCreditServiceInterface {
   }
 
   /**
+   * Submit callback for `::formCommerceProductTypeEditFormAlter()`.
+   *
    * Add a third party setting to the product type to flag whether or not this
    * product type is should be used as an apigee to up product.
    *
-   * @param array $form
+   * @param array|null $form
+   *   The add or edit form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
    */
   public static function formCommerceProductTypeSubmit(array &$form, FormStateInterface $form_state) {
     /** @var \Drupal\commerce_product\Entity\ProductTypeInterface $product_type */
@@ -177,4 +187,5 @@ class AddCreditService implements AddCreditServiceInterface {
       );
     }
   }
+
 }

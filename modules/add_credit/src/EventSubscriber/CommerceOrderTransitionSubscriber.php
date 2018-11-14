@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -23,21 +24,21 @@ use Drupal\apigee_edge\JobExecutor;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
-use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\state_machine\Event\WorkflowTransitionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * A state transition subscriber for `commerce_order` entities. See:
- * <https://docs.drupalcommerce.org/commerce2/developer-guide/orders/react-to-workflow-transitions>
+ * A state transition subscriber for `commerce_order` entities.
  *
- * @package Drupal\apigee_m10n_add_credit\EventSubscriber
+ * @see: <https://docs.drupalcommerce.org/commerce2/developer-guide/orders/react-to-workflow-transitions>
  */
 class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
   use JobCreatorTrait;
 
   /**
+   * The apigee edge SDK connector.
+   *
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
   protected $sdk_connector;
@@ -53,7 +54,9 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
    * CommerceOrderTransitionSubscriber constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
+   *   The apigee edge SDK connector.
    * @param \Drupal\apigee_edge\JobExecutor $job_executor
+   *   The apigee job executor.
    */
   public function __construct(SDKConnectorInterface $sdk_connector, JobExecutor $job_executor) {
     $this->sdk_connector = $sdk_connector;
@@ -72,11 +75,13 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
   }
 
   /**
+   * Handles commerce order state change.
+   *
    * Checks if the order is completed and checks for Apigee add credit products
    * that need to be applied to a developer.
    *
    * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
-   *  The transition event.
+   *   The transition event.
    *
    * @throws \Exception
    */
@@ -86,9 +91,9 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
     // Make sure this transition is to the `completed` state.
     if ($order->getState()->value === 'completed') {
       // Create a new price for the tally.
-      /** @var Price[] $add_credit_totals */
+      /** @var \Drupal\commerce_price\Price[] $add_credit_totals */
       $add_credit_totals = [];
-      // We need to loop through all of the products
+      // We need to loop through all of the products.
       foreach ($order->getItems() as $order_item) {
         /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variant */
         $variant = $order_item->getPurchasedEntity();
@@ -104,14 +109,14 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
             : $order_item->getTotalPrice();
         }
       }
-      // Checks to see if there are any add credit totals that need to be applied to
-      // a developer's account balance.
+      // Checks to see if there are any add credit totals that need to be
+      // applied to a developer's account balance.
       foreach ($add_credit_totals as $account_id => $add_credit_total) {
         if (!empty((double) $add_credit_total->getNumber())) {
           // Load the user this add credit item is for. TODO: Handle teams here.
           $user = user_load_by_mail($account_id);
-          // Create a new job update the account balance. Use a custom adjustment
-          // type because it can support a credit or a debit.
+          // Create a new job update the account balance. Use a custom
+          // adjustment type because it can support a credit or a debit.
           $job = new BalanceAdjustmentJob($user, new Adjustment([
             'type' => 'apigee_balance',
             'label' => 'Apigee balance adjustment',
@@ -123,4 +128,5 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
       }
     }
   }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -53,7 +54,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return [ static::$CONFIG_NAME ];
+    return [static::$CONFIG_NAME];
   }
 
   /**
@@ -73,19 +74,19 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
     $default_email = $config->get('notification_recipient');
     $default_email = $default_email ?: $this->configFactory()->get('system.site')->get('mail');
 
-    $form['notifications'] = array(
+    $form['notifications'] = [
       '#type' => 'fieldset',
       '#title' => $this
         ->t('Notifications'),
-    );
+    ];
     // Whether or not to sent an email if there is an error adding credit.
-    $description  = 'This notification is sent when an %add_credit product is 
-                     processed. Normally this would result in the application of 
-                     the purchased amount to the developer or the team account. 
-                     If an error occurs while attempting to apply the credit to 
-                     the users account the following recipient will be notified. 
-                     Select the %always_option to receive a notification even if 
-                     the credit is applied successfully.';
+    $description = 'This notification is sent when an %add_credit product is 
+                    processed. Normally this would result in the application of 
+                    the purchased amount to the developer or the team account. 
+                    If an error occurs while attempting to apply the credit to 
+                    the users account the following recipient will be notified. 
+                    Select the %always_option to receive a notification even if 
+                    the credit is applied successfully.';
 
     $form['notifications']['notify_on'] = [
       '#type' => 'radios',
