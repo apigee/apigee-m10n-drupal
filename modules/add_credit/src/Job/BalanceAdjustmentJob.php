@@ -256,10 +256,10 @@ class BalanceAdjustmentJob extends EdgeJob {
       /** @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[] $balances */
       $balances = $controller->getPrepaidBalance(new \DateTimeImmutable());
     }
-    catch (ApiResponseException $ex) {
+    catch (ApiResponseException $e) {
       // A 204 response is normal for an account with no balance.
-      if ($ex->getResponse()->getStatusCode() !== 204) {
-        throw $ex;
+      if ($e->getResponse()->getStatusCode() !== 204) {
+        throw $e;
       }
     }
 
