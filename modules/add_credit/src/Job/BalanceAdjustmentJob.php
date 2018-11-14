@@ -205,7 +205,7 @@ class BalanceAdjustmentJob extends EdgeJob {
 
         throw $thrown;
       }
-      elseif ($this->module_config->get('notify_on') == ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS) {
+      elseif ($this->module_config->get('notify_on') == ApigeeAddCreditConfigForm::NOTIFY_ALWAYS) {
         $this->sendNotification('balance_adjustment_report', $message_context);
       }
     }
