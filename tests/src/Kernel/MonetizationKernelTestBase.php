@@ -66,7 +66,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
 
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE));
 
-    $this->init();
+    $this->baseSetUp();
   }
 
 }
