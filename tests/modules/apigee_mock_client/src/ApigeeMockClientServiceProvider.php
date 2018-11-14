@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -24,12 +25,13 @@ use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class ApigeeM10nTestServiceProvide
+ * Class ApigeeMockClientServiceProvider.
+ *
+ * @todo: replace this with a service decorator that injects the apigee_mock_client.mock_http_client_factory dependency.
+ * @see https://github.com/apigee/apigee-edge-drupal/pull/79#discussion_r229186448
  *
  * This class is automatically picked up by the container builder.
- * See: https://www.drupal.org/docs/8/api/services-and-dependency-injection/altering-existing-services-providing-dynamic-services
- *
- * @package Drupal\apigee_mock_client
+ * @see: https://www.drupal.org/docs/8/api/services-and-dependency-injection/altering-existing-services-providing-dynamic-services.
  */
 class ApigeeMockClientServiceProvider extends ServiceProviderBase {
 
@@ -41,4 +43,5 @@ class ApigeeMockClientServiceProvider extends ServiceProviderBase {
     $container->getDefinition('apigee_edge.sdk_connector')
       ->replaceArgument(0, new Reference('apigee_mock_client.mock_http_client_factory'));
   }
+
 }

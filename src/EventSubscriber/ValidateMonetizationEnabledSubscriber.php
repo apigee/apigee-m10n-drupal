@@ -33,6 +33,14 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
   private $monetization;
   private $messenger;
 
+  /**
+   * ValidateMonetizationEnabledSubscriber constructor.
+   *
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The monetization service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
+   */
   public function __construct(MonetizationInterface $monetization, MessengerInterface $messenger) {
     $this->messenger = $messenger;
     $this->monetization = $monetization;
@@ -50,8 +58,9 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
   /**
    * {@inheritdoc}
    */
-  static function getSubscribedEvents() {
-    $events[KernelEvents::REQUEST][] = array('validateMonetizationEnabled');
+  public static function getSubscribedEvents() {
+    $events[KernelEvents::REQUEST][] = ['validateMonetizationEnabled'];
     return $events;
   }
+
 }

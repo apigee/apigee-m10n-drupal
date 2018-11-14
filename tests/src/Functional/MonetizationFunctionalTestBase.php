@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -22,32 +23,41 @@ use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\Tests\BrowserTestBase;
 
+/**
+ * A base class for functional tests.
+ *
+ * @group apigee_m10n
+ * @group apigee_m10n_functional
+ */
 class MonetizationFunctionalTestBase extends BrowserTestBase {
 
-  use ApigeeMonetizationTestTrait;
+  use ApigeeMonetizationTestTrait {
+    setUp as baseSetUp;
+  }
 
   protected static $modules = [
     'apigee_edge',
     'apigee_m10n',
     'apigee_mock_client',
-    'system'
+    'system',
   ];
 
   /**
-   * @var \Drupal\apigee_mock_client\MockHandlerStack
-   *
    * The mock handler stack is responsible for serving queued api responses.
+   *
+   * @var \Drupal\apigee_mock_client\MockHandlerStack
    */
   protected $stack;
 
   /**
    * Whether actual integration tests are enabled.
-   * @var boolean
+   *
+   * @var bool
    */
   protected $integration_enabled;
 
   /**
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
@@ -55,7 +65,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
-    $this->init();
+    $this->baseSetUp();
   }
 
 }

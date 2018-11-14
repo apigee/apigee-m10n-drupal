@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -56,8 +57,10 @@ interface ApigeeSdkControllerFactoryInterface {
    * Creates a company prepaid balance controller.
    *
    * @param \Apigee\Edge\Api\Monetization\Entity\CompanyInterface $company
+   *   The company.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface
+   *   The company balance controller.
    */
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface;
 

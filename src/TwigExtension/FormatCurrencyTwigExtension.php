@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -24,7 +25,7 @@ namespace Drupal\apigee_m10n\TwigExtension;
 class FormatCurrencyTwigExtension extends \Twig_Extension {
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function getFilters() {
     return [
@@ -33,7 +34,7 @@ class FormatCurrencyTwigExtension extends \Twig_Extension {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function getName() {
     return 'apigee_m10n.format_currency_twig_extension';
@@ -46,12 +47,14 @@ class FormatCurrencyTwigExtension extends \Twig_Extension {
    * {{ '10.00' | apigee_m10n_format_currency('USD') }}
    *
    * @param mixed $amount
-   *   The amount of currency that should be formatted. Generally a string representation of a float, although
-   *   a float will also be accepted.
+   *   The amount of currency that should be formatted.
    *
+   *   Generally a string representation of a float, although a float will also
+   *   be accepted.
    * @param string $currency_code
+   *   The currency code.
    *
-   * @see CommerceGuys\Intl\Currency\CurrencyRepository::getBaseDefinitions for a list of valid currency codes
+   * @see \CommerceGuys\Intl\Currency\CurrencyRepository::getBaseDefinitions()
    *
    * @return string
    *   A formatted price.

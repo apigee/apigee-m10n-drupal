@@ -4,4 +4,3 @@ apigee_m10n_add_credit.apigee_add_credit_config_form:
   description: 'Settings for drupal commerce add credit integration.'
   parent: system.admin_apigee_m10n
   weight: 99
-

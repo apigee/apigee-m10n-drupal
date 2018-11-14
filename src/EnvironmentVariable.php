@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -24,9 +25,10 @@ namespace Drupal\apigee_m10n;
  * @package Drupal\apigee_m10n
  */
 abstract class EnvironmentVariable {
-  public static $APIGEE_EDGE_ENDPOINT       = 'APIGEE_EDGE_ENDPOINT';
-  public static $APIGEE_EDGE_ORGANIZATION   = 'APIGEE_EDGE_ORGANIZATION';
-  public static $APIGEE_EDGE_USERNAME       = 'APIGEE_EDGE_USERNAME';
-  public static $APIGEE_EDGE_PASSWORD       = 'APIGEE_EDGE_PASSWORD';
-  public static $APIGEE_INTEGRATION_ENABLE  = 'APIGEE_INTEGRATION_ENABLE';
+  public static $APIGEE_EDGE_ENDPOINT = 'APIGEE_EDGE_ENDPOINT';
+  public static $APIGEE_EDGE_ORGANIZATION = 'APIGEE_EDGE_ORGANIZATION';
+  public static $APIGEE_EDGE_USERNAME = 'APIGEE_EDGE_USERNAME';
+  public static $APIGEE_EDGE_PASSWORD = 'APIGEE_EDGE_PASSWORD';
+  public static $APIGEE_INTEGRATION_ENABLE = 'APIGEE_INTEGRATION_ENABLE';
+
 }
