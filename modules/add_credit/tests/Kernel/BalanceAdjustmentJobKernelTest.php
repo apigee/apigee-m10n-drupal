@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
-use Drupal\apigee_edge\Job;
+use Drupal\apigee_edge\Job\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
@@ -141,14 +141,13 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     ]));
 
     // Save the job.
-    $this->queueDeveloperResponse($this->developer);
     $this->scheduleJob($job);
     static::assertSame(Job::IDLE, $job->getStatus());
 
     $this->stack
       // Queue an empty balance response because this is what you get with a new
       // user.
-      ->queueMockResponse('get_prepaid_balances_empty')
+      ->queueMockResponse('no_content')
       // Queue a developer balance response for the top up (POST).
       ->queueMockResponse(['post_developer_balances' => ['amount' => '19.99']])
       // Queue an updated balance response.
@@ -201,7 +200,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     ]));
 
     // Save the job.
-    $this->queueDeveloperResponse($this->developer);
     $this->scheduleJob($job);
     static::assertSame(Job::IDLE, $job->getStatus());
 
@@ -288,7 +286,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     ]));
 
     // Save the job.
-    $this->queueDeveloperResponse($this->developer);
     $this->scheduleJob($job);
     static::assertSame(Job::IDLE, $job->getStatus());
 

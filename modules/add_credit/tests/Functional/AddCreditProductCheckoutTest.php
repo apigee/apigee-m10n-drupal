@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
-use Drupal\apigee_edge\Job;
+use Drupal\apigee_edge\Job\Job;
 use Drupal\commerce_payment\Entity\PaymentGateway;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\Product;
