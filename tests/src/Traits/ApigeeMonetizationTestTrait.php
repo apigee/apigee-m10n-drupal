@@ -87,7 +87,7 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
-    $this->stack = $this->container->get('apigee_mock_client.mock_http_handler_stack');
+    $this->stack         = $this->container->get('apigee_mock_client.mock_http_handler_stack');
     $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
 
     $this->initAuth();
