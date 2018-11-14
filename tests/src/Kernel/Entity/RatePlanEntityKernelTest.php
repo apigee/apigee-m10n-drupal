@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -74,12 +75,11 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     $rate_plan = RatePlan::loadById($this->rate_plan->getPackage()->id(), $this->rate_plan->id());
 
     static::assertInstanceOf(RatePlanInterface::class, $rate_plan);
-    static::assertSame(getType($rate_plan), gettype($this->rate_plan));
-
+    static::assertSame(gettype($rate_plan), gettype($this->rate_plan));
 
     static::assertSame($rate_plan->isAdvance(), $this->rate_plan->isAdvance());
     static::assertSame($rate_plan->getCurrency()->id(), $this->rate_plan->getCurrency()->id());
-//    customPaymentTerm
+    // What about `customPaymentTerm`?
     static::assertSame($rate_plan->getDescription(), $this->rate_plan->getDescription());
     static::assertSame($rate_plan->getDisplayName(), $this->rate_plan->getDisplayName());
     static::assertSame($rate_plan->getEarlyTerminationFee(), $this->rate_plan->getEarlyTerminationFee());
@@ -87,7 +87,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getFrequencyDurationType(), $this->rate_plan->getFrequencyDurationType());
     static::assertSame($rate_plan->id(), $this->rate_plan->id());
     static::assertSame($rate_plan->isPrivate(), $this->rate_plan->isPrivate());
-//    keepOriginalStartDate
+    // What about `keepOriginalStartDate`?
     static::assertSame($rate_plan->getPackage()->id(), $this->rate_plan->getPackage()->id());
     static::assertSame($rate_plan->getName(), $this->rate_plan->getName());
     static::assertSame($rate_plan->getOrganization()->getName(), $this->rate_plan->getOrganization()->getName());
@@ -99,6 +99,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getRecurringType(), $this->rate_plan->getRecurringType());
     static::assertSame($rate_plan->getSetUpFee(), $this->rate_plan->getSetUpFee());
     // @todo: make sure timestamps are using the same timezone.
-//    static::assertSame($rate_plan->getStartDate()->format('d-m-y h:m:s'), $this->rate_plan->getStartDate()->format('d-m-y h:m:s'));
+    // static::assertSame($rate_plan->getStartDate()->format('d-m-y h:m:s'), $this->rate_plan->getStartDate()->format('d-m-y h:m:s'));
   }
+
 }

@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -23,9 +24,7 @@ use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Drupal\Component\Utility\Random;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
-use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
@@ -82,9 +81,9 @@ class RatePlanDetailFieldItem extends FieldItemBase {
       'ratePlanRates'             => [
         new RatePlanRateRateCard([
           'id'        => strtolower($random->name(16)),
-          'startUnit' => rand(5,20),
-          'rate'      => rand(5,20),
-        ])
+          'startUnit' => rand(5, 20),
+          'rate'      => rand(5, 20),
+        ]),
       ],
       "ratingParameter"           => "VOLUME",
       "type"                      => "RATECARD",
@@ -92,4 +91,5 @@ class RatePlanDetailFieldItem extends FieldItemBase {
 
     return $values;
   }
+
 }

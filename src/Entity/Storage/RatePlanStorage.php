@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -100,7 +101,7 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
     $sdk_entities = $this->getController($package_id)
       ->getEntities(TRUE, FALSE);
 
-    // Convert
+    // Convert the SDK entities entity to drupal entities.
     $entities = array_map([$this, 'convertToDrupalEntity'], $sdk_entities);
 
     $this->setPersistentCache($entities);
@@ -183,10 +184,11 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
    * @deprecated Use `::loadById` instead.
    */
   public function load($id) {
-    // Try to parse the
+    // @todo discuss if we should even be parsing `package::ID`.
     if ((list($package_id, $reate_plan_id) = explode('::', $id)) && !empty($package_id) && !empty($reate_plan_id)) {
       return $this->loadById($package_id, $reate_plan_id);
-    } else {
+    }
+    else {
       throw new \InvalidArgumentException('A package id is required to load a package rate plan. Use ');
     }
   }
@@ -230,4 +232,5 @@ class RatePlanStorage extends FieldableMonetizationEntityStorageBase implements 
   protected function convertToDrupalEntity(StandardRatePlan $sdk_entity): RatePlanInterface {
     return EntityConvertAwareTrait::convertToDrupalEntity($sdk_entity, RatePlan::class);
   }
+
 }

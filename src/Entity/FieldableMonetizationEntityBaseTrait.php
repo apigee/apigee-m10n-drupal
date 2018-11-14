@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -42,14 +42,11 @@ trait FieldableMonetizationEntityBaseTrait {
   }
 
   /**
+   * {@inheritdoc}
+   *
    * This is mostly copied from `FieldableEdgeEntityBaseTrait` but we are adding
    * support for using custom Apigee field values directly.
    *
-   * @param $field_name
-   * @param $value
-   * @param bool $notify
-   *
-   * @return $this
    * @throws \Drupal\Core\TypedData\Exception\ReadOnlyException
    */
   public function set($field_name, $value, $notify = TRUE) {
@@ -70,7 +67,7 @@ trait FieldableMonetizationEntityBaseTrait {
         $fieldValue = $value->getTimestamp();
       }
       // Custom field types can take the objects as is.
-      else if (array_key_exists($field_name, static::propertyToFieldStaticMap())
+      elseif (array_key_exists($field_name, static::propertyToFieldStaticMap())
         && in_array(static::getFieldType($field_name), FieldableMonetizationEntityInterface::APIGEE_SIMPLE_FIELD_TYPES)
       ) {
         $fieldValue = $value;

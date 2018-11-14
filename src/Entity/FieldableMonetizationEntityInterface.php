@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
@@ -20,18 +20,21 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
-use Apigee\Edge\Structure\AttributesProperty;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 
 /**
  * Interface for fieldable Edge entities.
  */
 interface FieldableMonetizationEntityInterface extends FieldableEdgeEntityInterface {
-  public const APIGEE_SIMPLE_FIELD_TYPES  = [
+
+  /**
+   * A list of simple field types.
+   */
+  public const APIGEE_SIMPLE_FIELD_TYPES = [
     'apigee_organization',
     'apigee_api_package',
     'apigee_currency',
     'apigee_rate_plan_detail',
   ];
+
 }

@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -18,16 +19,16 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage;
 
-
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 
-
+/**
+ * A base storage class for fieldable monetization entities.
+ */
 abstract class FieldableMonetizationEntityStorageBase extends MonetizationEntityStorageBase implements FieldableMonetizationEntityStorageInterface {
-
 
   /**
    * {@inheritdoc}
@@ -200,4 +201,5 @@ abstract class FieldableMonetizationEntityStorageBase extends MonetizationEntity
     // Make sure modules can alter field_name initial values.
     $this->invokeHook('field_values_init', $entity);
   }
+
 }

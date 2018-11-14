@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -75,11 +76,12 @@ class ApiPackageFieldItem extends FieldItemBase {
           'description'   => $random->sentences(3),
           'displayName'   => $random->word(16),
           'approvalType'  => ApiProductInterface::APPROVAL_TYPE_AUTO,
-        ])
+        ]),
       ],
       'status'      => 'CREATED',
     ]);
 
     return $values;
   }
+
 }

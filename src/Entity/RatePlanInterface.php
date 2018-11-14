@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -58,7 +59,6 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
    */
   public function getPublished(): bool;
 
-
   /**
    * Loads rate plans by package name.
    *
@@ -76,9 +76,10 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
    * @param string $package_name
    *   The package the rate plan belongs to.
    * @param string $id
-   *    the rate plan ID.
+   *   The rate plan ID.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
+   *   The rate plan.
    */
   public static function loadById(string $package_name, string $id): RatePlanInterface;
 

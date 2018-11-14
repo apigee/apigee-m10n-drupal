@@ -20,4 +20,3 @@ apigee_m10n.rate_plan:
   description: 'Configure rate plans.'
   parent: system.admin_apigee_m10n
   weight: 99
-

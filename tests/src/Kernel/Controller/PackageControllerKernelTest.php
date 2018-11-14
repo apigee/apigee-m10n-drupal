@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
-use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
 use Drupal\apigee_m10n\Controller\PackagesController;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Response;
@@ -104,7 +103,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
    * Tests the `monetization-packages` response.
    */
   public function testPackageResponse() {
-    /** @var ApiPackage[] $packages */
+    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiPackage[] $packages */
     $packages = [
       $this->createPackage(),
       $this->createPackage(),
@@ -113,13 +112,16 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $this->stack
       ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
 
-    $response = (string) $this->sdk_connector->getClient()->get("/mint/organizations/{$this->sdk_connector->getOrganization()}/monetization-packages")->getBody();
+    $response = (string) $this->sdk_connector
+      ->getClient()
+      ->get("/mint/organizations/{$this->sdk_connector->getOrganization()}/monetization-packages")
+      ->getBody();
 
     foreach ($packages as $package) {
-      static::assertContains($package->id(),              $response);
-      static::assertContains($package->getDisplayName(),  $response);
-      static::assertContains($package->getName(),         $response);
-      static::assertContains($package->getDescription(),  $response);
+      static::assertContains($package->id(), $response);
+      static::assertContains($package->getDisplayName(), $response);
+      static::assertContains($package->getName(), $response);
+      static::assertContains($package->getDescription(), $response);
     }
 
     $data = json_decode($response, TRUE);

@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -27,7 +28,10 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * Rate plans don't have a unique ID in apigee and a monetization package is
  * required to load a rate plan with is sort of incompatible with the drupal
  * entity loading system. For this reason, plan IDs have to be prepended with
- * the package name for loading. i.e. @code RatePlan::load('foo-package::bar-plan-name')
+ * the package name for loading. i.e.
+ *
+ * @code
+ * RatePlan::load('foo-package::bar-plan-name')
  * @endcode.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
@@ -87,20 +91,20 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
     return [
       'startDate'             => 'timestamp',
       'endDate'               => 'timestamp',
-      'contractDuration'      =>  'integer',
-      'currency'              =>  'apigee_currency',
-      'earlyTerminationFee'   =>  'decimal',
-      'freemiumDuration'      =>  'integer',
-      'freemiumDurationType'  =>  'string',
-      'freemiumUnit'          =>  'integer',
-      'frequencyDuration'     =>  'integer',
-      'organization'          =>  'apigee_organization',
-      'package'               =>  'apigee_api_package',
-      'paymentDueDays'        =>  'integer',
-      'ratePlanDetails'       =>  'apigee_rate_plan_detail',
-      'recurringFee'          =>  'decimal',
-      'recurringStartUnit'    =>  'integer',
-      'setUpFee'              =>  'decimal',
+      'contractDuration'      => 'integer',
+      'currency'              => 'apigee_currency',
+      'earlyTerminationFee'   => 'decimal',
+      'freemiumDuration'      => 'integer',
+      'freemiumDurationType'  => 'string',
+      'freemiumUnit'          => 'integer',
+      'frequencyDuration'     => 'integer',
+      'organization'          => 'apigee_organization',
+      'package'               => 'apigee_api_package',
+      'paymentDueDays'        => 'integer',
+      'ratePlanDetails'       => 'apigee_rate_plan_detail',
+      'recurringFee'          => 'decimal',
+      'recurringStartUnit'    => 'integer',
+      'setUpFee'              => 'decimal',
     ];
   }
 
@@ -183,7 +187,8 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
       // nulls. This occurs when passing values when creating an entity.
       try {
         $value = call_user_func([$this, $getter]);
-      } catch (\TypeError $t) {
+      }
+      catch (\TypeError $t) {
         \Drupal::service('logger.channel.apigee_m10n')
           ->error('Type Error while trying to get original value. \n\n @err', ['@err' => (string) $t]);
       }
@@ -192,7 +197,9 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
     return $value;
   }
 
-
+  /**
+   * {@inheritdoc}
+   */
   public function isDefaultRevision($new_value = NULL) {
     return TRUE;
   }

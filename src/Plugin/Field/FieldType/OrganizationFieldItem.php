@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -23,7 +24,6 @@ use Drupal\Component\Utility\Random;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
@@ -64,25 +64,25 @@ class OrganizationFieldItem extends FieldItemBase {
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
     $random = new Random();
     $values['value'] = new OrganizationProfile([
-      "approveTrusted"                => false,
-      "approveUntrusted"              => false,
+      "approveTrusted"                => FALSE,
+      "approveUntrusted"              => FALSE,
       "billingCycle"                  => "CALENDAR_MONTH",
       "country"                       => "US",
       "currency"                      => "USD",
       "description"                   => $random->sentences(5),
-      "hasBillingAdjustment"          => false,
-      "hasBroker"                     => false,
-      "hasSelfBilling"                => false,
-      "hasSeparateInvoiceForProduct"  => false,
+      "hasBillingAdjustment"          => FALSE,
+      "hasBroker"                     => FALSE,
+      "hasSelfBilling"                => FALSE,
+      "hasSeparateInvoiceForProduct"  => FALSE,
       "id"                            => strtolower($random->name()),
-      "issueNettingStmt"              => false,
+      "issueNettingStmt"              => FALSE,
       "logoUrl"                       => "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Apigee_logo.svg/320px-Apigee_logo.svg.png",
       "name"                          => $random->string(),
-      "nettingStmtPerCurrency"        => false,
+      "nettingStmtPerCurrency"        => FALSE,
       "regNo"                         => strtolower($random->name()),
-      "selfBillingAsExchOrg"          => false,
-      "selfBillingForAllDev"          => false,
-      "separateInvoiceForFees"        => false,
+      "selfBillingAsExchOrg"          => FALSE,
+      "selfBillingForAllDev"          => FALSE,
+      "separateInvoiceForFees"        => FALSE,
       "status"                        => "ACTIVE",
       "supportedBillingType"          => "BOTH",
       "taxEngineExternalId"           => strtoupper($random->name()),
@@ -92,4 +92,5 @@ class OrganizationFieldItem extends FieldItemBase {
     ]);
     return $values;
   }
+
 }

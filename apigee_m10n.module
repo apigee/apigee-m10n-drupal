@@ -58,7 +58,7 @@ function apigee_m10n_theme_suggestions_rate_plan(array $variables) {
  *
  * Default template: rate-plan.html.twig.
  *
- * @param $variables
+ * @param array $variables
  *   An associative array containing:
  *   - elements: An array of elements to display in view mode.
  *   - rate_plan: The Apigee  package rate plan entity.

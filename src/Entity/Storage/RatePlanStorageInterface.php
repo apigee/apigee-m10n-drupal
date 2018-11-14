@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -49,15 +50,19 @@ interface RatePlanStorageInterface extends FieldableMonetizationEntityStorageInt
    * @param string $package_name
    *   The package the rate plan belongs to.
    * @param string $id
-   *    the rate plan ID.
+   *   The rate plan ID.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
+   *   The rate plan.
    */
   public function loadById(string $package_name, string $id): RatePlanInterface;
 
   /**
+   * Get a package controller.
+   *
    * @param string $api_package_id
-   *   The Package ID is required in order to instantiate a package rate plan controller.
+   *   The Package ID.
+   *   This is required in order to instantiate a package rate plan controller.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanController
    *   The package rate plan sdk controller.
@@ -65,8 +70,10 @@ interface RatePlanStorageInterface extends FieldableMonetizationEntityStorageInt
   public function getController(string $api_package_id): RatePlanControllerInterface;
 
   /**
+   * Get the controller factory.
+   *
    * Since entity storage classes are used during install, this is used instead
-   * of dependency injection  to avoid an issue with the sdk controller
+   * of dependency injection to avoid an issue with the sdk controller
    * credentials not yet being available when the entity storage controller is
    * accessed.
    *

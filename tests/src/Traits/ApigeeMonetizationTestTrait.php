@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -176,8 +176,8 @@ trait ApigeeMonetizationTestTrait {
 
     $this->cleanup_queue[] = [
       'weight' => 99,
+      // Prepare for deleting the developer.
       'callback' => function () use ($account) {
-        // Prepare for deleting the developer.
         $this->queueDeveloperResponse($account);
         $this->queueDeveloperResponse($account);
         // Delete it.
@@ -215,7 +215,7 @@ trait ApigeeMonetizationTestTrait {
       'callback' => function () use ($product) {
         $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
         $product->delete();
-      }
+      },
     ];
 
     return $controller->load($product->getName());
@@ -228,7 +228,7 @@ trait ApigeeMonetizationTestTrait {
    */
   protected function createPackage(): ApiPackage {
     $products = [];
-    for ($i=rand(1,4); $i > 0; $i--) {
+    for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
     }
 
@@ -237,7 +237,8 @@ trait ApigeeMonetizationTestTrait {
       'description' => $this->getRandomGenerator()->sentences(3),
       'displayName' => $this->getRandomGenerator()->word(16),
       'apiProducts' => $products,
-      'status'      => 'CREATED', //CREATED, ACTIVE, INACTIVE
+      // CREATED, ACTIVE, INACTIVE.
+      'status'      => 'CREATED',
     ]);
     // Get a package controller from the package controller factory.
     $package_controller = $this->controller_factory->apiPackageController();
@@ -251,7 +252,7 @@ trait ApigeeMonetizationTestTrait {
       'callback' => function () use ($package, $package_controller) {
         $this->stack->queueMockResponse('no_content');
         $package_controller->delete($package->id());
-      }
+      },
     ];
 
     return $package;
@@ -329,7 +330,7 @@ trait ApigeeMonetizationTestTrait {
       ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
     $rate_plan->save();
 
-    /**
+    /*
      * The rateplan rates are being added after the entity is saved  because of
      * the following error.
      *
@@ -343,7 +344,7 @@ trait ApigeeMonetizationTestTrait {
     $rate_plan->getRatePlanDetails()[0]->setRatePlanRates([
       new RatePlanRateRateCard([
         'id'        => strtolower($this->randomMachineName()),
-        'rate'      => rand(5,20),
+        'rate'      => rand(5, 20),
       ]),
     ]);
 
@@ -353,7 +354,7 @@ trait ApigeeMonetizationTestTrait {
       'callback' => function () use ($rate_plan) {
         $this->stack->queueMockResponse('no_content');
         $rate_plan->delete();
-      }
+      },
     ];
 
     return $rate_plan;
@@ -446,7 +447,8 @@ trait ApigeeMonetizationTestTrait {
       foreach ($this->cleanup_queue as $claim) {
         try {
           $claim['callback']();
-        } catch (\Exception $ex) {
+        }
+        catch (\Exception $ex) {
           $errors[] = $ex;
         }
       }

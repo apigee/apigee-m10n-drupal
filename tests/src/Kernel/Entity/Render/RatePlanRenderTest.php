@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -28,17 +29,6 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 class RenderTest extends MonetizationKernelTestBase {
 
   /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   */
-  public function setUp() {
-    parent::setUp();
-
-
-  }
-
-  /**
    * Tests theme preprocess functions being able to attach assets.
    */
   public function testRenderRatePlan() {
@@ -48,11 +38,12 @@ class RenderTest extends MonetizationKernelTestBase {
 
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($plan->getEntityTypeId());
 
-    $build = $view_builder->view($plan,  'default');
+    $build = $view_builder->view($plan, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
     $this->assertText($plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
     $this->assertText($plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
   }
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -109,7 +109,7 @@ class PackagesController extends ControllerBase {
     $rate_plan_view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan', $view_mode);
 
     // Load plans for each package.
-    $plans = array_map(function($package) use ($rate_plan_view_builder) {
+    $plans = array_map(function ($package) use ($rate_plan_view_builder) {
       // Load the rate plans.
       $package_rate_plans = RatePlan::loadPackageRatePlans($package->id());
       if (!empty($package_rate_plans)) {
@@ -143,7 +143,8 @@ class PackagesController extends ControllerBase {
   /**
    * Get a rate plan controller.
    *
-   * @param $package_id
+   * @param string $package_id
+   *   The package ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The rate plan controller.
@@ -159,4 +160,5 @@ class PackagesController extends ControllerBase {
 
     return $controllers[$package_id];
   }
+
 }

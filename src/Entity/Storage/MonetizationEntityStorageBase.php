@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -28,6 +29,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Defines a base class for monetization entity storage.
+ */
 abstract class MonetizationEntityStorageBase extends EntityStorageBase {
 
   /**
@@ -288,7 +292,7 @@ abstract class MonetizationEntityStorageBase extends EntityStorageBase {
    *
    * @throws \ReflectionException
    */
-  protected function applyChanges( MonetizationEntityInterface $source, EntityInterface $destination) {
+  protected function applyChanges(MonetizationEntityInterface $source, EntityInterface $destination) {
     $roDst = new \ReflectionObject($destination);
     $roSrc = new \ReflectionObject($source);
     foreach ($roDst->getProperties() as $property) {

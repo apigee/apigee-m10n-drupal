@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -27,7 +28,6 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n_kernel
  */
 class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
-  /**
-   * @todo: Implement tests for Apigee field formatters.
-   */
+  // @todo: Implement tests for Apigee field formatters.
+
 }

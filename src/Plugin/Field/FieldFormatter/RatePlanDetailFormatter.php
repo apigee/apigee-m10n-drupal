@@ -1,5 +1,6 @@
 <?php
-/**
+
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -18,8 +19,6 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FieldFilteredMarkup;
-use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -59,8 +58,8 @@ class RatePlanDetailFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
+    // @todo: Implement settings summary.
     $summary = [];
-    // Implement settings summary.
 
     return $summary;
   }
@@ -72,12 +71,13 @@ class RatePlanDetailFormatter extends FormatterBase {
     $elements = [];
 
     foreach ($items as $delta => $item) {
-      $elements[$delta] = array(
+      $elements[$delta] = [
         '#theme' => 'rate_plan_detail',
         '#detail' => $item->value,
-      );
+      ];
     }
 
     return $elements;
   }
+
 }
