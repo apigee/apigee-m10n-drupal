@@ -25,6 +25,9 @@ use Drupal\Tests\BrowserTestBase;
 
 /**
  * A base class for functional tests.
+ *
+ * @group apigee_m10n
+ * @group apigee_m10n_functional
  */
 class MonetizationFunctionalTestBase extends BrowserTestBase {
 
