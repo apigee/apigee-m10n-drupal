@@ -65,7 +65,7 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
-    $this->baseSetUp();
+    $this->init();
   }
 
 }

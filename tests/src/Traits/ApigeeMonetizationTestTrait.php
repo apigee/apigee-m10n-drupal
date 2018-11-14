@@ -54,6 +54,15 @@ trait ApigeeMonetizationTestTrait {
   protected $sdk_connector;
 
   /**
+   * {@inheritdoc}
+   *
+   * This prevents `edgeSetup` from being called unintentionally.
+   */
+  protected function setUp() {
+    $this->init();
+  }
+
+  /**
    * Initialization.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -132,7 +141,6 @@ trait ApigeeMonetizationTestTrait {
 
     // Queue up a created response.
     $this->queueDeveloperResponse($account, 201);
-    $this->stack->append(new Response(204, [], ''));
 
     // Save the user.
     $account->save();

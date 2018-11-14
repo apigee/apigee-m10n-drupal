@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Job;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
+use Apigee\Edge\Exception\ApiResponseException;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\BillingController;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
@@ -251,8 +252,16 @@ class BalanceAdjustmentJob extends EdgeJob {
    * @throws \Exception
    */
   protected function getPrepaidBalance(PrepaidBalanceControllerInterface $controller, $currency_code) {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[] $balances */
-    $balances = $controller->getPrepaidBalance(new \DateTimeImmutable());
+    try {
+      /** @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[] $balances */
+      $balances = $controller->getPrepaidBalance(new \DateTimeImmutable());
+    }
+    catch (ApiResponseException $ex) {
+      // A 204 response is normal for an account with no balance.
+      if ($ex->getResponse()->getStatusCode() !== 204) {
+        throw $ex;
+      }
+    }
 
     if (!empty($balances)) {
       $balances = array_combine(array_map(function ($balance) {
@@ -348,24 +357,23 @@ class BalanceAdjustmentJob extends EdgeJob {
   protected function getMessage($message_id) {
     $type = $this->isDeveloperAdjustment() ? 'developer' : 'company';
 
+    $report_text = 'Existing credit added ({month}):  `{existing}`.<br />' . PHP_EOL;
+    $report_text .= 'Amount Applied:                   `{adjustment}`.<br />' . PHP_EOL;
+    $report_text .= 'New Balance:                      `{new_balance}`.<br />' . PHP_EOL;
+    $report_text .= 'Expected New Balance:             `{expected_balance}`.<br />' . PHP_EOL;
+
     $messages = [
       'developer' => [
         'balance_error_message' => 'Apigee User ({email}) has no balance for ({currency}).',
         'report_text_error_header' => 'Calculation discrepancy applying adjustment to developer `{email}`. <br />' . PHP_EOL . PHP_EOL,
         'report_text_info_header'  => 'Adjustment applied to developer:  `{email}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text'              => 'Existing credit added ({month}):  `{existing}`.<br />
-                                       Amount Applied:                   `{adjustment}`.<br />
-                                       New Balance:                      `{new_balance}`.<br />
-                                       Expected New Balance:             `{expected_balance}`.<br />' . PHP_EOL,
+        'report_text'              => $report_text,
       ],
       'company' => [
         'balance_error_message' => 'Apigee team ({team_name}) has no balance for ({currency}).',
         'report_text_error_header'  => 'Calculation discrepancy applying adjustment to team `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
         'report_text_info_header'   => 'Adjustment applied to team:       `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text'               => 'Existing credit added ({month}):  `{existing}`.<br />
-                                        Amount Applied:                   `{adjustment}`.<br />
-                                        New Balance:                      `{new_balance}`.<br />
-                                        Expected New Balance:              `{expected_balance}`.<br />' . PHP_EOL,
+        'report_text'               => $report_text,
       ],
     ];
 
