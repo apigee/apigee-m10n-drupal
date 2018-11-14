@@ -202,11 +202,11 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     // the queue.
     $this->stack
       // We should now have no existing balance .
-      ->queueFromResponseFile(['get_prepaid_balances_empty'])
+      ->queueMockResponse(['get_prepaid_balances_empty'])
       // Queue a developer balance response for the top up (POST).
-      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '12.00']])
+      ->queueMockResponse(['post_developer_balances' => ['amount' => '12.00']])
       // Queue an updated balance response.
-      ->queueFromResponseFile([
+      ->queueMockResponse([
         'get_prepaid_balances' => [
           'amount_usd' => '12.00',
           'topups_usd' => '12.00',
@@ -231,7 +231,7 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile([
+    $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '12.00',
         'developer' => $this->developer,

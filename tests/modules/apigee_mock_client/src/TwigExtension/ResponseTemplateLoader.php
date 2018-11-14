@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2018 Google Inc.
  *
@@ -24,17 +25,28 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 /**
  * Loads templates from the response-templates folder of a module.
  */
-class ModulePathLoader extends \Twig_Loader_Filesystem {
+class ResponseTemplateLoader extends \Twig_Loader_Filesystem {
 
   /**
-   * Constructs a new FilesystemLoader object .
+   * Constructs a new FilesystemLoader object.
    *
-   * @param string $module_name
-   *   The name of the module to load templates for.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler service.
    */
-  public function __construct($module_name, ModuleHandlerInterface $module_handler) {
-    parent::__construct($module_handler->getModule($module_name)->getPath() . '/tests/response-templates');
+  public function __construct(ModuleHandlerInterface $module_handler) {
+    $modules = $module_handler->getModuleList();
+
+    $paths = array_map(function ($module) {
+      return $module->getPath() . '/tests/response-templates';
+    }, $modules);
+
+    // Filter out core paths & those without a response-templates directory.
+    $paths = array_filter($paths, function ($path) {
+      return (strpos($path, 'core/') !== 0) && is_dir(DRUPAL_ROOT . "/{$path}");
+    });
+
+    parent::__construct($paths);
+
   }
+
 }

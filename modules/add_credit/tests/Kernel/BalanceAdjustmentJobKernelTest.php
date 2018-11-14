@@ -148,11 +148,11 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->stack
       // Queue an empty balance response because this is what you get with a new
       // user.
-      ->queueFromResponseFile('get_prepaid_balances_empty')
+      ->queueMockResponse('get_prepaid_balances_empty')
       // Queue a developer balance response for the top up (POST).
-      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '19.99']])
+      ->queueMockResponse(['post_developer_balances' => ['amount' => '19.99']])
       // Queue an updated balance response.
-      ->queueFromResponseFile([
+      ->queueMockResponse([
         'get_prepaid_balances' => [
           'amount_usd' => '19.99',
           'topups_usd' => '19.99',
@@ -165,7 +165,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile([
+    $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '19.99',
         'developer' => $this->developer,
@@ -207,7 +207,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
     $this->stack
       // We should now have an existing balance of 19.99.
-      ->queueFromResponseFile([
+      ->queueMockResponse([
         'get_prepaid_balances' => [
           'amount_usd' => '19.99',
           'topups_usd' => '19.99',
@@ -215,9 +215,9 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
         ],
       ])
       // Queue a developer balance response for the top up (POST).
-      ->queueFromResponseFile(['post_developer_balances' => ['amount' => '39.98']])
+      ->queueMockResponse(['post_developer_balances' => ['amount' => '39.98']])
       // Queue an updated balance response.
-      ->queueFromResponseFile([
+      ->queueMockResponse([
         'get_prepaid_balances' => [
           'amount_usd' => '39.98',
           'topups_usd' => '39.98',
@@ -230,7 +230,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
-    $this->stack->queueFromResponseFile([
+    $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '39.98',
         'developer' => $this->developer,
@@ -294,7 +294,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
 
     $this->stack
       // We should now have an existing balance of 19.99.
-      ->queueFromResponseFile([
+      ->queueMockResponse([
         'get_prepaid_balances' => [
           'amount_usd' => '19.99',
           'topups_usd' => '19.99',

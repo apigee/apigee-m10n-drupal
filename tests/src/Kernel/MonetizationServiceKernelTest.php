@@ -59,7 +59,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
   public function testMonetizationEnabled() {
 
     // Queue a response from the mock server.
-    $this->stack->queueFromResponseFile(['get_organization' => ['monetization_enabled' => 'true']]);
+    $this->stack->queueMockResponse(['get_organization' => ['monetization_enabled' => 'true']]);
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();
@@ -80,7 +80,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     }
 
     // Queue a response from the mock server.
-    $this->stack->queueFromResponseFile('get_organization');
+    $this->stack->queueMockResponse('get_organization');
 
     // Execute a client call.
     $is_monetization_enabled = $this->monetization->isMonetizationEnabled();
@@ -107,7 +107,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
       ->method('getEmail')
       ->will($this->returnValue($email));
 
-    $this->stack->queueFromResponseFile([
+    $this->stack->queueMockResponse([
       'get_eligible_products' => [
         'id' => strtolower($test_product_name),
         'name' => $test_product_name,

@@ -164,7 +164,7 @@ trait ApigeeMonetizationTestTrait {
     $context['developer'] = $developer;
     $context['org_name'] = $this->sdk_connector->getOrganization();
 
-    $this->stack->queueFromResponseFile(['get_developer' => $context]);
+    $this->stack->queueMockResponse(['get_developer' => $context]);
   }
 
   /**
@@ -179,7 +179,7 @@ trait ApigeeMonetizationTestTrait {
    */
   protected function queueOrg($monetized = TRUE) {
     $this->stack
-      ->queueFromResponseFile(['get_organization' => ['monetization_enabled' => $monetized ? 'true' : 'false']]);
+      ->queueMockResponse(['get_organization' => ['monetization_enabled' => $monetized ? 'true' : 'false']]);
   }
 
   /**

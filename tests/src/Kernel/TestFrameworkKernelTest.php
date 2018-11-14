@@ -90,7 +90,7 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
       return;
     }
     // Queue a response from the mock server.
-    $this->stack->queueFromResponseFile(['catalog_test']);
+    $this->stack->queueMockResponse(['catalog_test']);
 
     // Execute a client call.
     $response = $this->sdk_connector->buildClient(new AutoBasicAuth())->get('/');

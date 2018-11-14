@@ -98,7 +98,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
   public function testMyRedirects() {
     // Test the packages redirect.
     // Queue up a monetized org response.
-    $this->stack->queueFromResponseFile('get_monetized_org');
+    $this->stack->queueMockResponse('get_monetized_org');
     $request = Request::create('/user/monetization/packages', 'GET');
 
     /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
@@ -151,7 +151,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     }
 
     $this->stack
-      ->queueFromResponseFile(['get_monetization_packages' => ['packages' => $packages]]);
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
 
     $response = (string) $this->sdk_connector->getClient()->get('get-monetization-packages')->getBody();
 

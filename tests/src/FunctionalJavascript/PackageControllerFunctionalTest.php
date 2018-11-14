@@ -97,8 +97,8 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
     }
 
     $this->stack
-      ->queueFromResponseFile(['get_monetization_packages' => ['packages' => $packages]])
-      ->queueFromResponseFile(['get_monetization_packages' => ['packages' => array_slice($packages, -1)]]);
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]])
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => array_slice($packages, -1)]]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.packages', [
       'user' => $this->account->id(),
