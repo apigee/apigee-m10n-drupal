@@ -24,7 +24,8 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 /**
  * Performs functional tests on drupal_render().
  *
- * @group Common
+ * @group apigee_m10n
+ * @group apigee_m10n_kernel
  */
 class RenderTest extends MonetizationKernelTestBase {
 
