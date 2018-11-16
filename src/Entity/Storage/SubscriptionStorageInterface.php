@@ -21,11 +21,25 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 
 use Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 
 /**
  * Defines an interface for the subscription entity storage class.
  */
 interface SubscriptionStorageInterface extends FieldableMonetizationEntityStorageInterface {
+
+  /**
+   * Load an individual subscription by developer_id and the subscription ID.
+   *
+   * @param string $developer_id
+   *   The developer ID the subscription belongs to.
+   * @param string $id
+   *   The subscription ID.
+   *
+   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   *   The subscription.
+   */
+  public function loadById(string $developer_id, string $id): SubscriptionInterface;
 
   /**
    * Load Subscriptions by developer ID.

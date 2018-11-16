@@ -32,6 +32,7 @@ use Drupal\apigee_edge\Entity\EntityConvertAwareTrait;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -78,6 +79,11 @@ class SubscriptionStorage extends FieldableMonetizationEntityStorageBase impleme
       $container->get('config.factory'),
       $container->get('datetime.time')
     );
+  }
+
+  public function loadById(string $developer_id, string $id): SubscriptionInterface {
+    // Load, convert and return the subscription.
+    return $this->convertToDrupalEntity($this->getController($developer_id)->load($id));
   }
 
   /**
