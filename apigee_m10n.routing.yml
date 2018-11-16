@@ -67,3 +67,10 @@ apigee_monetization.subscribe_to_plan:
     _form: '\Drupal\apigee_m10n\Form\SubscribeToPlanTestForm'
   requirements:
     _permission: 'administer apigee monetization'
+
+# @todo: Consider using a route provider for this route.
+entity.subscription.unsubscribe_form:
+  path: '/user/{user}/monetization/subscription/{subscription}/unsubscribe'
+  defaults:
+    _entity_form: 'subscription.unsubscribe'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'

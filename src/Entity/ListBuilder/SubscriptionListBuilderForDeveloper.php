@@ -258,4 +258,21 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     return SubscriptionInterface::STATUS_ACTIVE;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDefaultOperations(EntityInterface $entity) {
+    $operations = parent::getDefaultOperations($entity);
+
+    if ($entity->access('unsubscribe') && $entity->hasLinkTemplate('unsubscribe-form')) {
+      $operations['edit'] = [
+        'title' => $this->t('Unsubscribe'),
+        'weight' => 10,
+        'url' => $this->ensureDestination($entity->toUrl('unsubscribe-form')),
+      ];
+    }
+
+    return $operations;
+  }
+
 }

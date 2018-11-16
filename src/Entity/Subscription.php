@@ -40,9 +40,13 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
+ *     "form" = {
+ *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeForm",
+ *     },
  *   },
  *   links = {
  *     "collection-by-developer" = "/user/{user}/monetization/subscriptions",
+ *     "unsubscribe-form" = "/user/{user}/monetization/subscription/{subscription}/unsubscribe",
  *   },
  *   entity_keys = {
  *     "id" = "id",
