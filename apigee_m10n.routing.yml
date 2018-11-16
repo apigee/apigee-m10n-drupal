@@ -74,3 +74,5 @@ entity.subscription.unsubscribe_form:
   defaults:
     _entity_form: 'subscription.unsubscribe'
     _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'subscription.unsubscribe'

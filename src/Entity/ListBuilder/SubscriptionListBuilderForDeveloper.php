@@ -30,6 +30,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -55,6 +56,13 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
+
+  /**
+   * The user for the listing page.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $user;
 
   /**
    * Constructs a new EntityListBuilder object.
@@ -146,18 +154,12 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   /**
    * {@inheritdoc}
    */
-  public function getOperations(EntityInterface $entity) {
-    return parent::getOperations($entity);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function load() {
     throw new EntityStorageException('Unable to load subscriptions directly. Use `SubscriptionStorage::loadPackageRatePlans`.');
   }
 
   public function render(UserInterface $user = NULL) {
+    $this->user = $user;
     $developer_id = $user->apigee_edge_developer_id->value;
 
     $header = $this->buildHeader();
@@ -265,10 +267,10 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $operations = parent::getDefaultOperations($entity);
 
     if ($entity->access('unsubscribe') && $entity->hasLinkTemplate('unsubscribe-form')) {
-      $operations['edit'] = [
+      $operations['unsubscribe'] = [
         'title' => $this->t('Unsubscribe'),
         'weight' => 10,
-        'url' => $this->ensureDestination($entity->toUrl('unsubscribe-form')),
+        'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
       ];
     }
 
