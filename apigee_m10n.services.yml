@@ -18,6 +18,11 @@ services:
     class: Drupal\apigee_m10n\TwigExtension\FormatCurrencyTwigExtension
     tags:
     - { name: twig.extension }
+  paramconverter.entity.rate_plan:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\RatePlanConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity.manager', '@language_manager']
   paramconverter.entity.subscription:
     class: Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter
     tags:

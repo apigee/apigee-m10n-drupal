@@ -68,7 +68,33 @@ apigee_monetization.subscribe_to_plan:
   requirements:
     _permission: 'administer apigee monetization'
 
-# @todo: Consider using a route provider for this route.
+entity.rate_plan.canonical:
+  path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}'
+  defaults:
+    _entity_view: 'rate_plan.full'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'rate_plan.view'
+  options:
+    parameters:
+      rate_plan:
+        type: 'entity:rate_plan'
+        converter: paramconverter.entity.rate_plan
+
+entity.rate_plan.subscribe_form:
+  path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe'
+  defaults:
+    _entity_form: 'rate_plan.subscribe'
+    _title_callback: '\Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm::title'
+#    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'rate_plan.subscribe'
+  options:
+    parameters:
+      rate_plan:
+        type: 'entity:rate_plan'
+        converter: paramconverter.entity.rate_plan
+
 entity.subscription.unsubscribe_form:
   path: '/user/{user}/monetization/subscription/{subscription}/unsubscribe'
   defaults:
