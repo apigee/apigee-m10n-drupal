@@ -133,7 +133,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->stack
       // Queue an empty balance response because this is what you get with a new
       // user.
-      ->queueMockResponse('no_content')
+      ->queueMockResponse('get_prepaid_balances_empty')
       // Queue a developer balance response for the top up (POST).
       ->queueMockResponse(['post_developer_balances' => ['amount' => '19.99']])
       // Queue an updated balance response.
