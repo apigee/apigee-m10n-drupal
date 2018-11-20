@@ -86,10 +86,10 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface {
     return new DeveloperPrepaidBalanceController(
-        $developer->getEmail(),
-        $this->getOrganization(),
-        $this->getClient()
-      );
+      $developer->getEmail(),
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
@@ -97,10 +97,10 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
     return new CompanyPrepaidBalanceController(
-        $company->getLegalName(),
-        $this->getOrganization(),
-        $this->getClient()
-      );
+      $company->getLegalName(),
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
@@ -118,9 +118,9 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function apiPackageController(): ApiPackageControllerInterface {
     return new ApiPackageController(
-        $this->getOrganization(),
-        $this->getClient()
-      );
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
@@ -138,12 +138,11 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function developerAcceptedRatePlanController(string $developer_email): DeveloperAcceptedRatePlanController {
-    return
-      new DeveloperAcceptedRatePlanController(
-        $developer_email,
-        $this->getOrganization(),
-        $this->getClient()
-      );
+    return new DeveloperAcceptedRatePlanController(
+      $developer_email,
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
@@ -154,7 +153,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   protected function getOrganization() {
     $this->org = $this->org ?? $this->sdk_connector->getOrganization();
-
     return $this->org;
   }
 
@@ -166,7 +164,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   protected function getClient() {
     $this->client = $this->client ?? $this->sdk_connector->getClient();
-
     return $this->client;
   }
 
