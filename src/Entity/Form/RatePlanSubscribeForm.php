@@ -1,61 +1,1 @@
-<?php
-
-/*
- * Copyright 2018 Google Inc.
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2 as published by the
- * Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
- * License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
-
-namespace Drupal\apigee_m10n\Entity\Form;
-
-use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
-
-/**
- * Unsubscribe entity form for subscriptions.
- */
-class RatePlanSubscribeForm extends EntityForm {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    $form = parent::buildForm($form, $form_state);
-
-    return $form;
-  }
-
-  /**
-   * Provides a generic title callback for a single entity.
-   *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The route match.
-   * @param \Drupal\Core\Entity\EntityInterface $_entity
-   *   (optional) An entity, passed in directly from the request attributes.
-   *
-   * @return string|null
-   *   The title for the entity view page, if an entity was found.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   */
-  public function title(RouteMatchInterface $route_match, EntityInterface $_entity = NULL) {
-    // Get the rate plan.
-    $rate_plan = $route_match->getParameter('rate_plan');
-
-    return $this->t("Subscribe to %label", ['%label' => $rate_plan->label()]);
-  }
-
-}
+<?php/* * Copyright 2018 Google Inc. * * This program is free software; you can redistribute it and/or modify it under * the terms of the GNU General Public License version 2 as published by the * Free Software Foundation. * * This program is distributed in the hope that it will be useful, but WITHOUT * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public * License for more details. * * You should have received a copy of the GNU General Public License along * with this program; if not, write to the Free Software Foundation, Inc., 51 * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. */namespace Drupal\apigee_m10n\Entity\Form;use Drupal\Core\Entity\EntityForm;use Drupal\Core\Entity\EntityInterface;use Drupal\Core\Form\FormStateInterface;use Drupal\Core\Routing\RouteMatchInterface;use Drupal\apigee_m10n\Controller\PackagesController;use Drupal\user\Entity\User;/** * Unsubscribe entity form for subscriptions. */class RatePlanSubscribeForm extends EntityForm {  protected $rate_plan;  protected $package;  protected $user;  /**   * {@inheritdoc}   */  public function buildForm(array $form, FormStateInterface $form_state) {    $form = parent::buildForm($form, $form_state);    // @TODO: add `End This Plan` option when current subscription is already active.    // @TODO: Show plan details, including package information.    $form['startDate'] = [      '#type'  => 'date',      '#title' => $this->t('Start Date'),    ];    $form['actions']['submit']['#value'] = $this->t('Purchase This Plan');    return $form;  }  /**   * Provides a generic title callback for a single entity.   *   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match   *   The route match.   * @param \Drupal\Core\Entity\EntityInterface $_entity   *   (optional) An entity, passed in directly from the request attributes.   *   * @return string|null   *   The title for the entity view page, if an entity was found.   *   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException   */  public function title(RouteMatchInterface $route_match, EntityInterface $_entity = NULL) {    // Get the rate plan.    $this->rate_plan = $route_match->getParameter('rate_plan');    // Get the package ID.    $this->user = User::load($route_match->getParameter('user'));    $this->package = $this->getCurrentPackage($route_match->getParameter('package'));    return $this->t("Subscribe to %label", ['%label' => $this->rate_plan->label()]);  }  /**   * {@inheritdoc}   */  public function save(array $form, FormStateInterface $form_state) {    $this->entity->set('ratePlan', $this->rate_plan);    $this->entity->set('package', $this->package);    return parent::save($form, $form_state);  }  /**   * {@inheritdoc}   */  public function submitForm(array &$form, FormStateInterface $form_state) {    // Remove button and internal Form API values from submitted values.    $form_state->cleanValues();    $this->entity = $this->buildEntity($form, $form_state);  }  /**   * {@inheritdoc}   */  public function buildEntity(array $form, FormStateInterface $form_state) {    $entity = clone $this->entity;    $this->copyFormValuesToEntity($entity, $form, $form_state);    // Invoke all specified builders for copying form values to entity properties.    if (isset($form['#entity_builders'])) {      foreach ($form['#entity_builders'] as $function) {        call_user_func_array($form_state->prepareCallback($function), [$entity->getEntityTypeId(), $entity, &$form, &$form_state]);      }    }    return $entity;  }    /**     * @param EntityInterface $entity     * @param array $form     * @param FormStateInterface $form_state     */  protected function copyFormValuesToEntity(EntityInterface $entity, array $form, FormStateInterface $form_state) {    $values = $form_state->getValues();    if ($this->entity instanceof EntityWithPluginCollectionInterface) {      // Do not manually update values represented by plugin collections.      $values = array_diff_key($values, $this->entity->getPluginCollections());    }    // @todo: This relies on a method that only exists for config and content    //   entities, in a different way. Consider moving this logic to a config    //   entity specific implementation.    foreach ($values as $key => $value) {      if ($key == 'startDate') {        $value = new \DateTimeImmutable($value);      }      $entity->set($key, $value);    }  }  /**   * @param $package_id   * @return mixed   */  protected function getCurrentPackage($package_id) {    $packages_and_plans = \Drupal::cache()->get('packages_and_plans');    if (!$packages_and_plans) {      $controller = PackagesController::create(\Drupal::getContainer());      $packages_and_plans = $controller->catalogPage($this->user);      \Drupal::cache()->set('packages_and_plans', $packages_and_plans);    }    else {      $packages_and_plans = $packages_and_plans->data;    }    $packages = array_filter($packages_and_plans['package_list']['#package_list']);    return $packages[$package_id];  }}

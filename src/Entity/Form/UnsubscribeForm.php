@@ -19,11 +19,49 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityConfirmFormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Unsubscribe entity form for subscriptions.
  */
-class UnsubscribeForm extends EntityForm {
+class UnsubscribeForm extends EntityConfirmFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    return $this->t('Are you sure you would like to unsubscribe from this plan?');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfirmText() {
+    return $this->t('Unsubscribe');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getQuestion() {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCancelUrl() {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->entity->setEndDate(new \DateTimeImmutable('-1 day'));
+    $this->entity->developerId = 'chrisnovak@google.com';
+    $this->entity->save();
+  }
 
 }
