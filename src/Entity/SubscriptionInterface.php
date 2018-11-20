@@ -53,4 +53,20 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface, FieldableEdge
    */
   public static function loadRatePlansByDeveloperEmail(string $developer_email): array;
 
+  /**
+   * Getter for the `isSubscriptionActive` call.
+   *
+   * @return bool
+   *   Whether or not this is an active subscription.
+   */
+  public function isSubscriptionActive(): bool;
+
+  /**
+   * Getter for the `getSubscriptionStatus` call.
+   *
+   * @return bool
+   *   Subscription status as a string.
+   */
+  public function getSubscriptionStatus(): string;
+
 }

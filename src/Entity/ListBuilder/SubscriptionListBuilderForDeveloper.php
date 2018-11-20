@@ -137,7 +137,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
       return $result ? "{$result}, {$product->getDisplayName()}" : $product->getDisplayName();
     }, "");
 
-    $row['status'] = $this->getSubscriptionStatus($subscription);
+    $row['status'] = $subscription->getSubscriptionStatus();
     $row['package'] = $rate_plan->getPackage()->getDisplayName();
     $row['products'] = $products;
     $row['plan'] = Link::fromTextAndUrl($rate_plan->getDisplayName(), $rate_plan->toUrl());
@@ -230,48 +230,19 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   }
 
   /**
-   * @todo determine if this should be in the AcceptedRatePlan SDK entity.
-   *
-   * @param $subscription
-   *
-   * @return string
-   */
-  private function getSubscriptionStatus($subscription) {
-    $org_timezone = $subscription->getRatePlan()->getOrganization()->getTimezone();
-    $today = new \DateTime('today', $org_timezone);
-
-    // If rate plan ended before today, the status is ended.
-    $plan_end_date = $subscription->getRatePlan()->getEndDate();
-    if (!empty($plan_end_date) && $plan_end_date < $today) {
-      return SubscriptionInterface::STATUS_ENDED;
-    }
-    // If the developer ended the plan before today, the plan has ended.
-    $developer_plan_end_date = $subscription->getEndDate();
-    if (!empty($developer_plan_end_date) && $developer_plan_end_date < $today) {
-      return SubscriptionInterface::STATUS_ENDED;
-    }
-
-    // If the start date is later than today, it is a future plan.
-    $developer_plan_start_date = $subscription->getStartDate();
-    if (!empty($developer_plan_start_date) && $developer_plan_start_date > $today) {
-      return SubscriptionInterface::STATUS_FUTURE;
-    }
-
-    return SubscriptionInterface::STATUS_ACTIVE;
-  }
-
-  /**
    * {@inheritdoc}
    */
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
 
     if ($entity->access('unsubscribe') && $entity->hasLinkTemplate('unsubscribe-form')) {
-      $operations['unsubscribe'] = [
-        'title' => $this->t('Unsubscribe'),
-        'weight' => 10,
-        'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
-      ];
+      if ($entity->isSubscriptionActive()) {
+        $operations['unsubscribe'] = [
+          'title' => $this->t('Unsubscribe'),
+          'weight' => 10,
+          'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user, 'subscription' => $entity->id()])),
+        ];
+      }
     }
 
     return $operations;
