@@ -32,7 +32,7 @@ use Drupal\Core\Url;
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
   /** @var \Drupal\Core\Entity\EntityInterface|User|null */
-  protected $user;
+  protected $developer;
 
   /** @var \Drupal\apigee_m10n\Entity\Subscription|null */
   protected $subscription;
@@ -43,7 +43,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * @param RouteMatchInterface $route_match
    */
   public function __construct(RouteMatchInterface $route_match) {
-    $this->user = User::load($route_match->getParameter('user'));
+    $this->developer = User::load($route_match->getParameter('user'));
     $this->subscription = $route_match->getParameter('subscription');
   }
 
@@ -115,16 +115,24 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $end_type = $values['end_type'];
+    $entity = $this->subscription;
+    $entity->setDeveloperEmail($this->developer->getEmail());
     if ($end_type == 'end_date') {
-      $this->entity->setEndDate(new \DateTimeImmutable($values['endDate']));
+      $entity->setEndDate(new \DateTimeImmutable($values['endDate']));
     }
     else {
-      $this->entity->setEndDate(new \DateTimeImmutable('-1 day'));
+      $entity->setEndDate(new \DateTimeImmutable('-1 day'));
     }
-    $this->entity->setDeveloperEmail(\Drupal::currentUser()->getEmail());
+    return $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->save();
   }
 
