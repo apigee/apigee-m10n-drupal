@@ -24,6 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\user\Entity\User;
+use Drupal\Core\Url;
 
 /**
  * Unsubscribe entity form for subscriptions.
@@ -76,7 +77,9 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getCancelUrl() {}
+  public function getCancelUrl() {
+    return  Url::fromRoute('apigee_monetization.my_subscriptions');
+  }
 
   /**
    * {@inheritdoc}
