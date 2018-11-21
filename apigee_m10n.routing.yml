@@ -81,13 +81,13 @@ entity.rate_plan.canonical:
         type: 'entity:rate_plan'
         converter: paramconverter.entity.rate_plan
 
-entity.subscription.subscribe_form:
+entity.rate_plan.subscribe_form:
   path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe'
   defaults:
-    _entity_form: 'subscription.subscribe'
-    _title_callback: '\Drupal\apigee_m10n\Entity\Form\SubscribeForm::title'
+    _entity_form: 'rate_plan.subscribe'
+    _title_callback: '\Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm::title'
   requirements:
-    _permission: 'access subscriptions'
+    _entity_access: 'rate_plan.subscribe'
   options:
     parameters:
       rate_plan:
