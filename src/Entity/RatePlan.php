@@ -47,14 +47,10 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\RatePlanStorage",
  *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
- *     "form" = {
- *       "subscribe" = "Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm",
- *     },
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
- *     "canonical"      = "/user/{user}/monetization/packages/{package}/plan/{rate_plan}",
- *     "subscribe-form" = "/user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe",
+ *     "canonical" = "/user/{user}/monetization/packages/{package}/plan/{rate_plan}",
  *   },
  *   entity_keys = {
  *     "id" = "id",
