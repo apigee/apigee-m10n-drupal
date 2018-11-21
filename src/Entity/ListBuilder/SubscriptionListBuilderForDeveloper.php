@@ -150,7 +150,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $row['package'] = $rate_plan->getPackage()->getDisplayName();
     $row['products'] = $products;
     $url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
-      'user' => $this->user->id(),
+      'user' => $this->current_user->id(),
       'package' => $rate_plan->getPackage()->id(),
       'rate_plan' => $rate_plan->id()
     ]));

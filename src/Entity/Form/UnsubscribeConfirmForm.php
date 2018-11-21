@@ -25,7 +25,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Unsubscribe entity form for subscriptions.
  */
-class UnsubscribeForm extends EntityConfirmFormBase {
+class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
   /**
    * {@inheritdoc}
@@ -38,29 +38,44 @@ class UnsubscribeForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return $this->t('Unsubscribe');
+    return $this->t('End This Plan');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getQuestion() {
-
-  }
+  public function getQuestion() {}
 
   /**
    * {@inheritdoc}
    */
-  public function getCancelUrl() {
+  public function getCancelUrl() {}
 
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+    $form['endDate'] = [
+      '#type'  => 'date',
+      '#title' => $this->t('Select an end date'),
+    ];
+    return $form;
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->entity->setEndDate(new \DateTimeImmutable('-1 day'));
-    $this->entity->developerId = 'chrisnovak@google.com';
+    $values = $form_state->getValues();
+    print_r($values);exit;
+    if (!empty($values['endDate'])) {
+      $this->entity->setEndDate(new \DateTimeImmutable($values['endDate']));
+    }
+    else {
+      $this->entity->setEndDate(new \DateTimeImmutable('-1 day'));
+    }
+    $this->entity->setDeveloperEmail(\Drupal::currentUser()->getEmail());
     $this->entity->save();
   }
 
