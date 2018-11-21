@@ -30,6 +30,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
@@ -65,6 +66,13 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   protected $user;
 
   /**
+   * Current user for the listing page.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $current_user;
+
+  /**
    * Constructs a new EntityListBuilder object.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -80,6 +88,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger;
     $this->messenger = $messenger;
+    $this->current_user = \Drupal::currentUser();
   }
 
   /**
@@ -140,7 +149,12 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $row['status'] = $subscription->getSubscriptionStatus();
     $row['package'] = $rate_plan->getPackage()->getDisplayName();
     $row['products'] = $products;
-    $row['plan'] = Link::fromTextAndUrl($rate_plan->getDisplayName(), $rate_plan->toUrl());
+    $url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $this->user->id(),
+      'package' => $rate_plan->getPackage()->id(),
+      'rate_plan' => $rate_plan->id()
+    ]));
+    $row['plan'] = Link::fromTextAndUrl($rate_plan->getDisplayName(), $url);
     $row['start_date'] = $subscription->getStartDate()->format('m/d/Y');
     $row['end_date'] = $subscription->getEndDate() ? $subscription->getEndDate()->format('m/d/Y') : null;
     $row['plan_end_date'] = $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : null;
@@ -240,7 +254,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         $operations['unsubscribe'] = [
           'title' => $this->t('Unsubscribe'),
           'weight' => 10,
-          'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user, 'subscription' => $entity->id()])),
+          'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
         ];
       }
     }

@@ -64,6 +64,9 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
     getProperties as baseGetProperties;
   }
 
+  /** @var  */
+  protected $developer_email;
+
   /**
    * {@inheritdoc}
    */
@@ -178,6 +181,21 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
    */
   public function isSubscriptionActive(): bool {
     return $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setDeveloperEmail($developer_email) {
+    $this->developer_email = $developer_email;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloperEmail(): string {
+    return $this->developer_email;
   }
 
   /**

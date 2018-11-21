@@ -120,7 +120,7 @@ class SubscriptionStorage extends FieldableMonetizationEntityStorageBase impleme
     // - prevent serialization/normalization errors
     //   (CircularReferenceException) caused by TypedData objects on Drupal
     //   entities.
-    $controller = $this->getController($entity->developerId);
+    $controller = $this->getController($entity->getDeveloperEmail());
     $rate_plan_storage = \Drupal::entityTypeManager('rate_plan')->getStorage('rate_plan');
     $rate_plan = $rate_plan_storage->convertToSdkEntity($entity->getRatePlan());
 
