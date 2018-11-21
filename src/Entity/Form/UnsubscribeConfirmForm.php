@@ -156,7 +156,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       }
     }
     catch (\Exception $e) {
-      throw new \Exception('Could not unsubscribe from a plan.');
+      throw new \Exception("Could not unsubscribe from a plan.\n" . $e->getMessage());
     }
   }
 
