@@ -31,11 +31,16 @@ use Drupal\Core\Url;
  */
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
+  /** @var \Drupal\Core\Entity\EntityInterface|User|null */
   protected $user;
+
+  /** @var \Drupal\apigee_m10n\Entity\Subscription|null */
   protected $subscription;
 
   /**
-   * Class constructor.
+   * UnsubscribeConfirmForm constructor.
+   *
+   * @param RouteMatchInterface $route_match
    */
   public function __construct(RouteMatchInterface $route_match) {
     $this->user = User::load($route_match->getParameter('user'));
