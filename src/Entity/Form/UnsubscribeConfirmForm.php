@@ -68,7 +68,6 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    print_r($values);exit;
     if (!empty($values['endDate'])) {
       $this->entity->setEndDate(new \DateTimeImmutable($values['endDate']));
     }
