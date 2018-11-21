@@ -21,11 +21,34 @@ namespace Drupal\apigee_m10n\Entity\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Unsubscribe entity form for subscriptions.
  */
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
+
+  protected $user;
+  protected $subscription;
+
+  /**
+   * Class constructor.
+   */
+  public function __construct(RouteMatchInterface $route_match) {
+    $this->user = User::load($route_match->getParameter('user'));
+    $this->subscription = $route_match->getParameter('subscription');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('current_route_match')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -44,7 +67,11 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getQuestion() {}
+  public function getQuestion() {
+    return $this->t('Unsubscribe from <em>%label</em> plan', [
+      '%label' => $this->subscription->getRatePlan()->label()
+    ]);
+  }
 
   /**
    * {@inheritdoc}
@@ -56,9 +83,23 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
+    $form['end_type'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Plan End Date'),
+      '#options' => [
+        'immediate' => $this->t('Immediately'),
+        'end_date'  => $this->t('Future Date')
+      ],
+      '#default_value' => 'immediate'
+    ];
     $form['endDate'] = [
       '#type'  => 'date',
       '#title' => $this->t('Select an end date'),
+      '#states' => [
+        'visible' => [
+          ':input[name="end_type"]' => array('value' => 'end_date'),
+        ]
+      ],
     ];
     return $form;
   }
@@ -68,7 +109,8 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    if (!empty($values['endDate'])) {
+    $end_type = $values['end_type'];
+    if ($end_type == 'end_date') {
       $this->entity->setEndDate(new \DateTimeImmutable($values['endDate']));
     }
     else {
