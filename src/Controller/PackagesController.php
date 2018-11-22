@@ -22,11 +22,8 @@ namespace Drupal\apigee_m10n\Controller;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
-use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Form\RatePlanConfigForm;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -108,15 +105,15 @@ class PackagesController extends ControllerBase {
     // Get the view mode to use for rate plans.
     $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('product_rate_plan_view_mode');
     // Get an entity view builder for rate plans.
-    $rate_plan_view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan', $view_mode);
+    $rate_plan_view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
 
     // Load plans for each package.
-    $plans = array_map(function ($package) use ($rate_plan_view_builder) {
+    $plans = array_map(function ($package) use ($rate_plan_view_builder, $view_mode) {
       // Load the rate plans.
       $package_rate_plans = RatePlan::loadPackageRatePlans($package->id());
       if (!empty($package_rate_plans)) {
         // Return a render-able list of rate plans.
-        return $rate_plan_view_builder->viewMultiple($package_rate_plans);
+        return $rate_plan_view_builder->viewMultiple($package_rate_plans, $view_mode);
       }
     }, $packages);
 
