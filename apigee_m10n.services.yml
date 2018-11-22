@@ -28,3 +28,7 @@ services:
     tags:
       - { name: paramconverter }
     arguments: ['@entity.manager', '@language_manager']
+  apigee_m10n.route_subscriber:
+    class: Drupal\apigee_m10n\Routing\MonetizationRouteSubscriber
+    tags:
+     - { name: event_subscriber }
