@@ -26,6 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\user\Entity\User;
 use Drupal\Core\Url;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Unsubscribe entity form for subscriptions.
@@ -98,12 +99,12 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['end_type'] = [
+    $form['when'] = [
       '#type' => 'radios',
       '#title' => $this->t('Plan End Date'),
       '#options' => [
         'immediate' => $this->t('Immediately'),
-        'end_date'  => $this->t('Future Date')
+        'on_date'   => $this->t('Future Date')
       ],
       '#default_value' => 'immediate'
     ];
@@ -112,7 +113,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#title' => $this->t('Select an end date'),
       '#states' => [
         'visible' => [
-          ':input[name="end_type"]' => array('value' => 'end_date'),
+          ':input[name="when"]' => ['value' => 'on_date'],
         ]
       ],
     ];
@@ -154,9 +155,11 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
           '%label' => $plan_name
         ]));
       }
+      Cache::invalidateTags(['apigee_my_subscriptions']);
+      $form_state->setRedirect('apigee_monetization.my_subscriptions');
     }
     catch (\Exception $e) {
-      throw new \Exception("Could not unsubscribe from a plan.\n" . $e->getMessage());
+      $this->messenger->addError($e->getMessage());
     }
   }
 

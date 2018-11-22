@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlan as MonetizationRatePlan;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
  * Defines the Package Rate Plan entity class.
@@ -134,6 +135,7 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
       'prorate' => 'boolean',
       'published' => 'boolean',
       'keepOriginalStartDate' => 'boolean',
+      'subscribeLink' => 'apigee_subscribe_link',
     ] + $properties;
 
     return $properties;
@@ -149,6 +151,13 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
     $definitions['ratePlanDetails']->setCardinality(-1);
 
     return $definitions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSubscribeLink(): bool {
+    return $this;
   }
 
   /**

@@ -186,8 +186,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
       '#empty' => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
       '#cache' => [
         'contexts' => $this->entityType->getListCacheContexts() + ['url.query_args'],
-        'tags' => $this->entityType->getListCacheTags(),
-        'max-age' => 600
+        'tags' => $this->entityType->getListCacheTags() + ['apigee_my_subscriptions'],
       ],
     ];
 
