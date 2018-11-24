@@ -250,7 +250,8 @@ trait ApigeeMonetizationTestTrait {
     $this->cleanup_queue[] = [
       'weight' => 10,
       'callback' => function () use ($package, $package_controller) {
-        $this->stack->queueMockResponse('no_content');
+        $this->stack
+          ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
         $package_controller->delete($package->id());
       },
     ];
@@ -276,6 +277,12 @@ trait ApigeeMonetizationTestTrait {
     $currency_controller = new SupportedCurrencyController($org_name, $this->sdk_connector->getClient());
     $this->stack->queueMockResponse('get_supported_currency');
     $currency = $currency_controller->load('usd');
+
+    $rate_plan_rate = new RatePlanRateRateCard([
+      'id'        => strtolower($this->randomMachineName()),
+      'rate'      => rand(5, 20),
+    ]);
+    $rate_plan_rate->setStartUnit(1);
 
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = RatePlan::create([
@@ -310,7 +317,7 @@ trait ApigeeMonetizationTestTrait {
           "meteringType"              => "UNIT",
           'org'                       => $org,
           "paymentDueDays"            => "30",
-          'ratePlanRates'             => [],
+          'ratePlanRates'             => [$rate_plan_rate],
           "ratingParameter"           => "VOLUME",
           "type"                      => "RATECARD",
         ]),
@@ -321,32 +328,14 @@ trait ApigeeMonetizationTestTrait {
       'setUpFee'              => '1.0000',
       'startDate'             => new \DateTimeImmutable('2018-07-26 00:00:00'),
       'type'                  => 'STANDARD',
+      'organization'          => $org,
+      'currency'              => $currency,
+      'package'               => $package,
     ]);
-    $rate_plan->setOrganization($org);
-    $rate_plan->setCurrency($currency);
-    $rate_plan->setPackage($package);
 
     $this->stack
       ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
     $rate_plan->save();
-
-    /*
-     * The rateplan rates are being added after the entity is saved  because of
-     * the following error.
-     *
-     * @todo: The following error must be fixed before we can save ratePlan rates.
-     *
-     * @code
-     * TypeError : Return value of Apigee\Edge\Api\Monetization\Structure\RatePlanRate::getStartUnit() must be of the type integer, null returned
-     * .../vendor/apigee/apigee-client-php/src/Api/Monetization/Structure/RatePlanRate.php:41
-     * @code
-     */
-    $rate_plan->getRatePlanDetails()[0]->setRatePlanRates([
-      new RatePlanRateRateCard([
-        'id'        => strtolower($this->randomMachineName()),
-        'rate'      => rand(5, 20),
-      ]),
-    ]);
 
     // Remove the rate plan in the cleanup queue.
     $this->cleanup_queue[] = [

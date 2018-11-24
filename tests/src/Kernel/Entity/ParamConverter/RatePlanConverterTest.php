@@ -20,7 +20,9 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\ParamConverter;
 
 use Drupal\apigee_m10n\Entity\ParamConverter\RatePlanConverter;
+use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Tests the rate plan param converter.
@@ -31,9 +33,44 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 class RatePlanConverterTest extends MonetizationKernelTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+
+    $this->installSchema('system', ['sequences']);
+    $this->installSchema('user', ['users_data']);
+    $this->installConfig([
+      'user',
+      'system',
+    ]);
+    $this->installEntitySchema('user');
+  }
+
+  /**
    * Test entities are converted.
    */
   public function testConvert() {
+    // Create an admin user.
+    $developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
+    $this->setCurrentUser($developer);
+    $api_package = $this->createPackage();
+    $rate_plan = $this->createPackageRatePlan($api_package);
+
+    $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $developer->id(),
+      'package' => $api_package->id(),
+      'rate_plan' => $rate_plan->id(),
+    ])->toString());
+
+    // Queue up API responses.
+    $this->stack
+      ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+
+    // Match the request.
+    \Drupal::service('router')->matchRequest($request);
+
+    $this->assertEquals($rate_plan->id(), $request->get('rate_plan')->id());
   }
 
   /**

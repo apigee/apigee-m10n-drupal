@@ -35,16 +35,16 @@ class RenderTest extends MonetizationKernelTestBase {
   public function testRenderRatePlan() {
 
     $package = $this->createPackage();
-    $plan = $this->createPackageRatePlan($package);
+    $rate_plan = $this->createPackageRatePlan($package);
 
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($plan->getEntityTypeId());
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($rate_plan->getEntityTypeId());
 
-    $build = $view_builder->view($plan, 'default');
+    $build = $view_builder->view($rate_plan, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
-    $this->assertText($plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
-    $this->assertText($plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
+    $this->assertText($rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
+    $this->assertText($rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
   }
 
 }

@@ -20,44 +20,11 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface as MonetizationRatePlanInterface;
-use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 
 /**
  * Defines the interface for package rate plan entity objects.
  */
-interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdgeEntityInterface {
-
-  /**
-   * Getter for the `isAdvance` call.
-   *
-   * @return bool
-   *   Whether or not this is an advance rate plan.
-   */
-  public function getAdvance(): bool;
-
-  /**
-   * Getter for the `isPrivate` call.
-   *
-   * @return bool
-   *   Whether or not this is a private rate plan.
-   */
-  public function getPrivate(): bool;
-
-  /**
-   * Getter for the `isProrate` call.
-   *
-   * @return bool
-   *   Whether or not this is a prorate rate plan.
-   */
-  public function getProrate(): bool;
-
-  /**
-   * Getter for the `isPublished` call.
-   *
-   * @return bool
-   *   Whether or not this rate plan is published.
-   */
-  public function getPublished(): bool;
+interface RatePlanInterface extends MonetizationRatePlanInterface {
 
   /**
    * Loads rate plans by package name.

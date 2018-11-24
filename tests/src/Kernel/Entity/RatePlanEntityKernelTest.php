@@ -72,7 +72,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     $this->stack
       ->queueMockResponse(['rate_plan' => ['plan' => $this->rate_plan]]);
 
-    $rate_plan = RatePlan::loadById($this->rate_plan->getPackage()->id(), $this->rate_plan->id());
+    $rate_plan = RatePlan::loadById($this->rate_plan->getpackage()->id(), $this->rate_plan->id());
 
     static::assertInstanceOf(RatePlanInterface::class, $rate_plan);
     static::assertSame(gettype($rate_plan), gettype($this->rate_plan));

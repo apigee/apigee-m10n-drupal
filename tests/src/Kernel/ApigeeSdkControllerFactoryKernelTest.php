@@ -30,8 +30,6 @@ use Drupal\user\UserInterface;
 /**
  * Tests the `apigee_m10n.sdk_controller_factory` service.
  *
- * @package Drupal\Tests\apigee_m10n\Kernel
- *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */

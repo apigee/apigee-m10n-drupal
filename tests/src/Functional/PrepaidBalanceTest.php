@@ -24,8 +24,6 @@ use Drupal\Core\Url;
 /**
  * Functional test for prepaid balance report.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */

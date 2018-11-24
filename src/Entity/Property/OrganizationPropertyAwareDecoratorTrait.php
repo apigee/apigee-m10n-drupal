@@ -17,15 +17,20 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Entity\Storage;
+namespace Drupal\apigee_m10n\Entity\Property;
 
-use Drupal\Core\Entity\DynamicallyFieldableEntityStorageInterface;
-use Drupal\Core\Entity\FieldableEntityStorageInterface;
-use Drupal\Core\Entity\Schema\DynamicallyFieldableEntityStorageSchemaInterface;
+use Apigee\Edge\Api\Monetization\Entity\OrganizationProfileInterface;
 
 /**
- * Defines an interface for fieldable Apigee Edge entities.
+ * Trait OrganizationPropertyAwareDecoratorTrait.
  */
-interface FieldableMonetizationEntityStorageInterface extends FieldableEntityStorageInterface, DynamicallyFieldableEntityStorageInterface, DynamicallyFieldableEntityStorageSchemaInterface {
+trait OrganizationPropertyAwareDecoratorTrait {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOrganization(): ?OrganizationProfileInterface {
+    return $this->decorated->getOrganization();
+  }
 
 }

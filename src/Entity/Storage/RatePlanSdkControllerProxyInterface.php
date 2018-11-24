@@ -19,35 +19,36 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage;
 
-use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Apigee\Edge\Entity\EntityInterface;
+use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 
 /**
- * Defines an interface for the rate plan storage class.
+ * Some additional loaders for the rate plan SDK storage controller proxy.
  */
-interface RatePlanStorageInterface {
+interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterface {
 
   /**
-   * Loads rate plans by package name.
+   * Loads all package rate plans for a given package.
    *
-   * @param string $package_name
-   *   The name of the API package.
+   * @param string $package_id
+   *   The package ID.
    *
-   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
-   *   An array of rate plans for a given package.
+   * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[]
+   *   A list of package rate plans keyed by ID.
    */
-  public function loadPackageRatePlans(string $package_name): array;
+  public function loadPackageRatePlans($package_id): array;
 
   /**
-   * Load an individual package rate plan by package_id and rate plan ID.
+   * Loads a package rate plan by ID.
    *
-   * @param string $package_name
-   *   The package the rate plan belongs to.
+   * @param string $package_id
+   *   The package ID.
    * @param string $id
    *   The rate plan ID.
    *
-   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
+   * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface
    *   The rate plan.
    */
-  public function loadById(string $package_name, string $id): RatePlanInterface;
+  public function loadById(string $package_id, string $id): EntityInterface;
 
 }

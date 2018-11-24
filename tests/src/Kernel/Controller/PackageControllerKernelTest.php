@@ -20,14 +20,13 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
 use Drupal\apigee_m10n\Controller\PackagesController;
+use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Functional tests for the package controller.
- *
- * @package Drupal\Tests\apigee_m10n\Functional
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
@@ -58,7 +57,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
 
     $this->account = $this->createAccount([
       'access monetization packages',
-      'access purchased monetization packages',
+      'access subscriptions',
     ]);
     $this->setCurrentUser($this->account);
   }
@@ -70,15 +69,12 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
    * works better as a kernel test.
    *
    * @throws \Exception
-   *
-   * @covers ::myCatalog
-   * @covers ::myPurchased
    */
   public function testMyRedirects() {
     // Test the packages redirect.
     // Queue up a monetized org response.
     $this->stack->queueMockResponse('get_monetized_org');
-    $request = Request::create('/user/monetization/packages', 'GET');
+    $request = Request::create(Url::fromRoute('apigee_monetization.my_packages')->toString(), 'GET');
 
     /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
     $kernel = $this->container->get('http_kernel');
@@ -89,18 +85,24 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
 
     // Test the purchased packages redirect.
     // Queue up a monetized org response.
-    $request = Request::create('/user/monetization/packages/purchased', 'GET');
+    $request = Request::create(Url::fromRoute('apigee_monetization.my_subscriptions')->toString(), 'GET');
 
     /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
     $kernel = $this->container->get('http_kernel');
     $response = $kernel->handle($request);
 
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame('http://localhost/user/' . $this->account->id() . '/monetization/packages/purchased', $response->headers->get('location'));
+    static::assertSame('http://localhost/user/' . $this->account->id() . '/monetization/subscriptions', $response->headers->get('location'));
   }
 
   /**
    * Tests the `monetization-packages` response.
+   *
+   * @throws \Exception
+   * @throws \Http\Client\Exception
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   public function testPackageResponse() {
     /** @var \Apigee\Edge\Api\Monetization\Entity\ApiPackage[] $packages */
