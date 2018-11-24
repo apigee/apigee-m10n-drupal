@@ -54,7 +54,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return [static::$CONFIG_NAME];
+    return [static::CONFIG_NAME];
   }
 
   /**
