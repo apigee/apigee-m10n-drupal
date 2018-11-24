@@ -40,15 +40,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
 /**
  * Defines the Package Rate Plan entity class.
  *
- * Rate plans don't have a unique ID in apigee and a monetization package is
- * required to load a rate plan with is sort of incompatible with the drupal
- * entity loading system. For this reason, plan IDs have to be prepended with
- * the package name for loading. i.e.
- *
- * @code
- * RatePlan::load('foo-package::bar-plan-name')
- * @endcode.
- *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
  *   id = "rate_plan",
  *   label = @Translation("Rate plan"),
