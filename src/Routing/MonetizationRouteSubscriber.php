@@ -33,13 +33,22 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
     foreach (['rate_plan'] as $entity_type_id) {
-      $collection->get("entity.field_config.{$entity_type_id}_field_edit_form")->setRequirements(['_access' => 'FALSE']);
-      $collection->get("entity.field_config.{$entity_type_id}_storage_edit_form")->setRequirements(['_access' => 'FALSE']);
-      $collection->get("entity.field_config.{$entity_type_id}_field_delete_form")->setRequirements(['_access' => 'FALSE']);
-      $collection->get("entity.{$entity_type_id}.field_ui_fields")->setRequirements(['_access' => 'FALSE']);
-      $collection->get("field_ui.field_storage_config_add_{$entity_type_id}")->setRequirements(['_access' => 'FALSE']);
-      $collection->get("entity.entity_form_display.{$entity_type_id}.default")->setRequirements(['_access' => 'FALSE']);
-      $collection->get("entity.entity_form_display.{$entity_type_id}.form_mode")->setRequirements(['_access' => 'FALSE']);
+      $routes_to_block = [
+        "entity.field_config.{$entity_type_id}_field_edit_form",
+        "entity.field_config.{$entity_type_id}_storage_edit_form",
+        "entity.field_config.{$entity_type_id}_field_delete_form",
+        "entity.{$entity_type_id}.field_ui_fields",
+        "field_ui.field_storage_config_add_{$entity_type_id}",
+        "entity.entity_form_display.{$entity_type_id}.default",
+        "entity.entity_form_display.{$entity_type_id}.form_mode",
+      ];
+
+      // Deny access to all unneeded routes.
+      foreach ($routes_to_block as $route_id) {
+        if ($route = $collection->get("entity.field_config.{$entity_type_id}_field_edit_form")) {
+          $route->setRequirements(['_access' => 'FALSE']);
+        }
+      }
     }
   }
 
