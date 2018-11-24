@@ -93,13 +93,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use StartDatePropertyAwareDecoratorTrait;
 
   /**
-   * The package this rate plan belongs to.
-   *
-   * @var string
-   */
-  protected $packageId;
-
-  /**
    * Constructs a `rate_plan` entity.
    *
    * @param array $values
@@ -113,10 +106,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * @throws \ReflectionException
    */
   public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
-    // Set the package ID.
-    if (isset($values['packageId'])) {
-      $this->packageId = $values['packageId'];
-    }
     /** @var \Apigee\Edge\Api\Management\Entity\DeveloperAppInterface $decorated */
     $entity_type = $entity_type ?? 'rate_plan';
     parent::__construct($values, $entity_type, $decorated);
