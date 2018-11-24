@@ -61,13 +61,6 @@ entity.subscription.collection_by_developer:
     user: '\d+'
     _permission: 'access subscriptions'
 
-apigee_monetization.subscribe_to_plan:
-  path: '/user/subscription-test'
-  defaults:
-    _form: '\Drupal\apigee_m10n\Form\SubscribeToPlanTestForm'
-  requirements:
-    _permission: 'administer apigee monetization'
-
 entity.rate_plan.canonical:
   path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}'
   defaults:
@@ -86,7 +79,6 @@ entity.rate_plan.subscribe_form:
   defaults:
     _entity_form: 'rate_plan.subscribe'
     _title_callback: '\Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm::title'
-#    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
   requirements:
     _entity_access: 'rate_plan.subscribe'
   options:

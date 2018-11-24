@@ -53,4 +53,40 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface, FieldableEdge
    */
   public static function loadRatePlansByDeveloperEmail(string $developer_email): array;
 
+  /**
+   * Getter for the `isSubscriptionActive` call.
+   *
+   * @return bool
+   *   Whether or not this is an active subscription.
+   */
+  public function isSubscriptionActive(): bool;
+
+  /**
+   * Getter for the `getSubscriptionStatus` call.
+   *
+   * @return bool
+   *   Subscription status as a string.
+   */
+  public function getSubscriptionStatus(): string;
+
+  /**
+   * Set developer email.
+   *
+   * @param $developer_email
+   *   The email of a developer registered with apigee edge.
+   *
+   * @return string
+   */
+  public function setDeveloperEmail($developer_email);
+
+  /**
+   * Get developer email.
+   *
+   * @param $developer_email
+   *   The email of a developer registered with apigee edge.
+   *
+   * @return string
+   */
+  public function getDeveloperEmail(): string;
+
 }
