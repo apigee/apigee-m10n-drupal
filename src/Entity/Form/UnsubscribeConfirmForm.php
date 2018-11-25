@@ -83,7 +83,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function getQuestion() {
     return $this->t('Unsubscribe from <em>%label</em> plan', [
-      '%label' => $this->subscription->getRatePlan()->label()
+      '%label' => $this->subscription->getRatePlan()->getDisplayName()
     ]);
   }
 
@@ -139,7 +139,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
-      $plan_name = $this->entity->getRatePlan()->label();
+      $plan_name = $this->entity->getRatePlan()->getDisplayName();
       if (!$this->entity->isSubscriptionActive()) {
         if ($this->entity->save()) {
           $this->messenger->addStatus($this->t('You have successfully unsubscribed from <em>%label</em> plan', [
