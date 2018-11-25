@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface as MonetizationRatePlanInterface;
+use Drupal\Core\Url;
 
 /**
  * Defines the interface for package rate plan entity objects.
@@ -49,5 +50,13 @@ interface RatePlanInterface extends MonetizationRatePlanInterface {
    *   The rate plan.
    */
   public static function loadById(string $package_name, string $id): RatePlanInterface;
+
+  /**
+   * Get's the subscribe  link for this rate plan.
+   *
+   * @return \Drupal\Core\Url|null
+   *   The url to subscribe to this rate plan
+   */
+  public function getSubscribeLink():? Url;
 
 }
