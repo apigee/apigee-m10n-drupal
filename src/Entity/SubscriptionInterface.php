@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -19,13 +19,12 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
-use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface;
-use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface;
 
 /**
  * Defines the interface for subscription entity objects.
  */
-interface SubscriptionInterface extends AcceptedRatePlanInterface, FieldableEdgeEntityInterface {
+interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
 
   /**
    * Status text for ended subscriptions.
@@ -49,7 +48,8 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface, FieldableEdge
    *   The email of a developer registered with apigee edge.
    *
    * @return \Drupal\apigee_m10n\Entity\Subscription[]
-   *   An array of subscription entities for a given developer (identified by email).
+   *   An array of subscription entities for a given developer (identified by
+   *   email).
    */
   public static function loadRatePlansByDeveloperEmail(string $developer_email): array;
 
@@ -64,29 +64,9 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface, FieldableEdge
   /**
    * Getter for the `getSubscriptionStatus` call.
    *
-   * @return bool
+   * @return string
    *   Subscription status as a string.
    */
   public function getSubscriptionStatus(): string;
-
-  /**
-   * Set developer email.
-   *
-   * @param $developer_email
-   *   The email of a developer registered with apigee edge.
-   *
-   * @return string
-   */
-  public function setDeveloperEmail($developer_email);
-
-  /**
-   * Get developer email.
-   *
-   * @param $developer_email
-   *   The email of a developer registered with apigee edge.
-   *
-   * @return string
-   */
-  public function getDeveloperEmail(): string;
 
 }

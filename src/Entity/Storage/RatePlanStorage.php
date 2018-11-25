@@ -44,7 +44,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
   protected $controller_proxy;
 
   /**
-   * Constructs an EdgeEntityStorageBase instance.
+   * Constructs an RatePlanStorage instance.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.

@@ -53,10 +53,10 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\RatePlanStorage",
  *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "form" = {
  *       "subscribe" = "Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm",
  *     },
- *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
  *     "canonical"      = "/user/{user}/monetization/packages/{package}/plan/{rate_plan}",
@@ -83,6 +83,8 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use PaymentDueDaysPropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
 
+  public const ENTITY_TYPE_ID = 'rate_plan';
+
   /**
    * Constructs a `rate_plan` entity.
    *
@@ -98,7 +100,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
     /** @var \Apigee\Edge\Api\Management\Entity\DeveloperAppInterface $decorated */
-    $entity_type = $entity_type ?? 'rate_plan';
+    $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
     parent::__construct($values, $entity_type, $decorated);
   }
 
@@ -114,13 +116,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public static function idProperty(): string {
     return MonetizationRatePlan::idProperty();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function drupalEntityId(): ?string {
-    return $this->decorated->id();
   }
 
   /**
@@ -179,7 +174,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public static function loadPackageRatePlans(string $package_name): array {
     return \Drupal::entityTypeManager()
-      ->getStorage('rate_plan')
+      ->getStorage(static::ENTITY_TYPE_ID)
       ->loadPackageRatePlans($package_name);
   }
 
@@ -193,8 +188,15 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public static function loadById(string $package_name, string $id): RatePlanInterface {
     return \Drupal::entityTypeManager()
-      ->getStorage('rate_plan')
+      ->getStorage(static::ENTITY_TYPE_ID)
       ->loadById($package_name, $id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function drupalEntityId(): ?string {
+    return $this->decorated->id();
   }
 
   /**

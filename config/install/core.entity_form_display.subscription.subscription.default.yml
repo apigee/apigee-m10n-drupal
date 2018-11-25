@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: subscription.subscription.default
+targetEntityType: subscription
+bundle: subscription
+mode: default
+content:
+  startDate:
+    type: datetime_timestamp
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  developer: true
+  endDate: true
+  ratePlan: true

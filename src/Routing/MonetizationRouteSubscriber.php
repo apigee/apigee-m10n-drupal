@@ -32,22 +32,26 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
    * {@inheritdoc}
    */
   protected function alterRoutes(RouteCollection $collection) {
-    foreach (['rate_plan'] as $entity_type_id) {
-      $routes_to_block = [
-        "entity.field_config.{$entity_type_id}_field_edit_form",
-        "entity.field_config.{$entity_type_id}_storage_edit_form",
-        "entity.field_config.{$entity_type_id}_field_delete_form",
-        "entity.{$entity_type_id}.field_ui_fields",
-        "field_ui.field_storage_config_add_{$entity_type_id}",
-        "entity.entity_form_display.{$entity_type_id}.default",
-        "entity.entity_form_display.{$entity_type_id}.form_mode",
-      ];
+    $routes_to_block = [
+      // Rate Plans.
+      "entity.field_config.rate_plan_field_edit_form",
+      "entity.field_config.rate_plan_storage_edit_form",
+      "entity.field_config.rate_plan_field_delete_form",
+      "entity.rate_plan.field_ui_fields",
+      "field_ui.field_storage_config_add_rate_plan",
+      "entity.entity_form_display.rate_plan.default",
+      "entity.entity_form_display.rate_plan.form_mode",
+      // Subscriptions.
+      "entity.field_config.subscription_field_edit_form",
+      "entity.field_config.subscription_storage_edit_form",
+      "entity.field_config.subscription_field_delete_form",
+      "entity.subscription.field_ui_fields",
+      "field_ui.field_storage_config_add_subscription",
+    ];
 
-      // Deny access to all unneeded routes.
-      foreach ($routes_to_block as $route_id) {
-        if ($route = $collection->get("entity.field_config.{$entity_type_id}_field_edit_form")) {
-          $route->setRequirements(['_access' => 'FALSE']);
-        }
+    foreach ($routes_to_block as $route_id) {
+      if ($route = $collection->get($route_id)) {
+        $route->setRequirements(['_access' => 'FALSE']);
       }
     }
   }

@@ -16,6 +16,16 @@ apigee_m10n.settings.rate_plan:
   options:
     _admin_route: TRUE
 
+apigee_m10n.settings.subscription:
+  path: 'admin/config/apigee-edge/monetization/subscription-settings'
+  defaults:
+    _form: '\Drupal\apigee_m10n\Form\SubscriptionConfigForm'
+    _title: 'Subscription settings'
+  requirements:
+    _permission: 'administer apigee m10n'
+  options:
+    _admin_route: TRUE
+
 apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:

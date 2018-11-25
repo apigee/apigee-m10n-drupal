@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_edge\Exception\RuntimeException;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
+use Drupal\user\Entity\User;
 
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
@@ -30,7 +31,7 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
  * controllers. Rate plan controllers require a package ID for instantiation so
  * we sometimes need to get a controller at runtime for a given rate plan.
  */
-class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface {
+class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRatePlanSdkControllerProxyInterface {
 
   use ApigeeSdkControllerFactoryAwareTrait;
 
@@ -38,7 +39,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function create(EntityInterface $entity): void {
-    $this->getRatePlanController($entity)->create($entity);
+    $this->getSubscriptionController($entity)->create($entity);
   }
 
   /**
@@ -47,85 +48,83 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
   public function load(string $id): EntityInterface {
     // A little secret is that the real package ID is not required for loading
     // a rate plan.
-    return $this->getRatePlanControllerByPackageId('default')->load($id);
+    return $this->getSubscriptionControllerByDeveloperId('default')->load($id);
   }
 
   /**
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    $this->getRatePlanController($entity)->update($entity);
+    $this->getSubscriptionController($entity)->update($entity);
   }
 
   /**
    * {@inheritdoc}
    */
   public function delete(string $id): void {
-    $this->getRatePlanControllerByPackageId('default')->delete($id);
+    $this->getSubscriptionControllerByDeveloperId('default')->delete($id);
   }
 
   /**
    * {@inheritdoc}
    */
   public function loadAll(): array {
-    // Cache the package controller.
-    static $package_controller;
-    $package_controller = $package_controller
-      ?: $this->controllerFactory()->apiPackageController();
+    // Get all active user emails.
+    $select = \Drupal::database()->select('users_field_data', 'u')
+      ->fields('u', ['mail']);
+    $select->condition('status', 1);
+    $select->condition('uid', [0, 1], 'NOT IN');
 
-    // TODO: Replace this with entity load once packages become drupal entities.
-    $all_packages = $package_controller->getEntities();
+    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[] $subscriptions */
+    $subscriptions = [];
 
-    /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[] $rate_plans */
-    $rate_plans = [];
-
-    // Loops through all packages to get the package plans.
-    foreach ($all_packages as $package) {
-      // Get all plans for this package.
-      $plans = $this->loadPackageRatePlans($package->id());
-      foreach ($plans as $plan) {
-        // Key rate plans by their ID.
-        $rate_plans[$plan->id()] = $plan;
+    // Loops through all developer emails to get their subscriptions.
+    foreach ($select->execute()->fetchCol() as $developer_email) {
+      // Get all subscriptions for this developer.
+      $developer_subscriptions = $this->loadByDeveloperId($developer_email);
+      foreach ($developer_subscriptions as $developer_subscription) {
+        // Subscriptions are keyed by their ID.
+        $subscriptions[$developer_subscription->id()] = $developer_subscription;
       }
     }
 
-    return $rate_plans;
+    return $subscriptions;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadPackageRatePlans($package_id): array {
+  public function loadByDeveloperId(string $developer_id): array {
     // Get all plans for this package.
-    return $this->getRatePlanControllerByPackageId($package_id)
+    return $this->getSubscriptionControllerByDeveloperId($developer_id)
       ->getEntities(TRUE, FALSE);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadById(string $package_id, string $id): EntityInterface {
-    return $this->getRatePlanControllerByPackageId($package_id)->load($id);
+  public function loadById(string $developer_id, string $id): EntityInterface {
+    return $this->getSubscriptionControllerByDeveloperId($developer_id)->load($id);
   }
 
   /**
-   * Given an entity, gets the rate plan controller.
+   * Given an entity, gets the subscription controller.
    *
    * @param \Apigee\Edge\Entity\EntityInterface $entity
    *   The ID of the package the rate plan belongs to.
    *
-   * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
+   * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getRatePlanController(EntityInterface $entity) {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $entity */
-    if (!($package = $entity->getPackage())) {
-      // If the package is not set, we have no way to get the controller since
-      // it depends on the package ID.
-      throw new RuntimeException('The API package must be set to create a rate plan.');
+  protected function getSubscriptionController(EntityInterface $entity) {
+    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
+    if (!($developer = $entity->getDeveloper())) {
+      // If the developer ID is not set, we have no way to get the controller
+      // since it depends on the developer id or email.
+      throw new RuntimeException('The Developer must be set to create a subscription controller.');
     }
     // Get the controller.
-    return $this->getRatePlanControllerByPackageId($package->id());
+    return $this->getSubscriptionControllerByDeveloperId($developer->getEmail());
   }
 
   /**
@@ -137,7 +136,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getRatePlanControllerByPackageId($package_id) {
+  protected function getSubscriptionControllerByDeveloperId($package_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.

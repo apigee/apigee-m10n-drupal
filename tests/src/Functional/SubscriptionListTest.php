@@ -22,9 +22,10 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 use Drupal\Core\Url;
 
 /**
- * Class SubscriptionListTest
+ * Class SubscriptionListTest.
  *
  * @group apigee_m10n
+ * @group apigee_m10n_functional
  */
 class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
@@ -62,7 +63,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $this->queueDeveloperResponse($this->account);
 
-    $this->stack->queueFromResponseFile('get-subscriptions');
+    $this->stack->queueMockResponse('get-subscriptions');
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->account->id(),

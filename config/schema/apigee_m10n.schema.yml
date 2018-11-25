@@ -5,3 +5,7 @@ apigee_m10n.rate_plan.config:
     product_rate_plan_view_mode:
       type: string
       label: 'View mode to use when viewing rate plans within packages.'
+
+apigee_m10n.subscription.config:
+  type: config_object
+  label: 'Subscription settings'
