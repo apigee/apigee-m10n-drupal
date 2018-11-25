@@ -93,10 +93,12 @@ interface ApigeeSdkControllerFactoryInterface {
   /**
    * Creates a developer accepted rate plan controller.
    *
-   * @param string $developer_email
+   * @param string $developer_id
+   *   The email or id of the developer.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController
+   *   A developer accepted rate plan controller.
    */
-  public function developerAcceptedRatePlanController(string $developer_email): DeveloperAcceptedRatePlanController;
+  public function developerAcceptedRatePlanController(string $developer_id): DeveloperAcceptedRatePlanController;
 
 }

@@ -174,7 +174,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
 
   public function render(UserInterface $user = NULL) {
     $this->user = $user;
-    $developer_id = $user->apigee_edge_developer_id->value;
+    $developer_id = $user->getEmail();
 
     $header = $this->buildHeader();
 
@@ -198,7 +198,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
 
     $rows = [];
 
-    foreach ($this->storage->loadByDeveloperId($developer_id) as $entity) {
+    foreach ($this->entityTypeManager->getStorage('subscription')->loadByDeveloperId($developer_id) as $entity) {
       if ($row = $this->buildRow($entity)) {
         $rows[$entity->id()] = $row;
       }

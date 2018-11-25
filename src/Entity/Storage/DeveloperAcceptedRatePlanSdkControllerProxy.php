@@ -97,7 +97,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
   public function loadByDeveloperId(string $developer_id): array {
     // Get all plans for this package.
     return $this->getSubscriptionControllerByDeveloperId($developer_id)
-      ->getEntities(TRUE, FALSE);
+      ->getAllAcceptedRatePlans();
   }
 
   /**
@@ -128,22 +128,22 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
   }
 
   /**
-   * Gets the rate plan controller by package ID.
+   * Gets the subscription controller by developer ID.
    *
-   * @param string $package_id
-   *   The ID of the package the rate plan belongs to.
+   * @param string $developer_id
+   *   The developer ID or email who has accepted the rate plan.
    *
-   * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
-   *   The real rate plan controller.
+   * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
+   *   The subscription controller.
    */
-  protected function getSubscriptionControllerByDeveloperId($package_id) {
+  protected function getSubscriptionControllerByDeveloperId($developer_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.
-    $controller_cache[$package_id] = $controller_cache[$package_id]
-      ?? $this->controllerFactory()->packageRatePlanController($package_id);
+    $controller_cache[$developer_id] = $controller_cache[$developer_id]
+      ?? $this->controllerFactory()->developerAcceptedRatePlanController($developer_id);
 
-    return $controller_cache[$package_id];
+    return $controller_cache[$developer_id];
   }
 
 }

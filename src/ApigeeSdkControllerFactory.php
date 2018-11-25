@@ -137,9 +137,9 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function developerAcceptedRatePlanController(string $developer_email): DeveloperAcceptedRatePlanController {
+  public function developerAcceptedRatePlanController(string $developer_id): DeveloperAcceptedRatePlanController {
     return new DeveloperAcceptedRatePlanController(
-      $developer_email,
+      $developer_id,
       $this->getOrganization(),
       $this->getClient()
     );
