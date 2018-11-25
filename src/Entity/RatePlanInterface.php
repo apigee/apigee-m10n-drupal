@@ -20,12 +20,13 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface as MonetizationRatePlanInterface;
+use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 use Drupal\Core\Url;
 
 /**
  * Defines the interface for package rate plan entity objects.
  */
-interface RatePlanInterface extends MonetizationRatePlanInterface {
+interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdgeEntityInterface {
 
   /**
    * Loads rate plans by package name.

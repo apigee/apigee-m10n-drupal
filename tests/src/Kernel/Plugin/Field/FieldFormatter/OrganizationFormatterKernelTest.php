@@ -19,18 +19,18 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\ApiPackageFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\ApiPackageFieldItem;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\OrganizationFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\OrganizationFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
- * Test the `apigee_api_package` field formatter.
+ * Test the `apigee_organization` field formatter.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
+class OrganizationFormatterKernelTest extends MonetizationKernelTestBase {
 
   /**
    * The formatter manager.
@@ -78,34 +78,33 @@ class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
   /**
    * Test viewing an API Package.
    *
-   * @throws \Exception
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->package_rate_plan->get('package');
+    $item_list = $this->package_rate_plan->get('organization');
     static::assertInstanceOf(FieldItemList::class, $item_list);
-    static::assertInstanceOf(ApiPackageFieldItem::class, $item_list->get(0));
-    static::assertSame($this->api_package->id(), $item_list->get(0)->value->id());
-    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\ApiPackageFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_api_package', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['package'],
+    static::assertInstanceOf(OrganizationFieldItem::class, $item_list->get(0));
+    static::assertSame($this->package_rate_plan->getOrganization()->id(), $item_list->get(0)->value->id());
+    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\OrganizationFormatter $instance */
+    $instance = $this->formatter_manager->createInstance('apigee_organization', [
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['organization'],
       'settings' => [],
       'label' => TRUE,
       'view_mode' => 'default',
       'third_party_settings' => [],
     ]);
-    static::assertInstanceOf(ApiPackageFormatter::class, $instance);
+    static::assertInstanceOf(OrganizationFormatter::class, $instance);
 
     // Render the field item.
     $build = $instance->view($item_list);
 
-    static::assertSame('Package', (string) $build['#title']);
+    static::assertSame('Organization', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
-    static::assertSame($this->api_package->getName(), (string) $build[0]['#markup']);
+    static::assertSame($this->package_rate_plan->getOrganization()->getName(), (string) $build[0]['#markup']);
 
     $this->render($build);
-    $this->assertText($this->api_package->getName());
+    $this->assertText($this->api_package->getOrganization()->getName());
   }
 
 }

@@ -29,16 +29,16 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'rate_plan_detail' field type.
+ * Plugin implementation of the 'apigee_rate_plan_details' field type.
  *
  * @FieldType(
- *   id = "apigee_rate_plan_detail",
+ *   id = "apigee_rate_plan_details",
  *   label = @Translation("Rate plan detail field item"),
  *   description = @Translation("Apigee package rate plan detail."),
- *   default_formatter = "apigee_rate_plan_detail"
+ *   default_formatter = "apigee_rate_plan_details"
  * )
  */
-class RatePlanDetailFieldItem extends FieldItemBase {
+class RatePlanDetailsFieldItem extends FieldItemBase {
 
   /**
    * {@inheritdoc}

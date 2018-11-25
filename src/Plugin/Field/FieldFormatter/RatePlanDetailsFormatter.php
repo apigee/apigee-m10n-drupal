@@ -24,17 +24,17 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Plugin implementation of the 'rate_plan_detail' field formatter.
+ * Plugin implementation of the 'apigee_rate_plan_details' field formatter.
  *
  * @FieldFormatter(
- *   id = "apigee_rate_plan_detail",
+ *   id = "apigee_rate_plan_details",
  *   label = @Translation("Rate plan detail formatter"),
  *   field_types = {
- *     "apigee_rate_plan_detail"
+ *     "apigee_rate_plan_details"
  *   }
  * )
  */
-class RatePlanDetailFormatter extends FormatterBase {
+class RatePlanDetailsFormatter extends FormatterBase {
 
   /**
    * {@inheritdoc}

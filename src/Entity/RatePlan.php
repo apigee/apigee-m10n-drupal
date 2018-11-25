@@ -136,7 +136,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       'organization'          => 'apigee_organization',
       'package'               => 'apigee_api_package',
       'paymentDueDays'        => 'integer',
-      'ratePlanDetails'       => 'apigee_rate_plan_detail',
+      'ratePlanDetails'       => 'apigee_rate_plan_details',
       'recurringFee'          => 'decimal',
       'recurringStartUnit'    => 'integer',
       'setUpFee'              => 'decimal',

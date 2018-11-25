@@ -19,18 +19,18 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\ApiPackageFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\ApiPackageFieldItem;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\RatePlanDetailsFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\RatePlanDetailsFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
- * Test the `apigee_api_package` field formatter.
+ * Test the `apigee_rate_plan_details` field formatter.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
+class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
 
   /**
    * The formatter manager.
@@ -78,34 +78,39 @@ class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
   /**
    * Test viewing an API Package.
    *
-   * @throws \Exception
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->package_rate_plan->get('package');
+    $item_list = $this->package_rate_plan->get('ratePlanDetails');
     static::assertInstanceOf(FieldItemList::class, $item_list);
-    static::assertInstanceOf(ApiPackageFieldItem::class, $item_list->get(0));
-    static::assertSame($this->api_package->id(), $item_list->get(0)->value->id());
-    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\ApiPackageFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_api_package', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['package'],
+    static::assertInstanceOf(RatePlanDetailsFieldItem::class, $item_list->get(0));
+    static::assertSame($this->package_rate_plan->getRatePlanDetails()[0]->getId(), $item_list->get(0)->value->getId());
+    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SupportedCurrencyFormatter $instance */
+    $instance = $this->formatter_manager->createInstance('apigee_rate_plan_details', [
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['ratePlanDetails'],
       'settings' => [],
       'label' => TRUE,
       'view_mode' => 'default',
       'third_party_settings' => [],
     ]);
-    static::assertInstanceOf(ApiPackageFormatter::class, $instance);
+    static::assertInstanceOf(RatePlanDetailsFormatter::class, $instance);
 
     // Render the field item.
     $build = $instance->view($item_list);
 
-    static::assertSame('Package', (string) $build['#title']);
+    static::assertSame('Rate Plan Details', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
-    static::assertSame($this->api_package->getName(), (string) $build[0]['#markup']);
+    static::assertSame($build[0]['#theme'], 'rate_plan_detail');
+    static::assertSame($this->package_rate_plan->getRatePlanDetails()[0]->getId(), $build[0]['#detail']->getId());
 
+    /** @var \Apigee\Edge\Api\Monetization\Structure\RatePlanDetail $details */
+    $details = $this->package_rate_plan->getRatePlanDetails()[0];
     $this->render($build);
-    $this->assertText($this->api_package->getName());
+    $this->assertText('Renewal Period 1 month');
+    $this->assertText('Operator ' . $details->getOrganization()->getDescription());
+    $this->assertText('Country ' . $details->getOrganization()->getCountry());
+    $this->assertText('Currency ' . $details->getCurrency()->getName());
   }
 
 }
