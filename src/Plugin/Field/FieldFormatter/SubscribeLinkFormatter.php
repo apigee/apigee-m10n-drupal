@@ -41,13 +41,22 @@ class SubscribeLinkFormatter extends FormatterBase {
   /**
    * {@inheritdoc}
    */
+  public static function defaultSettings() {
+    return [
+      'element_type' => 'link'
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['element_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Element type'),
       '#options' => [
-        'form' => $this->t('Render a form'),
-        'link' => $this->t('Link to a form')
+        'form' => $this->t('Rendered form'),
+        'link' => $this->t('Link')
       ],
       '#default_value' => 'link',
     ];
@@ -60,7 +69,7 @@ class SubscribeLinkFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     foreach ($items as $delta => $item) {
-      $elements[$delta] = $this->viewValue($item);
+      $elements[$delta] = ['#markup' => $this->viewValue($item)];
     }
     return $elements;
   }
@@ -82,7 +91,7 @@ class SubscribeLinkFormatter extends FormatterBase {
     else {
 
     }
-    return ['#markup' => 'test111111'];
+    return FieldFilteredMarkup::create('test markup goes here!');
   }
 
 }

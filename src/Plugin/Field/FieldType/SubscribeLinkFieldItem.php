@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldType;
 
-use Drupal\Component\Utility\Random;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -37,6 +36,15 @@ use Drupal\Core\TypedData\DataDefinition;
  * )
  */
 class SubscribeLinkFieldItem extends FieldItemBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary() {
+    $summary = [];
+    $summary[] = $this->t('Displays link/form to subscribe a rate plan.');
+    return $summary;
+  }
 
   /**
    * {@inheritdoc}
@@ -61,9 +69,7 @@ class SubscribeLinkFieldItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    $random = new Random();
-    $values['value'] = 'link';
-    return $values;
+    return 'link';
   }
 
 }

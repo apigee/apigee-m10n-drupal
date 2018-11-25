@@ -5,3 +5,11 @@ apigee_m10n.rate_plan.config:
     product_rate_plan_view_mode:
       type: string
       label: 'View mode to use when viewing rate plans within packages.'
+
+field.formatter.settings.apigee_subscribe_link:
+  type: mapping
+  label: 'Element type'
+  mapping:
+    element_type:
+      type: string
+      label: 'Element type'
