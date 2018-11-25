@@ -6,7 +6,10 @@ apigee_m10n.rate_plan.config:
       type: string
       label: 'View mode to use when viewing rate plans within packages.'
 
-<<<<<<< HEAD:config/schema/apigee_m10n.rate_plan.schema.yml
+apigee_m10n.subscription.config:
+  type: config_object
+  label: 'Subscription settings'
+
 field.formatter.settings.apigee_subscribe_link:
   type: mapping
   label: 'Element type'
@@ -14,8 +17,3 @@ field.formatter.settings.apigee_subscribe_link:
     element_type:
       type: string
       label: 'Element type'
-=======
-apigee_m10n.subscription.config:
-  type: config_object
-  label: 'Subscription settings'
->>>>>>> 5a75dea387ad9d36ecd3ee77b16b8d7202bb1c6b:config/schema/apigee_m10n.schema.yml
