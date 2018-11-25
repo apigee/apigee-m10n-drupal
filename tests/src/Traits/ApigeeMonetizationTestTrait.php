@@ -206,9 +206,6 @@ trait ApigeeMonetizationTestTrait {
     $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
     $product->save();
 
-    $this->stack->queueMockResponse(['api_product_mint' => ['product' => $product]]);
-    $controller = $this->controller_factory->apiProductController();
-
     // Remove the product in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 20,
@@ -217,6 +214,10 @@ trait ApigeeMonetizationTestTrait {
         $product->delete();
       },
     ];
+
+    // Queue another response for the entity load.
+    $this->stack->queueMockResponse(['api_product_mint' => ['product' => $product]]);
+    $controller = $this->controller_factory->apiProductController();
 
     return $controller->load($product->getName());
   }

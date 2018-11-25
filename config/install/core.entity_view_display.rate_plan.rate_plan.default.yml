@@ -25,7 +25,7 @@ content:
       link_to_entity: false
     third_party_settings: {  }
   ratePlanDetails:
-    type: apigee_rate_plan_detail
+    type: apigee_rate_plan_details
     weight: 2
     region: content
     label: above
