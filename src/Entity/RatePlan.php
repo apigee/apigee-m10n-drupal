@@ -213,9 +213,8 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribeLink(): Url {
-    $current_route = \Drupal::routeMatch()->getRouteObject();
-    $user = $current_route->getDefault('user');
+  public function getSubscribeLink():? Url {
+    $user = \Drupal::routeMatch()->getParameter('user');
     // @TODO: Look at using `entity.subscription.create` for this url.
     return empty($user) ? NULL : Url::fromRoute('entity.rate_plan.subscribe_form', [
       'user' => $user->id(),

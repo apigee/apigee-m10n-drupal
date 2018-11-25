@@ -54,9 +54,9 @@ interface RatePlanInterface extends MonetizationRatePlanInterface {
   /**
    * Get's the subscribe  link for this rate plan.
    *
-   * @return \Drupal\Core\Url
+   * @return \Drupal\Core\Url|null
    *   The url to subscribe to this rate plan
    */
-  public function getSubscribeLink(): Url;
+  public function getSubscribeLink():? Url;
 
 }
