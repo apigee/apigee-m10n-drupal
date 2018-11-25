@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -19,14 +19,12 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage;
 
-use Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 
 /**
  * Defines an interface for the subscription entity storage class.
  */
-interface SubscriptionStorageInterface extends FieldableMonetizationEntityStorageInterface {
+interface SubscriptionStorageInterface {
 
   /**
    * Load an individual subscription by developer_id and the subscription ID.
@@ -45,28 +43,11 @@ interface SubscriptionStorageInterface extends FieldableMonetizationEntityStorag
    * Load Subscriptions by developer ID.
    *
    * @param string $developer_id
-   *  Either the developer UUID or email address.
+   *   Either the developer UUID or email address.
    *
    * @return array
+   *   An array of subscriptions for the given developer.
    */
   public function loadByDeveloperId(string $developer_id): array;
-
-  /**
-   * @param string $developer_id
-   *
-   * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
-   */
-  public function getController(string $developer_id): AcceptedRatePlanControllerInterface;
-
-  /**
-   * Since entity storage classes are used during install, this is used instead
-   * of dependency injection  to avoid an issue with the sdk controller
-   * credentials not yet being available when the entity storage controller is
-   * accessed.
-   *
-   * @return \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
-   *   The controller factory.
-   */
-  public function controllerFactory(): ApigeeSdkControllerFactoryInterface;
 
 }

@@ -22,8 +22,6 @@ namespace Drupal\Tests\apigee_m10n\Kernel;
 /**
  * Tests the format currency twig filter.
  *
- * @package Drupal\Tests\apigee_m10n\Kernel
- *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  *

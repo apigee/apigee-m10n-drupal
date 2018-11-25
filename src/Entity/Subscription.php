@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,13 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlan;
-use Drupal\apigee_edge\Entity\FieldableEdgeEntityBaseTrait;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlan;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
+use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
+use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
+use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
@@ -53,39 +59,60 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   },
  *   permission_granularity = "entity_type",
  *   admin_permission = "administer subscription",
- *   field_ui_base_route = "apigee_m10n.settings.subscriptions",
+ *   field_ui_base_route = "apigee_m10n.settings.subscription",
  * )
  */
-class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
+class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface {
 
-  use FieldableMonetizationEntityBaseTrait {
-    baseFieldDefinitions as traitBaseFieldDefinitions;
-    set as traitSet;
-    getProperties as baseGetProperties;
+  use EndDatePropertyAwareDecoratorTrait;
+  use StartDatePropertyAwareDecoratorTrait;
+
+  public const ENTITY_TYPE_ID = 'subscription';
+
+  /**
+   * Constructs a `subscription` entity.
+   *
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   * @param null|string $entity_type
+   *   Type of the entity. It is optional because constructor sets its default
+   *   value.
+   * @param \Apigee\Edge\Entity\EntityInterface|null $decorated
+   *   The SDK entity that this Drupal entity decorates.
+   *
+   * @throws \ReflectionException
+   */
+  public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
+    /** @var \Apigee\Edge\Api\Management\Entity\DeveloperAppInterface $decorated */
+    $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
+    parent::__construct($values, $entity_type, $decorated);
   }
-
-  /** @var  */
-  protected $developer_email;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $values = []) {
-    $values = array_filter($values);
-    parent::__construct($values);
-    $this->entityTypeId = 'subscription';
+  protected static function decoratedClass(): string {
+    return DeveloperAcceptedRatePlan::class;
   }
 
   /**
    * {@inheritdoc}
    */
-  protected static function propertyToFieldStaticMap(): array {
+  public static function idProperty(): string {
+    return AcceptedRatePlan::idProperty();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function propertyToBaseFieldTypeMap(): array {
     return [
       'startDate'            => 'timestamp',
       'endDate'              => 'timestamp',
       'created'              => 'timestamp',
       'quotaTarget'          => 'integer',
       'ratePlan'             => 'entity_reference',
+      'developer'            => 'entity_reference',
       'updated'              => 'timestamp',
       'renewalDate'          => 'timestamp',
       'nextCycleStartDate'   => 'timestamp',
@@ -99,54 +126,65 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $definitions */
-    $definitions = self::traitBaseFieldDefinitions($entity_type);
-    return $definitions;
-  }
+    $definitions = parent::baseFieldDefinitions($entity_type);
 
-  /**
-   * @param string $field_name
-   * @param mixed $value
-   * @param bool $notify
-   *
-   * @return $this|\Drupal\apigee_m10n\Entity\SubscriptionInterface
-   * @throws \Drupal\Core\TypedData\Exception\ReadOnlyException
-   */
-  public function set($field_name, $value, $notify = TRUE) {
-    if ($field_name === 'ratePlan') {
-      $rate_plan_entity = RatePlan::loadById($value->getPackage()->id(), $value->id());
-      $this->ratePlan = $rate_plan_entity;
+    // The following fields should not be configurable through the UI.
+    $read_only_fields = [
+      'id',
+      'created',
+      'quotaTarget',
+      'updated',
+      'renewalDate',
+      'nextCycleStartDate',
+      'nextRecurringFeeDate',
+      'prevRecurringFeeDate',
+    ];
+    // Disable the form display entry for all read only fields.
+    foreach ($read_only_fields as $field_name) {
+      $definitions[$field_name]->setDisplayConfigurable('form', FALSE);
     }
-    else {
-      $this->traitSet($field_name, $value, $notify);
-    }
-    return $this;
+
+    return $definitions;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function toArray() {
-    $values = [];
+  public function isDefaultRevision($new_value = NULL) {
+    return TRUE;
+  }
 
-    foreach ($this->getFields() as $name => $property) {
-      if ($property->getFieldDefinition()->getType() === 'entity_reference') {
-        $values[$name] = \Drupal::entityTypeManager()->getStorage('rate_plan')->convertToSdkEntity($property->entity);
-      }
-      else {
-        /** @var \Drupal\Core\Field\FieldItemListInterface $property */
-        $values[$name] = $property->value;
-      }
-    }
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public static function loadRatePlansByDeveloperEmail(string $developer_email): array {
+    return \Drupal::entityTypeManager()
+      ->getStorage(static::ENTITY_TYPE_ID)
+      ->loadRatePlansByDeveloperEmail($developer_email);
+  }
 
-    // Keep the original values and only add new values from fields.
-    // This order is important because for example the array from traitToArray
-    // contains date properties as proper DateTimeImmutable objects but the new
-    // one contains them as timestamps. Because this function called by
-    // DrupalEntityControllerAwareTrait::convertToSdkEntity() that missmatch
-    // could cause errors.
-    $return = array_merge($values, $this->traitToArray());
-    $return['ratePlan'] = $values['ratePlan'];
-    return $return;
+  /**
+   * {@inheritdoc}
+   */
+  protected function drupalEntityId(): ?string {
+    return $this->getId();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getId(): ?string {
+    return $this->decorated->getId();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isSubscriptionActive(): bool {
+    return $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE;
   }
 
   /**
@@ -179,47 +217,78 @@ class Subscription extends AcceptedRatePlan implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
-  public function isSubscriptionActive(): bool {
-    return $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE;
+  public function getUpdated(): ?\DateTimeImmutable {
+    return $this->decorated->getUpdated();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setDeveloperEmail($developer_email) {
-    $this->developer_email = $developer_email;
-    return $this;
+  public function getCreated(): ?\DateTimeImmutable {
+    return $this->decorated->getCreated();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDeveloperEmail(): string {
-    return $this->developer_email;
+  public function getQuotaTarget(): ?int {
+    return $this->decorated->getQuotaTarget();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isDefaultRevision($new_value = NULL) {
-    return TRUE;
+  public function setQuotaTarget(int $quotaTarget): void {
+    $this->decorated->setQuotaTarget($quotaTarget);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function loadRatePlansByDeveloperEmail(string $developer_email): array {
-    // TODO: Implement loadRatePlansByDeveloperEmail() method.
+  public function getRatePlan(): RatePlanInterface {
+    return $this->decorated->getRatePlan();
   }
 
   /**
-   * Array of properties that should not be exposed as base fields.
-   *
-   * @return array
-   *   Array with property names.
+   * {@inheritdoc}
    */
-  protected static function propertyToFieldBlackList(): array {
-    return [];
+  public function setRatePlan(RatePlanInterface $ratePlan): void {
+    $this->decorated->setRatePlan($ratePlan);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRenewalDate(): ?\DateTimeImmutable {
+    return $this->decorated->getRenewalDate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNextCycleStartDate(): ?\DateTimeImmutable {
+    return $this->decorated->getNextCycleStartDate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNextRecurringFeeDate(): ?\DateTimeImmutable {
+    return $this->decorated->getNextRecurringFeeDate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPrevRecurringFeeDate(): ?\DateTimeImmutable {
+    return $this->decorated->getPrevRecurringFeeDate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloper(): ?DeveloperInterface {
+    return $this->decorated->getDeveloper();
   }
 
 }

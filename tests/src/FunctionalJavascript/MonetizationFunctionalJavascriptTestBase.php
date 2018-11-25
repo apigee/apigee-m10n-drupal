@@ -25,9 +25,6 @@ use Drupal\apigee_m10n\EnvironmentVariable;
 
 /**
  * Setup for functional javascript tests.
- *
- * @group apigee_m10n
- * @group apigee_m10n_functional
  */
 class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
 
@@ -65,7 +62,7 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
-    $this->init();
+    $this->baseSetUp();
   }
 
 }

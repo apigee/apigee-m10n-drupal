@@ -19,21 +19,26 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
+use Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface;
 use Apigee\Edge\Api\Monetization\Entity\RatePlan as MonetizationRatePlan;
+use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
+use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
+use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
+use Drupal\apigee_m10n\Entity\Property\CurrencyPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\DescriptionPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\DisplayNamePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\FreemiumPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\IdPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
  * Defines the Package Rate Plan entity class.
- *
- * Rate plans don't have a unique ID in apigee and a monetization package is
- * required to load a rate plan with is sort of incompatible with the drupal
- * entity loading system. For this reason, plan IDs have to be prepended with
- * the package name for loading. i.e.
- *
- * @code
- * RatePlan::load('foo-package::bar-plan-name')
- * @endcode.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
  *   id = "rate_plan",
@@ -50,7 +55,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *     "form" = {
- *       "subscribe"   = "Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm",
+ *       "subscribe" = "Drupal\apigee_m10n\Entity\Form\RatePlanSubscribeForm",
  *     },
  *   },
  *   links = {
@@ -65,33 +70,58 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   field_ui_base_route = "apigee_m10n.settings.rate_plan",
  * )
  */
-class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
+class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
 
-  use FieldableMonetizationEntityBaseTrait {
-    getProperties as baseGetProperties;
-    baseFieldDefinitions as baseBaseFieldDefinitions;
-  }
+  use CurrencyPropertyAwareDecoratorTrait;
+  use DescriptionPropertyAwareDecoratorTrait;
+  use DisplayNamePropertyAwareDecoratorTrait;
+  use EndDatePropertyAwareDecoratorTrait;
+  use FreemiumPropertyAwareDecoratorTrait;
+  use IdPropertyAwareDecoratorTrait;
+  use NamePropertyAwareDecoratorTrait;
+  use OrganizationPropertyAwareDecoratorTrait;
+  use PaymentDueDaysPropertyAwareDecoratorTrait;
+  use StartDatePropertyAwareDecoratorTrait;
+
+  public const ENTITY_TYPE_ID = 'rate_plan';
 
   /**
-   * The Drupal user ID which belongs to the developer app.
+   * Constructs a `rate_plan` entity.
    *
-   * @var null|int
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   * @param null|string $entity_type
+   *   Type of the entity. It is optional because constructor sets its default
+   *   value.
+   * @param \Apigee\Edge\Entity\EntityInterface|null $decorated
+   *   The SDK entity that this Drupal entity decorates.
+   *
+   * @throws \ReflectionException
    */
-  protected $drupalUserId;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $values = []) {
-    $values = array_filter($values);
-    parent::__construct($values);
-    $this->entityTypeId = 'rate_plan';
+  public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
+    /** @var \Apigee\Edge\Api\Management\Entity\DeveloperAppInterface $decorated */
+    $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
+    parent::__construct($values, $entity_type, $decorated);
   }
 
   /**
    * {@inheritdoc}
    */
-  protected static function propertyToFieldStaticMap(): array {
+  protected static function decoratedClass(): string {
+    return StandardRatePlan::class;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function idProperty(): string {
+    return MonetizationRatePlan::idProperty();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function propertyToBaseFieldTypeMap(): array {
     return [
       'startDate'             => 'timestamp',
       'endDate'               => 'timestamp',
@@ -113,100 +143,18 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
   }
 
   /**
-   * Array of properties that should not be exposed as base fields.
-   *
-   * @return array
-   *   Array with property names.
-   */
-  protected static function propertyToFieldBlackList(): array {
-    return ['package'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static function getProperties(): array {
-    // The original `getProperties` doesn't account for boolean values.
-    $properties = static::baseGetProperties();
-
-    $properties = [
-      'advance' => 'boolean',
-      'private' => 'boolean',
-      'prorate' => 'boolean',
-      'published' => 'boolean',
-      'keepOriginalStartDate' => 'boolean',
-      'subscribeLink' => 'apigee_subscribe_link',
-    ] + $properties;
-
-    return $properties;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $definitions */
-    $definitions = self::baseBaseFieldDefinitions($entity_type);
+    $definitions = parent::baseFieldDefinitions($entity_type);
     // The rate plan details are many-to-one.
     $definitions['ratePlanDetails']->setCardinality(-1);
+    // Allow the package to be accessed as a field but not rendered because
+    // rendering the package within a reate plan would cause recursion.
+    $definitions['package']->setDisplayConfigurable('view', FALSE);
 
     return $definitions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getSubscribeLink(): bool {
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAdvance(): bool {
-    return $this->isAdvance();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPrivate(): bool {
-    return $this->isPrivate();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getProrate(): bool {
-    return $this->isProrate();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPublished(): bool {
-    return $this->isPublished();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getOriginalFieldData(string $field_name) {
-    $value = NULL;
-    $getter = 'get' . ucfirst($field_name);
-    if (method_exists($this, $getter)) {
-      // In some cases, the original value is null for fields that don't allow
-      // nulls. This occurs when passing values when creating an entity.
-      try {
-        $value = call_user_func([$this, $getter]);
-      }
-      catch (\TypeError $t) {
-        \Drupal::service('logger.channel.apigee_m10n')
-          ->error('Type Error while trying to get original value. \n\n @err', ['@err' => (string) $t]);
-      }
-    }
-
-    return $value;
   }
 
   /**
@@ -226,7 +174,7 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
    */
   public static function loadPackageRatePlans(string $package_name): array {
     return \Drupal::entityTypeManager()
-      ->getStorage('rate_plan')
+      ->getStorage(static::ENTITY_TYPE_ID)
       ->loadPackageRatePlans($package_name);
   }
 
@@ -240,8 +188,225 @@ class RatePlan extends MonetizationRatePlan implements RatePlanInterface {
    */
   public static function loadById(string $package_name, string $id): RatePlanInterface {
     return \Drupal::entityTypeManager()
-      ->getStorage('rate_plan')
+      ->getStorage(static::ENTITY_TYPE_ID)
       ->loadById($package_name, $id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function drupalEntityId(): ?string {
+    return $this->decorated->id();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isAdvance(): bool {
+    return $this->decorated->isAdvance();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setAdvance(bool $advance): void {
+    $this->decorated->setAdvance($advance);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContractDuration(): ?int {
+    return $this->decorated->getContractDuration();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setContractDuration(int $contractDuration): void {
+    $this->decorated->setContractDuration($contractDuration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContractDurationType(): ?string {
+    return $this->decorated->getContractDurationType();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setContractDurationType(string $contractDurationType): void {
+    $this->decorated->setContractDurationType($contractDurationType);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEarlyTerminationFee(): ?float {
+    return $this->decorated->getEarlyTerminationFee();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEarlyTerminationFee(float $earlyTerminationFee): void {
+    $this->decorated->setEarlyTerminationFee($earlyTerminationFee);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFrequencyDuration(): ?int {
+    return $this->decorated->getFrequencyDuration();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setFrequencyDuration(int $frequencyDuration): void {
+    $this->decorated->setFrequencyDuration($frequencyDuration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFrequencyDurationType(): ?string {
+    return $this->decorated->getFrequencyDurationType();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setFrequencyDurationType(string $frequencyDurationType): void {
+    $this->decorated->setFrequencyDurationType($frequencyDurationType);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isPrivate(): bool {
+    return $this->decorated->isPrivate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPrivate(bool $private): void {
+    $this->decorated->setPrivate($private);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPackage(): ?ApiPackageInterface {
+    return $this->decorated->getPackage();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPackage(ApiPackageInterface $package): void {
+    $this->decorated->setPackage($package);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isProrate(): bool {
+    return $this->decorated->isProrate();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setProrate(bool $prorate): void {
+    $this->decorated->setProrate($prorate);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isPublished(): bool {
+    return $this->decorated->isPublished();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPublished(bool $published): void {
+    $this->decorated->setPublished($published);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRatePlanDetails(): array {
+    return $this->decorated->getRatePlanDetails();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRatePlanDetails(RatePlanDetail ...$ratePlanDetails): void {
+    $this->decorated->setRatePlanDetails(...$ratePlanDetails);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRecurringFee(): ?float {
+    return $this->decorated->getRecurringFee();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRecurringFee(float $recurringFee): void {
+    $this->decorated->setRecurringFee($recurringFee);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRecurringStartUnit(): ?int {
+    return $this->decorated->getRecurringStartUnit();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRecurringStartUnit(int $recurringStartUnit): void {
+    $this->decorated->setRecurringStartUnit($recurringStartUnit);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRecurringType(): string {
+    return $this->decorated->getRecurringType();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setRecurringType(string $recurringType): void {
+    $this->decorated->setRecurringType($recurringType);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSetUpFee(): float {
+    return $this->decorated->getSetUpFee();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSetUpFee(float $setUpFee): void {
+    $this->decorated->setSetUpFee($setUpFee);
   }
 
 }

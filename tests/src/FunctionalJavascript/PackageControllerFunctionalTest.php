@@ -24,8 +24,6 @@ use Drupal\Core\Url;
 /**
  * Functional tests for the package controller.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  *
@@ -53,7 +51,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
 
     $this->account = $this->createAccount([
       'access monetization packages',
-      'access purchased monetization packages',
+      'access subscriptions',
     ]);
     $this->queueOrg();
     $this->drupalLogin($this->account);
