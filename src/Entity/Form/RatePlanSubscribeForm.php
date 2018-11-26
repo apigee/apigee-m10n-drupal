@@ -59,7 +59,7 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->package_id = $route_match->getParameter('package');
-    $this->developer = User::load($route_match->getParameter('user'));
+    $this->developer = $route_match->getParameter('user');
     $this->rate_plan = $route_match->getParameter('rate_plan');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;
