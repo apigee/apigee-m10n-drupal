@@ -19,16 +19,15 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\user\Entity\User;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\user\Entity\User;
 use Drupal\Core\Cache\Cache;
 
 /**
@@ -48,21 +47,22 @@ class RatePlanSubscribeForm extends EntityForm {
   /** @var \Drupal\Core\Messenger\MessengerInterface */
   protected $messenger;
 
-  /** @var Drupal\Core\Entity\EntityManager */
-  protected $entityManager;
+  /** @var Drupal\apigee_m10n\ApigeeSdkControllerFactory */
+  protected $sdkControllerFactory;
 
   /**
    * RatePlanSubscribeForm constructor.
    *
    * @param RouteMatchInterface $route_match
    * @param MessengerInterface $messenger
+   * @param ApigeeSdkControllerFactory $sdkControllerFactory
    */
-  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, EntityManager $entityManager) {
+  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->package_id = $route_match->getParameter('package');
-    $this->developer = $route_match->getParameter('user');
+    $this->developer = User::load($route_match->getParameter('user'));
     $this->rate_plan = $route_match->getParameter('rate_plan');
     $this->messenger = $messenger;
-    $this->entityManager = $entityManager;
+    $this->sdkControllerFactory = $sdkControllerFactory;
   }
 
   /**
@@ -72,7 +72,7 @@ class RatePlanSubscribeForm extends EntityForm {
     return new static(
       $container->get('current_route_match'),
       $container->get('messenger'),
-      $container->get('entity.manager')
+      $container->get('apigee_m10n.sdk_controller_factory')
     );
   }
 
@@ -161,15 +161,9 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $developer = $this->entityManager->getStorage('developer')->load();
     $entity = Subscription::create([
-<<<<<<< HEAD
-      'developer' => $developer,
-      'startDate' => ($values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now')),
-=======
-      'developer' => \Drupal::service('apigee_m10n.sdk_controller_factory')->developerController()->load($this->developer->getEmail()),
+      'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
       'startDate' => $values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now'),
->>>>>>> 3baadb87558d18bff31e13dcccc724f77ad7018a
       'ratePlan' => $this->rate_plan,
     ]);
 
