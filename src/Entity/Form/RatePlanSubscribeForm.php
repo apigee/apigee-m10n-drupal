@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\Entity\Form;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -47,17 +48,21 @@ class RatePlanSubscribeForm extends EntityForm {
   /** @var \Drupal\Core\Messenger\MessengerInterface */
   protected $messenger;
 
+  /** @var Drupal\Core\Entity\EntityManager */
+  protected $entityManager;
+
   /**
    * RatePlanSubscribeForm constructor.
    *
    * @param RouteMatchInterface $route_match
    * @param MessengerInterface $messenger
    */
-  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger) {
+  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, EntityManager $entityManager) {
     $this->package_id = $route_match->getParameter('package');
     $this->developer = User::load($route_match->getParameter('user'));
     $this->rate_plan = $route_match->getParameter('rate_plan');
     $this->messenger = $messenger;
+    $this->entityManager = $entityManager;
   }
 
   /**
@@ -66,7 +71,8 @@ class RatePlanSubscribeForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('current_route_match'),
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('entity.manager')
     );
   }
 
@@ -155,8 +161,9 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+    $developer = $this->entityManager->getStorage('developer')->load();
     $entity = Subscription::create([
-      'developer' => Developer::decorated($this->developer->getEmail()),
+      'developer' => $developer,
       'startDate' => ($values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now')),
       'ratePlan' => $this->rate_plan,
     ]);
