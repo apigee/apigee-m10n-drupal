@@ -80,6 +80,8 @@ entity.rate_plan.canonical:
     _entity_access: 'rate_plan.view'
   options:
     parameters:
+      user:
+        type: 'entity:user'
       rate_plan:
         type: 'entity:rate_plan'
         converter: paramconverter.entity.rate_plan
