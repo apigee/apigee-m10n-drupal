@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Drupal\apigee_edge\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManager;
@@ -59,7 +59,7 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, EntityManager $entityManager) {
     $this->package_id = $route_match->getParameter('package');
-    $this->developer = User::load($route_match->getParameter('user'));
+    $this->developer = $route_match->getParameter('user');
     $this->rate_plan = $route_match->getParameter('rate_plan');
     $this->messenger = $messenger;
     $this->entityManager = $entityManager;
@@ -163,8 +163,13 @@ class RatePlanSubscribeForm extends EntityForm {
     $values = $form_state->getValues();
     $developer = $this->entityManager->getStorage('developer')->load();
     $entity = Subscription::create([
+<<<<<<< HEAD
       'developer' => $developer,
       'startDate' => ($values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now')),
+=======
+      'developer' => \Drupal::service('apigee_m10n.sdk_controller_factory')->developerController()->load($this->developer->getEmail()),
+      'startDate' => $values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now'),
+>>>>>>> 3baadb87558d18bff31e13dcccc724f77ad7018a
       'ratePlan' => $this->rate_plan,
     ]);
 

@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_edge\Exception\RuntimeException;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
-use Drupal\user\Entity\User;
 
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
@@ -39,7 +38,14 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function create(EntityInterface $entity): void {
-    $this->getSubscriptionController($entity)->create($entity);
+    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+    $this->getSubscriptionController($entity)
+      ->acceptRatePlan(
+        $entity->getRatePlan(),
+        $entity->getStartDate(),
+        $entity->getEndDate(),
+        $entity->getQuotaTarget()
+      );
   }
 
   /**
@@ -55,14 +61,14 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    $this->getSubscriptionController($entity)->update($entity);
+    $this->getSubscriptionController($entity)->updateSubscription($entity);
   }
 
   /**
    * {@inheritdoc}
    */
   public function delete(string $id): void {
-    $this->getSubscriptionControllerByDeveloperId('default')->delete($id);
+    throw new RuntimeException('Unable to delete subscriptions. Update the end date to unsubscribe.');
   }
 
   /**

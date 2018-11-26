@@ -93,6 +93,8 @@ entity.rate_plan.subscribe_form:
     _entity_access: 'rate_plan.subscribe'
   options:
     parameters:
+      user:
+        type: 'entity:user'
       rate_plan:
         type: 'entity:rate_plan'
         converter: paramconverter.entity.rate_plan
@@ -106,5 +108,8 @@ entity.subscription.unsubscribe_form:
     _entity_access: 'subscription.unsubscribe'
   options:
     parameters:
+      user:
+        type: 'entity:user'
       subscription:
+        type: 'entity:subscription'
         converter: paramconverter.entity.subscription

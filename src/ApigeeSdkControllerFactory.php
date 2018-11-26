@@ -28,6 +28,7 @@ use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
@@ -65,6 +66,13 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   protected $client;
 
   /**
+   * A cache of reusable controllers.
+   *
+   * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface[]
+   */
+  protected $controllers = [];
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -78,7 +86,22 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function organizationController(): OrganizationControllerInterface {
-    return new OrganizationController($this->client);
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new OrganizationController($this->client);
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerController(): DeveloperController {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new DeveloperController($this->getOrganization(), $this->getClient());
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
@@ -107,20 +130,28 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function apiProductController(): ApiProductControllerInterface {
-    return new ApiProductController(
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new ApiProductController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
    * {@inheritdoc}
    */
   public function apiPackageController(): ApiPackageControllerInterface {
-    return new ApiPackageController(
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new ApiPackageController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
