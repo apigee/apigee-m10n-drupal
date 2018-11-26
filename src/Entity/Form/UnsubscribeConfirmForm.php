@@ -24,7 +24,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use Drupal\Core\Cache\Cache;
 
@@ -33,7 +32,7 @@ use Drupal\Core\Cache\Cache;
  */
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
-  /** @var \Drupal\Core\Entity\EntityInterface|User|null */
+  /** @var \Drupal\Core\Entity\EntityInterface|\Drupal\user\Entity\User|null */
   protected $developer;
 
   /** @var \Drupal\apigee_m10n\Entity\Subscription|null */

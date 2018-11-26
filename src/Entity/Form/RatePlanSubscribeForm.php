@@ -19,13 +19,11 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\user\Entity\User;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
