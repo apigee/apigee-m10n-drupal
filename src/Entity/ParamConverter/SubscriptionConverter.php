@@ -44,7 +44,9 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
     $entity_definition = $this->entityManager->getDefinition($entity_type_id);
 
     // Load  the user.
-    $user = !empty($defaults['user']) ? User::load($defaults['user']) : FALSE;
+    $user = $defaults['user'] ?? FALSE;
+    // Load the user if it is still a string.
+    $user = is_string($user) ? User::load($user) : $user;
 
     // @todo: Add support for teams.
     // Load the subscription.

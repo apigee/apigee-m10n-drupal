@@ -49,7 +49,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * @param MessengerInterface $messenger
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger) {
-    $this->developer = User::load($route_match->getParameter('user'));
+    $this->developer = $route_match->getParameter('user');
     $this->subscription = $route_match->getParameter('subscription');
     $this->messenger = $messenger;
   }
