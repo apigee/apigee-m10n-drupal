@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Drupal\apigee_edge\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -156,8 +156,8 @@ class RatePlanSubscribeForm extends EntityForm {
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $entity = Subscription::create([
-      'developer' => Developer::load($this->developer->getEmail()),
-      'startDate' => $values['when'] == 'on_date' ? \DateTimeImmutable($values['startDate']) : \DateTimeImmutable('now'),
+      'developer' => \Drupal::service('apigee_m10n.sdk_controller_factory')->developerController()->load($this->developer->getEmail()),
+      'startDate' => $values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now'),
       'ratePlan' => $this->rate_plan,
     ]);
 
