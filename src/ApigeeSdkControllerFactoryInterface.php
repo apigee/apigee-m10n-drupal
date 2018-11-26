@@ -24,6 +24,7 @@ use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
@@ -43,6 +44,14 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The organization controller.
    */
   public function organizationController(): OrganizationControllerInterface;
+
+  /**
+   * Creates a monettization developer controller.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperController
+   *   The developer controller.
+   */
+  public function developerController(): DeveloperController;
 
   /**
    * Creates a developer prepaid balance controller.
