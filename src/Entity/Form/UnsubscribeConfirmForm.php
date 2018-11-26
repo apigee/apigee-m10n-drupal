@@ -99,7 +99,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['when'] = [
+    $form['end_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Plan End Date'),
       '#options' => [
@@ -113,7 +113,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#title' => $this->t('Select an end date'),
       '#states' => [
         'visible' => [
-          ':input[name="when"]' => ['value' => 'on_date'],
+          ':input[name="end_type"]' => ['value' => 'on_date'],
         ]
       ],
     ];
@@ -125,7 +125,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $end_type = $values['end_type'];
+    $end_type = $values['end_type'] ?? 'immediate';
 
     $this->subscription->setEndDate($end_type == 'end_date'
       ? new \DateTimeImmutable($values['endDate'])
