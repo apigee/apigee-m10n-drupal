@@ -29,7 +29,6 @@ use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\user\Entity\User;
 
 /**
  * Plugin implementation of the 'apigee_subscription_form' formatter.
@@ -91,7 +90,7 @@ class SubscribeLinkFormatter extends FormatterBase implements ContainerFactoryPl
    */
   public static function defaultSettings() {
     return [
-      'element_type' => 'link',
+      'element_type'    => 'link',
       'subscribe_label' => 'Purchase This Plan',
     ];
   }
@@ -134,8 +133,8 @@ class SubscribeLinkFormatter extends FormatterBase implements ContainerFactoryPl
    * @param \Drupal\Core\Field\FieldItemInterface $item
    *   One field item.
    *
-   * @return string
-   *   The textual output generated.
+   * @return array
+   *   Renderable elements (link/form).
    */
   protected function viewValue(FieldItemInterface $item) {
     if ($this->getSetting('element_type') == 'link') {
