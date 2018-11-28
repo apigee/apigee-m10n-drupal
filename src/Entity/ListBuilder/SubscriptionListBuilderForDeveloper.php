@@ -30,7 +30,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
@@ -139,30 +139,35 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     ];
   }
 
-  public function buildRow(EntityInterface $subscription) {
-    $rate_plan = $subscription->getRatePlan();
+  public function buildRow(EntityInterface $entity) {
+    $rate_plan = $entity->getRatePlan();
 
     $products = array_reduce($rate_plan->getPackage()->getApiProducts(), function($result, $product) {
       return $result ? "{$result}, {$product->getDisplayName()}" : $product->getDisplayName();
     }, "");
 
-    $row['status'] = $subscription->getSubscriptionStatus();
-    $row['package'] = $rate_plan->getPackage()->getDisplayName();
-    $row['products'] = $products;
     $url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->current_user->id(),
       'package' => $rate_plan->getPackage()->id(),
       'rate_plan' => $rate_plan->id()
     ]));
-    $row['plan'] = Link::fromTextAndUrl($rate_plan->getDisplayName(), $url);
-    $row['start_date'] = $subscription->getStartDate()->format('m/d/Y');
-    $row['end_date'] = $subscription->getEndDate() ? $subscription->getEndDate()->format('m/d/Y') : null;
-    $row['plan_end_date'] = $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : null;
-    $row['renewal_date'] = $subscription->getRenewalDate() ? $subscription->getRenewalDate()->format('m/d/Y') : null;
 
-    $row['operations']['data'] = $this->buildOperations($subscription);
-
-    return $row;
+    return [
+      'data' => [
+        'status'        => $entity->getSubscriptionStatus(),
+        'package'       => $rate_plan->getPackage()->getDisplayName(),
+        'products'      => $products,
+        'plan'          => Link::fromTextAndUrl($rate_plan->getDisplayName(), $url),
+        'start_date'    => $entity->getStartDate()->format('m/d/Y'),
+        'end_date'      => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : null,
+        'plan_end_date' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : null,
+        'renewal_date'  => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : null,
+        'operations'    => [
+          'data' => $this->buildOperations($entity)
+        ]
+      ],
+      'class' => [Html::cleanCssIdentifier(strtolower($rate_plan->getDisplayName()))],
+    ];
   }
 
   /**
@@ -179,14 +184,14 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $header = $this->buildHeader();
 
     $build['table'] = [
-      '#type' => 'table',
+      '#type'   => 'table',
       '#header' => $header,
-      '#title' => $this->getTitle(),
-      '#rows' => [],
-      '#empty' => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
-      '#cache' => [
+      '#title'  => $this->getTitle(),
+      '#rows'   => [],
+      '#empty'  => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
+      '#cache'  => [
         'contexts' => $this->entityType->getListCacheContexts() + ['url.query_args'],
-        'tags' => $this->entityType->getListCacheTags() + ['apigee_my_subscriptions'],
+        'tags'     => $this->entityType->getListCacheTags() + ['apigee_my_subscriptions'],
       ],
     ];
 
