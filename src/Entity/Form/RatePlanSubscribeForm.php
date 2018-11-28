@@ -27,16 +27,12 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\user\Entity\User;
 use Drupal\Core\Cache\Cache;
 
 /**
  * Unsubscribe entity form for subscriptions.
  */
 class RatePlanSubscribeForm extends EntityForm {
-
-  /** @var mixed|null  */
-  protected $package_id;
 
   /** @var \Drupal\user\Entity\User|null */
   protected $developer;
@@ -58,7 +54,6 @@ class RatePlanSubscribeForm extends EntityForm {
    * @param ApigeeSdkControllerFactory $sdkControllerFactory
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
-    $this->package_id = $route_match->getParameter('package');
     $this->developer = $route_match->getParameter('user');
     $this->rate_plan = $route_match->getParameter('rate_plan');
     $this->messenger = $messenger;
@@ -99,7 +94,7 @@ class RatePlanSubscribeForm extends EntityForm {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
 
-    $form['when'] = [
+    $form['start_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Plan End Date'),
       '#options' => [
@@ -114,7 +109,7 @@ class RatePlanSubscribeForm extends EntityForm {
       '#title' => $this->t('Start Date'),
       '#states' => [
         'visible' => [
-          ':input[name="when"]' => ['value' => 'on_date'],
+          ':input[name="start_type"]' => ['value' => 'on_date'],
         ]
       ],
     ];
@@ -136,16 +131,33 @@ class RatePlanSubscribeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
+  public function buildEntity(array $form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $entity = Subscription::create([
+      'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
+      'startDate' => $values['start_type'] == 'on_date'
+        ? new \DateTimeImmutable($values['startDate'])
+        : new \DateTimeImmutable('now'),
+      'ratePlan' => $this->rate_plan->decorated(),
+    ]);
+
+    return $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state) {
     try {
+      $display_name = $this->rate_plan->getDisplayName();
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have successfully subscribed to <em>%label</em> plan', [
-          '%label' => $this->rate_plan->getDisplayName()
+          '%label' => $display_name,
         ]));
       }
       else {
         $this->messenger->addWarning($this->t('Unable subscribe to <em>%label</em> plan', [
-          '%label' => $this->rate_plan->getDisplayName()
+          '%label' => $display_name,
         ]));
       }
       Cache::invalidateTags(['apigee_my_subscriptions']);
@@ -154,20 +166,6 @@ class RatePlanSubscribeForm extends EntityForm {
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildEntity(array $form, FormStateInterface $form_state) {
-    $values = $form_state->getValues();
-    $entity = Subscription::create([
-      'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
-      'startDate' => $values['when'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now'),
-      'ratePlan' => $this->rate_plan,
-    ]);
-
-    return $entity;
   }
 
 }
