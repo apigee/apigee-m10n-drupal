@@ -209,32 +209,6 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
       }
     }
 
-    // @todo implement storage->getQuery so we can use query->tableSort. @see DeveloperAppListBuilder::getEntityIds.
-    $column = tablesort_get_order($header)['sql'] ?? '';
-    $sort = tablesort_get_sort($header);
-
-    uasort($rows, function($a, $b) use ($column, $sort) {
-      $a = $a[$column];
-      $b = $b[$column];
-      $return = null;
-
-      if ($a === $b) {
-        $return = 0;
-      }
-      else if (strpos($column, 'date') !== false) {
-        $a = is_null($a) ? '+100 years' : $a;
-        $b = is_null($b) ? '+100 years' : $b;
-        $return = (new \DateTime($a)) < (new \DateTime($b)) ? -1 : 1;
-      }
-      else {
-        $a = is_a($a, Link::class) ? $a->getText() : $a;
-        $b = is_a($b, Link::class) ? $b->getText() : $b;
-        $return = strcasecmp((string) $a, (string) $b);
-      }
-
-      return ($sort === 'asc') ? $return : -$return;
-    });
-
     $build['table']['#rows'] = $rows;
 
     // Only add the pager if a limit is specified.
