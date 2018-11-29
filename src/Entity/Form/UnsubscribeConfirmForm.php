@@ -24,6 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use Drupal\Core\Cache\Cache;
@@ -42,16 +43,20 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   /** @var \Drupal\Core\Messenger\MessengerInterface */
   protected $messenger;
 
+  /** @var Drupal\apigee_m10n\ApigeeSdkControllerFactory */
+  protected $sdkControllerFactory;
+
   /**
    * UnsubscribeConfirmForm constructor.
    *
    * @param RouteMatchInterface $route_match
    * @param MessengerInterface $messenger
    */
-  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger) {
+  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->developer = $route_match->getParameter('user');
     $this->subscription = $route_match->getParameter('subscription');
     $this->messenger = $messenger;
+    $this->sdkControllerFactory = $sdkControllerFactory;
   }
 
   /**
@@ -60,7 +65,8 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('current_route_match'),
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('apigee_m10n.sdk_controller_factory')
     );
   }
 
@@ -139,21 +145,13 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
-      $plan_name = $this->entity->getRatePlan()->getDisplayName();
-      if (!$this->entity->isSubscriptionActive()) {
-        if ($this->entity->save()) {
-          $this->messenger->addStatus($this->t('You have successfully unsubscribed from <em>%label</em> plan', [
-            '%label' => $plan_name
-          ]));
-        }
-      }
-      else {
-        $this->messenger->addWarning($this->t('You are already unsubscribed from <em>%label</em> plan', [
-          '%label' => $plan_name
+      if ($this->entity->save()) {
+        $this->messenger->addStatus($this->t('You have successfully unsubscribed from <em>%label</em> plan', [
+          '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
+        Cache::invalidateTags(['apigee_my_subscriptions']);
+        $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
-      Cache::invalidateTags(['apigee_my_subscriptions']);
-      $form_state->setRedirect('apigee_monetization.my_subscriptions');
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
