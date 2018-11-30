@@ -1,6 +1,7 @@
 <?php
 
-/*
+/**
+ * @file
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -17,22 +18,18 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n;
+/**
+ * @file
+ * Helper module for the apigee_m10n tests.
+ */
+
+use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 
 /**
- * Environment variable keys.
- *
- * @package Drupal\apigee_m10n
+ * Implements hook_key_provider_info_alter().
  */
-abstract class EnvironmentVariable {
-  const APIGEE_EDGE_AUTH_TYPE = 'APIGEE_EDGE_AUTH_TYPE';
-  const APIGEE_EDGE_ENDPOINT = 'APIGEE_EDGE_ENDPOINT';
-  const APIGEE_EDGE_ORGANIZATION = 'APIGEE_EDGE_ORGANIZATION';
-  const APIGEE_EDGE_USERNAME = 'APIGEE_EDGE_USERNAME';
-  const APIGEE_EDGE_PASSWORD = 'APIGEE_EDGE_PASSWORD';
-  const APIGEE_INTEGRATION_ENABLE = 'APIGEE_INTEGRATION_ENABLE';
-  const APIGEE_EDGE_AUTHORIZATION_SERVER = 'APIGEE_EDGE_AUTHORIZATION_SERVER';
-  const APIGEE_EDGE_CLIENT_ID = 'APIGEE_EDGE_CLIENT_ID';
-  const APIGEE_EDGE_CLIENT_SECRET = 'APIGEE_EDGE_CLIENT_SECRET';
-
+function apigee_m10n_test_key_provider_info_alter(array &$key_providers) {
+  // This key provider override will make sure credentials are available during
+  // functional test callbacks.
+  $key_providers['apigee_edge_environment_variables']['class'] = TestEnvironmentVariablesKeyProvider::class;
 }
