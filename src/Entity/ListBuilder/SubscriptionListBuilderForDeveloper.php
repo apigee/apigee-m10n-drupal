@@ -116,7 +116,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function getPageTitle(RouteMatchInterface $route_match): string {
-    return $this->getTitle();
+    return $this->t('Purchased Plans');
   }
 
   public function getTitle() {
@@ -127,15 +127,15 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
 
   public function buildHeader() {
     return [
-      'status' => ['data' => $this->t('status'), 'field' => 'status'],
-      'package' => ['data' => $this->t('package'), 'field' => 'package', 'sort' => 'desc'],
-      'products' => ['data' => $this->t('products'), 'field' => 'products'],
-      'plan' => ['data' => $this->t('plan'), 'field' => 'plan'],
-      'start_date' => ['data' => $this->t('start_date'), 'field' => 'start_date'],
-      'end_date' => ['data' => $this->t('end_date'), 'field' => 'end_date'],
-      'plan_end_date' => ['data' => $this->t('plan_end_date'), 'field' => 'plan_end_date'],
-      'renewal_date' => ['data' => $this->t('renewal_date'), 'field' => 'renewal_date'],
-      'operations' => $this->t('Operations')
+      'status' => ['data' => $this->t('Status'), 'field' => 'status'],
+      'package' => ['data' => $this->t('Package'), 'field' => 'package', 'sort' => 'desc'],
+      'products' => ['data' => $this->t('Products'), 'field' => 'products'],
+      'plan' => ['data' => $this->t('Plan Name'), 'field' => 'plan'],
+      'start_date' => ['data' => $this->t('Start Date'), 'field' => 'start_date'],
+      'end_date' => ['data' => $this->t('End Date'), 'field' => 'end_date'],
+      'plan_end_date' => ['data' => $this->t('Plan End Date'), 'field' => 'plan_end_date'],
+      'renewal_date' => ['data' => $this->t('Renewal Date'), 'field' => 'renewal_date'],
+      'operations' => $this->t('Actions')
     ];
   }
 
@@ -230,7 +230,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     if ($entity->access('unsubscribe') && $entity->hasLinkTemplate('unsubscribe-form')) {
       if ($entity->isSubscriptionActive()) {
         $operations['unsubscribe'] = [
-          'title' => $this->t('Unsubscribe'),
+          'title' => $this->t('Cancel Plan'),
           'weight' => 10,
           'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
         ];

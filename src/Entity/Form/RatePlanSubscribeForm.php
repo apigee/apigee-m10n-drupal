@@ -85,7 +85,7 @@ class RatePlanSubscribeForm extends EntityForm {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function title(RouteMatchInterface $route_match, EntityInterface $_entity = NULL) {
-    return $this->t("Subscribe to %label", ['%label' => $this->rate_plan->getDisplayName()]);
+    return $this->t("Purchase <em>%label</em> plan", ['%label' => $this->rate_plan->getDisplayName()]);
   }
 
   /**
@@ -96,10 +96,10 @@ class RatePlanSubscribeForm extends EntityForm {
 
     $form['start_type'] = [
       '#type' => 'radios',
-      '#title' => $this->t('Plan End Date'),
+      '#title' => $this->t('Plan Start Date'),
       '#options' => [
-        'immediate' => $this->t('Immediately'),
-        'on_date'   => $this->t('Future Date')
+        'now'     => $this->t('Now'),
+        'on_date' => $this->t('Future Date')
       ],
       '#default_value' => 'immediate'
     ];
@@ -114,7 +114,7 @@ class RatePlanSubscribeForm extends EntityForm {
       ],
     ];
 
-    $form['actions']['submit']['#value'] = $this->t('Purchase This Plan');
+    $form['actions']['submit']['#value'] = $this->t('Purchase Plan');
 
     return $form;
   }
@@ -151,12 +151,12 @@ class RatePlanSubscribeForm extends EntityForm {
     try {
       $display_name = $this->rate_plan->getDisplayName();
       if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have successfully subscribed to <em>%label</em> plan', [
+        $this->messenger->addStatus($this->t('You have purchased <em>%label</em> plan', [
           '%label' => $display_name,
         ]));
       }
       else {
-        $this->messenger->addWarning($this->t('Unable subscribe to <em>%label</em> plan', [
+        $this->messenger->addWarning($this->t('Unable purchase <em>%label</em> plan', [
           '%label' => $display_name,
         ]));
       }

@@ -91,7 +91,7 @@ class SubscribeLinkFormatter extends FormatterBase implements ContainerFactoryPl
   public static function defaultSettings() {
     return [
       'element_type'    => 'link',
-      'subscribe_label' => 'Purchase This Plan',
+      'subscribe_label' => 'Purchase Plan',
     ];
   }
 

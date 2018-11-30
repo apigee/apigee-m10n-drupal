@@ -88,7 +88,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Unsubscribe from <em>%label</em> plan', [
+    return $this->t('Cancel <em>%label</em> plan', [
       '%label' => $this->subscription->getRatePlan()->getDisplayName()
     ]);
   }
@@ -109,8 +109,8 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Plan End Date'),
       '#options' => [
-        'immediate' => $this->t('Immediately'),
-        'on_date'   => $this->t('Future Date')
+        'now'     => $this->t('Now'),
+        'on_date' => $this->t('Future Date')
       ],
       '#default_value' => 'immediate'
     ];
@@ -131,7 +131,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $end_type = $values['end_type'] ?? 'immediate';
+    $end_type = $values['end_type'] ?? 'now';
 
     $this->subscription->setEndDate($end_type == 'end_date'
       ? new \DateTimeImmutable($values['endDate'])
@@ -146,7 +146,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
       if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have successfully unsubscribed from <em>%label</em> plan', [
+        $this->messenger->addStatus($this->t('You have successfully cancelled <em>%label</em> plan', [
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
         Cache::invalidateTags(['apigee_my_subscriptions']);
