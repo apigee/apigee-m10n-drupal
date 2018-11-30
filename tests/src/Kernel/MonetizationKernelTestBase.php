@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,6 @@ namespace Drupal\Tests\apigee_m10n\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
-use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
@@ -42,6 +41,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
     'file',
     'apigee_edge',
     'apigee_m10n',
+    'apigee_m10n_test',
     'apigee_mock_client',
     'user',
     'system',
@@ -63,8 +63,6 @@ class MonetizationKernelTestBase extends KernelTestBase {
     parent::setUp();
 
     $this->installConfig(['apigee_edge', 'apigee_m10n']);
-
-    $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_INTEGRATION_ENABLE));
 
     $this->init();
   }
