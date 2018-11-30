@@ -112,7 +112,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
         'now'     => $this->t('Now'),
         'on_date' => $this->t('Future Date')
       ],
-      '#default_value' => 'immediate'
+      '#default_value' => 'now'
     ];
     $form['endDate'] = [
       '#type'  => 'date',
