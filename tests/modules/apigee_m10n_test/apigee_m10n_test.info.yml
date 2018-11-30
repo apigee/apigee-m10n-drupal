@@ -1,0 +1,9 @@
+name: 'Apigee Monetization: Testing'
+type: module
+description: 'Support module for the Apigee Monetization tests.'
+core: 8.x
+package: Testing
+
+dependencies:
+  - apigee_edge:apigee_edge
+  - apigee_m10n:apigee_m10n

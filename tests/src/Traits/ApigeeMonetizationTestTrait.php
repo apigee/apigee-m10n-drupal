@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,12 +20,10 @@
 namespace Drupal\Tests\apigee_m10n\Traits;
 
 use Drupal\apigee_m10n\EnvironmentVariable;
-use Drupal\Component\Serialization\Json;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
-use GuzzleHttp\Psr7\Response;
 
 /**
  * Setup helpers for monetization tests.
@@ -68,8 +66,9 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function init() {
-    $this->stack         = $this->container->get('apigee_mock_client.mock_http_handler_stack');
-    $this->sdk_connector = $this->container->get('apigee_edge.sdk_connector');
+    $this->integration_enabled = !empty(getenv(EnvironmentVariable::APIGEE_INTEGRATION_ENABLE));
+    $this->stack               = $this->container->get('apigee_mock_client.mock_http_handler_stack');
+    $this->sdk_connector       = $this->container->get('apigee_edge.sdk_connector');
 
     $this->initAuth();
   }
@@ -85,21 +84,17 @@ trait ApigeeMonetizationTestTrait {
     $key = Key::create([
       'id'           => 'apigee_m10n_test_auth',
       'label'        => 'Apigee M10n Test Authorization',
-      'key_type'     => 'apigee_edge_basic_auth',
-      'key_provider' => 'config',
-      'key_input'    => 'apigee_edge_basic_auth_input',
+      'key_type'     => 'apigee_auth',
+      'key_provider' => 'apigee_edge_environment_variables',
+      'key_input'    => 'apigee_auth_input',
     ]);
-    $key->setKeyValue(Json::encode([
-      'endpoint'     => getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT),
-      'organization' => getenv(EnvironmentVariable::$APIGEE_EDGE_ORGANIZATION),
-      'username'     => getenv(EnvironmentVariable::$APIGEE_EDGE_USERNAME),
-      'password'     => getenv(EnvironmentVariable::$APIGEE_EDGE_PASSWORD),
-    ]));
+
     $key->save();
+    // Make sure the credentials persists for functional tests.
+    $key->getKeyProvider()->setKeyValue($key, $key->getKeyValue());
 
     $this->config('apigee_edge.auth')
       ->set('active_key', 'apigee_m10n_test_auth')
-      ->set('active_key_oauth_token', '')
       ->save();
   }
 
