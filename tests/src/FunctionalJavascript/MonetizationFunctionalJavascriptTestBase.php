@@ -21,7 +21,6 @@ namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
-use Drupal\apigee_m10n\EnvironmentVariable;
 
 /**
  * Setup for functional javascript tests.
@@ -33,8 +32,7 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
   }
 
   protected static $modules = [
-    'apigee_edge',
-    'apigee_m10n',
+    'apigee_m10n_test',
     'apigee_mock_client',
     'system',
   ];
@@ -58,8 +56,6 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
    */
   protected function setUp() {
     parent::setUp();
-
-    $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
     $this->baseSetUp();

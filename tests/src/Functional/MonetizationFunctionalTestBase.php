@@ -20,7 +20,6 @@
 namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
-use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\Tests\BrowserTestBase;
 
 /**
@@ -33,8 +32,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
   }
 
   protected static $modules = [
-    'apigee_edge',
-    'apigee_m10n',
+    'apigee_m10n_test',
     'apigee_mock_client',
     'system',
   ];
@@ -58,8 +56,6 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
    */
   protected function setUp() {
     parent::setUp();
-
-    $this->integration_enabled = !empty(getenv(EnvironmentVariable::$APIGEE_EDGE_ENDPOINT));
 
     // Create new Apigee Edge basic auth key.
     $this->baseSetUp();
