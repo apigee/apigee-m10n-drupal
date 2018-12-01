@@ -23,7 +23,6 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\FieldItemInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Link;
 
 /**
@@ -79,9 +78,8 @@ class SubscribeLinkFormatter extends FormatterBase {
    *   Renderable link element.
    */
   protected function viewValue(FieldItemInterface $item) {
-    if ($params = $item->value) {
-      $url = Url::fromRoute('entity.rate_plan.subscribe_form', $params);
-      return Link::fromTextAndUrl($this->getSetting('label'), $url)->toRenderable();
+    if ($params = $item->getValue()) {
+      return Link::createFromRoute($this->getSetting('label'), 'entity.rate_plan.subscribe_form', $params)->toRenderable();
     }
   }
 

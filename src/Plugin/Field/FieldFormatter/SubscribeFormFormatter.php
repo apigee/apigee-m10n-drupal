@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -102,8 +102,10 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   Renderable form elements.
    */
   protected function viewValue(FieldItemInterface $item) {
-    $rate_plan = $this->entityManager->getStorage('rate_plan')->create();
-    return $this->entityFormBuilder->getForm($rate_plan, 'subscribe');
+    if ($params = $item->getValue()) {
+      $rate_plan = $this->entityManager->getStorage('rate_plan')->create();
+      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe');
+    }
   }
 
 }

@@ -19,14 +19,13 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldType;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'apigee_subscription' field type.
+ * Plugin implementation of the 'apigee_subscribe' field type.
  *
  * @FieldType(
  *   id = "apigee_subscribe",
@@ -40,19 +39,10 @@ class SubscribeFieldItem extends FieldItemBase {
   /**
    * {@inheritdoc}
    */
-  public function settingsSummary() {
-    $summary = [];
-    $summary[] = $this->t('Displays link or form to subscribe a rate plan.');
-    return $summary;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     $properties['value'] = DataDefinition::create('any')
       ->setLabel(new TranslatableMarkup('value'))
-      ->setDescription(new TranslatableMarkup('Rate plan subscription form.'))
+      ->setDescription(new TranslatableMarkup('Rate plan subscribe form.'))
       ->setComputed(TRUE);
 
     return $properties;
@@ -63,13 +53,6 @@ class SubscribeFieldItem extends FieldItemBase {
    */
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
     return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    return '';
   }
 
 }
