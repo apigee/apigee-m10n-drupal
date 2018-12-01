@@ -26,23 +26,23 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'apigee_subscription_form' field type.
+ * Plugin implementation of the 'apigee_subscription' field type.
  *
  * @FieldType(
- *   id = "apigee_subscribe_link",
- *   label = @Translation("Apigee subscribe link"),
- *   description = @Translation("Apigee subscribe link"),
+ *   id = "apigee_subscribe",
+ *   label = @Translation("Apigee subscribe rate plan"),
+ *   description = @Translation("Apigee subscribe rate plan"),
  *   default_formatter = "apigee_subscribe_link"
  * )
  */
-class SubscribeLinkFieldItem extends FieldItemBase {
+class SubscribeFieldItem extends FieldItemBase {
 
   /**
    * {@inheritdoc}
    */
   public function settingsSummary() {
     $summary = [];
-    $summary[] = $this->t('Displays link/form to subscribe a rate plan.');
+    $summary[] = $this->t('Displays link or form to subscribe a rate plan.');
     return $summary;
   }
 
@@ -69,7 +69,7 @@ class SubscribeLinkFieldItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    return 'link';
+    return '';
   }
 
 }

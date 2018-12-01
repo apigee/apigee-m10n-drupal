@@ -134,11 +134,15 @@ class RatePlanSubscribeForm extends EntityForm {
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $entity = Subscription::create([
-      'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
+      'developer' => ($developer = $this->entity->getDeveloper())
+        ? $developer
+        : $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
       'startDate' => $values['start_type'] == 'on_date'
         ? new \DateTimeImmutable($values['startDate'])
         : new \DateTimeImmutable('now'),
-      'ratePlan' => $this->rate_plan->decorated(),
+      'ratePlan' => ($rate_plan = $this->entity->getRatePlan())
+        ? $rate_plan
+        : $this->rate_plan->decorated(),
     ]);
 
     return $entity;

@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface as MonetizationRatePlanInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
-use Drupal\Core\Url;
 
 /**
  * Defines the interface for package rate plan entity objects.
@@ -53,11 +52,11 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
   public static function loadById(string $package_name, string $id): RatePlanInterface;
 
   /**
-   * Get's the subscribe  link for this rate plan.
+   * Get's data for the `apigee_subscribe` field type.
    *
-   * @return \Drupal\Core\Url|null
-   *   The url to subscribe to this rate plan
+   * @return array|null
+   *   An array with data to build a link or form to subscribe rate plan.
    */
-  public function getSubscribeLink():? Url;
+  public function getSubscribeRatePlan():? array;
 
 }

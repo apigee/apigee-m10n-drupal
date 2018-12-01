@@ -36,7 +36,6 @@ use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Url;
 
 /**
  * Defines the Package Rate Plan entity class.
@@ -148,7 +147,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   protected static function getProperties(): array {
     $properties = parent::getProperties();
-    $properties['subscribeLink'] = 'apigee_subscribe_link';
+    $properties['subscribeRatePlan'] = 'apigee_subscribe';
 
     return $properties;
   }
@@ -213,14 +212,13 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribeLink():? Url {
+  public function getSubscribeRatePlan():? array {
     $user = \Drupal::routeMatch()->getParameter('user');
-    // @TODO: Look at using `entity.subscription.create` for this url.
-    return empty($user) ? NULL : Url::fromRoute('entity.rate_plan.subscribe_form', [
-      'user' => $user->id(),
-      'package' => $this->getPackage()->id(),
+    return empty($user) ? NULL : [
+      'user'      => $user->id(),
+      'package'   => $this->getPackage()->id(),
       'rate_plan' => $this->id(),
-    ]);
+    ];
   }
 
   /**
