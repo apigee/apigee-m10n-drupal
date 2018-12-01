@@ -5,7 +5,7 @@
     "description": "Apigee Edge Monetization for Drupal",
     "require": {
         "php": ">=7.1",
-        "drupal/apigee_edge": "^1.0",
+        "drupal/apigee_edge": "^1.0-beta1",
         "commerceguys/intl": "^1.0"
     },
     "require-dev": {
