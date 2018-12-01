@@ -25,7 +25,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
-use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use Drupal\Core\Cache\Cache;
 
@@ -34,7 +33,7 @@ use Drupal\Core\Cache\Cache;
  */
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
-  /** @var \Drupal\Core\Entity\EntityInterface|User|null */
+  /** @var \Drupal\user\Entity\User|null */
   protected $developer;
 
   /** @var \Drupal\apigee_m10n\Entity\Subscription|null */
@@ -43,7 +42,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   /** @var \Drupal\Core\Messenger\MessengerInterface */
   protected $messenger;
 
-  /** @var Drupal\apigee_m10n\ApigeeSdkControllerFactory */
+  /** @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory */
   protected $sdkControllerFactory;
 
   /**
