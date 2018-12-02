@@ -136,6 +136,25 @@ class RatePlanSubscribeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $prefix = $form_state->get('prefix');
+    $start_date_field = $prefix . 'startDate';
+    if ($values[$prefix . 'start_type'] == 'on_date') {
+      if (empty($values[$start_date_field])) {
+        $form_state->setErrorByName($start_date_field, $this->t('Please make sure to specify date'));
+      }
+      $start_date = new \DateTimeImmutable($values[$start_date_field]);
+      $current_date = new \DateTimeImmutable('now');
+      if ($start_date->getTimestamp() < $current_date->getTimestamp()) {
+        $form_state->setErrorByName($start_date_field, $this->t('Start Date should be future date'));
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Remove button and internal Form API values from submitted values.
     $form_state->cleanValues();
