@@ -115,7 +115,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
     ];
     $form['endDate'] = [
       '#type'  => 'date',
-      '#title' => $this->t('Select an end date'),
+      '#title' => $this->t('Select End Date'),
       '#states' => [
         'visible' => [
           ':input[name="end_type"]' => ['value' => 'on_date'],
