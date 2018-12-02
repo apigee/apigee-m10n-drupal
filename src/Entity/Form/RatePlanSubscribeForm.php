@@ -128,7 +128,7 @@ class RatePlanSubscribeForm extends EntityForm {
       ],
     ];
 
-    $form['actions']['submit']['#value'] = $this->t('Purchase Plan');
+    $form['actions']['submit']['#value'] = !empty($storage['button_label']) ? $storage['button_label'] : $this->t('Purchase Plan');
 
     return $form;
   }

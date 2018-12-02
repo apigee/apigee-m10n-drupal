@@ -25,6 +25,7 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityFormBuilder;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
@@ -92,6 +93,27 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
+  public static function defaultSettings() {
+    return [
+      'label' => 'Purchase Plan',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state) {
+    $form['label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Button label'),
+      '#default_value' => $this->getSetting('label'),
+    ];
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     foreach ($items as $delta => $item) {
@@ -109,6 +131,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    */
   protected function viewValue(FieldItemInterface $item) {
     if ($form_state_storage = $item->getValue()) {
+      $form_state_storage['button_label'] = $this->t($this->getSetting('label'));
       $rate_plan = $this->entityManager->getStorage('rate_plan')->create();
       return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', $form_state_storage);
     }
