@@ -103,8 +103,12 @@ class RatePlanSubscribeForm extends EntityForm {
     if (!empty($storage['rate_plan'])) {
       $this->rate_plan = $storage['rate_plan'];
     }
+    // This will help to solve issue with the #state API when an entity form
+    // gets rendered on the page. e.g Packages page.
+    $prefix = '_' . $this->rate_plan->id();
+    $form_state->set('prefix', $prefix);
 
-    $form['start_type'] = [
+    $form[$prefix . 'start_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Plan Start Date'),
       '#options' => [
@@ -114,12 +118,12 @@ class RatePlanSubscribeForm extends EntityForm {
       '#default_value' => 'now'
     ];
 
-    $form['startDate'] = [
+    $form[$prefix . 'startDate'] = [
       '#type'  => 'date',
       '#title' => $this->t('Start Date'),
       '#states' => [
         'visible' => [
-          ':input[name="start_type"]' => ['value' => 'on_date'],
+          ':input[name="' . $prefix . 'start_type"]' => ['value' => 'on_date'],
         ]
       ],
     ];
@@ -143,10 +147,11 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+    $prefix = $form_state->get('prefix');
     $entity = Subscription::create([
       'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
-      'startDate' => $values['start_type'] == 'on_date'
-        ? new \DateTimeImmutable($values['startDate'])
+      'startDate' => $values[$prefix . 'start_type'] == 'on_date'
+        ? new \DateTimeImmutable($values[$prefix . 'startDate'])
         : new \DateTimeImmutable('now'),
       'ratePlan' => $this->rate_plan->decorated(),
     ]);

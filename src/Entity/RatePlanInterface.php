@@ -52,7 +52,7 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
   public static function loadById(string $package_name, string $id): RatePlanInterface;
 
   /**
-   * Get's data for the `apigee_subscribe` field type.
+   * Get's data for the `apigee_subscribe` field formatter.
    *
    * @return array|null
    *   An array with data to build a link or form to subscribe rate plan.

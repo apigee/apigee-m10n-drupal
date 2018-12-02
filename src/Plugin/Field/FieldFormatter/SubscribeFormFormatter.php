@@ -108,9 +108,9 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   Renderable form elements.
    */
   protected function viewValue(FieldItemInterface $item) {
-    if ($form_storage = $item->getValue()) {
+    if ($form_state_storage = $item->getValue()) {
       $rate_plan = $this->entityManager->getStorage('rate_plan')->create();
-      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', $form_storage);
+      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', $form_state_storage);
     }
   }
 
