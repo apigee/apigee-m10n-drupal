@@ -78,8 +78,14 @@ class SubscribeLinkFormatter extends FormatterBase {
    *   Renderable link element.
    */
   protected function viewValue(FieldItemInterface $item) {
-    if ($params = $item->getValue()) {
-      return Link::createFromRoute($this->getSetting('label'), 'entity.rate_plan.subscribe_form', $params)->toRenderable();
+    if ($value = $item->getValue()) {
+      return Link::createFromRoute(
+        $this->getSetting('label'), 'entity.rate_plan.subscribe_form', [
+          'user'      => $value['user']->id(),
+          'package'   => $value['package']->id(),
+          'rate_plan' => $value['rate_plan']->id(),
+        ]
+      )->toRenderable();
     }
   }
 

@@ -215,9 +215,9 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   public function getSubscribeRatePlan():? array {
     $user = \Drupal::routeMatch()->getParameter('user');
     return empty($user) ? NULL : [
-      'user'      => $user->id(),
-      'package'   => $this->getPackage()->id(),
-      'rate_plan' => $this->id(),
+      'user'      => $user,
+      'package'   => $this->getPackage(),
+      'rate_plan' => $this,
     ];
   }
 

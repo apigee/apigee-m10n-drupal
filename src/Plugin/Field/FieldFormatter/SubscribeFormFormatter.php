@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -26,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Entity\EntityFormBuilder;
 use Drupal\Core\Entity\EntityManager;
-use Drupal\Core\Field\FormatterBase;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 
 /**
  * Plugin implementation of the 'apigee_subscription_form' formatter.
@@ -47,6 +48,9 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
   /** @var Drupal\Core\Entity\EntityManager */
   protected $entityManager;
 
+  /** @var Drupal\apigee_m10n\ApigeeSdkControllerFactory */
+  protected $sdkControllerFactory;
+
   /**
    * SubscribeLinkFormatter constructor.
    *
@@ -60,10 +64,11 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    * @param EntityFormBuilder $entityFormBuilder
    * @param EntityManager $entityManager
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityFormBuilder $entityFormBuilder, EntityManager $entityManager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityFormBuilder $entityFormBuilder, EntityManager $entityManager, ApigeeSdkControllerFactory $sdkControllerFactory) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->entityFormBuilder = $entityFormBuilder;
     $this->entityManager = $entityManager;
+    $this->sdkControllerFactory = $sdkControllerFactory;
   }
 
   /**
@@ -79,7 +84,8 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
       $configuration['view_mode'],
       $configuration['third_party_settings'],
       $container->get('entity.form_builder'),
-      $container->get('entity.manager')
+      $container->get('entity.manager'),
+      $container->get('apigee_m10n.sdk_controller_factory')
     );
   }
 
@@ -102,9 +108,9 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   Renderable form elements.
    */
   protected function viewValue(FieldItemInterface $item) {
-    if ($params = $item->getValue()) {
+    if ($form_storage = $item->getValue()) {
       $rate_plan = $this->entityManager->getStorage('rate_plan')->create();
-      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe');
+      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', $form_storage);
     }
   }
 

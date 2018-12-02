@@ -94,6 +94,16 @@ class RatePlanSubscribeForm extends EntityForm {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
 
+    // By doing this we're able to pass required parameters from the form field formatter
+    // and render subscribe form anywhere we render rate plan entity.
+    $storage = $form_state->getStorage();
+    if (!empty($storage['user'])) {
+      $this->developer = $storage['user'];
+    }
+    if (!empty($storage['rate_plan'])) {
+      $this->rate_plan = $storage['rate_plan'];
+    }
+
     $form['start_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Plan Start Date'),
@@ -134,15 +144,11 @@ class RatePlanSubscribeForm extends EntityForm {
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $entity = Subscription::create([
-      'developer' => ($developer = $this->entity->getDeveloper())
-        ? $developer
-        : $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
+      'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
       'startDate' => $values['start_type'] == 'on_date'
         ? new \DateTimeImmutable($values['startDate'])
         : new \DateTimeImmutable('now'),
-      'ratePlan' => ($rate_plan = $this->entity->getRatePlan())
-        ? $rate_plan
-        : $this->rate_plan->decorated(),
+      'ratePlan' => $this->rate_plan->decorated(),
     ]);
 
     return $entity;
