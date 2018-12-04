@@ -212,6 +212,21 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
+  public function toUrl($rel = 'canonical', array $options = []) {
+    // The string formatter assumes entities are revisionable.
+    $rel = ($rel === 'revision') ? 'canonical' : $rel;
+    // Build the URL.
+    $url = parent::toUrl($rel, $options);
+    // The route parameters still need tobe set.
+    $url->setRouteParameter('user', \Drupal::routeMatch()->getParameter('user')->id());
+    $url->setRouteParameter('package', $this->getPackage()->id());
+
+    return $url;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSubscribeRatePlan():? array {
     $user = \Drupal::routeMatch()->getParameter('user');
     return empty($user) ? NULL : [
