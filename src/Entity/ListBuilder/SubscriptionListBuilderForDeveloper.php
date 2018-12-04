@@ -36,24 +36,37 @@ use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Defines implementation of a subscriptions listing page.
+ *
+ * @ingroup entity_api
+ */
 class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements ContainerInjectionInterface {
 
   /**
+   * Subscription storage.
+   *
    * @var \Drupal\apigee_m10n\Entity\Storage\SubscriptionStorageInterface
    */
   protected $storage;
 
   /**
+   * Entity manager service.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * Logger service.
+   *
    * @var \Psr\Log\LoggerInterface
    */
   protected $logger;
 
   /**
+   * Messanger service.
+   *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
@@ -73,13 +86,18 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   protected $current_user;
 
   /**
-   * Constructs a new EntityListBuilder object.
+   * SubscriptionListBuilderForDeveloper constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
+   *   Entity type service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The entity storage class.
+   *   Entity storage.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   Entity type manager service.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   Logger service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messanger service.
    */
   public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger, MessengerInterface $messenger) {
     parent::__construct($entity_type, $storage);
@@ -119,30 +137,43 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     return $this->t('Purchased Plans');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getTitle() {
     return $this->t('@subscriptions', [
       '@subscriptions' => (string) $this->entityTypeManager->getDefinition('subscription')->getPluralLabel()
     ]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildHeader() {
     return [
-      'status' => ['data' => $this->t('Status'), 'field' => 'status'],
-      'package' => ['data' => $this->t('Package'), 'field' => 'package', 'sort' => 'desc'],
-      'products' => ['data' => $this->t('Products'), 'field' => 'products'],
-      'plan' => ['data' => $this->t('Plan Name'), 'field' => 'plan'],
-      'start_date' => ['data' => $this->t('Start Date'), 'field' => 'start_date'],
-      'end_date' => ['data' => $this->t('End Date'), 'field' => 'end_date'],
+      'status'        => ['data' => $this->t('Status'), 'field' => 'status'],
+      'package'       => [
+        'data'  => $this->t('Package'),
+        'field' => 'package',
+        'sort'  => 'desc'
+      ],
+      'products'      => ['data' => $this->t('Products'), 'field' => 'products'],
+      'plan'          => ['data' => $this->t('Plan Name'), 'field' => 'plan'],
+      'start_date'    => ['data' => $this->t('Start Date'), 'field' => 'start_date'],
+      'end_date'      => ['data' => $this->t('End Date'), 'field' => 'end_date'],
       'plan_end_date' => ['data' => $this->t('Plan End Date'), 'field' => 'plan_end_date'],
-      'renewal_date' => ['data' => $this->t('Renewal Date'), 'field' => 'renewal_date'],
-      'operations' => $this->t('Actions')
+      'renewal_date'  => ['data' => $this->t('Renewal Date'), 'field' => 'renewal_date'],
+      'operations'    => $this->t('Actions')
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildRow(EntityInterface $entity) {
     $rate_plan = $entity->getRatePlan();
 
-    $products = array_reduce($rate_plan->getPackage()->getApiProducts(), function($result, $product) {
+    $products = array_reduce($rate_plan->getPackage()->getApiProducts(), function ($result, $product) {
       return $result ? "{$result}, {$product->getDisplayName()}" : $product->getDisplayName();
     }, "");
 
@@ -159,9 +190,9 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         'products'      => $products,
         'plan'          => Link::fromTextAndUrl($rate_plan->getDisplayName(), $url),
         'start_date'    => $entity->getStartDate()->format('m/d/Y'),
-        'end_date'      => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : null,
-        'plan_end_date' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : null,
-        'renewal_date'  => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : null,
+        'end_date'      => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : NULL,
+        'plan_end_date' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : NULL,
+        'renewal_date'  => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : NULL,
         'operations'    => [
           'data' => $this->buildOperations($entity)
         ]
@@ -177,6 +208,9 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     throw new EntityStorageException('Unable to load subscriptions directly. Use `SubscriptionStorage::loadPackageRatePlans`.');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function render(UserInterface $user = NULL) {
     $this->user = $user;
     $developer_id = $user->getEmail();

@@ -33,23 +33,43 @@ use Drupal\Core\Cache\Cache;
  */
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
-  /** @var \Drupal\user\Entity\User|null */
+  /**
+   * Drupal user.
+   *
+   * @var \Drupal\user\Entity\User|null
+   */
   protected $developer;
 
-  /** @var \Drupal\apigee_m10n\Entity\Subscription|null */
+  /**
+   * Subscription entity.
+   *
+   * @var \Drupal\apigee_m10n\Entity\Subscription|null
+   */
   protected $subscription;
 
-  /** @var \Drupal\Core\Messenger\MessengerInterface */
+  /**
+   * Messanger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
   protected $messenger;
 
-  /** @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory */
+  /**
+   * SDK controller factory.
+   *
+   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory
+   */
   protected $sdkControllerFactory;
 
   /**
    * UnsubscribeConfirmForm constructor.
    *
-   * @param RouteMatchInterface $route_match
-   * @param MessengerInterface $messenger
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   Route match service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messanger service.
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdkControllerFactory
+   *   SDK Controller factory.
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->developer = $route_match->getParameter('user');
@@ -96,7 +116,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return  Url::fromRoute('apigee_monetization.my_subscriptions');
+    return Url::fromRoute('apigee_monetization.my_subscriptions');
   }
 
   /**

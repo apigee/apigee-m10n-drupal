@@ -73,7 +73,9 @@ class SubscribeLinkFormatter extends FormatterBase {
   /**
    * Renderable link element.
    *
-   * @param FieldItemInterface $item
+   * @param \Drupal\Core\Field\FieldItemInterface $item
+   *   Field item variable.
+   *
    * @return array
    *   Renderable link element.
    */

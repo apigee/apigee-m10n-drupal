@@ -34,24 +34,43 @@ use Drupal\Core\Cache\Cache;
  */
 class RatePlanSubscribeForm extends EntityForm {
 
-  /** @var \Drupal\user\Entity\User|null */
+  /**
+   * Drupal user entity.
+   *
+   * @var \Drupal\user\Entity\User|null
+   */
   protected $developer;
 
-  /** @var \Drupal\apigee_m10n\Entity\RatePlan|null */
+  /**
+   * Rate Plan entity.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlan|null
+   */
   protected $rate_plan;
 
-  /** @var \Drupal\Core\Messenger\MessengerInterface */
+  /**
+   * Messanger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
   protected $messenger;
 
-  /** @var Drupal\apigee_m10n\ApigeeSdkControllerFactory */
+  /**
+   * SDK Controller factory.
+   *
+   * @var Drupal\apigee_m10n\ApigeeSdkControllerFactory
+   */
   protected $sdkControllerFactory;
 
   /**
    * RatePlanSubscribeForm constructor.
    *
-   * @param RouteMatchInterface $route_match
-   * @param MessengerInterface $messenger
-   * @param ApigeeSdkControllerFactory $sdkControllerFactory
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   Route match service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messanger service.
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdkControllerFactory
+   *   SDK Controller factory.
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->developer = $route_match->getParameter('user');
@@ -169,9 +188,7 @@ class RatePlanSubscribeForm extends EntityForm {
     $prefix = $form_state->get('prefix');
     $entity = Subscription::create([
       'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
-      'startDate' => $values[$prefix . 'start_type'] == 'on_date'
-        ? new \DateTimeImmutable($values[$prefix . 'startDate'])
-        : new \DateTimeImmutable('now'),
+      'startDate' => $values[$prefix . 'start_type'] == 'on_date' ? new \DateTimeImmutable($values[$prefix . 'startDate']) : new \DateTimeImmutable('now'),
       'ratePlan' => $this->rate_plan->decorated(),
     ]);
 
