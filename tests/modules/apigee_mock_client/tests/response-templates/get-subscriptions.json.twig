@@ -12,7 +12,7 @@
             "created": "{{ subscription_one.created|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "developer": {
                 "billingType": "{{ subscription_one.billingType|default('PREPAID') }}",
-                "broker": "{{ subscription_one.broker|default(false) }}",
+                "broker": false,
                 "email": "{{ subscription_one.email|default("test@example.com") }}",
                 "id": "{{ subscription_one.developerId|default("1234abcd-1234abcd") }}",
                 "isCompany": "{{ subscription_one.isCompany|default(false) }}",
@@ -34,7 +34,7 @@
             "created": "{{ subscription_two.created|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "developer": {
                 "billingType": "{{ subscription_two.billingType|default('PREPAID') }}",
-                "broker": "{{ subscription_two.broker|default(false) }}",
+                "broker": false,
                 "email": "{{ subscription_two.email|default("test@example.com") }}",
                 "id": "{{ subscription_two.developerId|default("1234abcd-1234abcd") }}",
                 "isCompany": "{{ subscription_two.isCompany|default(false) }}",
@@ -51,7 +51,7 @@
             "ratePlan": {% include 'rate-plan.json.twig' %},
             "startDate": "{{ subscription_two.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
             "updated": "{{ subscription_two.updated|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}"
-        },
+        }
     ],
     "totalRecords": 2
 }

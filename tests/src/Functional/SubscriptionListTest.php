@@ -32,10 +32,13 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   /**
    * Drupal user.
    *
-   * @var $account
+   * @var \Drupal\user\UserInterface
    */
   protected $account;
 
+  /**
+   * Tests permissions for `My Plans/Subscriptions` page.
+   */
   public function testSubscriptionListAccessDenied() {
 
     // If the user doesn't have the "access subscriptions" permission, they should get access denied.
@@ -51,6 +54,9 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseContains('Access denied');
   }
 
+  /**
+   * Tests for `My Plans/Subscriptions` page.
+   */
   public function testSubscriptionListView() {
     // If the user has "access subscriptions" permission, they should be able to see some prepaid balances.
     $this->account = $this->createAccount([
@@ -61,18 +67,23 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $this->drupalLogin($this->account);
 
-    $this->queueDeveloperResponse($this->account);
-
     $this->stack->queueMockResponse('get_subscriptions');
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->account->id(),
     ]));
 
+    // Make sure user has access to the page.
     $this->assertSession()->responseNotContains('Access denied');
 
-    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(1)', 'Active');
-
+    // Checking my subscriptions table columns.
+    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(1)', 'Future');
+    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(2)', 'The Foo');
+    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(3)', '');
+    $this->assertSession()->elementContains('css', 'tr.foo-displayname > td:nth-child(4)', '<a href="/user/' . $this->account->id() . '/monetization/packages/');
+    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(5)', '12/04/2018');
+    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(5)', '12/04/2018');
 
   }
+
 }
