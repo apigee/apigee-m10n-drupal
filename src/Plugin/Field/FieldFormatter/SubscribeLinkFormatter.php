@@ -80,12 +80,14 @@ class SubscribeLinkFormatter extends FormatterBase {
    *   Renderable link element.
    */
   protected function viewValue(FieldItemInterface $item) {
+    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+    $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
       return Link::createFromRoute(
-        $this->t($this->getSetting('label')), 'entity.rate_plan.canonical', [
+        $this->getSetting('label'), 'entity.rate_plan.subscribe_form', [
           'user'      => $value['user']->id(),
-          'package'   => $value['package']->id(),
-          'rate_plan' => $value['rate_plan']->id(),
+          'package'   => $rate_plan->getPackage()->id(),
+          'rate_plan' => $rate_plan->id(),
         ]
       )->toRenderable();
     }

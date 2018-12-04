@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity\Form;
 
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -42,13 +43,6 @@ class RatePlanSubscribeForm extends EntityForm {
   protected $developer;
 
   /**
-   * Rate Plan entity.
-   *
-   * @var \Drupal\apigee_m10n\Entity\RatePlan|null
-   */
-  protected $rate_plan;
-
-  /**
    * Messanger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
@@ -58,7 +52,7 @@ class RatePlanSubscribeForm extends EntityForm {
   /**
    * SDK Controller factory.
    *
-   * @var Drupal\apigee_m10n\ApigeeSdkControllerFactory
+   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory
    */
   protected $sdkControllerFactory;
 
@@ -74,7 +68,6 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->developer = $route_match->getParameter('user');
-    $this->rate_plan = $route_match->getParameter('rate_plan');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;
   }
@@ -104,7 +97,8 @@ class RatePlanSubscribeForm extends EntityForm {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function title(RouteMatchInterface $route_match, EntityInterface $_entity = NULL) {
-    return $this->t("Purchase <em>%label</em> plan", ['%label' => $this->rate_plan->getDisplayName()]);
+    $this->entity = $this->entity ?? $_entity ?? $route_match->getParameter('rate_plan');
+    return $this->t("Purchase <em>%label</em> plan", ['%label' => $this->entity->getDisplayName()]);
   }
 
   /**
@@ -112,38 +106,38 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
+    // Get the form ID from state.
+    $form_id = $form_state->getBuildInfo()['form_id'];
 
-    // By doing this we're able to pass required parameters from the form field formatter
-    // and render subscribe form anywhere we render rate plan entity.
+    // Pre-populate the form ID so we can use it in the form states API.
+    $form['#id'] = $form['#id'] ?? Html::getUniqueId($form_id);
+    // Provide a selector usable by JavaScript. As the ID is unique, its not
+    // possible to rely on it in JavaScript.
+    $form['#attributes']['data-drupal-selector'] = Html::getId($form_id);
+
+    // Formatter and render subscribe form anywhere we render rate plan entity.
     $storage = $form_state->getStorage();
     if (!empty($storage['user'])) {
       $this->developer = $storage['user'];
     }
-    if (!empty($storage['rate_plan'])) {
-      $this->rate_plan = $storage['rate_plan'];
-    }
-    // This will help to solve issue with the #state API when an entity form
-    // gets rendered on the page. e.g Packages page.
-    $prefix = '_' . $this->rate_plan->id();
-    $form_state->set('prefix', $prefix);
 
-    $form[$prefix . 'start_type'] = [
+    $form['start_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Plan Start Date'),
       '#options' => [
         'now'     => $this->t('Now'),
-        'on_date' => $this->t('Future Date')
+        'on_date' => $this->t('Future Date'),
       ],
-      '#default_value' => 'now'
+      '#default_value' => 'now',
     ];
 
-    $form[$prefix . 'startDate'] = [
+    $form['startDate'] = [
       '#type'  => 'date',
       '#title' => $this->t('Start Date'),
       '#states' => [
         'visible' => [
-          ':input[name="' . $prefix . 'start_type"]' => ['value' => 'on_date'],
-        ]
+          "form#{$form['#id']} :input[name=\"start_type\"]" => ['value' => 'on_date'],
+        ],
       ],
     ];
 
@@ -157,9 +151,8 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $prefix = $form_state->get('prefix');
-    $start_date_field = $prefix . 'startDate';
-    if ($values[$prefix . 'start_type'] == 'on_date') {
+    $start_date_field = 'startDate';
+    if ($values['start_type'] == 'on_date') {
       if (empty($values[$start_date_field])) {
         $form_state->setErrorByName($start_date_field, $this->t('Please make sure to specify date'));
       }
@@ -185,11 +178,10 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $prefix = $form_state->get('prefix');
     $entity = Subscription::create([
       'developer' => $this->sdkControllerFactory->developerController()->load($this->developer->getEmail()),
-      'startDate' => $values[$prefix . 'start_type'] == 'on_date' ? new \DateTimeImmutable($values[$prefix . 'startDate']) : new \DateTimeImmutable('now'),
-      'ratePlan' => $this->rate_plan->decorated(),
+      'startDate' => $values['start_type'] == 'on_date' ? new \DateTimeImmutable($values['startDate']) : new \DateTimeImmutable('now'),
+      'ratePlan' => $this->entity->decorated(),
     ]);
 
     return $entity;
@@ -200,7 +192,7 @@ class RatePlanSubscribeForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      $display_name = $this->rate_plan->getDisplayName();
+      $display_name = $this->entity->getDisplayName();
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased <em>%label</em> plan', [
           '%label' => $display_name,

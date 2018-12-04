@@ -233,8 +233,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     $user = \Drupal::routeMatch()->getParameter('user');
     return empty($user) ? NULL : [
       'user'      => $user,
-      'package'   => $this->getPackage(),
-      'rate_plan' => $this,
     ];
   }
 

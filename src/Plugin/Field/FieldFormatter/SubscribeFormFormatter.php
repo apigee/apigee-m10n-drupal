@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -132,10 +131,13 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   Renderable form elements.
    */
   protected function viewValue(FieldItemInterface $item) {
-    if ($form_state_storage = $item->getValue()) {
-      $form_state_storage['button_label'] = $this->t('@label', ['@label' => $this->getSetting('label')]);
-      $rate_plan = RatePlan::create([]);
-      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', $form_state_storage);
+    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+    $rate_plan = $item->getEntity();
+    if ($value = $item->getValue()) {
+      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', [
+        'button_label' => $this->t('@label', ['@label' => $this->getSetting('label')]),
+        'user' => $value['user'],
+      ]);
     }
   }
 
