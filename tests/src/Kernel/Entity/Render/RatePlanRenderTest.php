@@ -43,8 +43,8 @@ class RenderTest extends MonetizationKernelTestBase {
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
-    $this->assertText($rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
     $this->assertText($rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
+    $this->assertLinkByHref("/user/0/monetization/packages/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", 0, 'The display name links to the rate plan.');
   }
 
 }

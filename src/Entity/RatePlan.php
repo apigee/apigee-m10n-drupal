@@ -218,7 +218,9 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // Build the URL.
     $url = parent::toUrl($rel, $options);
     // The route parameters still need tobe set.
-    $url->setRouteParameter('user', \Drupal::routeMatch()->getParameter('user')->id());
+    $route_user = \Drupal::routeMatch()->getParameter('user');
+    $user = $route_user ?: \Drupal::currentUser();
+    $url->setRouteParameter('user', $user->id());
     $url->setRouteParameter('package', $this->getPackage()->id());
 
     return $url;
