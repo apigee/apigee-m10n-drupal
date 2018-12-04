@@ -63,13 +63,15 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $this->queueDeveloperResponse($this->account);
 
-    $this->stack->queueMockResponse('get-subscriptions');
+    $this->stack->queueMockResponse('get_subscriptions');
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->account->id(),
     ]));
 
-//    $this->assertSession()->elementTextContains('css', 'tr.apigee-balance-row-aud > td:nth-child(1)', 'AUD');
+    $this->assertSession()->responseNotContains('Access denied');
+
+    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(1)', 'Active');
 
 
   }
