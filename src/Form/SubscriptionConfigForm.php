@@ -51,11 +51,28 @@ class SubscriptionConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    return [
-      'message' => [
-        '#markup' => $this->t('Manage subscription form and view displays in the above tabs.'),
-      ],
+    // Get the working configuration.
+    $config = $this->config(static::CONFIG_NAME);
+
+    $form['subscribe_form_title'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Subscribe form page title.'),
+      '#description' => $this->t('The page title to use for the subscribe form page. i.e. "Subscribe to %rate_plan"'),
+      '#default_value' => $config->get('subscribe_form_title'),
     ];
+
+    return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    parent::submitForm($form, $form_state);
+
+    $this->config(static::CONFIG_NAME)
+      ->set('subscribe_form_title', $form_state->getValue('subscribe_form_title'))
+      ->save();
   }
 
 }

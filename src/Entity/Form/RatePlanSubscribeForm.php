@@ -31,7 +31,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 
 /**
- * Unsubscribe entity form for subscriptions.
+ * Subscribe entity form for rate plans.
  */
 class RatePlanSubscribeForm extends EntityForm {
 
