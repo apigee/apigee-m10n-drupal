@@ -60,6 +60,14 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    */
   protected $package_rate_plan;
 
+
+  /**
+   * Drupal user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $account;
+
   /**
    * {@inheritdoc}
    *
@@ -67,6 +75,20 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    */
   public function setUp() {
     parent::setUp();
+
+    $this->installEntitySchema('user');
+    $this->installEntitySchema('date_format');
+    $this->installSchema('system', ['sequences']);
+    $this->installSchema('user', ['users_data']);
+    $this->installConfig([
+      'user',
+      'system',
+    ]);
+
+    $this->account = $this->createAccount([
+      'access subscriptions',
+    ]);
+    $this->setCurrentUser($this->account);
 
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
