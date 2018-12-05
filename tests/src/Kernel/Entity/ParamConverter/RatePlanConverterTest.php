@@ -85,7 +85,7 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
 
     /** @var \Drupal\Core\Routing\RouteProviderInterface $route_provider */
     $route_provider = \Drupal::service('router.route_provider');
-    $route = $route_provider->getRouteByName('entity.rate_plan.subscribe_form');
+    $route = $route_provider->getRouteByName('entity.rate_plan.subscribe');
 
     static::assertTrue($converter->applies(['type' => 'entity:rate_plan'], 'rate_plan', $route));
   }

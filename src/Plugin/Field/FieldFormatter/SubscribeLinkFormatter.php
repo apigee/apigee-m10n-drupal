@@ -84,7 +84,7 @@ class SubscribeLinkFormatter extends FormatterBase {
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
       return Link::createFromRoute(
-        $this->getSetting('label'), 'entity.rate_plan.subscribe_form', [
+        $this->getSetting('label'), 'entity.rate_plan.subscribe', [
           'user'      => $value['user']->id(),
           'package'   => $rate_plan->getPackage()->id(),
           'rate_plan' => $rate_plan->id(),

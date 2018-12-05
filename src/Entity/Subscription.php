@@ -48,7 +48,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
- *       "edit"        = "Drupal\apigee_m10n\Entity\Form\SubscriptionEditForm",
+ *       "default"     = "Drupal\apigee_m10n\Entity\Form\SubscriptionForm",
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
  *     },
  *   },

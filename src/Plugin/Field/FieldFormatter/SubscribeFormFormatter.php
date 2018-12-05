@@ -144,8 +144,8 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
         'developer' => new Developer(['email' => $value['user']->getEmail()]),
         'startDate' => new \DateTimeImmutable(),
       ]);
-      return $this->entityFormBuilder->getForm($subscription, 'edit', [
-        'create_label' => $this->t('@label', ['@label' => $this->getSetting('label')]),
+      return $this->entityFormBuilder->getForm($subscription, 'default', [
+        'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
       ]);
     }
   }

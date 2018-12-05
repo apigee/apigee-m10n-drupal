@@ -30,7 +30,7 @@ use Drupal\Core\Cache\Cache;
 /**
  * Unsubscribe entity form for subscriptions.
  */
-class SubscriptionEditForm extends MonetizationEntityForm {
+class SubscriptionForm extends MonetizationEntityForm {
 
   /**
    * Messanger service.
@@ -66,6 +66,18 @@ class SubscriptionEditForm extends MonetizationEntityForm {
       $container->get('datetime.time'),
       $container->get('messenger')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function actions(array $form, FormStateInterface $form_state) {
+    $actions = parent::actions($form, $form_state);
+    // Set the save lable if one has been passed into storage.
+    if (!empty($actions['submit']) && ($save_label = $form_state->get('save_label'))) {
+      $actions['submit']['#value'] = $save_label;
+    }
+    return $actions;
   }
 
   /**
