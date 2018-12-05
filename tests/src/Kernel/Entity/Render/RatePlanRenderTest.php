@@ -30,22 +30,36 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 class RenderTest extends MonetizationKernelTestBase {
 
   /**
+   * Test package rate plan.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
+   */
+  protected $package_rate_plan;
+
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->package_rate_plan = $this->createPackageRatePlan($this->createPackage());
+  }
+
+  /**
    * Tests theme preprocess functions being able to attach assets.
    */
   public function testRenderRatePlan() {
 
-    $package = $this->createPackage();
-    $rate_plan = $this->createPackageRatePlan($package);
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->package_rate_plan->getEntityTypeId());
 
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($rate_plan->getEntityTypeId());
-
-    $build = $view_builder->view($rate_plan, 'default');
+    $build = $view_builder->view($this->package_rate_plan, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
-    $this->assertText($rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
-    $this->assertText($rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
-    $this->assertLinkByHref("/user/0/monetization/packages/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", 0, 'The display name links to the rate plan.');
+    $this->assertText($this->package_rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
+    $this->assertText($this->package_rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
+    $this->assertLinkByHref("/user/0/monetization/packages/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
   }
 
 }
