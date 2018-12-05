@@ -75,6 +75,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     // Make sure user has access to the page.
     $this->assertSession()->responseNotContains('Access denied');
+    $this->assertSession()->responseNotContains('Connection error');
 
     // Checking my subscriptions table columns.
     $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(1)', 'Future');
