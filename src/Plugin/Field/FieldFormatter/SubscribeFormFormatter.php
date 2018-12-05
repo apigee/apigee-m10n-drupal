@@ -19,6 +19,8 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
+use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
+use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -49,6 +51,13 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
   protected $entityFormBuilder;
 
   /**
+   * The SDK controller factory.
+   *
+   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
+   */
+  protected $sdkControllerFactory;
+
+  /**
    * SubscribeLinkFormatter constructor.
    *
    * @param string $plugin_id
@@ -67,10 +76,13 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   Any third party settings.
    * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entityFormBuilder
    *   Entity form builder service.
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdkControllerFactory
+   *   The Apigee Monetization SDK controller factory.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityFormBuilderInterface $entityFormBuilder) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityFormBuilderInterface $entityFormBuilder, ApigeeSdkControllerFactoryInterface $sdkControllerFactory) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->entityFormBuilder = $entityFormBuilder;
+    $this->sdkControllerFactory = $sdkControllerFactory;
   }
 
   /**
@@ -85,7 +97,8 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('entity.form_builder')
+      $container->get('entity.form_builder'),
+      $container->get('apigee_m10n.sdk_controller_factory')
     );
   }
 
@@ -134,9 +147,15 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
-      return $this->entityFormBuilder->getForm($rate_plan, 'subscribe', [
-        'button_label' => $this->t('@label', ['@label' => $this->getSetting('label')]),
-        'user' => $value['user'],
+      $subscription = Subscription::create([
+        'ratePlan' => $rate_plan,
+        // TODO: User a controller proxy that caches the developer entity.
+        // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
+        'developer' => $this->sdkControllerFactory->developerController()->load($value['user']->getEmail()),
+        'startDate' => new \DateTimeImmutable(),
+      ]);
+      return $this->entityFormBuilder->getForm($subscription, 'edit', [
+        'create_label' => $this->t('@label', ['@label' => $this->getSetting('label')]),
       ]);
     }
   }

@@ -34,20 +34,21 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * Defines the Subscription entity class.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
- *   id = "subscription",
- *   label = @Translation("Subscription"),
+ *   id             = "subscription",
+ *   label          = @Translation("Subscription"),
  *   label_singular = @Translation("Subscription"),
- *   label_plural = @Translation("Subscriptions"),
+ *   label_plural   = @Translation("Subscriptions"),
  *   label_count = @PluralTranslation(
  *     singular = "@count Subscription",
- *     plural = "@count Subscriptions",
+ *     plural   = "@count Subscriptions",
  *   ),
  *   handlers = {
- *     "storage" = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
- *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
+ *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
+ *     "access"              = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
- *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
+ *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
+ *       "edit"        = "Drupal\apigee_m10n\Entity\Form\SubscriptionEditForm",
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
  *     },
  *   },
@@ -59,8 +60,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "id" = "id",
  *   },
  *   permission_granularity = "entity_type",
- *   admin_permission = "administer subscription",
- *   field_ui_base_route = "apigee_m10n.settings.subscription",
+ *   admin_permission       = "administer subscription",
+ *   field_ui_base_route    = "apigee_m10n.settings.subscription",
  * )
  */
 class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface {
@@ -119,12 +120,12 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    */
   protected static function propertyToBaseFieldTypeMap(): array {
     return [
-      'startDate'            => 'timestamp',
+      'startDate'            => 'apigee_datestamp',
       'endDate'              => 'timestamp',
       'created'              => 'timestamp',
       'quotaTarget'          => 'integer',
       'ratePlan'             => 'entity_reference',
-      'developer'            => 'entity_reference',
+      'developer'            => 'apigee_monetization_developer',
       'updated'              => 'timestamp',
       'renewalDate'          => 'timestamp',
       'nextCycleStartDate'   => 'timestamp',
@@ -150,6 +151,7 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
       'nextCycleStartDate',
       'nextRecurringFeeDate',
       'prevRecurringFeeDate',
+      'developer',
     ];
     // Disable the form display entry for all read only fields.
     foreach ($read_only_fields as $field_name) {
