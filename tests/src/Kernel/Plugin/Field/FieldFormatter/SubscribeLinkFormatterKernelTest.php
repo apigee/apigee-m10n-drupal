@@ -81,13 +81,6 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
-
-  /**
-   * Test viewing a subscribe link formatter.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-   */
   public function testView() {
     $item_list = $this->package_rate_plan->get('subscribeRatePlan');
     static::assertInstanceOf(FieldItemList::class, $item_list);
