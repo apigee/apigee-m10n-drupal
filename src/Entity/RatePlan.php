@@ -236,6 +236,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * Get user from route parameter and fall back to current user if empty.
    *
    * @return \Drupal\Core\Session\AccountProxyInterface
+   *   Returns user entity.
    */
   private function getUser() {
     // The route parameters still need tobe set.
