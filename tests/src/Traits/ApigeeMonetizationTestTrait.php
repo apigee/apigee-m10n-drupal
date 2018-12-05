@@ -327,6 +327,7 @@ trait ApigeeMonetizationTestTrait {
       'organization'          => $org,
       'currency'              => $currency,
       'package'               => $package,
+      'subscribeRatePlan'     => [],
     ]);
 
     $this->stack

@@ -217,10 +217,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     $rel = ($rel === 'revision') ? 'canonical' : $rel;
     // Build the URL.
     $url = parent::toUrl($rel, $options);
-    // The route parameters still need tobe set.
-    $route_user = \Drupal::routeMatch()->getParameter('user');
-    $user = $route_user ?: \Drupal::currentUser();
-    $url->setRouteParameter('user', $user->id());
+    $url->setRouteParameter('user', $this->getUser()->id());
     $url->setRouteParameter('package', $this->getPackage()->id());
 
     return $url;
@@ -230,10 +227,20 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getSubscribeRatePlan():? array {
-    $user = \Drupal::routeMatch()->getParameter('user');
-    return empty($user) ? NULL : [
-      'user'      => $user,
+    return [
+      'user' => $this->getUser(),
     ];
+  }
+
+  /**
+   * Get user from route parameter and fall back to current user if empty.
+   *
+   * @return \Drupal\Core\Session\AccountProxyInterface
+   */
+  private function getUser() {
+    // The route parameters still need tobe set.
+    $route_user = \Drupal::routeMatch()->getParameter('user');
+    return $route_user ?: \Drupal::currentUser();
   }
 
   /**
