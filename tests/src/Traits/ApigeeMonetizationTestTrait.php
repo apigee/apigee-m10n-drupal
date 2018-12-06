@@ -23,13 +23,17 @@ use Apigee\Edge\Api\Monetization\Controller\OrganizationProfileController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
 use Apigee\Edge\Api\Monetization\Entity\ApiProduct as MonetizationApiProduct;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Apigee\Edge\Api\Monetization\Entity\Property\FreemiumPropertiesInterface;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
 use Drupal\user\Entity\User;
@@ -344,6 +348,37 @@ trait ApigeeMonetizationTestTrait {
     ];
 
     return $rate_plan;
+  }
+
+  /**
+   * Creates a subscription.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $user
+   *   The user to subscribe to the rate plan.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
+   *   The rate plan to subscribe to.
+   *
+   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   *   The subscription.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function createSubscription(AccountInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
+    $subscription = Subscription::create([
+      'ratePlan' => $rate_plan,
+      'developer' => new Developer(['email' => $user->getEmail()]),
+      'startDate' => new \DateTimeImmutable(),
+    ]);
+
+    $this->stack->queueMockResponse('post_subscription', ['subscription' => $subscription]);
+    $subscription->save();
+
+    // The subscription controller does not have a delete operation so there is
+    // nothing to add to the cleanup queue.
+    return $subscription;
   }
 
   /**

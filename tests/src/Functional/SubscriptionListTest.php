@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
+use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Url;
 
 /**
@@ -67,7 +68,12 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $this->drupalLogin($this->account);
 
-    $this->stack->queueMockResponse('get_subscriptions');
+    $package = $this->createPackage();
+    $rate_plan = $this->createPackageRatePlan($package);
+    $subscription = $this->createsubscription($this->account, $rate_plan);
+
+    $this->stack
+      ->queueMockResponse(['get_subscriptions' => ['subscriptions' => [$subscription]]]);
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->account->id(),
