@@ -57,8 +57,8 @@ interface MonetizationInterface {
   /**
    * Get's the prepaid balance for a developer.
    *
-   * Takes in a developer UUID or email address, and a date specifying the report month and year,
-   * and returns an array of prepaid balances.
+   * Takes in a developer UUID or email address, and a date specifying the
+   * report month and year, and returns an array of prepaid balances.
    *
    * @param \Drupal\user\UserInterface $developer
    *   The developer user.
@@ -134,5 +134,24 @@ interface MonetizationInterface {
    *   A CSV string of prepaid balances.
    */
   public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
+
+  /**
+   * Get all terms and conditions.
+   *
+   * @return array|null
+   *   Array of all terms and conditions.
+   */
+  public function getAllTermsAndConditions(): ?array;
+
+  /**
+   * Get terms and conditions accepted by developer.
+   *
+   * @param string $developer_id
+   *   Developer email.
+   *
+   * @return array|null
+   *   Array of terms and conditions.
+   */
+  public function getDeveloperAcceptedTermsAndConditions(string $developer_id): ?array;
 
 }

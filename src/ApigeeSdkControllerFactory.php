@@ -36,6 +36,7 @@ use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsController;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
@@ -76,7 +77,7 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * A cache of reusable controllers.
    *
-   * @var \Apigee\Edge\Controller\EntityControllerInterface[]
+   * @var array
    */
   protected $controllers = [];
 
@@ -110,6 +111,17 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       $this->controllers[__FUNCTION__] = new DeveloperController($this->getOrganization(), $this->getClient());
     }
     return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerTermsAndConditionsController(string $developer_id): DeveloperTermsAndConditionsController {
+    return new DeveloperTermsAndConditionsController(
+      $developer_id,
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**

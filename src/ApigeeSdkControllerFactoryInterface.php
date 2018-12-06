@@ -27,6 +27,7 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
@@ -56,6 +57,17 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The developer controller.
    */
   public function developerController(): DeveloperController;
+
+  /**
+   * Creates developer terms and conditions controller.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController
+   *   The developer controller.
+   */
+  public function developerTermsAndConditionsController(string $developer_id): DeveloperTermsAndConditionsController;
 
   /**
    * Creates a developer prepaid balance controller.

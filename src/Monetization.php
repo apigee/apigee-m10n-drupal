@@ -23,6 +23,7 @@ use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\Formatter\CurrencyFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
@@ -194,6 +195,24 @@ class Monetization implements MonetizationInterface {
   public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array {
     $balance_controller = $this->sdk_controller_factory->companyBalanceController($company);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAllTermsAndConditions(): ?array {
+    $tncs = $this->sdk_controller_factory->termsAndConditionsController()
+      ->getPaginatedEntityList();
+    return $tncs;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloperAcceptedTermsAndConditions(string $developer_id): ?array {
+    $tncs = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
+      ->getTermsAndConditionsHistory();
+    return $tncs;
   }
 
   /**
