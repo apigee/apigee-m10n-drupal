@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -260,8 +259,8 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    */
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
-
-    if ($entity->access('unsubscribe') && $entity->hasLinkTemplate('unsubscribe-form')) {
+    // TODO: Is a custom unsubscribe access check is really necessary?
+    if ($entity->access('update') && $entity->hasLinkTemplate('unsubscribe-form')) {
       if ($entity->isSubscriptionActive()) {
         $operations['unsubscribe'] = [
           'title' => $this->t('Cancel Plan'),
