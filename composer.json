@@ -15,5 +15,12 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "extra": {
+        "patches": {
+            "apigee/apigee-client-php": {
+              "Fix developer ID issue when unsubscribing from a rate plan": "https://github.com/apigee/apigee-client-php/files/2627181/unsubscribe-rate-plan-developer-id.patch.txt"
+            }
+        }
+    }
 }
