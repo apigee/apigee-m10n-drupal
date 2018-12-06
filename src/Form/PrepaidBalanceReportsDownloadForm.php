@@ -24,7 +24,6 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,13 +61,10 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    *   The SDK controller factory.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   The Apigee Monetization base service.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current logged in user.
    */
-  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization, AccountInterface $current_user) {
+  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization) {
     $this->monetization = $monetization;
     $this->sdkControllerFactory = $sdk_controller_factory;
-    $this->currentUser = $current_user;
   }
 
   /**
@@ -93,6 +89,8 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
+    $this->currentUser = $user;
+
     $form['heading'] = [
       '#type' => 'html_tag',
       '#tag' => 'h3',
