@@ -28,7 +28,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 
 /**
- * Subscribe Rate Plan entity form.
+ * Subscription entity form.
  */
 class SubscriptionForm extends MonetizationEntityForm {
 
