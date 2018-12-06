@@ -48,11 +48,11 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   protected $sdkControllerFactory;
 
   /**
-   * The current logged in user.
+   * The user from route.
    *
    * @var \Drupal\Core\Session\AccountInterface
    */
-  protected $currentUser;
+  protected $user;
 
   /**
    * PrepaidBalancesDownloadForm constructor.
@@ -73,8 +73,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('apigee_m10n.sdk_controller_factory'),
-      $container->get('apigee_m10n.monetization'),
-      $container->get('current_user')
+      $container->get('apigee_m10n.monetization')
     );
   }
 
@@ -89,7 +88,8 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
-    $this->currentUser = $user;
+    // Set the user.
+    $this->user = $user;
 
     $form['heading'] = [
       '#type' => 'html_tag',
@@ -214,7 +214,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
     if (($year = $form_state->getValue('year')) && ($month = $form_state->getValue('month')) && ($currency = $form_state->getValue('currency'))) {
       $date = new \DateTimeImmutable("$year-$month-1");
 
-      $prepaid_balance_reports_controller = $this->sdkControllerFactory->prepaidBalanceReportsController($this->currentUser->getEmail());
+      $prepaid_balance_reports_controller = $this->sdkControllerFactory->prepaidBalanceReportsController($this->user->getEmail());
       if ($report = $prepaid_balance_reports_controller->getReport($date, $currency)) {
         $filename = "prepaid-balance-report-$year-$month.csv";
         $response = new Response($report);
