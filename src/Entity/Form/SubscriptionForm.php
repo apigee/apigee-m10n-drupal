@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -37,13 +38,23 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   protected $messenger;
 
   /**
+   * The monetization service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
    * Constructs a SubscriptionEditForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The monetization service.
    */
-  public function __construct(MessengerInterface $messenger = NULL) {
+  public function __construct(MessengerInterface $messenger = NULL, MonetizationInterface $monetization = NULL) {
     $this->messenger = $messenger;
+    $this->monetization = $monetization;
   }
 
   /**
@@ -51,7 +62,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('apigee_m10n.monetization')
     );
   }
 
@@ -64,6 +76,36 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // and when rendered as a formatter.
     // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146.
     return parent::getFormId() . '_' . $this->entity->getRatePlan()->id();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+
+    // We won't ask a user to accept terms and conditions again if
+    // it has been already accepted.
+    if (!$this->monetization->isLatestTermsAndConditionAccepted($this->getEntity()->getDeveloper()->getEmail())) {
+      $form['tnc'] = [
+        '#type'  => 'checkbox',
+        '#title' => $this->t('Acceptance text goes here'),
+      ];
+    }
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    // We only apply checking when terms and conditions checkbox is present in
+    // the form.
+    if (!empty($form['tnc']) && empty($form_state->getValue('tnc'))) {
+      $form_state->setErrorByName('tnc', $this->t('Terms and conditions acceptance required.'));
+    }
   }
 
   /**
@@ -83,6 +125,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
+      $this->monetization->acceptLatestTermsAndConditions($this->getEntity()->getDeveloper()->getEmail());
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [

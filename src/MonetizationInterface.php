@@ -21,6 +21,7 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -136,22 +137,24 @@ interface MonetizationInterface {
   public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
 
   /**
-   * Get all terms and conditions.
-   *
-   * @return array|null
-   *   Array of all terms and conditions.
-   */
-  public function getAllTermsAndConditions(): ?array;
-
-  /**
-   * Get terms and conditions accepted by developer.
+   * Check if developer accepted latest terms and conditions.
    *
    * @param string $developer_id
-   *   Developer email.
+   *   Developer ID.
    *
-   * @return array|null
-   *   Array of terms and conditions.
+   * @return bool|null
+   *   User terms and conditions acceptance flag.
    */
-  public function getDeveloperAcceptedTermsAndConditions(string $developer_id): ?array;
+  public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool;
+
+  /**
+   * Accepts a terms and conditions by its id.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem
+   */
+  public function acceptLatestTermsAndConditions(string $developer_id): LegalEntityTermsAndConditionsHistoryItem;
 
 }

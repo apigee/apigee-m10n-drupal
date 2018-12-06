@@ -23,7 +23,7 @@ use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
-use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\Formatter\CurrencyFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
@@ -200,19 +200,27 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAllTermsAndConditions(): ?array {
-    $tncs = $this->sdk_controller_factory->termsAndConditionsController()
-      ->getPaginatedEntityList();
-    return $tncs;
+  public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
+    if ($latest_tnc_id = $this->getLatestTermsAndConditionId()) {
+      $developer_terms = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory();
+      // @TODO: Sort and get the latest terms and condition based on date ?
+      return (!empty($developer_terms[$latest_tnc_id]) && $developer_terms[$latest_tnc_id]->getAction() === 'ACCEPTED');
+    }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDeveloperAcceptedTermsAndConditions(string $developer_id): ?array {
-    $tncs = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
-      ->getTermsAndConditionsHistory();
-    return $tncs;
+  public function acceptLatestTermsAndConditions(string $developer_id): LegalEntityTermsAndConditionsHistoryItem {
+    return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
+      ->acceptTermsAndConditionsById($this->getLatestTermsAndConditionId());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function formatCurrency(string $amount, string $currency_id): string {
+    return $this->currencyFormatter->format($amount, $currency_id);
   }
 
   /**
@@ -244,10 +252,14 @@ class Monetization implements MonetizationInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Get latest terms and conditions ID.
    */
-  public function formatCurrency(string $amount, string $currency_id): string {
-    return $this->currencyFormatter->format($amount, $currency_id);
+  protected function getLatestTermsAndConditionId() {
+    if ($terms = $this->sdk_controller_factory->termsAndConditionsController()->getPaginatedEntityList()) {
+      $all_tnc_ids = array_keys($terms);
+      // @TODO: Sort and get the latest terms and condition based on date ?
+      return $all_tnc_ids[0];
+    }
   }
 
   /**
