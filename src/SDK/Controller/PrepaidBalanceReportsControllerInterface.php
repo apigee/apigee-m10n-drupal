@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace Drupal\apigee_m10n\Controller;
+namespace Drupal\apigee_m10n\SDK\Controller;
 
 /**
  * TODO: Extract this to the apigee-client-php package.

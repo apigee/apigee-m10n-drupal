@@ -26,8 +26,8 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInt
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
-use Drupal\apigee_m10n\Controller\BillingDocumentsControllerInterface;
-use Drupal\apigee_m10n\Controller\PrepaidBalanceReportsControllerInterface;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -94,7 +94,7 @@ interface ApigeeSdkControllerFactoryInterface {
   /**
    * Creates a billing documents controller.
    *
-   * @return \Drupal\apigee_m10n\Controller\BillingDocumentsControllerInterface
+   * @return \Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface
    *   The controller.
    */
   public function billingDocumentsController(): BillingDocumentsControllerInterface;
@@ -105,7 +105,7 @@ interface ApigeeSdkControllerFactoryInterface {
    * @param string $developerId
    *   UUID or email address of a developer.
    *
-   * @return \Drupal\apigee_m10n\Controller\PrepaidBalanceReportsControllerInterface
+   * @return \Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface
    *   The controller.
    */
   public function prepaidBalanceReportsController(string $developerId): PrepaidBalanceReportsControllerInterface;

@@ -33,10 +33,10 @@ use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n\Controller\BillingDocumentsController;
-use Drupal\apigee_m10n\Controller\BillingDocumentsControllerInterface;
-use Drupal\apigee_m10n\Controller\PrepaidBalanceReportsController;
-use Drupal\apigee_m10n\Controller\PrepaidBalanceReportsControllerInterface;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsController;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
