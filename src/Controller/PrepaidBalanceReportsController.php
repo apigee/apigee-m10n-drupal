@@ -26,18 +26,22 @@ use Psr\Http\Message\UriInterface;
 /**
  * TODO: Extract this to the apigee-client-php package.
  *
- * Class PrepaidBalanceReportsController
+ * Class PrepaidBalanceReportsController.
  *
  * @package Drupal\apigee_m10n\Controller
  */
 class PrepaidBalanceReportsController extends AbstractController implements PrepaidBalanceReportsControllerInterface {
 
   /**
+   * The organization id.
+   *
    * @var string
    */
   protected $organization;
 
   /**
+   * The API client.
+   *
    * @var \Apigee\Edge\ClientInterface
    */
   protected $client;
@@ -53,8 +57,11 @@ class PrepaidBalanceReportsController extends AbstractController implements Prep
    * PrepaidBalanceReportsController constructor.
    *
    * @param string $developerId
+   *   The developer uuid or email.
    * @param string $organization
+   *   The organization id.
    * @param \Apigee\Edge\ClientInterface $client
+   *   The API Client.
    */
   public function __construct(string $developerId, string $organization, ClientInterface $client) {
     parent::__construct($client);
@@ -103,9 +110,11 @@ class PrepaidBalanceReportsController extends AbstractController implements Prep
       // TODO: Use ResponseToArrayHelper when we refactor this to apigee-client-php.
       return (string) $response->getBody();
 
-    } catch (ClientErrorException $exception) {
+    }
+    catch (ClientErrorException $exception) {
       // Log something for now.
       \Drupal::logger('apigee_m10n')->error($exception->getMessage());
     }
   }
+
 }

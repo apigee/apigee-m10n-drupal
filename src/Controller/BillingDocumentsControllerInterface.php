@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n\Controller;
 /**
  * TODO: Extract this to the apigee-client-php package.
  *
- * Interface BillingDocumentsControllerInterface
+ * Interface BillingDocumentsControllerInterface.
  *
  * @package Drupal\apigee_m10n\Controller
  */
@@ -30,7 +30,9 @@ interface BillingDocumentsControllerInterface {
   /**
    * Gets all billing documents months.
    *
-   * @return array|null.
+   * @return array|null
+   *   An array of billing documents.
    */
   public function getEntities(): ?array;
+
 }

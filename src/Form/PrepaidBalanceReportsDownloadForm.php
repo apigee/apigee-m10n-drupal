@@ -35,16 +35,22 @@ use Symfony\Component\HttpFoundation\Response;
 class PrepaidBalanceReportsDownloadForm extends FormBase {
 
   /**
+   * The Apigee Monetization base service.
+   *
    * @var \Drupal\apigee_m10n\MonetizationInterface
    */
   protected $monetization;
 
   /**
+   * The Apigee SDK controller factory.
+   *
    * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
    */
   protected $sdkControllerFactory;
 
   /**
+   * The current logged in user.
+   *
    * @var \Drupal\Core\Session\AccountInterface
    */
   protected $currentUser;
@@ -55,7 +61,9 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The Apigee Monetization base service.
    * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current logged in user.
    */
   public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization, AccountInterface $current_user) {
     $this->monetization = $monetization;
@@ -132,8 +140,8 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       '#type' => 'select',
       '#required' => TRUE,
       '#options' => [
-          '' => $this->t('Select an account'),
-        ] + $currency_options,
+        '' => $this->t('Select an account'),
+      ] + $currency_options,
     ];
 
     // Build date options.
@@ -147,8 +155,8 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       '#type' => 'select',
       '#required' => TRUE,
       '#options' => [
-          '' => $this->t('Select a year'),
-        ] + array_combine(array_keys($options), array_keys($options)),
+        '' => $this->t('Select a year'),
+      ] + array_combine(array_keys($options), array_keys($options)),
       '#ajax' => [
         'callback' => '::updateOptions',
         'wrapper' => 'month-container',
@@ -168,8 +176,8 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
         '#type' => 'select',
         '#required' => TRUE,
         '#options' => [
-            '' => $this->t('Select a month'),
-          ] + $options[$year],
+          '' => $this->t('Select a month'),
+        ] + $options[$year],
       ];
     };
 
@@ -190,9 +198,12 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    * Rebuilds the month options.
    *
    * @param array $form
+   *   The form array.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state object.
    *
    * @return mixed
+   *   The month_container form element.
    */
   public static function updateOptions(array $form, FormStateInterface $form_state) {
     return $form['month_container'];

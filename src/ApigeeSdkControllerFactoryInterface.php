@@ -105,8 +105,9 @@ interface ApigeeSdkControllerFactoryInterface {
    * @param string $developerId
    *   UUID or email address of a developer.
    *
-   * @return \Drupal\apigee_m10n\Controller\PrepaidBalanceReportsControllerInterface.
+   * @return \Drupal\apigee_m10n\Controller\PrepaidBalanceReportsControllerInterface
    *   The controller.
    */
   public function prepaidBalanceReportsController(string $developerId): PrepaidBalanceReportsControllerInterface;
+
 }

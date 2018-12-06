@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n\Controller;
 /**
  * TODO: Extract this to the apigee-client-php package.
  *
- * Interface ReportsControllerInterface
+ * Interface ReportsControllerInterface.
  *
  * @package Drupal\apigee_m10n\Controller
  */
@@ -31,9 +31,13 @@ interface PrepaidBalanceReportsControllerInterface {
    * Returns the prepaid balance reports for a given month and currency.
    *
    * @param \DateTimeImmutable $billingMonth
+   *   The billing month.
    * @param string $currencyCode
+   *   The current code. Example: usd or cad.
    *
    * @return null|string
+   *   The report as a CSV string.
    */
   public function getReport(\DateTimeImmutable $billingMonth, string $currencyCode): ?string;
+
 }

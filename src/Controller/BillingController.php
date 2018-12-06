@@ -70,6 +70,8 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   The `apigee_edge.sdk_connector` service.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   The `apigee_m10n.monetization` service.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The Drupal form builder.
    */
   public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder) {
     $this->sdk_connector = $sdk_connector;

@@ -26,18 +26,22 @@ use Psr\Http\Message\UriInterface;
 /**
  * TODO: Extract this to the apigee-client-php package.
  *
- * Class BillingDocumentsController
+ * Class BillingDocumentsController.
  *
  * @package Drupal\apigee_m10n\Controller
  */
 class BillingDocumentsController extends AbstractController implements BillingDocumentsControllerInterface {
 
   /**
+   * The organization id.
+   *
    * @var string
    */
   protected $organization;
 
   /**
+   * The API Client.
+   *
    * @var \Apigee\Edge\ClientInterface
    */
   protected $client;
@@ -46,7 +50,9 @@ class BillingDocumentsController extends AbstractController implements BillingDo
    * BillingDocumentsController constructor.
    *
    * @param string $organization
+   *   The organization id.
    * @param \Apigee\Edge\ClientInterface $client
+   *   The API Client.
    */
   public function __construct(string $organization, ClientInterface $client) {
     parent::__construct($client);
@@ -72,9 +78,11 @@ class BillingDocumentsController extends AbstractController implements BillingDo
       // TODO: Use ResponseToArrayHelper when we refactor this to apigee-client-php.
       return json_decode((string) $response->getBody());
 
-    } catch (ClientErrorException $exception) {
+    }
+    catch (ClientErrorException $exception) {
       // Log something for now.
       \Drupal::logger('apigee_m10n')->error($exception->getMessage());
     }
   }
+
 }
