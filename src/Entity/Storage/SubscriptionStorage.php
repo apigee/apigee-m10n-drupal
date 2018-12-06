@@ -106,8 +106,15 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function loadById(string $developer_id, string $id): SubscriptionInterface {
-    $entity = NULL;
+    // Load from cache.
+    $ids = [$id];
+    $subscriptions = $this->getFromPersistentCache($ids);
+    // Return the cached entity.
+    if (isset($subscriptions[$id])) {
+      return $subscriptions[$id];
+    }
 
+    $entity = NULL;
     $this->withController(function (DeveloperAcceptedRatePlanSdkControllerProxyInterface $controller) use ($developer_id, $id, &$entity) {
       $drupal_entity = ($sdk_entity = $controller->loadById($developer_id, $id))
         ? $this->createNewInstance($sdk_entity)
