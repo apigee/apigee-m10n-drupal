@@ -28,7 +28,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 
 /**
- * Unsubscribe entity form for subscriptions.
+ * Subscribe Rate Plan entity form.
  */
 class SubscriptionForm extends MonetizationEntityForm {
 
@@ -73,7 +73,7 @@ class SubscriptionForm extends MonetizationEntityForm {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    // Set the save lable if one has been passed into storage.
+    // Set the save label if one has been passed into storage.
     if (!empty($actions['submit']) && ($save_label = $form_state->get('save_label'))) {
       $actions['submit']['#value'] = $save_label;
     }
