@@ -106,6 +106,13 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    */
   public function loadById(string $package_id, string $id): RatePlanInterface {
     $entity = NULL;
+    // Load from cache.
+    $ids = [$id];
+    $rate_plans = $this->getFromPersistentCache($ids);
+    // Return the cached entity.
+    if (isset($rate_plans[$id])) {
+      return $rate_plans[$id];
+    }
 
     $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $id, &$entity) {
       $drupal_entity = ($sdk_entity = $controller->loadById($package_id, $id))
