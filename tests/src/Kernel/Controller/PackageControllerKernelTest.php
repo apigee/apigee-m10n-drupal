@@ -57,7 +57,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
 
     $this->account = $this->createAccount([
       'access monetization packages',
-      'access subscriptions',
+      'view subscription',
     ]);
     $this->setCurrentUser($this->account);
   }

@@ -60,7 +60,7 @@ apigee_monetization.my_subscriptions:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:
-    _permission: 'access subscriptions'
+    _permission: 'view subscription'
 
 entity.subscription.collection_by_developer:
   path: '/user/{user}/monetization/subscriptions'
@@ -69,7 +69,7 @@ entity.subscription.collection_by_developer:
     _title_callback: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle'
   requirements:
     user: '\d+'
-    _permission: 'access subscriptions'
+    _permission: 'view subscription'
 
 entity.rate_plan.canonical:
   path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}'

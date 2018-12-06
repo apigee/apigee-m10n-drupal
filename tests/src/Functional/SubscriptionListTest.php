@@ -41,7 +41,8 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    */
   public function testSubscriptionListAccessDenied() {
 
-    // If the user doesn't have the "access subscriptions" permission, they should get access denied.
+    // If the user doesn't have the "view subscription" permission, they should
+    // get access denied.
     $this->account = $this->createAccount([]);
 
     $this->queueOrg();
@@ -58,10 +59,9 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    * Tests for `My Plans/Subscriptions` page.
    */
   public function testSubscriptionListView() {
-    // If the user has "access subscriptions" permission, they should be able to see some prepaid balances.
-    $this->account = $this->createAccount([
-      'access subscriptions'
-    ]);
+    // If the user has "view subscription" permission, they should be able to
+    // see some prepaid balances.
+    $this->account = $this->createAccount(['view subscription']);
 
     $this->queueOrg();
 

@@ -51,7 +51,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
 
     $this->account = $this->createAccount([
       'access monetization packages',
-      'access subscriptions',
+      'view subscription',
     ]);
     $this->queueOrg();
     $this->drupalLogin($this->account);
