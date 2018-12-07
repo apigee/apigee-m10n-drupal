@@ -64,7 +64,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   protected $logger;
 
   /**
-   * Messanger service.
+   * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -89,7 +89,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
    */
   public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger, MessengerInterface $messenger) {
     parent::__construct($entity_type, $storage);
