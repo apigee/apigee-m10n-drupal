@@ -2,15 +2,17 @@ system.admin_apigee_m10n:
   title: 'Monetization'
   parent: system.admin_config_edge
   route_name: apigee_m10n.settings
-apigee_m10n.billing:
-  title: 'Billing'
-  description: 'Billing for my account.'
+
+apigee_m10n.packages:
+  title: 'Pricing & Plans'
+  description: 'Pricing & Plans.'
+  route_name: apigee_monetization.my_packages
+  menu_name: main
+  weight: 10
+
+apigee_m10n.manage_profile:
+  title: 'Manage profile'
+  description: 'Manage Apigee Monetization profile.'
   route_name: apigee_monetization.my_billing
   menu_name: account
   weight: -25
-apigee_m10n.packages:
-  title: 'Packages'
-  description: 'Packages for my account.'
-  route_name: apigee_monetization.my_packages
-  menu_name: account
-  weight: -20
