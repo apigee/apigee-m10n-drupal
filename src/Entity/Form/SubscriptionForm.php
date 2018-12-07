@@ -24,7 +24,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
-use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Subscription entity form.
@@ -88,9 +89,13 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // We won't ask a user to accept terms and conditions again if
     // it has been already accepted.
     if (!$this->monetization->isLatestTermsAndConditionAccepted($this->getEntity()->getDeveloper()->getEmail())) {
+      $tnc = $this->monetization->getLatestTermsAndConditions();
       $form['tnc'] = [
         '#type'  => 'checkbox',
-        '#title' => $this->t('Acceptance text goes here'),
+        '#title' => $this->t('%description @link', [
+          '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->t('Accept terms and conditions'),
+          '@link'        => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
+        ]),
       ];
     }
 
@@ -129,7 +134,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       // Accept terms and conditions.
       if (!empty($form_state->getValue('tnc'))) {
         // @TODO: maybe we need to handle this a little bit differntly
-        // first make sure developer accepted T&C and then save Subscription entity?
+        // first make sure developer accepted T&C and then save Subscription
+        // entity?
         $this->monetization->acceptLatestTermsAndConditions($this->getEntity()->getDeveloper()->getEmail());
       }
       $display_name = $this->entity->getRatePlan()->getDisplayName();

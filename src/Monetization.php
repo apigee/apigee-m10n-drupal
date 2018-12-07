@@ -23,6 +23,7 @@ use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditions;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\Formatter\CurrencyFormatter;
@@ -202,7 +203,7 @@ class Monetization implements MonetizationInterface {
    */
   public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
     try {
-      $latest_tnc_id = $this->getLatestTermsAndCondition()->id();
+      $latest_tnc_id = $this->getLatestTermsAndConditions()->id();
       $history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory();
       foreach ($history as $item) {
         $tnc = $item->getTnc();
@@ -219,10 +220,33 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLatestTermsAndConditions(): ?TermsAndConditions {
+    if ($terms = $this->sdk_controller_factory->termsAndConditionsController()->getPaginatedEntityList()) {
+      $inEffectTerms = [];
+      // Loop through array of terms to pull only terms that are in effect.
+      foreach ($terms as $tnc) {
+        $effectiveDate = $tnc->getStartDate();
+        if ($effectiveDate < new \DateTimeImmutable('now', $effectiveDate->getTimezone())) {
+          array_push($inEffectTerms, $tnc);
+        }
+      }
+      // Make sure to sort terms and conditions by date.
+      usort($inEffectTerms, function ($a, $b) {
+        // It is easier to compare unix timestamps.
+        return $a->getStartDate()->format('U') - $b->getStartDate()->format('U');
+      });
+      $ids = array_keys($inEffectTerms);
+      return $inEffectTerms[end($ids)] ?? NULL;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function acceptLatestTermsAndConditions(string $developer_id): LegalEntityTermsAndConditionsHistoryItem {
     try {
       return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
-        ->acceptTermsAndConditionsById($this->getLatestTermsAndCondition()->id());
+        ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
     catch (\Throwable $t) {
       return NULL;
