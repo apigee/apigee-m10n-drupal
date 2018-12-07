@@ -201,7 +201,8 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
-    if ($latest_tnc_id = $this->getLatestTermsAndConditionId()) {
+    try {
+      $latest_tnc_id = $this->getLatestTermsAndCondition()->id();
       $history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory();
       foreach ($history as $item) {
         $tnc = $item->getTnc();
@@ -210,14 +211,22 @@ class Monetization implements MonetizationInterface {
         }
       }
     }
+    catch (\Exception $e) {
+      return NULL;
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function acceptLatestTermsAndConditions(string $developer_id): LegalEntityTermsAndConditionsHistoryItem {
-    return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
-      ->acceptTermsAndConditionsById($this->getLatestTermsAndConditionId());
+    try {
+      return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
+        ->acceptTermsAndConditionsById($this->getLatestTermsAndCondition()->id());
+    }
+    catch (\Exception $e) {
+      return NULL;
+    }
   }
 
   /**
@@ -258,26 +267,28 @@ class Monetization implements MonetizationInterface {
   /**
    * Get latest terms and conditions ID.
    *
-   * @return mixed
-   *  Terms and conditions ID.
+   * @return mixed|null
+   *   Terms and conditions ID.
+   *
+   * @throws \Exception
    */
-  protected function getLatestTermsAndConditionId() {
+  protected function getLatestTermsAndCondition() {
     if ($terms = $this->sdk_controller_factory->termsAndConditionsController()->getPaginatedEntityList()) {
       $inEffectTerms = [];
       // Loop through array of terms to pull only terms that are in effect.
-      foreach ($terms as $tnc_id => $tnc) {
+      foreach ($terms as $tnc) {
         $effectiveDate = $tnc->getStartDate();
         if ($effectiveDate < new \DateTimeImmutable('now', $effectiveDate->getTimezone())) {
           $inEffectTerms[] = $tnc;
         }
       }
       // Make sure to sort terms and conditions by date.
-      usort($inEffectTerms, function($a, $b) {
+      usort($inEffectTerms, function ($a, $b) {
         // It is easier to compare unix timestamps.
         return $a->getStartDate()->format('U') - $b->getStartDate()->format('U');
       });
       $ids = array_keys($inEffectTerms);
-      return $inEffectTerms[end($ids)]->id();
+      return $inEffectTerms[end($ids)];
     }
   }
 

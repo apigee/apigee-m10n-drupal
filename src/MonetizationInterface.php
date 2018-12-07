@@ -154,6 +154,7 @@ interface MonetizationInterface {
    *   Developer ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem
+   *   Terms and conditions history item.
    */
   public function acceptLatestTermsAndConditions(string $developer_id): LegalEntityTermsAndConditionsHistoryItem;
 

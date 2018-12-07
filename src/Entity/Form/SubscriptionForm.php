@@ -24,6 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\apigee_m10n\MonetizationInterface;
 
 /**
  * Subscription entity form.
@@ -125,7 +126,12 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      $this->monetization->acceptLatestTermsAndConditions($this->getEntity()->getDeveloper()->getEmail());
+      // Accept terms and conditions.
+      if (!empty($form_state->getValue('tnc'))) {
+        // @TODO: maybe we need to handle this a little bit differntly
+        // first make sure developer accepted T&C and then save Subscription entity?
+        $this->monetization->acceptLatestTermsAndConditions($this->getEntity()->getDeveloper()->getEmail());
+      }
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
