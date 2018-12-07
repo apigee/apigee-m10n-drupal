@@ -202,9 +202,13 @@ class Monetization implements MonetizationInterface {
    */
   public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
     if ($latest_tnc_id = $this->getLatestTermsAndConditionId()) {
-      $developer_terms = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory();
-      // @TODO: Sort and get the latest terms and condition based on date ?
-      return (!empty($developer_terms[$latest_tnc_id]) && $developer_terms[$latest_tnc_id]->getAction() === 'ACCEPTED');
+      $history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory();
+      foreach ($history as $item) {
+        $tnc = $item->getTnc();
+        if ($tnc->id() === $latest_tnc_id) {
+          return ($item->getAction() === 'ACCEPTED');
+        }
+      }
     }
   }
 
@@ -253,12 +257,27 @@ class Monetization implements MonetizationInterface {
 
   /**
    * Get latest terms and conditions ID.
+   *
+   * @return mixed
+   *  Terms and conditions ID.
    */
   protected function getLatestTermsAndConditionId() {
     if ($terms = $this->sdk_controller_factory->termsAndConditionsController()->getPaginatedEntityList()) {
-      $all_tnc_ids = array_keys($terms);
-      // @TODO: Sort and get the latest terms and condition based on date ?
-      return $all_tnc_ids[0];
+      $inEffectTerms = [];
+      // Loop through array of terms to pull only terms that are in effect.
+      foreach ($terms as $tnc_id => $tnc) {
+        $effectiveDate = $tnc->getStartDate();
+        if ($effectiveDate < new \DateTimeImmutable('now', $effectiveDate->getTimezone())) {
+          $inEffectTerms[] = $tnc;
+        }
+      }
+      // Make sure to sort terms and conditions by date.
+      usort($inEffectTerms, function($a, $b) {
+        // It is easier to compare unix timestamps.
+        return $a->getStartDate()->format('U') - $b->getStartDate()->format('U');
+      });
+      $ids = array_keys($inEffectTerms);
+      return $inEffectTerms[end($ids)]->id();
     }
   }
 
