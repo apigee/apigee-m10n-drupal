@@ -49,7 +49,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   protected $subscription;
 
   /**
-   * Messanger service.
+   * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
