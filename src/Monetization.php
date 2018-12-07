@@ -211,7 +211,7 @@ class Monetization implements MonetizationInterface {
         }
       }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $t) {
       return NULL;
     }
   }
@@ -224,7 +224,7 @@ class Monetization implements MonetizationInterface {
       return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndCondition()->id());
     }
-    catch (\Exception $e) {
+    catch (\Throwable $t) {
       return NULL;
     }
   }
@@ -279,7 +279,7 @@ class Monetization implements MonetizationInterface {
       foreach ($terms as $tnc) {
         $effectiveDate = $tnc->getStartDate();
         if ($effectiveDate < new \DateTimeImmutable('now', $effectiveDate->getTimezone())) {
-          $inEffectTerms[] = $tnc;
+          array_push($inEffectTerms, $tnc);
         }
       }
       // Make sure to sort terms and conditions by date.
@@ -288,7 +288,7 @@ class Monetization implements MonetizationInterface {
         return $a->getStartDate()->format('U') - $b->getStartDate()->format('U');
       });
       $ids = array_keys($inEffectTerms);
-      return $inEffectTerms[end($ids)];
+      return $inEffectTerms[end($ids)] ?? NULL;
     }
   }
 
