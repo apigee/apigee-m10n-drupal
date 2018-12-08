@@ -78,13 +78,6 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   protected $user;
 
   /**
-   * Current user for the listing page.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  protected $current_user;
-
-  /**
    * SubscriptionListBuilderForDeveloper constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -105,7 +98,6 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger;
     $this->messenger = $messenger;
-    $this->current_user = \Drupal::currentUser();
   }
 
   /**
@@ -141,7 +133,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    */
   public function getTitle() {
     return $this->t('@subscriptions', [
-      '@subscriptions' => (string) $this->entityTypeManager->getDefinition('subscription')->getPluralLabel()
+      '@subscriptions' => (string) $this->entityTypeManager->getDefinition('subscription')->getPluralLabel(),
     ]);
   }
 
@@ -150,19 +142,50 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    */
   public function buildHeader() {
     return [
-      'status'        => ['data' => $this->t('Status'), 'field' => 'status'],
-      'package'       => [
+      'status' => [
+        'data' => $this->t('Status'),
+        'field' => 'status',
+        'class' => ['field-status'],
+      ],
+      'package' => [
         'data'  => $this->t('Package'),
         'field' => 'package',
-        'sort'  => 'desc'
+        'class' => ['package-name'],
+        'sort'  => 'desc',
       ],
-      'products'      => ['data' => $this->t('Products'), 'field' => 'products'],
-      'plan'          => ['data' => $this->t('Plan Name'), 'field' => 'plan'],
-      'start_date'    => ['data' => $this->t('Start Date'), 'field' => 'start_date'],
-      'end_date'      => ['data' => $this->t('End Date'), 'field' => 'end_date'],
-      'plan_end_date' => ['data' => $this->t('Plan End Date'), 'field' => 'plan_end_date'],
-      'renewal_date'  => ['data' => $this->t('Renewal Date'), 'field' => 'renewal_date'],
-      'operations'    => $this->t('Actions')
+      'products' => [
+        'data' => $this->t('Products'),
+        'class' => ['products'],
+        'field' => 'products',
+      ],
+      'plan' => [
+        'data' => $this->t('Plan Name'),
+        'class' => ['rate-plan-name'],
+        'field' => 'plan',
+      ],
+      'start_date' => [
+        'data' => $this->t('Start Date'),
+        'class' => ['subscription-start-date'],
+        'field' => 'start_date',
+      ],
+      'end_date' => [
+        'data' => $this->t('End Date'),
+        'class' => ['subscription-end-date'],
+        'field' => 'end_date',
+      ],
+      'plan_end_date' => [
+        'data' => $this->t('Plan End Date'),
+        'class' => ['rate-plan-end-date'],
+        'field' => 'plan_end_date',
+      ],
+      'renewal_date' => [
+        'data' => $this->t('Renewal Date'),
+        'class' => ['subscription-renewal-date'],
+        'field' => 'renewal_date',
+      ],
+      'operations' => [
+        'data' => $this->t('Actions'),
+      ],
     ];
   }
 
@@ -176,27 +199,49 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
       return $result ? "{$result}, {$product->getDisplayName()}" : $product->getDisplayName();
     }, "");
 
-    $url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
-      'user' => $this->current_user->id(),
+    $rate_plan_url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $this->user->id(),
       'package' => $rate_plan->getPackage()->id(),
-      'rate_plan' => $rate_plan->id()
+      'rate_plan' => $rate_plan->id(),
     ]));
 
     return [
       'data' => [
-        'status'        => $entity->getSubscriptionStatus(),
-        'package'       => $rate_plan->getPackage()->getDisplayName(),
-        'products'      => $products,
-        'plan'          => Link::fromTextAndUrl($rate_plan->getDisplayName(), $url),
-        'start_date'    => $entity->getStartDate()->format('m/d/Y'),
-        'end_date'      => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : NULL,
-        'plan_end_date' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : NULL,
-        'renewal_date'  => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : NULL,
-        'operations'    => [
-          'data' => $this->buildOperations($entity)
-        ]
+        'status' => [
+          'data' => $entity->getSubscriptionStatus(),
+          'class' => ['field-status'],
+        ],
+        'package' => [
+          'data' => $rate_plan->getPackage()->getDisplayName(),
+          'class' => ['package-name'],
+        ],
+        'products' => [
+          'data' => $products,
+          'class' => ['products'],
+        ],
+        'plan' => [
+          'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $rate_plan_url),
+          'class' => ['rate-plan-name'],
+        ],
+        'start_date' => [
+          'data' => $entity->getStartDate()->format('m/d/Y'),
+          'class' => ['subscription-start-date'],
+        ],
+        'end_date' => [
+          'data' => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : NULL,
+          'class' => ['subscription-end-date'],
+        ],
+        'plan_end_date' => [
+          'data' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : NULL,
+          'class' => ['rate-plan-end-date'],
+        ],
+        'renewal_date' => [
+          'data' => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : NULL,
+          'class' => ['subscription-renewal-date'],
+        ],
+        'operations'    => ['data' => $this->buildOperations($entity)],
       ],
-      'class' => [Html::cleanCssIdentifier(strtolower($rate_plan->getDisplayName()))],
+      'class' => ['subscription-row', Html::cleanCssIdentifier(strtolower($rate_plan->getDisplayName()))],
     ];
   }
 
@@ -226,6 +271,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         'contexts' => $this->entityType->getListCacheContexts() + ['url.query_args'],
         'tags'     => $this->entityType->getListCacheTags() + ['apigee_my_subscriptions'],
       ],
+      '#attributes' => ['class' => ['developer-subscription-list']],
     ];
 
     if (!$developer_id) {
