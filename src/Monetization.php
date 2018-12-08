@@ -213,7 +213,9 @@ class Monetization implements MonetizationInterface {
         }
       }
     }
-    catch (\Throwable $t) {}
+    catch (\Throwable $t) {
+      // @TODO: Log errors ?
+    }
 
     return NULL;
   }
@@ -249,7 +251,9 @@ class Monetization implements MonetizationInterface {
       return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
-    catch (\Throwable $t) {}
+    catch (\Throwable $t) {
+      // @TODO: Log errors ?
+    }
     return NULL;
   }
 

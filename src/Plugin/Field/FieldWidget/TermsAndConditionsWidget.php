@@ -46,7 +46,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   /**
    * Developer email.
    *
-   * @var string;
+   * @var string
    */
   protected $developer_id;
 
@@ -61,17 +61,13 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    * SubscribeLinkFormatter constructor.
    *
    * @param string $plugin_id
-   *   The plugin_id for the formatter.
+   *   The plugin_id for the widget.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
-   *   The definition of the field to which the formatter is associated.
+   *   The definition of the field to which the widget is associated.
    * @param array $settings
-   *   The formatter settings.
-   * @param string $label
-   *   The formatter label display setting.
-   * @param string $view_mode
-   *   The view mode.
+   *   The widget settings.
    * @param array $third_party_settings
    *   Any third party settings.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
@@ -101,7 +97,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    */
   public static function defaultSettings() {
     return [
-       'default_description' => 'Accept Terms and Conditions',
+      'default_description' => 'Accept Terms and Conditions',
     ] + parent::defaultSettings();
   }
 
