@@ -140,13 +140,6 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   /**
    * {@inheritdoc}
    */
-  public function errorElement(array $element, ConstraintViolationInterface $violation, array $form, FormStateInterface $form_state) {
-    return $element['value'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function validate($element, FormStateInterface $form_state) {
     $value = $element['#value'];
     // We only apply checking when terms and conditions checkbox is present in the form.
