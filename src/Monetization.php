@@ -204,17 +204,18 @@ class Monetization implements MonetizationInterface {
   public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
     try {
       $latest_tnc_id = $this->getLatestTermsAndConditions()->id();
-      $history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory();
-      foreach ($history as $item) {
-        $tnc = $item->getTnc();
-        if ($tnc->id() === $latest_tnc_id) {
-          return ($item->getAction() === 'ACCEPTED');
+      if ($history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory()) {
+        foreach ($history as $item) {
+          $tnc = $item->getTnc();
+          if ($tnc->id() === $latest_tnc_id) {
+            return ($item->getAction() === 'ACCEPTED');
+          }
         }
       }
     }
-    catch (\Throwable $t) {
-      return NULL;
-    }
+    catch (\Throwable $t) {}
+
+    return NULL;
   }
 
   /**
@@ -243,14 +244,13 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function acceptLatestTermsAndConditions(string $developer_id): LegalEntityTermsAndConditionsHistoryItem {
+  public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem {
     try {
       return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
-    catch (\Throwable $t) {
-      return NULL;
-    }
+    catch (\Throwable $t) {}
+    return NULL;
   }
 
   /**
