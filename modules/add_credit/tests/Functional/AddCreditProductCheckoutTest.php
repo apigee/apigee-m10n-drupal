@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\commerce_payment\Entity\PaymentGateway;
 use Drupal\commerce_price\Price;
@@ -234,7 +235,10 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '12.00',
-        'developer' => $this->developer,
+        'developer' => new Developer([
+          'email' => $this->developer->getEmail(),
+          'uuid' => \Drupal::service('uuid')->generate(),
+        ]),
       ],
     ]);
     $new_balance = $this->balance_controller->getByCurrency('USD');

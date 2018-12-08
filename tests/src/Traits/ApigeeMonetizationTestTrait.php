@@ -373,7 +373,7 @@ trait ApigeeMonetizationTestTrait {
       'startDate' => new \DateTimeImmutable(),
     ]);
 
-    $this->stack->queueMockResponse('post_subscription', ['subscription' => $subscription]);
+    $this->stack->queueMockResponse('subscription', ['subscription' => $subscription]);
     $subscription->save();
 
     // The subscription controller does not have a delete operation so there is

@@ -8,6 +8,17 @@
  *
  * Variables:
  * - developer: The user account for the developer.
+ *   - address:       Developer address.
+ *   - approxTaxRate: Approximate tax rate for the developer.
+ *   - billingType:   Developer payment model used for billing. Valid values include: <ul><li>PREPAID: The developer pays in advance for the use of an API product. Funds are deducted from the developer's balance when the API product is used. The developer must maintain a prepaid balance sufficient to purchase the API product.</li><li>POSTPAID: The developer is billed monthly (through an invoice) for the use of API products. The developer pays for the use of API products based on the payment terms set by the plan(s) included on the invoice.</li><li>BOTH: In this case, the billing type defaults to PREPAID.</li></ul>
+ *   - broker:        Flag that specifies whether the revenue is based on net.
+ *   - email:         Email ID for the developer or company.
+ *   - id:            Developer or company ID.
+ *   - isCompany:     Flag that specifies whether this is a company.
+ *   - name:          Name of the developer or company.
+ *   - organization:  Flag that specifies whether the revenue is based on net.
+ *   - status:        Status indicator for the API product. Valid values include: CREATED, ACTIVE, INACTIVE. This value is maintained but not currently used by the API product.
+ *   - type:          Developer type (TRUSTED or UNTRUSTED).
  */
 #}
 {
@@ -15,10 +26,10 @@
     "billingType" : "PREPAID",
     "broker" : false,
     "customAttributes" : [ ],
-    "email" : "{{ developer.mail.value }}",
-    "id" : "{{ developer.uuid.value }}",
+    "email" : "{{ developer.email }}",
+    "id" : "{{ developer.uuid }}",
     "isCompany" : false,
-    "name" : "Clark Adams",
+    "name" : "{{ developer.name|default('Clark Adams') }}",
     "organization" : {% include 'org.json.twig' %},
     "status" : "ACTIVE",
     "type" : "UNTRUSTED"

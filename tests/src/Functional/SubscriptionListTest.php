@@ -21,6 +21,7 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Url;
+use Drupal\user\Entity\Role;
 
 /**
  * Class SubscriptionListTest.
@@ -38,9 +39,15 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   protected $account;
 
   /**
-   * Tests permissions for `My Plans/Subscriptions` page.
+   * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
-  public function testSubscriptionListAccessDenied() {
+  public function setUp() {
+    parent::setUp();
 
     // If the user doesn't have the "view subscription" permission, they should
     // get access denied.
@@ -49,6 +56,12 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     $this->queueOrg();
 
     $this->drupalLogin($this->account);
+  }
+
+  /**
+   * Tests permissions for `My Plans/Subscriptions` page.
+   */
+  public function testSubscriptionListAccessDenied() {
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->account->id(),
     ]));
@@ -58,22 +71,21 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
   /**
    * Tests for `My Plans/Subscriptions` page.
+   *
+   * @throws \Exception
    */
   public function testSubscriptionListView() {
-    // If the user has "view subscription" permission, they should be able to
-    // see some prepaid balances.
-    $this->account = $this->createAccount(['view subscription']);
-
-    $this->queueOrg();
-
-    $this->drupalLogin($this->account);
+    // Add the view subscription permission to the current user.
+    $user_roles = $this->account->getRoles();
+    $this->grantPermissions(Role::load(reset($user_roles)), ['view subscription']);
 
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
     $subscription = $this->createsubscription($this->account, $rate_plan);
 
     $this->stack
-      ->queueMockResponse(['get_subscriptions' => ['subscriptions' => [$subscription]]]);
+      ->queueMockResponse(['get_developer_subscriptions' => ['subscriptions' => [$subscription]]])
+      ->queueMockResponse(['get_package_rate_plan' => ['plan' => $rate_plan]]);
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->account->id(),
@@ -84,12 +96,12 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Connection error');
 
     // Checking my subscriptions table columns.
-    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(1)', 'Future');
-    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(2)', 'The Foo');
-    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(3)', '');
-    $this->assertSession()->elementContains('css', 'tr.foo-displayname > td:nth-child(4)', '<a href="/user/' . $this->account->id() . '/monetization/packages/');
-    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(5)', '12/04/2018');
-    $this->assertSession()->elementTextContains('css', 'tr.foo-displayname > td:nth-child(5)', '12/04/2018');
+    $this->assertCssElementContains('.subscription-row:nth-child(1) td.field-status', 'Future');
+    $this->assertCssElementContains('.subscription-row:nth-child(1) td.package-name', $rate_plan->getPackage()->getDisplayName());
+    $this->assertCssElementContains('.subscription-row:nth-child(1) td.products', $rate_plan->getPackage()->getApiProducts()[0]->getDisplayName());
+    $this->assertCssElementContains('.subscription-row:nth-child(1) td.rate-plan-name', $rate_plan->getDisplayName());
+    $this->assertCssElementContains('.subscription-row:nth-child(1) td.subscription-start-date', $subscription->getStartDate()->format('m/d/Y'));
+    static::assertSame($this->cssSelect('.subscription-row:nth-child(1) td.subscription-end-date')[0]->getText(), '');
 
   }
 

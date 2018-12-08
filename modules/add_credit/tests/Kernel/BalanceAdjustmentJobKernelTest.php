@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
@@ -153,7 +154,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '19.99',
-        'developer' => $this->developer,
+        'developer' => new Developer([
+          'email' => $this->developer->getEmail(),
+          'uuid' => \Drupal::service('uuid')->generate(),
+        ]),
       ],
     ]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
@@ -217,7 +221,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '39.98',
-        'developer' => $this->developer,
+        'developer' => new Developer([
+          'email' => $this->developer->getEmail(),
+          'uuid' => \Drupal::service('uuid')->generate(),
+        ]),
       ],
     ]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
