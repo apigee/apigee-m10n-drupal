@@ -62,4 +62,7 @@ field.formatter.settings.apigee_datestamp:
 field.formatter.settings.apigee_tnc_default:
   type: mapping
   label: 'Terms and Conditions'
-  mapping: {}
+  mapping:
+    default_description:
+      type: string
+      label: 'Terms and Conditions'

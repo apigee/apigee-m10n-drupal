@@ -18,8 +18,7 @@ content:
     type: apigee_tnc_widget
     weight: 1
     region: content
-    settings:
-      default_description: 'Accept Terms and Conditions'
+    settings: {  }
     third_party_settings: {  }
 hidden:
   endDate: true
