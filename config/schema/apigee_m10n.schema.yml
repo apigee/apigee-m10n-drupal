@@ -58,3 +58,8 @@ field.formatter.settings.apigee_datestamp:
     timezone:
       type: string
       label: 'Timezone'
+
+field.formatter.settings.apigee_tnc_default:
+  type: mapping
+  label: 'Terms and Conditions'
+  mapping: {}

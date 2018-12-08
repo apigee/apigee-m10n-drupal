@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
 
 /**
  * Defines the interface for subscription entity objects.
@@ -68,5 +69,13 @@ interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
    *   Subscription status as a string.
    */
   public function getSubscriptionStatus(): string;
+
+  /**
+   * Get's data for the `apigee_tnc` field formatter.
+   *
+   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
+   *   The rate plan.
+   */
+  public function getTermsAndConditions(): RatePlanInterface;
 
 }
