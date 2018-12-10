@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -34,9 +34,9 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
   /**
    * Drupal user.
    *
-   * @var \Drupal\Core\Session\AccountInterface
+   * @var \Drupal\user\UserInterface
    */
-  protected $account;
+  protected $developer;
 
   /**
    * Test access.
@@ -49,13 +49,13 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalancesAccessDenied() {
 
     // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
-    $this->account = $this->createAccount([]);
+    $this->developer = $this->createAccount([]);
 
     $this->queueOrg();
 
-    $this->drupalLogin($this->account);
+    $this->drupalLogin($this->developer);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->account->id(),
+      'user' => $this->developer->id(),
     ]));
 
     $this->assertSession()->responseContains('Access denied');
@@ -73,11 +73,11 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalancesView() {
     // If the user has "view mint prepaid reports" permission, they should be
     // able to see some prepaid balances.
-    $this->account = $this->createAccount(['view mint prepaid reports']);
+    $this->developer = $this->createAccount(['view mint prepaid reports']);
 
     $this->queueOrg();
 
-    $this->drupalLogin($this->account);
+    $this->drupalLogin($this->developer);
 
     $this->stack->queueMockResponse([
       'get-prepaid-balances' => [
@@ -94,7 +94,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->account->id(),
+      'user' => $this->developer->id(),
     ]));
 
     $this->assertSession()->responseNotContains('Access denied');
