@@ -216,7 +216,7 @@ class Monetization implements MonetizationInterface {
       $result = $balance_controller->getPrepaidBalance($billingDate);
     }
     catch (\Exception $e) {
-      $this->messenger->addWarning('Unable to retrieve prepaid balances.');
+      $this->messenger->addWarning($e->getMessage());
       $this->logger->warning('Unable to retrieve prepaid balances: ' . $e->getMessage());
       return NULL;
     }
@@ -229,6 +229,28 @@ class Monetization implements MonetizationInterface {
    */
   public function formatCurrency(string $amount, string $currency_id): string {
     return $this->currencyFormatter->format($amount, $currency_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSupportedCurrencies(string $organization_id): ?array {
+    return $this->sdk_controller_factory->supportedCurrencyController($organization_id)->getEntities();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBillingDocumentsMonths(string $organization_id): ?array {
+    return $this->sdk_controller_factory->billingDocumentsController($organization_id)->getEntities();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string {
+    return $this->sdk_controller_factory->prepaidBalanceReportsController($developer_id)
+      ->getReport($month, $currency);
   }
 
 }

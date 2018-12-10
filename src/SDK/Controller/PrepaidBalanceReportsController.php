@@ -114,6 +114,8 @@ class PrepaidBalanceReportsController extends AbstractController implements Prep
     catch (ClientErrorException $exception) {
       // Log something for now.
       \Drupal::logger('apigee_m10n')->error($exception->getMessage());
+
+      throw $exception;
     }
   }
 

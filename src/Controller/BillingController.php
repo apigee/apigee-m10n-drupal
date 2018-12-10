@@ -25,6 +25,7 @@ use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -50,6 +51,13 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   protected $formBuilder;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * Apigee Monetization utility service.
    *
    * @var \Drupal\apigee_m10n\MonetizationInterface
@@ -72,11 +80,14 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   The `apigee_m10n.monetization` service.
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The Drupal form builder.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder) {
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user) {
     $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
     $this->formBuilder = $form_builder;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -86,7 +97,8 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     return new static(
       $container->get('apigee_edge.sdk_connector'),
       $container->get('apigee_m10n.monetization'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('current_user')
     );
   }
 
@@ -144,8 +156,16 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     ];
 
     // Show the prepaid balance reports download form.
-    if ($user->hasPermission('download prepaid balance reports')) {
-      $output['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user);
+    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+      $organization_id = $this->sdk_connector->getOrganization();
+
+      // Get supported currencies.
+      $supported_currencies = $this->monetization->getSupportedCurrencies($organization_id);
+
+      // Get billing documents.
+      $billing_documents = $this->monetization->getBillingDocumentsMonths($organization_id);
+
+      $output['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
     }
 
     return $output;

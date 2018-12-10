@@ -84,30 +84,36 @@ interface ApigeeSdkControllerFactoryInterface {
   public function packageRatePlanController($package_id): RatePlanControllerInterface;
 
   /**
-   * Creates a supported currentcy controller.
+   * Creates a supported currency controller.
+   *
+   * @param string $organization_id
+   *   The organization id.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface
    *   The controller.
    */
-  public function supportedCurrencyController(): SupportedCurrencyControllerInterface;
+  public function supportedCurrencyController(string $organization_id): SupportedCurrencyControllerInterface;
 
   /**
    * Creates a billing documents controller.
    *
+   * @param string $organization_id
+   *   The organization id.
+   *
    * @return \Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface
    *   The controller.
    */
-  public function billingDocumentsController(): BillingDocumentsControllerInterface;
+  public function billingDocumentsController(string $organization_id): BillingDocumentsControllerInterface;
 
   /**
    * Creates a prepaid balance reports controller.
    *
-   * @param string $developerId
+   * @param string $developer_id
    *   UUID or email address of a developer.
    *
    * @return \Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface
    *   The controller.
    */
-  public function prepaidBalanceReportsController(string $developerId): PrepaidBalanceReportsControllerInterface;
+  public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface;
 
 }
