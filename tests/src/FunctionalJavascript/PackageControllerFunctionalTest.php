@@ -34,9 +34,9 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
   /**
    * Drupal user.
    *
-   * @var \Drupal\Core\Session\AccountInterface
+   * @var \Drupal\user\UserInterface
    */
-  protected $account;
+  protected $develoepr;
 
   /**
    * {@inheritdoc}
@@ -49,12 +49,12 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
   protected function setUp() {
     parent::setUp();
 
-    $this->account = $this->createAccount([
+    $this->develoepr = $this->createAccount([
       'access monetization packages',
       'view subscription',
     ]);
     $this->queueOrg();
-    $this->drupalLogin($this->account);
+    $this->drupalLogin($this->develoepr);
   }
 
   /**
@@ -81,7 +81,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
       ->queueMockResponse(['get_monetization_packages' => ['packages' => array_slice($packages, -1)]]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.packages', [
-      'user' => $this->account->id(),
+      'user' => $this->develoepr->id(),
     ]));
 
     $this->assertCssElementContains('h1.page-title', 'Packages');

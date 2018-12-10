@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -19,8 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\Core\Url;
-
 /**
  * Functional test for navigation.
  *
@@ -34,9 +32,9 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   /**
    * Drupal user.
    *
-   * @var \Drupal\Core\Session\AccountInterface
+   * @var \Drupal\user\UserInterface
    */
-  protected $account;
+  protected $developer;
 
   public static $modules = ['block'];
 
@@ -57,14 +55,14 @@ class NavigationTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testNavigation() {
-    $this->account = $this->createAccount([
+    $this->developer = $this->createAccount([
       'view mint prepaid reports',
       'access monetization packages',
       'view subscription',
     ]);
 
     $this->queueOrg();
-    $this->drupalLogin($this->account);
+    $this->drupalLogin($this->developer);
 
     // Check the manage profile link.
     $this->clickLink('Manage profile');
