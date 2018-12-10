@@ -23,7 +23,7 @@ use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -93,7 +93,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   /**
    * View prepaid balance and account statements, add money to prepaid balance.
    *
-   * @param \Drupal\Core\Session\AccountInterface $user
+   * @param \Drupal\user\UserInterface $user
    *   The Drupal user.
    *
    * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -101,7 +101,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *
    * @throws \Exception
    */
-  public function prepaidBalancePage(AccountInterface $user) {
+  public function prepaidBalancePage(UserInterface $user) {
     // Retrieve the prepaid balances for this user for the current month and
     // year.
     $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
