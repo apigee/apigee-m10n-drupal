@@ -36,7 +36,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $account;
+  protected $developer;
 
   /**
    * {@inheritdoc}
@@ -51,11 +51,11 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     // If the user doesn't have the "view subscription" permission, they should
     // get access denied.
-    $this->account = $this->createAccount([]);
+    $this->developer = $this->createAccount([]);
 
     $this->queueOrg();
 
-    $this->drupalLogin($this->account);
+    $this->drupalLogin($this->developer);
   }
 
   /**
@@ -63,7 +63,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    */
   public function testSubscriptionListAccessDenied() {
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
-      'user' => $this->account->id(),
+      'user' => $this->developer->id(),
     ]));
 
     $this->assertSession()->responseContains('Access denied');
@@ -76,19 +76,19 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    */
   public function testSubscriptionListView() {
     // Add the view subscription permission to the current user.
-    $user_roles = $this->account->getRoles();
+    $user_roles = $this->developer->getRoles();
     $this->grantPermissions(Role::load(reset($user_roles)), ['view subscription']);
 
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
-    $subscription = $this->createsubscription($this->account, $rate_plan);
+    $subscription = $this->createsubscription($this->developer, $rate_plan);
 
     $this->stack
       ->queueMockResponse(['get_developer_subscriptions' => ['subscriptions' => [$subscription]]])
       ->queueMockResponse(['get_package_rate_plan' => ['plan' => $rate_plan]]);
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
-      'user' => $this->account->id(),
+      'user' => $this->developer->id(),
     ]));
 
     // Make sure user has access to the page.

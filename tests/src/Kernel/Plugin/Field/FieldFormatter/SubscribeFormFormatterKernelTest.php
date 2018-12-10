@@ -66,7 +66,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $account;
+  protected $developer;
 
   /**
    * {@inheritdoc}
@@ -85,10 +85,10 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
       'system',
     ]);
 
-    $this->account = $this->createAccount([
+    $this->developer = $this->createAccount([
       'view subscription',
     ]);
-    $this->setCurrentUser($this->account);
+    $this->setCurrentUser($this->developer);
 
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');

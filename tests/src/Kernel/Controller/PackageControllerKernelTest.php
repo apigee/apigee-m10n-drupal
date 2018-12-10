@@ -40,7 +40,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $account;
+  protected $developer;
 
   /**
    * {@inheritdoc}
@@ -55,11 +55,11 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
       'user',
     ]);
 
-    $this->account = $this->createAccount([
+    $this->developer = $this->createAccount([
       'access monetization packages',
       'view subscription',
     ]);
-    $this->setCurrentUser($this->account);
+    $this->setCurrentUser($this->developer);
   }
 
   /**
@@ -81,7 +81,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $response = $kernel->handle($request);
 
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame('http://localhost/user/' . $this->account->id() . '/monetization/packages', $response->headers->get('location'));
+    static::assertSame('http://localhost/user/' . $this->developer->id() . '/monetization/packages', $response->headers->get('location'));
 
     // Test the purchased packages redirect.
     // Queue up a monetized org response.
@@ -92,7 +92,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $response = $kernel->handle($request);
 
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame('http://localhost/user/' . $this->account->id() . '/monetization/subscriptions', $response->headers->get('location'));
+    static::assertSame('http://localhost/user/' . $this->developer->id() . '/monetization/subscriptions', $response->headers->get('location'));
   }
 
   /**
@@ -156,7 +156,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
         ->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans[$package->id()]]]);
     }
 
-    $renderable = $page_controller->catalogPage($this->account);
+    $renderable = $page_controller->catalogPage($this->developer);
 
     self::assertArrayHasKey($packages[0]->id(), $renderable["package_list"]["#package_list"]);
     self::assertArrayHasKey($packages[0]->id(), $renderable["package_list"]["#plan_list"]);
