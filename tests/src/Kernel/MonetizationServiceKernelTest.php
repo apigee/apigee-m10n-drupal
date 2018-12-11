@@ -139,7 +139,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Test latest terms and conditions.
+   * Test terms and conditions.
    *
    * @throws \Http\Client\Exception
    * @throws \Twig_Error_Loader
