@@ -20,9 +20,12 @@
 namespace Drupal\apigee_m10n\Controller;
 
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -38,6 +41,18 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    * @var string
    */
   public static $cachePrefix = 'apigee.monetization.billing';
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
+  protected $formBuilder;
 
   /**
    * Apigee Monetization utility service.
@@ -60,10 +75,16 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   The `apigee_edge.sdk_connector` service.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   The `apigee_m10n.monetization` service.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The form builder.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization) {
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user) {
     $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
+    $this->currentUser = $current_user;
+    $this->formBuilder = $form_builder;
   }
 
   /**
@@ -72,7 +93,9 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('apigee_edge.sdk_connector'),
-      $container->get('apigee_m10n.monetization')
+      $container->get('apigee_m10n.monetization'),
+      $container->get('form_builder'),
+      $container->get('current_user')
     );
   }
 
@@ -85,7 +108,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   public function myPrepaidBalance(): RedirectResponse {
     return $this->redirect(
       'apigee_monetization.billing',
-      ['user' => \Drupal::currentUser()->id()],
+      ['user' => $this->currentUser->id()],
       ['absolute' => TRUE]
     );
   }
@@ -106,7 +129,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     // year.
     $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
 
-    return [
+    $output = [
       'prepaid_balances' => [
         '#theme' => 'prepaid_balances',
         '#balances' => $balances,
@@ -120,6 +143,17 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
         ],
       ],
     ];
+
+    // Show the prepaid balance reports download form.
+    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+      $supported_currencies = $this->monetization->getSupportedCurrencies();
+
+      $billing_documents = $this->monetization->getBillingDocumentsMonths();
+
+      $output['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
+    }
+
+    return $output;
   }
 
 }
