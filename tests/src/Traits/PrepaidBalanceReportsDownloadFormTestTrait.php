@@ -33,26 +33,24 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
    *   An array of response ids.
    */
   protected function queueMockResponses(array $response_ids) {
+    $mock_responses = $this->getMockResponses();
     foreach ($response_ids as $response_id) {
-      if ($mock = $this->getMockResponse($response_id)) {
+      if (isset($mock_responses[$response_id])) {
         $this->stack->queueMockResponse([
-          $response_id => $mock,
+          $response_id => $mock_responses[$response_id],
         ]);
       }
     }
   }
 
   /**
-   * Helper to get mock responses.
+   * Returns an array of mock responses.
    *
-   * @param string $response_id
-   *   The response id.
-   *
-   * @return array|mixed
-   *   The response.
+   * @return array
+   *   An array of mock responses.
    */
-  protected function getMockResponse(string $response_id) {
-    $responses = [
+  public function getMockResponses() {
+    return [
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,
         "current_total_aud" => 200.0000,
@@ -154,8 +152,6 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
         ],
       ],
     ];
-
-    return isset($responses[$response_id]) ? $responses[$response_id] : [];
   }
 
 }

@@ -63,11 +63,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
   /**
    * Test for an account with no reports.
    *
-   * @throws \Behat\Mink\Exception\ExpectationException
    * @throws \Behat\Mink\Exception\ResponseTextException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
    */
   public function testAccountWithNoReports() {
     $this->queueMockResponses([
@@ -97,11 +93,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
   /**
    * Test for a date with no reports.
    *
-   * @throws \Behat\Mink\Exception\ExpectationException
    * @throws \Behat\Mink\Exception\ResponseTextException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
    */
   public function testDateWithNoReport() {
     $this->queueMockResponses([
@@ -132,9 +124,6 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
    * Test the prepaid balance download form for a valid account and date.
    *
    * @throws \Behat\Mink\Exception\ExpectationException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
    */
   public function testValidAccountAndDate() {
     $this->queueMockResponses([
