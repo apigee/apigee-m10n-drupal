@@ -12,7 +12,7 @@ content:
     type: string
     weight: 1
     region: content
-    label: hidden
+    label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
@@ -20,11 +20,26 @@ content:
     type: string
     weight: 0
     region: content
-    label: hidden
+    label: above
     settings:
       link_to_entity: true
     third_party_settings: {  }
+  ratePlanDetails:
+    type: apigee_rate_plan_details
+    weight: 2
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
   subscribe:
+    type: apigee_subscribe_form
+    weight: 3
+    region: content
+    label: above
+    settings:
+      label: 'Purchase Plan'
+    third_party_settings: {  }
+  subscribeRatePlan:
     type: apigee_subscribe_form
     weight: 2
     region: content
@@ -51,7 +66,6 @@ hidden:
   private: true
   prorate: true
   published: true
-  ratePlanDetails: true
   recurringFee: true
   recurringStartUnit: true
   recurringType: true
