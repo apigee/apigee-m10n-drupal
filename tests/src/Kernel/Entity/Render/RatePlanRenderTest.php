@@ -37,12 +37,31 @@ class RenderTest extends MonetizationKernelTestBase {
   protected $package_rate_plan;
 
   /**
+   * The developer drupal user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $developer;
+
+  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
     parent::setUp();
+
+    // Setup for creating a user.
+    $this->installSchema('system', ['sequences']);
+    $this->installSchema('user', ['users_data']);
+    $this->installConfig([
+      'user',
+      'system',
+    ]);
+    $this->installEntitySchema('user');
+    $this->developer = $this->createAccount(['view rate_plan']);
+    $this->setCurrentUser($this->developer);
+
     $this->package_rate_plan = $this->createPackageRatePlan($this->createPackage());
   }
 
@@ -59,7 +78,9 @@ class RenderTest extends MonetizationKernelTestBase {
 
     $this->assertText($this->package_rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
     $this->assertText($this->package_rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
-    $this->assertLinkByHref("/user/0/monetization/packages/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
+    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/packages/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
+    // Make sure the subscribe form is displayed.
+    static::assertNotEmpty($this->cssSelect('input[value="Purchase Plan"]')[0], 'The purchase button was rendered.');
   }
 
 }
