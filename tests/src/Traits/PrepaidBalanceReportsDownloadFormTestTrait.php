@@ -19,6 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
+use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
+
 /**
  * Helpers to test the prepaid balance reports.
  */
@@ -29,10 +31,6 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
    *
    * @param array $response_ids
    *   An array of response ids.
-   *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
    */
   protected function queueMockResponses(array $response_ids) {
     foreach ($response_ids as $response_id) {
@@ -68,7 +66,7 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
       ],
       'get-supported-currencies' => [
         'currencies' => [
-          [
+          new SupportedCurrency([
             "description" => "United States Dollars",
             "displayName" => "United States Dollars",
             "id" => "usd",
@@ -76,8 +74,8 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
             "name" => "USD",
             "status" => "ACTIVE",
             "virtualCurrency" => FALSE,
-          ],
-          [
+          ]),
+          new SupportedCurrency([
             "description" => "Australia Dollars",
             "displayName" => "Australia Dollars",
             "id" => "aud",
@@ -85,8 +83,8 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
             "name" => "AUD",
             "status" => "ACTIVE",
             "virtualCurrency" => FALSE,
-          ],
-          [
+          ]),
+          new SupportedCurrency([
             "description" => "test",
             "displayName" => "Test",
             "id" => "test",
@@ -94,7 +92,7 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
             "name" => "TEST",
             "status" => "ACTIVE",
             "virtualCurrency" => FALSE,
-          ],
+          ]),
         ],
       ],
       'get-billing-documents-months' => [

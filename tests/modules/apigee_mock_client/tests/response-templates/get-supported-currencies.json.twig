@@ -10,7 +10,7 @@
 {
     "supportedCurrency": [
         {% for currency in currencies %}
-            {% include 'currency.json.twig' with currency %}{{ loop.last ? '' : ',' }}
+            {% include 'currency.json.twig' %}{{ loop.last ? '' : ',' }}
         {% endfor %}
     ],
     "totalRecords" : {{ currencies|length }}
