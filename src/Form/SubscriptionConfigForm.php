@@ -57,7 +57,7 @@ class SubscriptionConfigForm extends ConfigFormBase {
     $form['subscribe_form_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Subscribe form page title.'),
-      '#description' => $this->t('The page title to use for the subscribe form page. i.e. "Subscribe to %rate_plan"'),
+      '#description' => $this->t('The page title to use for the subscribe form page. i.e. "Purchase %rate_plan"'),
       '#default_value' => $config->get('subscribe_form_title'),
     ];
     $form['subscribe_button_label'] = [

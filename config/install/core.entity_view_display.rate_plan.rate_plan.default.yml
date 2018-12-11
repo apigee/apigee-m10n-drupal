@@ -12,7 +12,7 @@ content:
     type: string
     weight: 1
     region: content
-    label: above
+    label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
@@ -20,23 +20,23 @@ content:
     type: string
     weight: 0
     region: content
-    label: above
+    label: hidden
     settings:
       link_to_entity: true
     third_party_settings: {  }
-  ratePlanDetails:
-    type: apigee_rate_plan_details
+  subscribeRatePlan:
+    type: apigee_subscribe_form
     weight: 2
     region: content
-    label: above
-    settings: {  }
+    label: hidden
+    settings:
+      label: Purchase
     third_party_settings: {  }
 hidden:
   advance: true
   contractDuration: true
   contractDurationType: true
   currency: true
-  displayName:  true
   earlyTerminationFee: true
   endDate: true
   freemiumDuration: true
@@ -47,13 +47,14 @@ hidden:
   id: true
   name: true
   organization: true
-  package: true
   paymentDueDays: true
   private: true
   prorate: true
   published: true
+  ratePlanDetails: true
   recurringFee: true
   recurringStartUnit: true
   recurringType: true
   setUpFee: true
   startDate: true
+  subscribeLink: true
