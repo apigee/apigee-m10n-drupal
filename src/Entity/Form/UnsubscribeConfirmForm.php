@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -93,22 +94,28 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getDescription() {
-    return $this->t('Are you sure you would like to unsubscribe from this plan?');
+    // Get the unsubscribe text from config. Use `config_translate` to
+    // translate if necessary.
+    $description = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('unsubscribe_description');
+    return $description ?? $this->t('Are you sure you would to like cancel this plan?');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return $this->t('End This Plan');
+    $button_label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('unsubscribe_button_label');
+    return $button_label ?? $this->t('End This Plan');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Cancel <em>%label</em> plan', [
-      '%label' => $this->subscription->getRatePlan()->getDisplayName()
+    $question = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('unsubscribe_question');
+    return $this->t($question ?? 'Cancel %rate_plan', [
+      '%rate_plan' => $this->subscription->getRatePlan()->getDisplayName(),
+      '@rate_plan' => $this->subscription->getRatePlan()->getDisplayName(),
     ]);
   }
 
