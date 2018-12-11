@@ -18,8 +18,6 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-use Drupal\apigee_m10n\Monetization;
-
 const MONETIZATION_DISABLED_ERROR_MESSAGE = 'Monetization is not enabled for your Apigee Edge organization.';
 
 /**
@@ -35,11 +33,25 @@ function apigee_m10n_requirements($phase) {
 
   // Verify that monetization is enabled before allowing user to install module.
   if ($phase === 'install') {
-
-    $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
-    $org_id = $sdk_connector->getOrganization();
-
+    // Check if Apigee Edge authentication is configured and working.
     try {
+      /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
+      $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
+      $sdk_connector->testConnection();
+    }
+    catch (\Exception $e) {
+      $requirements['apigee_monetization_connection_error'] = [
+        'title' => t('Apigee Monetization'),
+        'description' => t('Apigee Edge authentication is not properly configured. A working Apigee Edge connection is required to enable Apigee Monetization.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+
+      return $requirements;
+    }
+
+    // Check if monetization is enabled for the organization.
+    try {
+      $org_id = $sdk_connector->getOrganization();
       $org_details = $sdk_connector->getClient()->get('/organizations/' . $org_id)->getBody()->getContents();
       $org_details = json_decode($org_details);
     }
