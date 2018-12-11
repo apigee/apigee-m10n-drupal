@@ -234,15 +234,15 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSupportedCurrencies(string $organization_id): ?array {
-    return $this->sdk_controller_factory->supportedCurrencyController($organization_id)->getEntities();
+  public function getSupportedCurrencies(): ?array {
+    return $this->sdk_controller_factory->supportedCurrencyController()->getEntities();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getBillingDocumentsMonths(string $organization_id): ?array {
-    return $this->sdk_controller_factory->billingDocumentsController($organization_id)->getEntities();
+  public function getBillingDocumentsMonths(): ?array {
+    return $this->sdk_controller_factory->billingDocumentsController()->getEntities();
   }
 
   /**

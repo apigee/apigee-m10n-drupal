@@ -132,9 +132,9 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function supportedCurrencyController(string $organization_id): SupportedCurrencyControllerInterface {
+  public function supportedCurrencyController(): SupportedCurrencyControllerInterface {
     return new SupportedCurrencyController(
-      $organization_id,
+      $this->org,
       $this->client
     );
   }
@@ -142,9 +142,9 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function billingDocumentsController(string $organization_id): BillingDocumentsControllerInterface {
+  public function billingDocumentsController(): BillingDocumentsControllerInterface {
     return new BillingDocumentsController(
-      $organization_id,
+      $this->org,
       $this->client
     );
   }

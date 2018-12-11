@@ -157,13 +157,9 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
 
     // Show the prepaid balance reports download form.
     if ($this->currentUser->hasPermission('download prepaid balance reports')) {
-      $organization_id = $this->sdk_connector->getOrganization();
+      $supported_currencies = $this->monetization->getSupportedCurrencies();
 
-      // Get supported currencies.
-      $supported_currencies = $this->monetization->getSupportedCurrencies($organization_id);
-
-      // Get billing documents.
-      $billing_documents = $this->monetization->getBillingDocumentsMonths($organization_id);
+      $billing_documents = $this->monetization->getBillingDocumentsMonths();
 
       $output['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
     }

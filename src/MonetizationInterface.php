@@ -107,24 +107,18 @@ interface MonetizationInterface {
   /**
    * Get supported currencies for an organization.
    *
-   * @param string $organization_id
-   *   The organization id.
-   *
    * @return array
    *   An array of supported currency entities.
    */
-  public function getSupportedCurrencies(string $organization_id): ?array;
+  public function getSupportedCurrencies(): ?array;
 
   /**
    * Get the billing documents months for an organization.
    *
-   * @param string $organization_id
-   *   The organization id.
-   *
    * @return array|null
    *   An array of billing documents.
    */
-  public function getBillingDocumentsMonths(string $organization_id): ?array;
+  public function getBillingDocumentsMonths(): ?array;
 
   /**
    * Returns a CSV string for prepaid balances.
