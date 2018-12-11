@@ -101,7 +101,7 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
     // Render the field item.
     $build = $instance->view($item_list);
 
-    static::assertSame('Subscribe', (string) $build['#title']);
+    static::assertSame('Purchase', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
 
     $this->render($build);

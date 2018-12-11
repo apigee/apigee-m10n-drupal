@@ -54,6 +54,12 @@ class SubscriptionConfigForm extends ConfigFormBase {
     // Get the working configuration.
     $config = $this->config(static::CONFIG_NAME);
 
+    $form['subscribe_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Subscribe label.'),
+      '#description' => $this->t('The subscribe label would be shown if the Label is set to display on a subscribe field.'),
+      '#default_value' => $config->get('subscribe_label'),
+    ];
     $form['subscribe_form_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Subscribe form page title.'),
@@ -77,6 +83,7 @@ class SubscriptionConfigForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
 
     $this->config(static::CONFIG_NAME)
+      ->set('subscribe_label', $form_state->getValue('subscribe_label'))
       ->set('subscribe_form_title', $form_state->getValue('subscribe_form_title'))
       ->set('subscribe_button_label', $form_state->getValue('subscribe_button_label'))
       ->save();

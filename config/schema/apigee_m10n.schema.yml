@@ -10,6 +10,9 @@ apigee_m10n.subscription.config:
   type: config_object
   label: 'Subscription settings'
   mapping:
+    subscribe_label:
+      type: string
+      label: 'The subscribe label.'
     subscribe_form_title:
       type: string
       label: 'Subscribe form page title.'
