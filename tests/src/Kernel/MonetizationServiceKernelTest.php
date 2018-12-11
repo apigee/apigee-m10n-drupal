@@ -138,4 +138,31 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     static::assertInstanceOf(LoggerInterface::class, $logger);
   }
 
+  /**
+   * Test latest terms and conditions.
+   *
+   * @throws \Http\Client\Exception
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  public function testLatestTermsAndConditions() {
+    $developer_id = $this->randomMachineName() . '@example.com';
+
+    $this->stack
+      ->queueMockResponse(['get_developer_terms_conditions']);
+
+    $response = (string) $this->sdk_connector
+      ->getClient()
+      ->get("/mint/organizations/{$this->sdk_connector->getOrganization()}/developers/{$developer_id}/developer-tncs")
+      ->getBody();
+
+    $data = json_decode($response, TRUE);
+    static::assertNotEmpty($data);
+    static::assertContains($data['developerTnc'][0]['action'], ['ACCEPTED', 'DECLINED']);
+    static::assertEquals($data['developerTnc'][0]['auditDate'],'2018-12-10 21:00:00');
+    static::assertEquals($data['developerTnc'][0]['tnc']['organization']['name'],'tsnow-mint');
+    static::assertEquals($data['developerTnc'][0]['tnc']['organization']['taxEngineExternalId'],'APIGEE01');
+  }
+
 }
