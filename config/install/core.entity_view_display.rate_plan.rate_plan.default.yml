@@ -24,7 +24,7 @@ content:
     settings:
       link_to_entity: true
     third_party_settings: {  }
-  subscribeRatePlan:
+  subscribe:
     type: apigee_subscribe_form
     weight: 2
     region: content

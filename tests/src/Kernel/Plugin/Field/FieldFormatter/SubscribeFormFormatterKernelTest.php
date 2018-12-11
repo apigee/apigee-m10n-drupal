@@ -104,15 +104,15 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->package_rate_plan->get('subscribeRatePlan');
+    $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
     static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_subscribe_form', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribeRatePlan'],
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
       'settings' => [
-        'label' => 'Subscribe Rate Plan'
+        'label' => 'Subscribe'
       ],
       'label' => TRUE,
       'view_mode' => 'default',
@@ -123,7 +123,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     // Render the field item.
     $build = $instance->view($item_list);
 
-    static::assertSame('Subscribe Rate Plan', (string) $build['#title']);
+    static::assertSame('Subscribe', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
 
     $this->render($build);

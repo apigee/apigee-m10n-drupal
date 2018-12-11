@@ -29,8 +29,8 @@ use Drupal\Core\TypedData\DataDefinition;
  *
  * @FieldType(
  *   id = "apigee_subscribe",
- *   label = @Translation("Apigee subscribe rate plan"),
- *   description = @Translation("Apigee subscribe rate plan"),
+ *   label = @Translation("Apigee Edge subscribe"),
+ *   description = @Translation("Apigee Edge subscribe"),
  *   default_formatter = "apigee_subscribe_link"
  * )
  */
@@ -42,7 +42,7 @@ class SubscribeFieldItem extends FieldItemBase {
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     $properties['value'] = DataDefinition::create('any')
       ->setLabel(new TranslatableMarkup('value'))
-      ->setDescription(new TranslatableMarkup('Rate plan subscribe form.'))
+      ->setDescription(new TranslatableMarkup('Rate plan subscription form.'))
       ->setComputed(TRUE);
 
     return $properties;

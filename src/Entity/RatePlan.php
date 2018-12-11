@@ -144,7 +144,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   protected static function getProperties(): array {
     $properties = parent::getProperties();
-    $properties['subscribeRatePlan'] = 'apigee_subscribe';
+    $properties['subscribe'] = 'apigee_subscribe';
 
     return $properties;
   }
@@ -223,7 +223,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribeRatePlan():? array {
+  public function getSubscribe():? array {
     return [
       'user' => $this->getUser(),
     ];
