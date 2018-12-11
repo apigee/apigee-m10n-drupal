@@ -1,0 +1,11 @@
+apigee_m10n.billing:
+  title: 'Prepaid Balance'
+  route_name: apigee_monetization.billing
+  base_route: apigee_monetization.billing
+  weight: 10
+
+apigee_m10n.subscriptions:
+  title: 'Purchased Plans'
+  route_name: apigee_monetization.purchased
+  base_route: apigee_monetization.billing
+  weight: 20
