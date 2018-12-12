@@ -161,8 +161,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     static::assertNotEmpty($data);
     static::assertContains($data['developerTnc'][0]['action'], ['ACCEPTED', 'DECLINED']);
     static::assertEquals($data['developerTnc'][0]['auditDate'], '2018-12-10 21:00:00');
-    static::assertEquals($data['developerTnc'][0]['tnc']['organization']['name'], 'tsnow-mint');
-    static::assertEquals($data['developerTnc'][0]['tnc']['organization']['taxEngineExternalId'], 'APIGEE01');
+    static::assertEquals($data['developerTnc'][0]['tnc']['organization']['name'], $this->sdk_connector->getOrganization());
   }
 
 }
