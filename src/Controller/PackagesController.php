@@ -90,13 +90,13 @@ class PackagesController extends ControllerBase {
   /**
    * Gets a list of available packages for this user.
    *
-   * @param \Drupal\user\UserInterface|null $user
+   * @param \Drupal\user\UserInterface $user
    *   The drupal user/developer.
    *
    * @return array
    *   The pager render array.
    */
-  public function catalogPage(UserInterface $user = NULL) {
+  public function catalogPage(UserInterface $user) {
     // Get the package controller.
     $package_controller = $this->controller_factory->apiPackageController();
     // Load purchased packages for comparison.
