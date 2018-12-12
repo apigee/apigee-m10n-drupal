@@ -33,16 +33,20 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Entity form variant for content entity types.
+ * Entity form variant for Apigee Edge entity types.
  *
- * @see \Drupal\Core\ContentEntityBase
+ * The content `ContentEntityForm` makes the assumption that entities are
+ * translatable and revisionable. This entity base form provides most of the
+ * same helpers for Apigee Edge entities.
+ *
+ * @see \Drupal\Core\Entity\ContentEntityForm
  */
-class MonetizationEntityForm extends EntityForm implements MonetizationEntityFormInterface {
+class EdgeContentEntityForm extends EntityForm implements EdgeContentEntityFormInterface {
 
   /**
    * The entity being used by this form.
    *
-   * @var \Drupal\Core\Entity\ContentEntityInterface|\Drupal\Core\Entity\RevisionLogInterface
+   * @var \Drupal\apigee_edge\Entity\EdgeEntityInterface
    */
   protected $entity;
 
@@ -68,7 +72,7 @@ class MonetizationEntityForm extends EntityForm implements MonetizationEntityFor
   protected $entityRepository;
 
   /**
-   * Constructs a MonetizationEntityForm object.
+   * Constructs a EdgeContentEntityForm object.
    *
    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    *   The entity repository service.

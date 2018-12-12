@@ -24,9 +24,15 @@ use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Defines a common interface for content entity form classes.
+ * Entity form variant for Apigee Edge entity types.
+ *
+ * This would extend `\Drupal\Core\Entity\ContentEntityFormInterface` except
+ * Edge entities are not translatable so `getFormLangcode` and
+ * `isDefaultFormLangcode` are dropped.
+ *
+ * @see \Drupal\Core\Entity\ContentEntityFormInterface
  */
-interface MonetizationEntityFormInterface extends EntityFormInterface {
+interface EdgeContentEntityFormInterface extends EntityFormInterface {
 
   /**
    * Gets the form display.

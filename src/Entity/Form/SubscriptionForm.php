@@ -30,7 +30,7 @@ use Drupal\Core\Cache\Cache;
 /**
  * Subscription entity form.
  */
-class SubscriptionForm extends MonetizationEntityForm {
+class SubscriptionForm extends EdgeContentEntityForm {
 
   /**
    * Messanger service.
