@@ -122,8 +122,6 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
 
   /**
    * Test the prepaid balance download form for a valid account and date.
-   *
-   * @throws \Behat\Mink\Exception\ExpectationException
    */
   public function testValidAccountAndDate() {
     $this->queueMockResponses([
@@ -147,9 +145,9 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->submitForm($edit, 'Download CSV');
 
     $filename = "prepaid-balance-report-2018-9.csv";
-    $this->assertSession()->statusCodeEquals(Response::HTTP_OK);
-    $this->assertEquals('text/csv; charset=UTF-8', $this->drupalGetHeader('Content-Type'));
-    $this->assertEquals("attachment; filename='$filename'", $this->drupalGetHeader('Content-Disposition'));
+    $this->assertStatusCodeEquals(Response::HTTP_OK);
+    $this->assertHeaderEquals('text/csv; charset=UTF-8', $this->drupalGetHeader('Content-Type'));
+    $this->assertHeaderEquals("attachment; filename='$filename'", $this->drupalGetHeader('Content-Disposition'));
   }
 
 }

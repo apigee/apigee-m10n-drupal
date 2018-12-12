@@ -50,6 +50,8 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   protected $currentUser;
 
   /**
+   * The form builder.
+   *
    * @var \Drupal\Core\Form\FormBuilderInterface
    */
   protected $formBuilder;
