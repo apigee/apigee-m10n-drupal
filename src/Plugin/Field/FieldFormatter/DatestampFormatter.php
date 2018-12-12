@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldFormatter\TimestampFormatter;
 
 /**
@@ -33,5 +34,18 @@ use Drupal\Core\Field\Plugin\Field\FieldFormatter\TimestampFormatter;
  * )
  */
 class DatestampFormatter extends TimestampFormatter {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode) {
+    $items_numeric = clone $items;
+    foreach ($items_numeric as $index => $value) {
+      // The `TimestampFormatter` formatter expects values to be numeric.
+      $items_numeric[$index] = $value->value->getTimestamp();
+    }
+
+    return parent::viewElements($items_numeric, $langcode);
+  }
 
 }

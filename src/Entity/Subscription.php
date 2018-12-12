@@ -121,16 +121,16 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   protected static function propertyToBaseFieldTypeMap(): array {
     return [
       'startDate'            => 'apigee_datestamp',
-      'endDate'              => 'timestamp',
-      'created'              => 'timestamp',
+      'endDate'              => 'apigee_datestamp',
+      'created'              => 'apigee_datestamp',
       'quotaTarget'          => 'integer',
       'ratePlan'             => 'entity_reference',
       'developer'            => 'apigee_monetization_developer',
-      'updated'              => 'timestamp',
-      'renewalDate'          => 'timestamp',
-      'nextCycleStartDate'   => 'timestamp',
-      'nextRecurringFeeDate' => 'timestamp',
-      'prevRecurringFeeDate' => 'timestamp',
+      'updated'              => 'apigee_datestamp',
+      'renewalDate'          => 'apigee_datestamp',
+      'nextCycleStartDate'   => 'apigee_datestamp',
+      'nextRecurringFeeDate' => 'apigee_datestamp',
+      'prevRecurringFeeDate' => 'apigee_datestamp',
     ];
   }
 
