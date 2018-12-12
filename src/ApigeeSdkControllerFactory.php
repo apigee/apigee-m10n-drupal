@@ -108,22 +108,36 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface {
-    return new DeveloperPrepaidBalanceController(
-      $developer->getEmail(),
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    $developer_email = $developer->getEmail();
+    if (empty($this->controllers[__FUNCTION__][$developer_email])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$developer_email] = new DeveloperPrepaidBalanceController(
+        $developer_email,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$developer_email];
   }
 
   /**
    * {@inheritdoc}
    */
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
-    return new CompanyPrepaidBalanceController(
-      $company->getLegalName(),
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    $legal_name = $company->getLegalName();
+    if (empty($this->controllers[__FUNCTION__][$legal_name])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$legal_name] = new CompanyPrepaidBalanceController(
+        $legal_name,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$legal_name];
   }
 
   /**
@@ -175,11 +189,17 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function developerAcceptedRatePlanController(string $developer_id): DeveloperAcceptedRatePlanController {
-    return new DeveloperAcceptedRatePlanController(
-      $developer_id,
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__][$developer_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$developer_id] = new DeveloperAcceptedRatePlanController(
+        $developer_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$developer_id];
   }
 
   /**
