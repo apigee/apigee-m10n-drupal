@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\Render;
 
+use Drupal\Component\Datetime\DateTimePlus;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
@@ -27,14 +28,21 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class RatePlanRenderTest extends MonetizationKernelTestBase {
+class SubscriptionRenderTest extends MonetizationKernelTestBase {
 
   /**
    * Test package rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
+
+  /**
+   * Test subscription.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
+   */
+  protected $subscription;
 
   /**
    * The developer drupal user.
@@ -59,28 +67,28 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
       'system',
     ]);
     $this->installEntitySchema('user');
-    $this->developer = $this->createAccount(['view rate_plan']);
+    $this->developer = $this->createAccount(['view subscription']);
     $this->setCurrentUser($this->developer);
 
-    $this->package_rate_plan = $this->createPackageRatePlan($this->createPackage());
+    $this->rate_plan = $this->createPackageRatePlan($this->createPackage());
+    $this->subscription = $this->createSubscription($this->developer, $this->rate_plan);
   }
 
   /**
    * Tests theme preprocess functions being able to attach assets.
    */
-  public function testRenderRatePlan() {
+  public function testRenderSubscription() {
 
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->package_rate_plan->getEntityTypeId());
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->subscription->getEntityTypeId());
 
-    $build = $view_builder->view($this->package_rate_plan, 'default');
+    $build = $view_builder->view($this->subscription, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
-    $this->assertText($this->package_rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
-    $this->assertText($this->package_rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
-    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/packages/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
-    // Make sure the subscribe form is displayed.
-    static::assertNotEmpty($this->cssSelect('input[value="Purchase Plan"]')[0], 'The purchase button was rendered.');
+    $this->assertText($this->developer->getDisplayName(), 'The developer display name appears.');
+    $start_date = $this->subscription->getStartDate()->format('D, m/d/Y - H:i');
+    static::assertNotEmpty($start_date);
+    $this->assertText($start_date, 'The start date appears in the rendered subscription.');
   }
 
 }
