@@ -157,12 +157,18 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function packageRatePlanController($package_id): RatePlanControllerInterface {
-    return new RatePlanController(
-      $package_id,
-      $this->getOrganization(),
-      $this->getClient()
-    );
+  public function ratePlanController($package_id): RatePlanControllerInterface {
+    if (empty($this->controllers[__FUNCTION__][$package_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new rate plan controller.
+      $this->controllers[__FUNCTION__][$package_id] = new RatePlanController(
+        $package_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$package_id];
   }
 
   /**

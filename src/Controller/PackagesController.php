@@ -136,15 +136,7 @@ class PackagesController extends ControllerBase {
    *   The rate plan controller.
    */
   protected function packageRatePlanController($package_id): RatePlanControllerInterface {
-    // Use static caching.
-    static $controllers;
-
-    // Controlelrs should be cached per package id.
-    if (!isset($controllers[$package_id])) {
-      $controllers[$package_id] = $this->controller_factory->packageRatePlanController($package_id);
-    }
-
-    return $controllers[$package_id];
+    return $this->controller_factory->ratePlanController($package_id);
   }
 
 }

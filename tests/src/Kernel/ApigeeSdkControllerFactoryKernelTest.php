@@ -114,9 +114,9 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
   /**
    * Test the package rate plan controller.
    */
-  public function testPackageRatePlanController() {
+  public function testRatePlanController() {
     /** @var \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface $controller */
-    $controller = $this->controller_factory->packageRatePlanController($this->randomString());
+    $controller = $this->controller_factory->ratePlanController($this->randomString());
 
     static::assertInstanceOf(RatePlanControllerInterface::class, $controller);
 

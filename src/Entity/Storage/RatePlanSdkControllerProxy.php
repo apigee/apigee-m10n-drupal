@@ -142,7 +142,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
     static $controller_cache = [];
     // Make sure a controller is cached.
     $controller_cache[$package_id] = $controller_cache[$package_id]
-      ?? $this->controllerFactory()->packageRatePlanController($package_id);
+      ?? $this->controllerFactory()->ratePlanController($package_id);
 
     return $controller_cache[$package_id];
   }
