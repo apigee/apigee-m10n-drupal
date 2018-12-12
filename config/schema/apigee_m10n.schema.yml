@@ -11,31 +11,30 @@ apigee_m10n.subscription.config:
   label: 'Subscription settings'
   mapping:
     subscribe_label:
-      type: string
+      type: label
       label: 'The subscribe label.'
     subscribe_form_title:
-      type: string
+      type: label
       label: 'Subscribe form page title.'
     subscribe_button_label:
-      type: string
+      type: label
       label: 'Subscribe button label.'
     unsubscribe_question:
-      type: string
+      type: label
       label: 'Unsubscribe form page title.'
     unsubscribe_description:
-      type: string
+      type: label
       label: 'Unsubscribe form description.'
     unsubscribe_button_label:
-      type: string
+      type: label
       label: 'Unsubscribe button label.'
-
 
 field.formatter.settings.apigee_subscribe_link:
   type: mapping
   label: 'Subscribe Link'
   mapping:
     subscribe_label:
-      type: string
+      type: label
       label: 'Subscribe label'
 
 field.formatter.settings.apigee_subscribe_form:
@@ -43,7 +42,7 @@ field.formatter.settings.apigee_subscribe_form:
   label: 'Subscribe form settings'
   mapping:
     label:
-      type: string
+      type: label
       label: 'Subscribe Label'
 
 field.formatter.settings.apigee_datestamp:
