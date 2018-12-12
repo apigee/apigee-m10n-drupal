@@ -128,7 +128,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
           [$this, 'validate'],
         ],
       ];
-      // Accept
+      // Accept TnC description.
       $element['#description'] = $this->t('%description @link', [
         '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
         '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
