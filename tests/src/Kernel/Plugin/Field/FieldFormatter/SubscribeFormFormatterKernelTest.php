@@ -104,6 +104,13 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
+
+    $this->stack->queueMockResponse([
+      'get_organization',
+      'get_terms_conditions',
+      'get_developer_terms_conditions',
+    ]);
+
     $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));

@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org_name}/tncs
+ *
+ * Response Code: 200
+ */
+#}
+{
+    "tnc": [
+        {
+            "id": "{{ tnc.id|default('123123001-0000-1111-2222-00290d41d3ce') }}",
+            "organization": {% include 'org.json.twig' %},
+            "startDate": "{{ tnc.startDate|default('2018-12-10 00:00:00') }}",
+            "url": "{{ tnc.url|default('https://myterms-site.com/v1') }}",
+            "version": "{{ tnc.version|default('1') }}"
+        },
+        {
+            "id": "{{ tnc.id|default('20001234-1234-1234-0000-123456789002') }}",
+            "organization": {% include 'org.json.twig' %},
+            "startDate": "{{ tnc.startDate|default('2018-08-07 08:00:00') }}",
+            "url": "{{ tnc.url|default('https://example2.com') }}",
+             "version": "{{ tnc.version|default('2') }}"
+        },
+        {
+            "id": "{{ tnc.id|default('10001234-1234-1234-0000-123456789003') }}",
+            "organization": {% include 'org.json.twig' %},
+            "startDate": "{{ tnc.startDate|default('2018-08-08 09:00:00') }}",
+            "url": "{{ tnc.url|default('https://example3.com') }}",
+            "version": "{{ tnc.version|default('3') }}"
+        }
+    ],
+    "totalRecords": 3
+}
