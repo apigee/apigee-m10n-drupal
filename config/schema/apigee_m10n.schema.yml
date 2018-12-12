@@ -33,7 +33,7 @@ field.formatter.settings.apigee_subscribe_link:
   type: mapping
   label: 'Subscribe Link'
   mapping:
-    subscribe_label:
+    label:
       type: label
       label: 'Subscribe label'
 

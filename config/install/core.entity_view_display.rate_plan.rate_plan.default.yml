@@ -32,20 +32,12 @@ content:
     settings: {  }
     third_party_settings: {  }
   subscribe:
-    type: apigee_subscribe_form
+    type: apigee_subscribe_link
     weight: 3
     region: content
     label: above
     settings:
       label: 'Purchase Plan'
-    third_party_settings: {  }
-  subscribeRatePlan:
-    type: apigee_subscribe_form
-    weight: 2
-    region: content
-    label: hidden
-    settings:
-      label: Purchase
     third_party_settings: {  }
 hidden:
   advance: true
@@ -71,4 +63,3 @@ hidden:
   recurringType: true
   setUpFee: true
   startDate: true
-  subscribeLink: true
