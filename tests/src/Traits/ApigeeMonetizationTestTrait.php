@@ -353,7 +353,7 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Creates a subscription.
    *
-   * @param \Drupal\Core\Session\AccountInterface $user
+   * @param \Drupal\user\UserInterface $user
    *   The user to subscribe to the rate plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
    *   The rate plan to subscribe to.
@@ -366,10 +366,13 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  protected function createSubscription(AccountInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
+  protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
     $subscription = Subscription::create([
       'ratePlan' => $rate_plan,
-      'developer' => new Developer(['email' => $user->getEmail()]),
+      'developer' => new Developer([
+        'email' => $user->getEmail(),
+        'name' => $user->getDisplayName(),
+      ]),
       'startDate' => new \DateTimeImmutable(),
     ]);
 
