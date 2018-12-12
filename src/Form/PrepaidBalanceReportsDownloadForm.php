@@ -211,7 +211,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
           $filename = "prepaid-balance-report-$date.csv";
           $response = new Response($report);
           $response->headers->set('Content-Type', 'text/csv');
-          $response->headers->set('Content-Disposition', "attachment; filename='$filename'");
+          $response->headers->set('Content-Disposition', "attachment; filename=$filename");
           $form_state->setResponse($response);
         }
       }
