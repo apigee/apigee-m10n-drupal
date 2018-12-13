@@ -193,11 +193,13 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
     $rate_plan = $entity->getRatePlan();
 
-    $products = array_reduce($rate_plan->getPackage()->getApiProducts(), function ($result, $product) {
-      return $result ? "{$result}, {$product->getDisplayName()}" : $product->getDisplayName();
-    }, "");
+    // Concatenate all of the product names.
+    $products = implode(', ', array_map(function ($product) {
+      return $product->getDisplayName();
+    }, $rate_plan->getPackage()->getApiProducts()));
 
     $rate_plan_url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->user->id(),
