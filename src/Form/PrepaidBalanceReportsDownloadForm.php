@@ -49,27 +49,6 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   protected $sdkControllerFactory;
 
   /**
-   * The user from route.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $user;
-
-  /**
-   * An array of supported currencies.
-   *
-   * @var array
-   */
-  protected $supportedCurrencies;
-
-  /**
-   * An array of billing documents.
-   *
-   * @var array
-   */
-  protected $billingDocuments;
-
-  /**
    * PrepaidBalancesDownloadForm constructor.
    *
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
@@ -103,12 +82,6 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL, array $supported_currencies = [], array $billing_documents = []) {
-    $this->user = $user;
-
-    $this->supportedCurrencies = $supported_currencies;
-
-    $this->billingDocuments = $billing_documents;
-
     $form['heading'] = [
       '#type' => 'html_tag',
       '#tag' => 'h3',
@@ -116,7 +89,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
     ];
 
     // No form if there's no supported currency.
-    if (!count($this->supportedCurrencies)) {
+    if (!count($supported_currencies)) {
       $form['currency'] = [
         '#markup' => $this->t('There are no supported currencies for your account.'),
       ];
@@ -124,7 +97,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       return $form;
     }
 
-    if (!count($this->billingDocuments)) {
+    if (!count($billing_documents)) {
       $form['year'] = [
         '#markup' => $this->t('There are no billing documents for your account.'),
       ];
@@ -134,12 +107,9 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
 
     // Build currency options.
     $currency_options = [];
-    foreach ($this->supportedCurrencies as $currency) {
+    foreach ($supported_currencies as $currency) {
       $currency_options[$currency->id()] = "{$currency->getName()} ({$currency->getDisplayName()})";
     }
-
-    // Save this to form state to be available in submit callback.
-    $form_state->set('currency_options', $currency_options);
 
     $form['currency'] = [
       '#title' => $this->t('Select an account'),
@@ -154,9 +124,11 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
     $date_options = [];
     array_map(function ($document) use (&$date_options) {
       $date_options[$document->year][$document->year . '-' . $document->month] = ucwords(strtolower($document->monthEnum));
-    }, $this->billingDocuments);
+    }, $billing_documents);
 
     // Save this to form state to be available in submit callback.
+    $form_state->set('user', $user);
+    $form_state->set('currency_options', $currency_options);
     $form_state->set('date_options', $date_options);
 
     $form['year'] = [
@@ -207,7 +179,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       try {
         $billing_date = new \DateTimeImmutable($date);
 
-        if ($report = $this->monetization->getPrepaidBalanceReports($this->user->getEmail(), $billing_date, $currency)) {
+        if ($report = $this->monetization->getPrepaidBalanceReports($form_state->get('user')->getEmail(), $billing_date, $currency)) {
           $filename = "prepaid-balance-report-$date.csv";
           $response = new Response($report);
           $response->headers->set('Content-Type', 'text/csv');
