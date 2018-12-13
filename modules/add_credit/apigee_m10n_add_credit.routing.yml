@@ -5,5 +5,3 @@ apigee_m10n_add_credit.apigee_add_credit_config_form:
     _title: 'Apigee Add Credit Configuration'
   requirements:
     _permission: 'access administration pages'
-  options:
-    _admin_route: TRUE

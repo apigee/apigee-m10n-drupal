@@ -13,8 +13,6 @@ apigee_m10n.settings.rate_plan:
     _title: 'Rate plan settings'
   requirements:
     _permission: 'administer apigee m10n'
-  options:
-    _admin_route: TRUE
 
 apigee_m10n.settings.subscription:
   path: 'admin/config/apigee-edge/monetization/subscription-settings'
@@ -23,8 +21,6 @@ apigee_m10n.settings.subscription:
     _title: 'Subscription settings'
   requirements:
     _permission: 'administer apigee m10n'
-  options:
-    _admin_route: TRUE
 
 apigee_monetization.my_billing:
   path: /user/monetization/billing
