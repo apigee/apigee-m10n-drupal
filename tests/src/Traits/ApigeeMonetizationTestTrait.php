@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
@@ -259,7 +260,7 @@ trait ApigeeMonetizationTestTrait {
     try {
       $this->getSession()->getResponseHeaders();
     }
-    catch (\Exception $exception) {
+    catch (UnsupportedDriverActionException $exception) {
       $this->markTestSkipped($exception->getMessage());
     }
   }
