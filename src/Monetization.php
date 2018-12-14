@@ -141,7 +141,7 @@ class Monetization implements MonetizationInterface {
       }
       catch (\Exception $e) {
         $this->messenger->addError($e->getMessage());
-        return $is_monetization_enabled = FALSE;
+        return FALSE;
       }
 
       $monetization_status = $org->getPropertyValue('features.isMonetizationEnabled') === 'true' ? 'enabled' : 'disabled';
@@ -150,7 +150,7 @@ class Monetization implements MonetizationInterface {
       $this->cache->set("apigee_m10n:org_monetization_status:{$org_id}", $monetization_status, $expire_time->getTimestamp());
     }
 
-    return (bool) $is_monetization_enabled = $monetization_status === 'enabled' ? TRUE : FALSE;
+    return (bool) $monetization_status === 'enabled' ? TRUE : FALSE;
   }
 
   /**
