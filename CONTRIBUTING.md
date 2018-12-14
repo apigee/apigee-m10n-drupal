@@ -103,11 +103,12 @@ If needed, you can set environment variables multiple ways, either by defining t
 file as `phpunit.xml` and specifying them in that file.
 
 This module is tested with the following driver configuration in `phpunit.xml`. This approach uses 
-[ChromeDriver](http://chromedriver.chromium.org/) directly without the use of selenium server. 
+[ChromeDriver](http://chromedriver.chromium.org/) directly without the use of selenium server for
+functional javascript tests and [`GoutteDriver`](http://mink.behat.org/en/latest/drivers/goutte.html)
+for functional tests.
 
 ```xml
-<env name="MINK_DRIVER_CLASS" value="Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver" />
-<env name="MINK_DRIVER_ARGS" value='["chrome", {"chromeOptions":{"args":["--headless"]}}, "http://localhost:9515"]' />
+<env name="MINK_DRIVER_ARGS_WEBDRIVER" value='["chrome", {"chromeOptions":{"args":["--headless"]}}, "http://localhost:9515"]' />
 ```
 
 You can execute tests of this module with the following command (note the location
