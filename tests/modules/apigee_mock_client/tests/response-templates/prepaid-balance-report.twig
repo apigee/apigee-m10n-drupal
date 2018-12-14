@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ *   Prepaid balance report.
+ *
+ * Usage:
+ *   @code {% include 'prepaid-balance-report.json.twig' %} @endcode
+ *
+ * Variables:
+ *  - developer: The developer name.
+ *  - developer_id: The developer_id.
+ *  - currency: The currency, Example: USD.
+ *  - transaction_type: The transaction type,
+ *  - provider_status: The provider status,
+ *  - charged_data: The charged amount,
+ *  - transaction_id: The transaction UUID,
+ *  - payment_reference: The payment reference UUID.
+ *  - start_time: The start time. Example: 2018-09-13 17:05:16.
+ *  - end_time: The end time. Example: 2018-09-13 17:05:16
+ *  - batch_size: The batch size. Example: 1.
+ */
+#}
+{{ developer }},{{ developer_id }},{{ currency }},{{ transaction_type }},{{ provider_status }},{{ charged_data }},{{ transaction_id }},{{ payment_reference }},{{ start_time }},{{ end_time }},{{ batch_size }}

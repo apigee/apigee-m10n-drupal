@@ -1,0 +1,17 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org}/supported-currencies
+ * Response Code: 200
+ *
+ * @see: currency.json.twig
+ */
+#}
+{
+    "supportedCurrency": [
+        {% for currency in currencies %}
+            {% include 'currency.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "totalRecords" : {{ currencies|length }}
+}
