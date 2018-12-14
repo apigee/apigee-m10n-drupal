@@ -147,7 +147,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $filename = "prepaid-balance-report-2018-9.csv";
     $this->assertStatusCodeEquals(Response::HTTP_OK);
     $this->assertHeaderEquals('text/csv; charset=UTF-8', $this->drupalGetHeader('Content-Type'));
-    $this->assertHeaderEquals("attachment; filename='$filename'", $this->drupalGetHeader('Content-Disposition'));
+    $this->assertHeaderEquals("attachment; filename=$filename", $this->drupalGetHeader('Content-Disposition'));
   }
 
 }
