@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\EventSubscriber;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -30,8 +31,26 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface {
 
-  private $monetization;
-  private $messenger;
+  /**
+   * The monetization service.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $currentRouteMatch;
+
+  /**
+   * The current route match.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
 
   /**
    * ValidateMonetizationEnabledSubscriber constructor.
@@ -40,18 +59,24 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
    *   The monetization service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
+   *   The current route match.
    */
-  public function __construct(MonetizationInterface $monetization, MessengerInterface $messenger) {
+  public function __construct(MonetizationInterface $monetization, MessengerInterface $messenger, RouteMatchInterface $current_route_match) {
     $this->messenger = $messenger;
     $this->monetization = $monetization;
+    $this->currentRouteMatch = $current_route_match;
   }
 
   /**
    * If monetization isn't enabled alert the user.
    */
   public function validateMonetizationEnabled() {
-    if (!$this->monetization->isMonetizationEnabled()) {
-      $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
+    /** @var \Symfony\Component\Routing\Route $current_route */
+    if (($current_route = $this->currentRouteMatch->getRouteObject()) && ($current_route->hasOption('_apigee_monetization_route'))) {
+      if (!$this->monetization->isMonetizationEnabled()) {
+        $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
+      }
     }
   }
 

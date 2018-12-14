@@ -21,9 +21,7 @@
 namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Behat\Behat\HelperContainer\Exception\ServiceNotFoundException;
-use Drupal\apigee_edge\Exception\AuthenticationKeyException;
 use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
-use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests apigee_m10n installation.
@@ -33,7 +31,7 @@ use Drupal\Tests\BrowserTestBase;
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
-class InstallTest extends BrowserTestBase {
+class InstallTest extends MonetizationFunctionalTestBase {
 
   use ApigeeMonetizationTestTrait;
 
@@ -56,45 +54,6 @@ class InstallTest extends BrowserTestBase {
       $this->assertSession()->pageTextContains('Apigee Edge authentication is not properly configured. A working Apigee Edge connection is required to enable Apigee Monetization.');
       $this->assertFalse($this->container->get('module_handler')->moduleExists('apigee_m10n'));
     }
-  }
-
-  /**
-   * Tests installation when Apigee Edge is enabled but not configured.
-   */
-  public function testInstallWhenApigeeEdgeNotConfigured() {
-    $module_installer = $this->container->get('module_installer');
-
-    // Install apigee_edge.
-    $module_installer->install(['apigee_edge']);
-
-    try {
-      $module_installer->install(['apigee_m10n']);
-    }
-    catch (\Exception $exception) {
-      $this->assertInstanceOf(AuthenticationKeyException::class, $exception);
-      $this->assertSession()->pageTextContains('Apigee Edge authentication is not properly configured. A working Apigee Edge connection is required to enable Apigee Monetization.');
-      $this->assertFalse($this->container->get('module_handler')->moduleExists('apigee_m10n'));
-    }
-  }
-
-  /**
-   * Tests installation.
-   */
-  public function testInstallation() {
-    $module_installer = $this->container->get('module_installer');
-
-    // Install apigee_edge.
-    $module_installer->install(['apigee_edge']);
-
-    // Configure connection.
-    $module_installer->install(['apigee_m10n_test', 'apigee_mock_client']);
-    $this->rebuildContainer();
-    $this->initAuth();
-
-    // Install apigee_m10n.
-    $module_installer->install(['apigee_m10n']);
-
-    $this->assertTrue($this->container->get('module_handler')->moduleExists('apigee_m10n'));
   }
 
 }

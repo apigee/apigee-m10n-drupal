@@ -5,6 +5,8 @@ apigee_m10n.settings:
     _title: "Monetization"
   requirements:
     _permission: 'administer apigee monetization'
+  options:
+    _apigee_monetization_route: TRUE
 
 apigee_monetization.my_billing:
   path: /user/monetization/billing
@@ -12,6 +14,8 @@ apigee_monetization.my_billing:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::myPrepaidBalance
   requirements:
     _permission: 'view mint prepaid reports'
+  options:
+    _apigee_monetization_route: TRUE
 
 apigee_monetization.billing:
   path: /user/{user}/monetization/billing
@@ -19,6 +23,8 @@ apigee_monetization.billing:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalancePage
   requirements:
     _permission: 'view mint prepaid reports'
+  options:
+    _apigee_monetization_route: TRUE
 
 apigee_monetization.my_packages:
   path: /user/monetization/packages
@@ -26,6 +32,8 @@ apigee_monetization.my_packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
     _permission: 'access monetization packages'
+  options:
+    _apigee_monetization_route: TRUE
 
 apigee_monetization.packages:
   path: /user/{user}/monetization/packages
@@ -34,6 +42,8 @@ apigee_monetization.packages:
     _title: "Packages"
   requirements:
     _permission: 'access monetization packages'
+  options:
+    _apigee_monetization_route: TRUE
 
 apigee_monetization.my_purchased:
   path: /user/monetization/packages/purchased
@@ -41,6 +51,8 @@ apigee_monetization.my_purchased:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myPurchased
   requirements:
     _permission: 'access purchased monetization packages'
+  options:
+    _apigee_monetization_route: TRUE
 
 apigee_monetization.purchased:
   path: /user/{user}/monetization/packages/purchased
@@ -49,3 +61,5 @@ apigee_monetization.purchased:
     _title: "Purchased Packages"
   requirements:
     _permission: 'access purchased monetization packages'
+  options:
+    _apigee_monetization_route: TRUE
