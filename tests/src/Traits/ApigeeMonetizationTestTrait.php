@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
@@ -222,6 +223,46 @@ trait ApigeeMonetizationTestTrait {
       $exceptions,
       'A HTTP error has been logged in the Journal.'
     );
+  }
+
+  /**
+   * Helper to current response code equals to provided one.
+   *
+   * @param int $code
+   *   The expected status code.
+   */
+  protected function assertStatusCodeEquals($code) {
+    $this->checkDriverHeaderSupport();
+
+    $this->assertSession()->statusCodeEquals($code);
+  }
+
+  /**
+   * Helper to check headers.
+   *
+   * @param mixed $expected
+   *   The expected header.
+   * @param mixed $actual
+   *   The actual header.
+   * @param string $message
+   *   The message.
+   */
+  protected function assertHeaderEquals($expected, $actual, $message = '') {
+    $this->checkDriverHeaderSupport();
+
+    $this->assertEquals($expected, $actual, $message);
+  }
+
+  /**
+   * Checks if the driver supports headers.
+   */
+  protected function checkDriverHeaderSupport() {
+    try {
+      $this->getSession()->getResponseHeaders();
+    }
+    catch (UnsupportedDriverActionException $exception) {
+      $this->markTestSkipped($exception->getMessage());
+    }
   }
 
 }

@@ -29,8 +29,14 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
+use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsController;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -118,6 +124,37 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function packageRatePlanController($package_id): RatePlanControllerInterface {
     return new RatePlanController(
       $package_id,
+      $this->org,
+      $this->client
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportedCurrencyController(): SupportedCurrencyControllerInterface {
+    return new SupportedCurrencyController(
+      $this->org,
+      $this->client
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function billingDocumentsController(): BillingDocumentsControllerInterface {
+    return new BillingDocumentsController(
+      $this->org,
+      $this->client
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface {
+    return new PrepaidBalanceReportsController(
+      $developer_id,
       $this->org,
       $this->client
     );

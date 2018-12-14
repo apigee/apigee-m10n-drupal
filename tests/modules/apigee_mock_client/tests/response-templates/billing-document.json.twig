@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ *   Billing document include file. Use this whenever a billing document is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'billing-document.json.twig' %} @endcode
+ *
+ * Variables:
+ *  - month: The month. Example: 11.
+ *  - monthEnum: The month name in uppercase. Example: NOVEMBER.
+ *  - status: The status of the document, Example: OPEN.
+ *  - year: The year. Example: 2018,
+ */
+#}
+{
+  "month": "{{ month|default(1) }}",
+  "monthEnum": "{{ monthEnum|default('JANUARY') }}",
+  "status": "{{ status|default('OPEN') }}",
+  "year": "{{ year|default('2018') }}"
+}

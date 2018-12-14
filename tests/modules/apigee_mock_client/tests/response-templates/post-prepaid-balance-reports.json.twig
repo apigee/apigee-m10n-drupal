@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ *   POST /v1/mint/organizations/{org}/prepaid-balance-reports
+ *
+ * Response Code: 200
+ */
+#}
+Reporting Period:,From:,{{ from|default('2018-09-01') }},  To:,{{ to|default('2018-09-30') }}
+Developer:,{{ developer|default('Doe, John') }},
+Application:,{{ application|default('All') }}
+Currency:,{{ currency|default('Local') }}
+Type of Report:,{{ type|default('Detailed Balance Top-up report') }}
+
+Developer Name,Developer ID,Currency,Transaction Type,Provider Status,Charged Rate,Transaction ID,Payment Reference,Transaction Start Time,Transaction End Time,Batch Size,
+{% for balance in balances %}
+  {% include 'prepaid-balance-report.twig' with balance %},
+{% endfor %}
