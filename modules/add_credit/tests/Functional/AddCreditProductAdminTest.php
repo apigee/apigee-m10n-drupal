@@ -127,12 +127,12 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
 
     // Go to the "manage form display" page for this product type.
     $this->drupalGet('admin/commerce/config/product-types/default/edit/form-display');
-    // Get the field table text.
-    $table_test = $this->getSession()->getPage()->find('css', 'table#field-display-overview')->getText();
+    // Get the field table html. `GoutteDriver` treats option values as text.
+    $table_html = $this->getSession()->getPage()->find('css', 'table#field-display-overview')->getHtml();
     // Make sure the enable field comes before the "Disabled" row (region).
     static::assertLessThan(
-      strpos($table_test, 'Disabled'),
-      strpos($table_test, 'This is an Apigee add credit product'),
+      strpos($table_html, '<td colspan="7">Disabled</td>'),
+      strpos($table_html, 'This is an Apigee add credit product'),
       'Failed asserting the "Add credit" toggle is not disabled.'
     );
 
