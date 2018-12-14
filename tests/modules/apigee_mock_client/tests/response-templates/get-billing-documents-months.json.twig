@@ -1,0 +1,13 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org}/billing-documents-months
+ *
+ * Response Code: 200
+ */
+#}
+[
+  {% for document in documents %}
+    {% include 'billing-document.json.twig' with document %}{{ loop.last ? '' : ',' }}
+  {% endfor %}
+]

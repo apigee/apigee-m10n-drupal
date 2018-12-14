@@ -104,4 +104,35 @@ interface MonetizationInterface {
    */
   public function formatCurrency(string $amount, string $currency_id): string;
 
+  /**
+   * Get supported currencies for an organization.
+   *
+   * @return array
+   *   An array of supported currency entities.
+   */
+  public function getSupportedCurrencies(): ?array;
+
+  /**
+   * Get the billing documents months for an organization.
+   *
+   * @return array|null
+   *   An array of billing documents.
+   */
+  public function getBillingDocumentsMonths(): ?array;
+
+  /**
+   * Returns a CSV string for prepaid balances.
+   *
+   * @param string $developer_id
+   *   The developer id.
+   * @param \DateTimeImmutable $month
+   *   The month for the prepaid balances.
+   * @param string $currency
+   *   The currency id. Example: usd.
+   *
+   * @return null|string
+   *   A CSV string of prepaid balances.
+   */
+  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
+
 }

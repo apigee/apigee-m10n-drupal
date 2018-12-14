@@ -100,7 +100,15 @@ git push -u origin patch-2:patch-2 # Push changes to your repo.
 
 If needed, you can set environment variables multiple ways, either by defining them with
 `export` or `set` in the terminal or creating a copy of the `core/phpunit.xml.dist`
-file as `core/phpunit.xml` and specifying them in that file.
+file as `phpunit.xml` and specifying them in that file.
+
+This module is tested with the following driver configuration in `phpunit.xml`. This approach uses 
+[ChromeDriver](http://chromedriver.chromium.org/) directly without the use of selenium server. 
+
+```xml
+<env name="MINK_DRIVER_CLASS" value="Drupal\FunctionalJavascriptTests\DrupalSelenium2Driver" />
+<env name="MINK_DRIVER_ARGS" value='["chrome", {"chromeOptions":{"args":["--headless"]}}, "http://localhost:9515"]' />
+```
 
 You can execute tests of this module with the following command (note the location
 of the `phpunit` executable may vary):

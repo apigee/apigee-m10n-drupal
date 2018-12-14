@@ -33,8 +33,14 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
+use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
+use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsController;
+use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -68,7 +74,7 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * A cache of reusable controllers.
    *
-   * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface[]
+   * @var \Apigee\Edge\Controller\EntityControllerInterface[]
    */
   protected $controllers = [];
 
@@ -200,6 +206,49 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       );
     }
     return $this->controllers[__FUNCTION__][$developer_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportedCurrencyController(): SupportedCurrencyControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new SupportedCurrencyController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function billingDocumentsController(): BillingDocumentsControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new BillingDocumentsController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new PrepaidBalanceReportsController(
+        $developer_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
