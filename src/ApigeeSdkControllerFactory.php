@@ -132,8 +132,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function supportedCurrencyController(): SupportedCurrencyControllerInterface {
     return new SupportedCurrencyController(
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
@@ -142,8 +142,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function billingDocumentsController(): BillingDocumentsControllerInterface {
     return new BillingDocumentsController(
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
@@ -153,8 +153,8 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface {
     return new PrepaidBalanceReportsController(
       $developer_id,
-      $this->org,
-      $this->client
+      $this->getOrganization(),
+      $this->getClient()
     );
   }
 
