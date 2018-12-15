@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n\EventSubscriber;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
