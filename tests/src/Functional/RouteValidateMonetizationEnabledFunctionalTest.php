@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
+namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\apigee_m10n\Monetization;
 
@@ -31,7 +31,7 @@ use Drupal\apigee_m10n\Monetization;
  *
  * @coversDefaultClass \Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
  */
-class RouteValidateMonetizationEnabledFunctionalJavascriptTest extends MonetizationFunctionalJavascriptTestBase {
+class RouteValidateMonetizationEnabledFunctionalTest extends MonetizationFunctionalTestBase {
 
   /**
    * Tests routes when monetization is disabled.
