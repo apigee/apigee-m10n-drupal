@@ -24,19 +24,13 @@ use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Validates that monetization is enabled on every request.
  */
 class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface {
-
-  /**
-   * The monetization service.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $currentRouteMatch;
 
   /**
    * The current route match.
@@ -59,21 +53,21 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
    *   The monetization service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
-   *   The current route match.
    */
-  public function __construct(MonetizationInterface $monetization, MessengerInterface $messenger, RouteMatchInterface $current_route_match) {
+  public function __construct(MonetizationInterface $monetization, MessengerInterface $messenger) {
     $this->messenger = $messenger;
     $this->monetization = $monetization;
-    $this->currentRouteMatch = $current_route_match;
   }
 
   /**
    * If monetization isn't enabled alert the user.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   *   The event.
    */
-  public function validateMonetizationEnabled() {
+  public function validateMonetizationEnabled(GetResponseEvent $event) {
     /** @var \Symfony\Component\Routing\Route $current_route */
-    if (($current_route = $this->currentRouteMatch->getRouteObject()) && ($current_route->hasOption('_apigee_monetization_route'))) {
+    if (($current_route = $event->getRequest()->get('_route_object')) && ($current_route->hasOption('_apigee_monetization_route'))) {
       if (!$this->monetization->isMonetizationEnabled()) {
         $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
       }

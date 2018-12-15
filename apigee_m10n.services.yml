@@ -10,7 +10,7 @@ services:
     arguments: ['@apigee_edge.sdk_connector']
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
-    arguments: ['@apigee_m10n.monetization', '@messenger', '@current_route_match']
+    arguments: ['@apigee_m10n.monetization', '@messenger']
     tags:
       - {name: event_subscriber}
   apigee_m10n.format_currency_twig_extension:
