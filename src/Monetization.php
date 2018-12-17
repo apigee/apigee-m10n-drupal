@@ -150,7 +150,7 @@ class Monetization implements MonetizationInterface {
       $this->cache->set("apigee_m10n:org_monetization_status:{$org_id}", $monetization_status, $expire_time->getTimestamp());
     }
 
-    return (bool) ($monetization_status === 'enabled');
+    return ($monetization_status === 'enabled');
   }
 
   /**
