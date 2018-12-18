@@ -32,7 +32,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface {
 
   /**
-   * The current route match.
+   * The `apigee_m10n.monetization` service.
    *
    * @var \Drupal\apigee_m10n\MonetizationInterface
    */
