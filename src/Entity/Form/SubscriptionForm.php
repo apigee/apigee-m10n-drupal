@@ -71,6 +71,17 @@ class SubscriptionForm extends EdgeContentEntityForm {
   /**
    * {@inheritdoc}
    */
+  public function getFormId() {
+    // @TODO: Make sure we find a better way to handle names
+    // without adding rate plan ID this form is getting cached
+    // and when rendered as a formatter.
+    // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146
+    return parent::getFormId() . '_' . $this->entity->getRatePlan()->id();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
     // Set the save label if one has been passed into storage.
