@@ -211,7 +211,8 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * {@inheritdoc}
    */
   public function isSubscriptionActive(): bool {
-    return $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE;
+    return ($this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE
+      || $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE);
   }
 
   /**
