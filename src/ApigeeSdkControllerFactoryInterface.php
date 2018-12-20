@@ -49,7 +49,7 @@ interface ApigeeSdkControllerFactoryInterface {
   public function organizationController(): OrganizationControllerInterface;
 
   /**
-   * Creates a monettization developer controller.
+   * Creates a monetization developer controller.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperController
    *   The developer controller.
