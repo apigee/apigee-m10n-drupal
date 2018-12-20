@@ -1,0 +1,17 @@
+apigee_m10n_test.monetization:
+  path: /monetization
+  defaults:
+    _controller: \Drupal\apigee_m10n_test\Controller\TestController::test
+    _title: Monetization
+  requirements:
+    _access: 'TRUE'
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n_test.non_monetization:
+  path: /non-monetization
+  defaults:
+    _controller: \Drupal\apigee_m10n_test\Controller\TestController::test
+    _title: 'Non Monetization'
+  requirements:
+    _access: 'TRUE'
