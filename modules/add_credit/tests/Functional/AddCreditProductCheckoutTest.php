@@ -102,7 +102,6 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     // Create the developer account.
     // @todo: Restrict this to a what a developers permissions would be.
     $this->developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
-    $this->queueOrg();
     $this->drupalLogin($this->developer);
 
     $this->assertNoClientError();

@@ -17,7 +17,6 @@ services:
   apigee_m10n.sdk_controller_proxy.subscription:
     class: Drupal\apigee_m10n\Entity\Storage\DeveloperAcceptedRatePlanSdkControllerProxy
 
-# @todo: Consider dropping the `apigee_m10n.validate_monetization_enabled` event subscriber.
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
     arguments: ['@apigee_m10n.monetization', '@messenger']
