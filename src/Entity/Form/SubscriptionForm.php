@@ -103,7 +103,7 @@ class SubscriptionForm extends EdgeContentEntityForm {
         ]));
       }
       else {
-        $this->messenger->addWarning($this->t('Unable purchase <em>%label</em> plan', [
+        $this->messenger->addWarning($this->t('Unable to purchase <em>%label</em> plan', [
           '%label' => $display_name,
         ]));
       }
