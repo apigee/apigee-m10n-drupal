@@ -180,7 +180,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       }
     }
     catch (\Exception $e) {
-      $this->messenger->addError($e->getMessage());
+      $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
   }
 
