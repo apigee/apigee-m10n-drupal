@@ -36,34 +36,20 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\ParamConverter\ParamNotConvertedException
    */
   public function convert($value, $definition, $name, array $defaults) {
     $entity_type_id = $this->getEntityTypeFromDefaults($definition, $name, $defaults);
-    $storage = $this->entityManager->getStorage($entity_type_id);
-    $entity_definition = $this->entityManager->getDefinition($entity_type_id);
 
     // Get the package ID.
     $package_id = $defaults['package'] ?? FALSE;
 
     // Load the rate_plan.
-    if (!$package_id || !($entity = $storage->loadById($package_id, $value))) {
+    if (!$package_id || !($entity = $this->entityManager->getStorage($entity_type_id)->loadById($package_id, $value))) {
       throw new \InvalidArgumentException('Unable to load rate plan.');
-    }
-
-    // If the entity type is revisionable and the parameter has the
-    // "load_latest_revision" flag, load the latest revision.
-    if ($entity instanceof RevisionableInterface && !empty($definition['load_latest_revision']) && $entity_definition->isRevisionable()) {
-      // Retrieve the latest revision ID taking translations into account.
-      $langcode = $this->languageManager()
-        ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
-        ->getId();
-      $entity = $this->getLatestTranslationAffectedRevision($entity, $langcode);
-    }
-
-    // If the entity type is translatable, ensure we return the proper
-    // translation object for the current context.
-    if ($entity instanceof EntityInterface && $entity instanceof TranslatableInterface) {
-      $entity = $this->entityManager->getTranslationFromContext($entity, NULL, ['operation' => 'entity_upcast']);
     }
 
     return $entity;
