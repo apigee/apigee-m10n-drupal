@@ -48,7 +48,9 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
     $package_id = $defaults['package'] ?? FALSE;
 
     // Load the rate_plan.
+    // @TODO: If the entity doesn't exist, we should return a 404.
     if (!$package_id || !($entity = $this->entityManager->getStorage($entity_type_id)->loadById($package_id, $value))) {
+      // TODO: Improve the error message here.
       throw new \InvalidArgumentException('Unable to load rate plan.');
     }
 

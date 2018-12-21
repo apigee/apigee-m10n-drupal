@@ -125,6 +125,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function getPageTitle(RouteMatchInterface $route_match): string {
+    // TODO: make sure this string is configurable.
     return $this->t('Purchased Plans');
   }
 
@@ -309,6 +310,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $operations = parent::getDefaultOperations($entity);
     // TODO: Is a custom unsubscribe access check is really necessary?
     if ($entity->access('update') && $entity->hasLinkTemplate('unsubscribe-form')) {
+      // TODO: Allow cancelation of future plans.
       if ($entity->isSubscriptionActive()) {
         $operations['unsubscribe'] = [
           'title' => $this->t('Cancel Plan'),

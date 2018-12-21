@@ -97,6 +97,9 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
     parent::__construct($values, $entity_type, $decorated);
     // Save entity references in this class as well as the decorated instance.
     if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof DrupalRatePlanInterface) {
+      // TODO: Since `RatePlan::createFrom($sdk_rate_plan)` is available do we
+      // need to store an extra reference here. Is the slight performance
+      // benefit worth it?
       $this->setRatePlan($values['ratePlan']);
     }
   }

@@ -179,6 +179,8 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
         $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
     }
+    // TODO: Check to see if `EntityStorageException` is the only type of error
+    // to we need to catch here.
     catch (\Exception $e) {
       $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
