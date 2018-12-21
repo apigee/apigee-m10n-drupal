@@ -97,7 +97,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    */
   public static function defaultSettings() {
     return [
-      'label' => 'Purchase Plan',
+      'label' => 'Purchase plan',
     ];
   }
 
