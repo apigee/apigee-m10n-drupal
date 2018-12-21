@@ -15,7 +15,7 @@ apigee_m10n.settings.rate_plan:
     _form: '\Drupal\apigee_m10n\Form\RatePlanConfigForm'
     _title: 'Rate plan settings'
   requirements:
-    _permission: 'administer apigee m10n'
+    _permission: 'administer apigee monetization'
   options:
     _apigee_monetization_route: TRUE
 
@@ -25,7 +25,7 @@ apigee_m10n.settings.subscription:
     _form: '\Drupal\apigee_m10n\Form\SubscriptionConfigForm'
     _title: 'Subscription settings'
   requirements:
-    _permission: 'administer apigee m10n'
+    _permission: 'administer apigee monetization'
   options:
     _apigee_monetization_route: TRUE
 
