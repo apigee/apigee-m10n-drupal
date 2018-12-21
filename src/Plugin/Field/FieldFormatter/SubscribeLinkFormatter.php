@@ -43,7 +43,7 @@ class SubscribeLinkFormatter extends FormatterBase {
    */
   public static function defaultSettings() {
     return [
-      'label' => 'Purchase Plan',
+      'label' => 'Purchase plan',
     ];
   }
 
