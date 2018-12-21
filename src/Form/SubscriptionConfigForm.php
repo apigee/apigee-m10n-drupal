@@ -57,7 +57,7 @@ class SubscriptionConfigForm extends ConfigFormBase {
     $form['subscribe_label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Subscribe label.'),
-      '#description' => $this->t('The subscribe label would be shown if the Label is set to display on a subscribe field.'),
+      '#description' => $this->t('The subscribe label would be shown if the label is set to display on a subscribe field.'),
       '#default_value' => $config->get('subscribe_label'),
     ];
     $form['subscribe_form_title'] = [
