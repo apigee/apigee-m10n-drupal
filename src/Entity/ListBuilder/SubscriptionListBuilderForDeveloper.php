@@ -210,7 +210,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     return [
       'data' => [
         'status' => [
-          'data' => $entity->getSubscriptionStatus(),
+          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
           'class' => ['field-status'],
         ],
         'package' => [
