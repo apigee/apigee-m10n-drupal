@@ -172,7 +172,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
       if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have successfully cancelled <em>%label</em> plan', [
+        $this->messenger->addStatus($this->t('You have successfully cancelled %label plan', [
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
         Cache::invalidateTags(['apigee_my_subscriptions']);

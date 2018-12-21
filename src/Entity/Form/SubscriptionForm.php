@@ -98,12 +98,12 @@ class SubscriptionForm extends EdgeContentEntityForm {
     try {
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have purchased <em>%label</em> plan', [
+        $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
       }
       else {
-        $this->messenger->addWarning($this->t('Unable to purchase <em>%label</em> plan', [
+        $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
           '%label' => $display_name,
         ]));
       }
