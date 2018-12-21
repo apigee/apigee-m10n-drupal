@@ -84,8 +84,9 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL, array $supported_currencies = [], array $billing_documents = []) {
     $form['heading'] = [
       '#type' => 'html_tag',
-      '#tag' => 'h2',
+      '#tag' => 'h3',
       '#value' => $this->t('Previous Prepaid Statements'),
+      '#attributes' => ['class' => ['label']],
     ];
 
     // No form if there's no supported currency.
