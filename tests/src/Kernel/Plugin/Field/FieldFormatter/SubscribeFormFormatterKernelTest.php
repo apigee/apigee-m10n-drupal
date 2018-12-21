@@ -127,7 +127,6 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     static::assertInstanceOf(SubscribeFormFormatter::class, $instance);
 
     // Render the field item.
-    $this->stack->queueMockResponse('get_terms_conditions');
     $build = $instance->view($item_list);
 
     static::assertSame('Purchase', (string) $build['#title']);
