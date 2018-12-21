@@ -23,10 +23,3 @@ apigee_m10n.packages:
   route_name: apigee_monetization.my_packages
   menu_name: main
   weight: 10
-
-apigee_m10n.manage_profile:
-  title: 'Manage profile'
-  description: 'Manage Apigee Monetization profile.'
-  route_name: apigee_monetization.my_billing
-  menu_name: account
-  weight: -25

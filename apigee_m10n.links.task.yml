@@ -13,11 +13,11 @@ apigee_m10n.settings.subscription:
 apigee_m10n.billing:
   title: 'Prepaid Balance'
   route_name: apigee_monetization.billing
-  base_route: apigee_monetization.billing
-  weight: 10
+  base_route: entity.user.canonical
+  weight: -2
 
 apigee_m10n.subscriptions:
   title: 'Purchased Plans'
   route_name: entity.subscription.collection_by_developer
-  base_route: apigee_monetization.billing
-  weight: 20
+  base_route: entity.user.canonical
+  weight: -1
