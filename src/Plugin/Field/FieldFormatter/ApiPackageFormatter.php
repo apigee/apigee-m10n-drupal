@@ -24,7 +24,7 @@ namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
  *
  * @FieldFormatter(
  *   id = "apigee_api_package",
- *   label = @Translation("Api package formatter"),
+ *   label = @Translation("API package formatter"),
  *   field_types = {
  *     "apigee_api_package"
  *   }
