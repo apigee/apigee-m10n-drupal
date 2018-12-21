@@ -241,7 +241,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    *   Returns user entity.
    */
   private function getUser() {
-    // The route parameters still need tobe set.
+    // The route parameters still need to be set.
     $route_user = \Drupal::routeMatch()->getParameter('user');
     return $route_user ?: \Drupal::currentUser();
   }
