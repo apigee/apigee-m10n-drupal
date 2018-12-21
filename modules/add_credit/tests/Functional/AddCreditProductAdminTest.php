@@ -176,8 +176,8 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
     static::assertNotEmpty($site_mail);
     $this->assertSession()->fieldValueEquals('Email address', $site_mail);
     // Check the note about configuring commerce notifications.
-    $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'It is possible to configure drupal commerce to send an email to the purchaser upon order completion.');
-    $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation for more information.');
+    $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'You can configure Drupal Commerce to send an email to the consumer to confirm completion of the order.');
+    $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation.');
 
     // Change to always notify.
     $this->submitForm(['notify_on' => ApigeeAddCreditConfigForm::NOTIFY_ALWAYS], 'Save configuration');
