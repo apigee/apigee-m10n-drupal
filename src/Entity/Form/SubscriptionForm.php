@@ -62,7 +62,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // @TODO: Make sure we find a better way to handle names
     // without adding rate plan ID this form is getting cached
     // and when rendered as a formatter.
-    // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146
+    // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146.
     return parent::getFormId() . '_' . $this->entity->getRatePlan()->id();
   }
 

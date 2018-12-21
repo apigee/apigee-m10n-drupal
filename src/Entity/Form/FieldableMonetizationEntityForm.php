@@ -24,13 +24,7 @@ use Drupal\Core\Entity\EntityConstraintViolationListInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Entity form variant for Apigee Edge entity types.
- *
- * The content `ContentEntityForm` makes the assumption that entities are
- * translatable and revisionable. This entity base form provides most of the
- * same helpers for Apigee Edge entities.
- *
- * @see \Drupal\Core\Entity\ContentEntityForm
+ * Entity form variant for Apigee Monetization entity types.
  */
 class FieldableMonetizationEntityForm extends FieldableEdgeEntityForm implements FieldableMonetizationEntityFormInterface {
 
