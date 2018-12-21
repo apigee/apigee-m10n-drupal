@@ -11,9 +11,9 @@ apigee_m10n.settings.rate_plan:
   weight: 99
 
 apigee_m10n.settings.subscription:
-  title: 'Subscriptions'
+  title: 'Rate plan purchases'
   route_name: apigee_m10n.settings.subscription
-  description: 'Configure subscriptions.'
+  description: 'Configure rate plan purchases.'
   parent: system.admin_apigee_m10n
   weight: 100
 
