@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Field\FormatterBase;
@@ -141,10 +140,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
         'ratePlan' => $rate_plan,
         // TODO: User a controller proxy that caches the developer entity.
         // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
-        'developer' => new Developer([
-          'email' => $value['user']->getEmail(),
-          'legalName' => $value['user']->getEmail(),
-        ]),
+        'developer' => new Developer(['email' => $value['user']->getEmail()]),
         'startDate' => new \DateTimeImmutable(),
       ]);
       return $this->entityFormBuilder->getForm($subscription, 'default', [

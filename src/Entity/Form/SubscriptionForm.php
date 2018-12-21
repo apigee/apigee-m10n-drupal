@@ -26,6 +26,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\apigee_edge\Entity\Developer;
 
 /**
  * Subscription entity form.
@@ -96,6 +97,12 @@ class SubscriptionForm extends EdgeContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
+      // Auto assign legal name
+      $developer_id = $this->entity->getDeveloper()->getEmail();
+      $developer = Developer::load($developer_id);
+      $developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $developer_id);
+      $developer->save();
+
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased <em>%label</em> plan', [
