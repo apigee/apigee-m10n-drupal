@@ -100,8 +100,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
   /**
    * Test viewing a subscribe form formatter.
    *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * @throws \Exception
    */
   public function testView() {
 
@@ -119,7 +118,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     $instance = $this->formatter_manager->createInstance('apigee_subscribe_form', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
       'settings' => [
-        'label' => 'Subscribe'
+        'label' => 'Subscribe',
       ],
       'label' => TRUE,
       'view_mode' => 'default',
@@ -128,6 +127,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     static::assertInstanceOf(SubscribeFormFormatter::class, $instance);
 
     // Render the field item.
+    $this->stack->queueMockResponse('get_terms_conditions');
     $build = $instance->view($item_list);
 
     static::assertSame('Purchase', (string) $build['#title']);
