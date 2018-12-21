@@ -159,7 +159,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // The rate plan details are many-to-one.
     $definitions['ratePlanDetails']->setCardinality(-1);
     // Allow the package to be accessed as a field but not rendered because
-    // rendering the package within a reate plan would cause recursion.
+    // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
     // If the subscription label setting is available, use it.
     $subscribe_label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_label');
