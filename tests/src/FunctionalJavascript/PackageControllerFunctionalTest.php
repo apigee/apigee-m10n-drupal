@@ -19,14 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
 
-use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
-use Apigee\Edge\Api\Monetization\Entity\ApiProduct;
 use Drupal\Core\Url;
 
 /**
  * Functional tests for the package controller.
- *
- * @package Drupal\Tests\apigee_m10n\Functional
  *
  * @group apigee_m10n
  * @group apigee_m10n_functional
@@ -55,45 +51,29 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
 
     $this->develoepr = $this->createAccount([
       'access monetization packages',
-      'access purchased monetization packages',
+      'view subscription',
     ]);
-    $this->queueOrg();
     $this->drupalLogin($this->develoepr);
   }
 
   /**
    * Test the catalog page controller.
    *
-   * @throws \Behat\Mink\Exception\ElementTextException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Exception
    */
   public function testCatalogPage() {
-    $packages = [];
-    $package_names = [
-      $this->randomMachineName(),
-      $this->randomMachineName(),
-      $this->randomMachineName(),
+    $packages = [
+      $this->createPackage(),
+      $this->createPackage(),
     ];
+    $rate_plans = array_map([$this, 'createPackageRatePlan'], $packages);
 
-    foreach ($package_names as $name) {
-      $product_name = $name . 'Product';
+    $this->queueOrg();
+    $this->stack
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
 
-      $packages[] = new ApiPackage([
-        'id' => strtolower($name),
-        'name' => $name,
-        'description' => $name . ' description.',
-        'displayName' => $name . ' display name',
-        'apiProducts' => [
-          new ApiProduct([
-            'id' => strtolower($product_name),
-            'name' => $product_name,
-            'description' => $product_name . ' description.',
-            'displayName' => $product_name . ' display name',
-          ]),
-        ],
-      ]);
+    foreach ($rate_plans as $plan) {
+      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$plan]]]);
     }
 
     $this->stack
@@ -136,7 +116,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
     $this->assertCssElementContains("{$prefix} div.apigee-package-name", $packages[1]->getName());
     $this->assertCssElementContains("{$prefix} div.apigee-package-description", $packages[1]->getDescription());
     $this->assertCssElementContains("{$prefix} div.apigee-package-status", $packages[1]->getStatus());
-    // Set the selector prefix for the 1st product of the 1st package.
+    // Set the selector prefix for the 1st product of the 2nd package.
     $prefix = 'ul.apigee-package-list > li:nth-child(2) ul.apigee-product-list li:nth-child(1)';
     // Get the product.
     /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct $product */
@@ -145,6 +125,18 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
     $this->assertCssElementContains("{$prefix} div.apigee-product-id", $product->id());
     $this->assertCssElementContains("{$prefix} div.apigee-product-name", $product->getName());
     $this->assertCssElementContains("{$prefix} div.apigee-product-description", $product->getDescription());
+
+    // Set the selector prefix for the 1st rate plan of the 1st package.
+    $prefix = 'ul.apigee-package-list > li:nth-child(1) .rate-plan-entity-list .apigee-package-rate-plan:nth-child(1)';
+    // Get the rate plan.
+    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+    $rate_plan = $rate_plans[0];
+
+    static::assertNotSame($rate_plan->getDisplayName(), $rate_plan->getDescription());
+    $this->assertCssElementContains("{$prefix} .field--name-displayname", $rate_plan->getDisplayName());
+    $this->assertCssElementContains("{$prefix} .field--name-description", $rate_plan->getDescription());
+
+    $this->assertCssElementContains("{$prefix} .field--name-rateplandetails .rate-plan-detail", $rate_plan->getRatePlanDetails()[0]->getDuration() . ' ' . strtolower($rate_plan->getRatePlanDetails()[0]->getDurationType()));
   }
 
 }

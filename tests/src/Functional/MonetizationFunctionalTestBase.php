@@ -24,9 +24,6 @@ use Drupal\Tests\BrowserTestBase;
 
 /**
  * A base class for functional tests.
- *
- * @group apigee_m10n
- * @group apigee_m10n_functional
  */
 class MonetizationFunctionalTestBase extends BrowserTestBase {
 
@@ -61,7 +58,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
     parent::setUp();
 
     // Create new Apigee Edge basic auth key.
-    $this->init();
+    $this->baseSetUp();
   }
 
 }

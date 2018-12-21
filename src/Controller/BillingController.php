@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -37,10 +37,8 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
 
   /**
    * Cache prefix that is used for cache tags for this controller.
-   *
-   * @var string
    */
-  public static $cachePrefix = 'apigee.monetization.billing';
+  const CACHE_PREFIX = 'apigee.monetization.billing';
 
   /**
    * The current user.
@@ -138,7 +136,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
         '#cache' => [
           // Add a custom cache tag so that this page can be invalidated by code
           // that updates prepaid balances.
-          'tags' => [static::$cachePrefix . ':user:' . $user->id()],
+          'tags' => [static::CACHE_PREFIX . ':user:' . $user->id()],
           // Cache by path for up to 10 minutes.
           'contexts' => ['url.path'],
           'max-age' => 600,

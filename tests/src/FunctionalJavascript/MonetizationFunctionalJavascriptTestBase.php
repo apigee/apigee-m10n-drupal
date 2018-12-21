@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -24,9 +24,6 @@ use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
 
 /**
  * Setup for functional javascript tests.
- *
- * @group apigee_m10n
- * @group apigee_m10n_functional
  */
 class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
 
@@ -61,7 +58,7 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
     parent::setUp();
 
     // Create new Apigee Edge basic auth key.
-    $this->init();
+    $this->baseSetUp();
   }
 
 }

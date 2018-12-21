@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ *   Subscription include file. Use this whenever a developer accepted rate plan is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'subscription.json.twig' %} @endcode
+ *
+ * Variables:
+ * - subscription: The `subscripttion` Drupal entity.
+ *   - created:              Date the rate plan was created.
+ *   - developer:            The billing developer object.
+ *   - endDate:              End date of the rate plan in UTC.
+ *   - id:                   ID of the developer rate plan.
+ *   - nextCycleStartDate:   Start date and time for the next cycle in UTC. Uses the following format: <code>YYYY-MM-DD HH:mm:ss</code>.
+ *   - nextRecurringFeeDate: Date and time for the next recurring fee in UTC. This value is based on the <code>recurringStartUnit</code> value, which specifies the day of the month that recurring fees are charged. Uses the following format: <code>YYYY-MM-DD HH:mm:ss</code>.
+ *   - ratePlan:             The `rate_plan` Drupal entity.
+ *   - startDate:            Start date and time for the rate plan in UTC. Uses the following format: <code>YYYY-MM-DD HH:mm:ss</code>. If you do not specify a timestamp (not recommended), 00:00:00 (midnight) is used by default.
+ *   - updated:              Date the rate plan was updated in UTC.
+ */
+#}
+{
+    "created": "{{ subscription.created|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "developer": {% include 'monetization-developer.json.twig' with {"developer": subscription.developer } %},
+    {% if subscription.endDate %}
+        "endDate": "{{ subscription.endDate|date('Y-m-d h:m:s') }}",
+    {% endif %}
+    "id": "{{ subscription.id|default("4321dcba-1234abcd") }}",
+    "nextCycleStartDate": "{{ subscription.nextCycleStartDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "nextRecurringFeeDate": "{{ subscription.nextRecurringFeeDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "ratePlan": {% include 'rate-plan.json.twig' with {"plan": subscription.ratePlan } %},
+    "startDate": "{{ subscription.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "updated": "{{ subscription.updated|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}"
+}

@@ -1,9 +1,9 @@
 administer apigee monetization:
   title: 'Administer apigee monetization'
+
 access monetization packages:
   title: 'Access monetization packages'
-access purchased monetization packages:
-  title: 'Access purchased monetization packages'
+
 view mint prepaid reports:
   title: 'View Mint Prepaid Reports'
 download prepaid balance reports:

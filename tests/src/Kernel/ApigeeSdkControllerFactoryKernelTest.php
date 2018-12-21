@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -29,8 +29,6 @@ use Drupal\user\UserInterface;
 
 /**
  * Tests the `apigee_m10n.sdk_controller_factory` service.
- *
- * @package Drupal\Tests\apigee_m10n\Kernel
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
@@ -116,9 +114,9 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
   /**
    * Test the package rate plan controller.
    */
-  public function testPackageRatePlanController() {
+  public function testRatePlanController() {
     /** @var \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface $controller */
-    $controller = $this->controller_factory->packageRatePlanController($this->randomString());
+    $controller = $this->controller_factory->ratePlanController($this->randomString());
 
     static::assertInstanceOf(RatePlanControllerInterface::class, $controller);
 

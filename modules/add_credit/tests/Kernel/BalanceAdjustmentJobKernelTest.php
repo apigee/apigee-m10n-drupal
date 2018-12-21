@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
@@ -99,7 +100,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->installEntitySchema('user');
     \Drupal::service('commerce_price.currency_importer')->importByCountry('US');
 
-    $this->developer = $this->createAccount([]);
+    $this->developer = $this->createAccount();
 
     $this->assertNoClientError();
 
@@ -110,20 +111,6 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       ->set('mail', $this->site_mail)
       ->set('name', 'example site')
       ->save();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function tearDown() {
-    // Prepare for deleting the developer.
-    $this->queueDeveloperResponse($this->developer);
-    $this->queueDeveloperResponse($this->developer);
-
-    // We have to remove the developer we created so it is removed from Apigee.
-    $this->developer->delete();
-
-    parent::tearDown();
   }
 
   /**
@@ -167,7 +154,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '19.99',
-        'developer' => $this->developer,
+        'developer' => new Developer([
+          'email' => $this->developer->getEmail(),
+          'uuid' => \Drupal::service('uuid')->generate(),
+        ]),
       ],
     ]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
@@ -231,7 +221,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     $this->stack->queueMockResponse([
       'get_developer_balances' => [
         'amount_usd' => '39.98',
-        'developer' => $this->developer,
+        'developer' => new Developer([
+          'email' => $this->developer->getEmail(),
+          'uuid' => \Drupal::service('uuid')->generate(),
+        ]),
       ],
     ]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
@@ -247,8 +240,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testSuccessfulNotification() {
-    $this->config(ApigeeAddCreditConfigForm::$CONFIG_NAME)
-      ->set('notify_on', ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS)
+    $this->config(ApigeeAddCreditConfigForm::CONFIG_NAME)
+      ->set('notify_on', ApigeeAddCreditConfigForm::NOTIFY_ALWAYS)
       ->save();
 
     $this->testExecuteRequestWithExistingBalance();

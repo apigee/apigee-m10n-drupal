@@ -1,0 +1,65 @@
+langcode: en
+status: true
+dependencies:
+  module:
+  - apigee_m10n
+id: rate_plan.rate_plan.default
+targetEntityType: rate_plan
+bundle: rate_plan
+mode: default
+content:
+  description:
+    type: string
+    weight: 1
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  displayName:
+    type: string
+    weight: 0
+    region: content
+    label: above
+    settings:
+      link_to_entity: true
+    third_party_settings: {  }
+  ratePlanDetails:
+    type: apigee_rate_plan_details
+    weight: 2
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  subscribe:
+    type: apigee_subscribe_link
+    weight: 3
+    region: content
+    label: above
+    settings:
+      label: 'Purchase Plan'
+    third_party_settings: {  }
+hidden:
+  advance: true
+  contractDuration: true
+  contractDurationType: true
+  currency: true
+  earlyTerminationFee: true
+  endDate: true
+  freemiumDuration: true
+  freemiumDurationType: true
+  freemiumUnit: true
+  frequencyDuration: true
+  frequencyDurationType: true
+  id: true
+  name: true
+  organization: true
+  paymentDueDays: true
+  private: true
+  prorate: true
+  published: true
+  recurringFee: true
+  recurringStartUnit: true
+  recurringType: true
+  setUpFee: true
+  startDate: true

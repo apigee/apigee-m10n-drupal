@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -107,7 +107,7 @@ class BalanceAdjustmentJob extends EdgeJob {
 
     $this->adjustment = $adjustment;
 
-    $this->module_config = \Drupal::config(ApigeeAddCreditConfigForm::$CONFIG_NAME);
+    $this->module_config = \Drupal::config(ApigeeAddCreditConfigForm::CONFIG_NAME);
 
     $this->setTag('prepaid_balance_update_wait');
   }
@@ -137,7 +137,7 @@ class BalanceAdjustmentJob extends EdgeJob {
         // total so we have to grab that from the balance controller again.
         $balance_after = $this->getPrepaidBalance($controller, $currency_code);
         $new_balance = new Price((string) ($balance_after->getTopUps()), $currency_code);
-        Cache::invalidateTags([BillingController::$cachePrefix . ':user:' . $this->developer->id()]);
+        Cache::invalidateTags([BillingController::CACHE_PREFIX . ':user:' . $this->developer->id()]);
       }
       catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.
@@ -205,7 +205,7 @@ class BalanceAdjustmentJob extends EdgeJob {
 
         throw $thrown;
       }
-      elseif ($this->module_config->get('notify_on') == ApigeeAddCreditConfigForm::$NOTIFY_ALWAYS) {
+      elseif ($this->module_config->get('notify_on') == ApigeeAddCreditConfigForm::NOTIFY_ALWAYS) {
         $this->sendNotification('balance_adjustment_report', $message_context);
       }
     }

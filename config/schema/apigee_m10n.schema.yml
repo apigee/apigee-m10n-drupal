@@ -1,0 +1,60 @@
+apigee_m10n.rate_plan.config:
+  type: config_object
+  label: 'Rate plan settings'
+  mapping:
+    product_rate_plan_view_mode:
+      type: string
+      label: 'View mode to use when viewing rate plans within packages.'
+
+apigee_m10n.subscription.config:
+  type: config_object
+  label: 'Subscription settings'
+  mapping:
+    subscribe_label:
+      type: label
+      label: 'The subscribe label.'
+    subscribe_form_title:
+      type: label
+      label: 'Subscribe form page title.'
+    subscribe_button_label:
+      type: label
+      label: 'Subscribe button label.'
+    unsubscribe_question:
+      type: label
+      label: 'Unsubscribe form page title.'
+    unsubscribe_description:
+      type: label
+      label: 'Unsubscribe form description.'
+    unsubscribe_button_label:
+      type: label
+      label: 'Unsubscribe button label.'
+
+field.formatter.settings.apigee_subscribe_link:
+  type: mapping
+  label: 'Subscribe Link'
+  mapping:
+    label:
+      type: label
+      label: 'Subscribe label'
+
+field.formatter.settings.apigee_subscribe_form:
+  type: mapping
+  label: 'Subscribe form settings'
+  mapping:
+    label:
+      type: label
+      label: 'Subscribe Label'
+
+field.formatter.settings.apigee_datestamp:
+  type: mapping
+  label: 'Apigee Edge date'
+  mapping:
+    date_format:
+      type: string
+      label: 'Date format'
+    custom_date_format:
+      type: string
+      label: 'Custom date format'
+    timezone:
+      type: string
+      label: 'Timezone'

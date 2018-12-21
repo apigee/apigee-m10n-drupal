@@ -6,5 +6,4 @@ apigee_m10n_add_credit.apigee_add_credit_config_form:
   requirements:
     _permission: 'access administration pages'
   options:
-    _admin_route: TRUE
     _apigee_monetization_route: TRUE

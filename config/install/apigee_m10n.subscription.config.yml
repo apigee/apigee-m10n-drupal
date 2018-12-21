@@ -1,0 +1,6 @@
+subscribe_label: "Purchase"
+subscribe_form_title: "Purchase @rate_plan"
+subscribe_button_label: "Purchase"
+unsubscribe_question: "Cancel @rate_plan"
+unsubscribe_description: "Are you sure you would to like cancel this plan?"
+unsubscribe_button_label: "End this plan"

@@ -19,7 +19,20 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
+use Apigee\Edge\Api\Monetization\Controller\OrganizationProfileController;
+use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
+use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
+use Apigee\Edge\Api\Monetization\Entity\ApiProduct as MonetizationApiProduct;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\Property\FreemiumPropertiesInterface;
+use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
+use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\RatePlan;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
@@ -47,31 +60,42 @@ trait ApigeeMonetizationTestTrait {
    * The SDK Connector client.
    *
    * This will have it's http client stack replaced a mock stack.
+   * mock.
    *
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
   protected $sdk_connector;
 
   /**
-   * {@inheritdoc}
+   * The SDK controller factory.
    *
-   * This prevents `edgeSetup` from being called unintentionally.
+   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
    */
-  protected function setUp() {
-    $this->init();
-  }
+  protected $controller_factory;
 
   /**
-   * Initialization.
+   * The clean up queue.
+   *
+   * @var array
+   *   An associative array with a `callback` and a `weight` key. Some items
+   *   will need to be called before others which is the reason for the weight
+   *   system.
+   */
+  protected $cleanup_queue;
+
+  /**
+   * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function init() {
+  public function setUp() {
     $this->integration_enabled = !empty(getenv(EnvironmentVariable::APIGEE_INTEGRATION_ENABLE));
     $this->stack               = $this->container->get('apigee_mock_client.mock_http_handler_stack');
     $this->sdk_connector       = $this->container->get('apigee_edge.sdk_connector');
 
     $this->initAuth();
+    // `::initAuth` has to happen before getting the controller factory.
+    $this->controller_factory = $this->container->get('apigee_m10n.sdk_controller_factory');
   }
 
   /**
@@ -149,7 +173,215 @@ trait ApigeeMonetizationTestTrait {
     // This is here to make drupalLogin() work.
     $account->passRaw = $edit['pass'];
 
+    $this->cleanup_queue[] = [
+      'weight' => 99,
+      // Prepare for deleting the developer.
+      'callback' => function () use ($account) {
+        $this->queueDeveloperResponse($account);
+        $this->queueDeveloperResponse($account);
+        // Delete it.
+        $account->delete();
+      },
+    ];
+
     return $account;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \Exception
+   */
+  protected function createProduct(): MonetizationApiProduct {
+    /** @var \Drupal\apigee_edge\Entity\ApiProduct $product */
+    $product = ApiProduct::create([
+      'id'            => strtolower($this->randomMachineName()),
+      'name'          => $this->randomMachineName(),
+      'description'   => $this->getRandomGenerator()->sentences(3),
+      'displayName'   => $this->getRandomGenerator()->word(16),
+      'approvalType'  => ApiProduct::APPROVAL_TYPE_AUTO,
+    ]);
+    // Need to queue the management spi product.
+    $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
+    $product->save();
+
+    // Remove the product in the cleanup queue.
+    $this->cleanup_queue[] = [
+      'weight' => 20,
+      'callback' => function () use ($product) {
+        $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
+        $product->delete();
+      },
+    ];
+
+    // Queue another response for the entity load.
+    $this->stack->queueMockResponse(['api_product_mint' => ['product' => $product]]);
+    $controller = $this->controller_factory->apiProductController();
+
+    return $controller->load($product->getName());
+  }
+
+  /**
+   * Create an API package.
+   *
+   * @throws \Exception
+   */
+  protected function createPackage(): ApiPackage {
+    $products = [];
+    for ($i = rand(1, 4); $i > 0; $i--) {
+      $products[] = $this->createProduct();
+    }
+
+    $package = new ApiPackage([
+      'name'        => $this->randomMachineName(),
+      'description' => $this->getRandomGenerator()->sentences(3),
+      'displayName' => $this->getRandomGenerator()->word(16),
+      'apiProducts' => $products,
+      // CREATED, ACTIVE, INACTIVE.
+      'status'      => 'CREATED',
+    ]);
+    // Get a package controller from the package controller factory.
+    $package_controller = $this->controller_factory->apiPackageController();
+    $this->stack
+      ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
+    $package_controller->create($package);
+
+    // Remove the packages in the cleanup queue.
+    $this->cleanup_queue[] = [
+      'weight' => 10,
+      'callback' => function () use ($package, $package_controller) {
+        $this->stack
+          ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
+        $package_controller->delete($package->id());
+      },
+    ];
+
+    return $package;
+  }
+
+  /**
+   * Create a package rate plan for a given package.
+   *
+   * @throws \Exception
+   */
+  protected function createPackageRatePlan(ApiPackage $package): RatePlanInterface {
+    $client = $this->sdk_connector->getClient();
+    $org_name = $this->sdk_connector->getOrganization();
+
+    // Load the org profile.
+    $org_controller = new OrganizationProfileController($org_name, $client);
+    $this->stack->queueMockResponse('get_organization_profile');
+    $org = $org_controller->load();
+
+    // The usd currency should be available by default.
+    $currency_controller = new SupportedCurrencyController($org_name, $this->sdk_connector->getClient());
+    $this->stack->queueMockResponse('get_supported_currency');
+    $currency = $currency_controller->load('usd');
+
+    $rate_plan_rate = new RatePlanRateRateCard([
+      'id'        => strtolower($this->randomMachineName()),
+      'rate'      => rand(5, 20),
+    ]);
+    $rate_plan_rate->setStartUnit(1);
+
+    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+    $rate_plan = RatePlan::create([
+      'advance'               => TRUE,
+      'customPaymentTerm'     => TRUE,
+      'description'           => $this->getRandomGenerator()->sentences(3),
+      'displayName'           => $this->getRandomGenerator()->word(16),
+      'earlyTerminationFee'   => '2.0000',
+      'endDate'               => new \DateTimeImmutable('now + 1 year'),
+      'frequencyDuration'     => 1,
+      'frequencyDurationType' => FreemiumPropertiesInterface::FREEMIUM_DURATION_MONTH,
+      'freemiumUnit'          => 1,
+      'id'                    => strtolower($this->randomMachineName()),
+      'isPrivate'             => 'false',
+      'name'                  => $this->randomMachineName(),
+      'paymentDueDays'        => '30',
+      'prorate'               => FALSE,
+      'published'             => TRUE,
+      'ratePlanDetails'       => [
+        new RatePlanDetail([
+          "aggregateFreemiumCounters" => TRUE,
+          "aggregateStandardCounters" => TRUE,
+          "aggregateTransactions"     => TRUE,
+          'currency'                  => $currency,
+          "customPaymentTerm"         => TRUE,
+          "duration"                  => 1,
+          "durationType"              => "MONTH",
+          "freemiumDuration"          => 1,
+          "freemiumDurationType"      => "MONTH",
+          "freemiumUnit"              => 110,
+          "id"                        => strtolower($this->randomMachineName(16)),
+          "meteringType"              => "UNIT",
+          'org'                       => $org,
+          "paymentDueDays"            => "30",
+          'ratePlanRates'             => [$rate_plan_rate],
+          "ratingParameter"           => "VOLUME",
+          "type"                      => "RATECARD",
+        ]),
+      ],
+      'recurringFee'          => '3.0000',
+      'recurringStartUnit'    => '1',
+      'recurringType'         => 'CALENDAR',
+      'setUpFee'              => '1.0000',
+      'startDate'             => new \DateTimeImmutable('2018-07-26 00:00:00'),
+      'type'                  => 'STANDARD',
+      'organization'          => $org,
+      'currency'              => $currency,
+      'package'               => $package,
+      'subscribe'             => [],
+    ]);
+
+    $this->stack
+      ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+    $rate_plan->save();
+
+    // Remove the rate plan in the cleanup queue.
+    $this->cleanup_queue[] = [
+      'weight' => 9,
+      'callback' => function () use ($rate_plan) {
+        $this->stack->queueMockResponse('no_content');
+        $rate_plan->delete();
+      },
+    ];
+
+    return $rate_plan;
+  }
+
+  /**
+   * Creates a subscription.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user to subscribe to the rate plan.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
+   *   The rate plan to subscribe to.
+   *
+   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   *   The subscription.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
+    $subscription = Subscription::create([
+      'ratePlan' => $rate_plan,
+      'developer' => new Developer([
+        'email' => $user->getEmail(),
+        'name' => $user->getDisplayName(),
+      ]),
+      'startDate' => new \DateTimeImmutable(),
+    ]);
+
+    $this->stack->queueMockResponse('subscription', ['subscription' => $subscription]);
+    $subscription->save();
+
+    // The subscription controller does not have a delete operation so there is
+    // nothing to add to the cleanup queue.
+    return $subscription;
   }
 
   /**
@@ -177,9 +409,7 @@ trait ApigeeMonetizationTestTrait {
    * @param bool $monetized
    *   Whether or not the org is monetized.
    *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Exception
    */
   protected function queueOrg($monetized = TRUE) {
     $this->stack
@@ -223,6 +453,34 @@ trait ApigeeMonetizationTestTrait {
       $exceptions,
       'A HTTP error has been logged in the Journal.'
     );
+  }
+
+  /**
+   * Performs cleanup tasks after each individual test method has been run.
+   */
+  protected function tearDown() {
+    if (!empty($this->cleanup_queue)) {
+      $errors = [];
+      // Sort all callbacks by weight. Lower weights will be executed first.
+      usort($this->cleanup_queue, function ($a, $b) {
+        return ($a['weight'] === $b['weight']) ? 0 : (($a['weight'] < $b['weight']) ? -1 : 1);
+      });
+      // Loop through the queue and execute callbacks.
+      foreach ($this->cleanup_queue as $claim) {
+        try {
+          $claim['callback']();
+        }
+        catch (\Exception $ex) {
+          $errors[] = $ex;
+        }
+      }
+
+      parent::tearDown();
+
+      if (!empty($errors)) {
+        throw new \Exception('Errors found while processing the cleanup queue', 0, reset($errors));
+      }
+    }
   }
 
   /**

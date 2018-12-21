@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ *   Rate include file. Use this whenever a rate plan rate is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'rate-plan-rate.json.twig' %} @endcode
+ *
+ * Variables:
+ * - rate:
+ *   - endUnit:     End unit.
+ *   - id:          ID of the rate plan rate. Only valid and required when you are updating a draft rate plan rate.
+ *   - rate:        Rate for the rate card plan. Specify for RATECARD plans only.
+ *   - revshare:    Revenue share. Specify for REVSHARE plans only.
+ *   - startUnit:   Start unit.
+ */
+#}
+{
+    "endUnit":      {{ rate.endUnit|default('15') }},
+    "id":           "{{ rate.id|default('foo') }}",
+    "rate":         {{ rate.rate|default('0.1000') }},
+    "startUnit":    0,
+    {#"startUnit":    {{ rate.startUnit|default('0') }},#}
+    "type":         "{{ rate.type|default('RATECARD') }}"
+}

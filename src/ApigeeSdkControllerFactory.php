@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -23,8 +23,12 @@ use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
+use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
@@ -68,6 +72,13 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   protected $client;
 
   /**
+   * A cache of reusable controllers.
+   *
+   * @var \Apigee\Edge\Controller\EntityControllerInterface[]
+   */
+  protected $controllers = [];
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -81,81 +92,163 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function organizationController(): OrganizationControllerInterface {
-    return new OrganizationController($this->client);
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new OrganizationController($this->client);
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerController(): DeveloperController {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new DeveloperController($this->getOrganization(), $this->getClient());
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
    * {@inheritdoc}
    */
   public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface {
-    return new DeveloperPrepaidBalanceController(
-      $developer->getEmail(),
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    $developer_email = $developer->getEmail();
+    if (empty($this->controllers[__FUNCTION__][$developer_email])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$developer_email] = new DeveloperPrepaidBalanceController(
+        $developer_email,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$developer_email];
   }
 
   /**
    * {@inheritdoc}
    */
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
-    return new CompanyPrepaidBalanceController(
-      $company->getLegalName(),
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    $legal_name = $company->getLegalName();
+    if (empty($this->controllers[__FUNCTION__][$legal_name])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$legal_name] = new CompanyPrepaidBalanceController(
+        $legal_name,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$legal_name];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function apiProductController(): ApiProductControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new ApiProductController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
    * {@inheritdoc}
    */
   public function apiPackageController(): ApiPackageControllerInterface {
-    return new ApiPackageController(
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new ApiPackageController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function packageRatePlanController($package_id): RatePlanControllerInterface {
-    return new RatePlanController(
-      $package_id,
-      $this->getOrganization(),
-      $this->getClient()
-    );
+  public function ratePlanController($package_id): RatePlanControllerInterface {
+    if (empty($this->controllers[__FUNCTION__][$package_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new rate plan controller.
+      $this->controllers[__FUNCTION__][$package_id] = new RatePlanController(
+        $package_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$package_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerAcceptedRatePlanController(string $developer_id): DeveloperAcceptedRatePlanController {
+    if (empty($this->controllers[__FUNCTION__][$developer_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$developer_id] = new DeveloperAcceptedRatePlanController(
+        $developer_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$developer_id];
   }
 
   /**
    * {@inheritdoc}
    */
   public function supportedCurrencyController(): SupportedCurrencyControllerInterface {
-    return new SupportedCurrencyController(
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new SupportedCurrencyController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
    * {@inheritdoc}
    */
   public function billingDocumentsController(): BillingDocumentsControllerInterface {
-    return new BillingDocumentsController(
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new BillingDocumentsController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
    * {@inheritdoc}
    */
   public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface {
-    return new PrepaidBalanceReportsController(
-      $developer_id,
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new PrepaidBalanceReportsController(
+        $developer_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
@@ -166,7 +259,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   protected function getOrganization() {
     $this->org = $this->org ?? $this->sdk_connector->getOrganization();
-
     return $this->org;
   }
 
@@ -178,7 +270,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   protected function getClient() {
     $this->client = $this->client ?? $this->sdk_connector->getClient();
-
     return $this->client;
   }
 

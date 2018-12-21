@@ -58,12 +58,12 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->developer = $this->createAccount([
       'view mint prepaid reports',
       'access monetization packages',
-      'access purchased monetization packages',
+      'view subscription',
     ]);
 
-    $this->queueOrg();
     $this->drupalLogin($this->developer);
 
+    $this->queueOrg();
     // Check the manage profile link.
     $this->clickLink('Manage profile');
 

@@ -2,18 +2,45 @@ services:
   logger.channel.apigee_m10n:
     parent: logger.channel_base
     arguments: ['apigee_monetization']
+
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
     arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n']
+
   apigee_m10n.sdk_controller_factory:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
     arguments: ['@apigee_edge.sdk_connector']
+
+  apigee_m10n.sdk_controller_proxy.rate_plan:
+    class: Drupal\apigee_m10n\Entity\Storage\RatePlanSdkControllerProxy
+
+  apigee_m10n.sdk_controller_proxy.subscription:
+    class: Drupal\apigee_m10n\Entity\Storage\DeveloperAcceptedRatePlanSdkControllerProxy
+
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
     arguments: ['@apigee_m10n.monetization', '@messenger']
     tags:
       - {name: event_subscriber}
+
   apigee_m10n.format_currency_twig_extension:
     class: Drupal\apigee_m10n\TwigExtension\FormatCurrencyTwigExtension
     tags:
     - { name: twig.extension }
+
+  paramconverter.entity.rate_plan:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\RatePlanConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity.manager', '@language_manager']
+
+  paramconverter.entity.subscription:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity.manager', '@language_manager']
+
+  apigee_m10n.route_subscriber:
+    class: Drupal\apigee_m10n\Routing\MonetizationRouteSubscriber
+    tags:
+     - { name: event_subscriber }

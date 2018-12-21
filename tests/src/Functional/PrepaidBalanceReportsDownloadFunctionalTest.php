@@ -55,8 +55,6 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
       'download prepaid balance reports',
     ]);
 
-    $this->queueOrg();
-
     $this->drupalLogin($this->account);
   }
 
@@ -66,6 +64,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
    * @throws \Behat\Mink\Exception\ResponseTextException
    */
   public function testAccountWithNoReports() {
+    $this->queueOrg();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
@@ -93,9 +92,10 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
   /**
    * Test for a date with no reports.
    *
-   * @throws \Behat\Mink\Exception\ResponseTextException
+   * @throws \Exception
    */
   public function testDateWithNoReport() {
+    $this->queueOrg();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
@@ -122,8 +122,11 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
 
   /**
    * Test the prepaid balance download form for a valid account and date.
+   *
+   * @throws \Exception
    */
   public function testValidAccountAndDate() {
+    $this->queueOrg();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',

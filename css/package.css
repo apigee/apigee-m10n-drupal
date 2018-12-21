@@ -64,3 +64,20 @@ li.apigee-sdk-package.expanded div.apigee-package-details {
 div.apigee-package-id {
   margin-top: 5px;
 }
+/* Add a little formatting to the plan grid. */
+.apigee-sdk-package .rate-plan-entity-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 5px;
+}
+.apigee-sdk-package .apigee-package-rate-plan {
+  flex:1 1 auto;
+  width: 29%;
+  margin:5px;
+  background-color: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  padding: 10px;
+}
+

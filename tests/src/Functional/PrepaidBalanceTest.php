@@ -24,8 +24,6 @@ use Drupal\Core\Url;
 /**
  * Functional test for prepaid balance report.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
@@ -51,9 +49,8 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
     $this->developer = $this->createAccount([]);
 
-    $this->queueOrg();
-
     $this->drupalLogin($this->developer);
+    $this->queueOrg();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
@@ -75,10 +72,9 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     // able to see some prepaid balances.
     $this->developer = $this->createAccount(['view mint prepaid reports']);
 
-    $this->queueOrg();
-
     $this->drupalLogin($this->developer);
 
+    $this->queueOrg();
     $this->stack->queueMockResponse([
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,
