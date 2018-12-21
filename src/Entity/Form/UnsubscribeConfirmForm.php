@@ -136,9 +136,9 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#title' => $this->t('Plan End Date'),
       '#options' => [
         'now'     => $this->t('Now'),
-        'on_date' => $this->t('Future Date')
+        'on_date' => $this->t('Future Date'),
       ],
-      '#default_value' => 'now'
+      '#default_value' => 'now',
     ];
     $form['endDate'] = [
       '#type'  => 'date',
@@ -146,7 +146,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#states' => [
         'visible' => [
           ':input[name="end_type"]' => ['value' => 'on_date'],
-        ]
+        ],
       ],
     ];
     return $form;
