@@ -71,7 +71,7 @@ interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
   public function getSubscriptionStatus(): string;
 
   /**
-   * Get's data for the `apigee_tnc` field formatter.
+   * Gets data for the `apigee_tnc` field formatter.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   The rate plan.
