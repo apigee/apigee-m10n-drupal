@@ -84,7 +84,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL, array $supported_currencies = [], array $billing_documents = []) {
     $form['heading'] = [
       '#type' => 'html_tag',
-      '#tag' => 'h3',
+      '#tag' => 'h2',
       '#value' => $this->t('Previous Prepaid Statements'),
     ];
 

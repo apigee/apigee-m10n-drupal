@@ -42,6 +42,7 @@ apigee_monetization.billing:
   path: /user/{user}/monetization/billing
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalancePage
+    _title: 'Prepaid Balance'
   requirements:
     _permission: 'view mint prepaid reports'
   options:
