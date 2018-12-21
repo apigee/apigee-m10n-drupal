@@ -23,7 +23,7 @@ apigee_m10n.settings.subscription:
   path: 'admin/config/apigee-edge/monetization/subscription-settings'
   defaults:
     _form: '\Drupal\apigee_m10n\Form\SubscriptionConfigForm'
-    _title: 'Subscription settings'
+    _title: 'Rate plan purchase settings'
   requirements:
     _permission: 'administer apigee monetization'
   options:

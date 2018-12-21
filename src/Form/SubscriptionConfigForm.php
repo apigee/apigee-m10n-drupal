@@ -56,38 +56,38 @@ class SubscriptionConfigForm extends ConfigFormBase {
 
     $form['subscribe_label'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Subscribe label.'),
-      '#description' => $this->t('The subscribe label would be shown if the label is set to display on a subscribe field.'),
+      '#title' => $this->t('Purchase rate plan label'),
+      '#description' => $this->t('If configured to be displayed, the heading label used in the purchase rate plan form.'),
       '#default_value' => $config->get('subscribe_label'),
     ];
     $form['subscribe_form_title'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Subscribe form page title.'),
-      '#description' => $this->t('The page title to use for the subscribe form page. i.e. "Purchase %rate_plan"'),
+      '#title' => $this->t('Purchase rate plan form title'),
+      '#description' => $this->t('Title of the purchase rate plan form. For example: "Purchase %rate_plan".'),
       '#default_value' => $config->get('subscribe_form_title'),
     ];
     $form['subscribe_button_label'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Subscribe button label.'),
-      '#description' => $this->t('This label will be used when creating a subscription.'),
+      '#title' => $this->t('Purchase rate plan button label'),
+      '#description' => $this->t('Button label for purchasing a rate plan.'),
       '#default_value' => $config->get('subscribe_button_label'),
     ];
     $form['unsubscribe_question'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Unsubscribe form page title.'),
-      '#description' => $this->t('The page title to use for the unsubscribe form page. i.e. "Cancel %rate_plan"'),
+      '#title' => $this->t('Cancel rate plan form title'),
+      '#description' => $this->t('Title of the cancel form. For example: "Cancel %rate_plan".'),
       '#default_value' => $config->get('unsubscribe_question'),
     ];
     $form['unsubscribe_description'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Unsubscribe form description.'),
-      '#description' => $this->t('This descriptions appears as the cancellation subtitle of the the unsubscribe form page.'),
+      '#title' => $this->t('Cancel rate plan form prompt'),
+      '#description' => $this->t('Prompt that appears as a subtitle on the cancel rate plan form.'),
       '#default_value' => $config->get('unsubscribe_description'),
     ];
     $form['unsubscribe_button_label'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Unsubscribe button label.'),
-      '#description' => $this->t('This label will be used when ending a subscription.'),
+      '#title' => $this->t('Cancel rate plan button label'),
+      '#description' => $this->t('Button label for canceling a rate plan.'),
       '#default_value' => $config->get('unsubscribe_button_label'),
     ];
 
