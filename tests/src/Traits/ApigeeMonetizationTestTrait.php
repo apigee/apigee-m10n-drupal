@@ -409,9 +409,7 @@ trait ApigeeMonetizationTestTrait {
    * @param bool $monetized
    *   Whether or not the org is monetized.
    *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Exception
    */
   protected function queueOrg($monetized = TRUE) {
     $this->stack

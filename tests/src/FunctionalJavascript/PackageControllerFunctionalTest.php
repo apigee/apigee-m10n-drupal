@@ -53,7 +53,6 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
       'access monetization packages',
       'view subscription',
     ]);
-    $this->queueOrg();
     $this->drupalLogin($this->develoepr);
   }
 
@@ -69,6 +68,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
     ];
     $rate_plans = array_map([$this, 'createPackageRatePlan'], $packages);
 
+    $this->queueOrg();
     $this->stack
       ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
 

@@ -96,7 +96,6 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
     parent::setUp();
     // Create an admin account.
     $this->admin = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
-    $this->queueOrg();
     $this->drupalLogin($this->admin);
     $this->assertNoClientError();
 

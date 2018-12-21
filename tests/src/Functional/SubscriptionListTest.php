@@ -53,8 +53,6 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     // get access denied.
     $this->developer = $this->createAccount([]);
 
-    $this->queueOrg();
-
     $this->drupalLogin($this->developer);
   }
 
@@ -62,6 +60,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    * Tests permissions for `My Plans/Subscriptions` page.
    */
   public function testSubscriptionListAccessDenied() {
+    $this->queueOrg();
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->developer->id(),
     ]));
@@ -83,6 +82,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     $rate_plan = $this->createPackageRatePlan($package);
     $subscription = $this->createsubscription($this->developer, $rate_plan);
 
+    $this->queueOrg();
     $this->stack
       ->queueMockResponse(['get_developer_subscriptions' => ['subscriptions' => [$subscription]]])
       ->queueMockResponse(['get_package_rate_plan' => ['plan' => $rate_plan]]);
