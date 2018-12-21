@@ -86,6 +86,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       '#type' => 'html_tag',
       '#tag' => 'h3',
       '#value' => $this->t('Previous Prepaid Statements'),
+      '#attributes' => ['class' => ['label']],
     ];
 
     // No form if there's no supported currency.

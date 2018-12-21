@@ -23,7 +23,7 @@ apigee_m10n.settings.subscription:
   path: 'admin/config/apigee-edge/monetization/subscription-settings'
   defaults:
     _form: '\Drupal\apigee_m10n\Form\SubscriptionConfigForm'
-    _title: 'Subscription settings'
+    _title: 'Rate plan purchase settings'
   requirements:
     _permission: 'administer apigee monetization'
   options:
@@ -42,6 +42,7 @@ apigee_monetization.billing:
   path: /user/{user}/monetization/billing
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalancePage
+    _title: 'Prepaid Balance'
   requirements:
     _permission: 'view mint prepaid reports'
   options:

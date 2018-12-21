@@ -6,18 +6,18 @@ apigee_m10n.settings.rate_plan:
 
 apigee_m10n.settings.subscription:
   route_name: apigee_m10n.settings.subscription
-  title: 'Subscription settings'
+  title: 'Rate plan purchase settings'
   base_route: apigee_m10n.settings.subscription
   weight: -10
 
 apigee_m10n.billing:
   title: 'Prepaid Balance'
   route_name: apigee_monetization.billing
-  base_route: apigee_monetization.billing
-  weight: 10
+  base_route: entity.user.canonical
+  weight: -2
 
 apigee_m10n.subscriptions:
   title: 'Purchased Plans'
   route_name: entity.subscription.collection_by_developer
-  base_route: apigee_monetization.billing
-  weight: 20
+  base_route: entity.user.canonical
+  weight: -1

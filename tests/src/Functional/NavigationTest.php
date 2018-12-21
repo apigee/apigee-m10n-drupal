@@ -65,17 +65,17 @@ class NavigationTest extends MonetizationFunctionalTestBase {
 
     $this->queueOrg();
     // Check the manage profile link.
-    $this->clickLink('Manage profile');
+    $this->clickLink('My account');
 
     // Check the Pricing & Plans link.
     $session = $this->assertSession();
     $session->linkExists('Pricing & Plans');
-    $session->linkExists('Manage profile');
+    $session->linkExists('My account');
     $session->linkExists('Prepaid Balance');
     $session->linkExists('Purchased Plans');
 
     $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & Plans');
-    $this->assertCssElementContains('.block-menu.navigation.menu--account', 'Manage profile');
+    $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
     $this->assertCssElementContains('nav.tabs', 'Prepaid Balance');
     $this->assertCssElementContains('nav.tabs', 'Purchased Plans');
   }
