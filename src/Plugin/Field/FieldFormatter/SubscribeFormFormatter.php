@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Field\FormatterBase;

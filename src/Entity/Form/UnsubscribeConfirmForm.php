@@ -159,7 +159,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
     $values = $form_state->getValues();
     $end_type = $values['end_type'] ?? 'now';
 
-    $this->subscription->setEndDate($end_type == 'end_date'
+    $this->subscription->setEndDate($end_type == 'on_date'
       ? new \DateTimeImmutable($values['endDate'])
       : new \DateTimeImmutable('-1 day'));
 
