@@ -30,7 +30,7 @@ use Drupal\Core\Cache\Cache;
 class SubscriptionForm extends FieldableMonetizationEntityForm {
 
   /**
-   * Messanger service.
+   * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -40,7 +40,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    * Constructs a SubscriptionEditForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
    */
   public function __construct(MessengerInterface $messenger = NULL) {
     $this->messenger = $messenger;

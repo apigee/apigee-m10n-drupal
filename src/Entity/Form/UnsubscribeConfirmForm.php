@@ -49,7 +49,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   protected $subscription;
 
   /**
-   * Messanger service.
+   * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -68,7 +68,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   Route match service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdkControllerFactory
    *   SDK Controller factory.
    */

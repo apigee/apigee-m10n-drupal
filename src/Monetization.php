@@ -23,6 +23,8 @@ use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditions;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\Formatter\CurrencyFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
@@ -197,6 +199,72 @@ class Monetization implements MonetizationInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
+    try {
+      $latest_tnc_id = $this->getLatestTermsAndConditions()->id();
+      if ($history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory()) {
+        foreach ($history as $item) {
+          $tnc = $item->getTnc();
+          if ($tnc->id() === $latest_tnc_id) {
+            return ($item->getAction() === 'ACCEPTED');
+          }
+        }
+      }
+    }
+    catch (\Throwable $t) {
+      // @TODO: Log errors ?
+    }
+
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLatestTermsAndConditions(): ?TermsAndConditions {
+    if ($terms = $this->sdk_controller_factory->termsAndConditionsController()->getPaginatedEntityList()) {
+      $inEffectTerms = [];
+      // Loop through array of terms to pull only terms that are in effect.
+      foreach ($terms as $tnc) {
+        $effectiveDate = $tnc->getStartDate();
+        if ($effectiveDate < new \DateTimeImmutable('now', $effectiveDate->getTimezone())) {
+          array_push($inEffectTerms, $tnc);
+        }
+      }
+      // Make sure to sort terms and conditions by date.
+      usort($inEffectTerms, function ($a, $b) {
+        // It is easier to compare unix timestamps.
+        return $a->getStartDate()->format('U') - $b->getStartDate()->format('U');
+      });
+      $ids = array_keys($inEffectTerms);
+      return $inEffectTerms[end($ids)] ?? NULL;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem {
+    try {
+      return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
+        ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
+    }
+    catch (\Throwable $t) {
+      // @TODO: Log errors ?
+    }
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function formatCurrency(string $amount, string $currency_id): string {
+    return $this->currencyFormatter->format($amount, $currency_id);
+  }
+
+  /**
    * Gets the prepaid balances.
    *
    * Uses a prepaid balance controller to return prepaid balances for a
@@ -225,10 +293,31 @@ class Monetization implements MonetizationInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Get latest terms and conditions ID.
+   *
+   * @return mixed|null
+   *   Terms and conditions ID.
+   *
+   * @throws \Exception
    */
-  public function formatCurrency(string $amount, string $currency_id): string {
-    return $this->currencyFormatter->format($amount, $currency_id);
+  protected function getLatestTermsAndCondition() {
+    if ($terms = $this->sdk_controller_factory->termsAndConditionsController()->getPaginatedEntityList()) {
+      $inEffectTerms = [];
+      // Loop through array of terms to pull only terms that are in effect.
+      foreach ($terms as $tnc) {
+        $effectiveDate = $tnc->getStartDate();
+        if ($effectiveDate < new \DateTimeImmutable('now', $effectiveDate->getTimezone())) {
+          array_push($inEffectTerms, $tnc);
+        }
+      }
+      // Make sure to sort terms and conditions by date.
+      usort($inEffectTerms, function ($a, $b) {
+        // It is easier to compare unix timestamps.
+        return $a->getStartDate()->format('U') - $b->getStartDate()->format('U');
+      });
+      $ids = array_keys($inEffectTerms);
+      return $inEffectTerms[end($ids)] ?? NULL;
+    }
   }
 
   /**

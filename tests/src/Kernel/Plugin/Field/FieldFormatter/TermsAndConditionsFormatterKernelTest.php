@@ -19,18 +19,27 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\SubscribeFieldItem;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\TermsAndConditionsFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\TermsAndConditionsFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Drupal\apigee_m10n\Entity\Subscription;
 
 /**
- * Test the `apigee_subscribe_link` field formatter.
+ * Test the `apigee_tnc_default` field formatter.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
+class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
+
+  /**
+   * Drupal user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $account;
 
   /**
    * The formatter manager.
@@ -47,28 +56,6 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
   protected $field_manager;
 
   /**
-   * Test API Package.
-   *
-   * @var \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface
-   */
-  protected $api_package;
-
-  /**
-   * Test package rate plan.
-   *
-   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
-   */
-  protected $package_rate_plan;
-
-
-  /**
-   * Drupal user.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  protected $developer;
-
-  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -77,59 +64,56 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
-    $this->installEntitySchema('date_format');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
-    $this->installConfig([
-      'user',
-      'system',
-    ]);
-
-    $this->developer = $this->createAccount([
-      'view subscription',
-    ]);
-    $this->setCurrentUser($this->developer);
+    $this->installSchema('system', ['sequences']);
 
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
-
-    $this->api_package = $this->createPackage();
-    $this->package_rate_plan = $this->createPackageRatePlan($this->api_package);
   }
 
   /**
-   * Test viewing a subscribe form formatter.
+   * Test viewing a terms and condition field.
    *
-   * @throws \Exception
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
    */
   public function testView() {
 
-    $this->stack->queueMockResponse([
-      'get_organization',
-      'get_terms_conditions',
-      'get_developer_terms_conditions',
+    // If the user doesn't have the "view subscription" permission, they should
+    // get access denied.
+    $this->account = $this->createAccount(['view subscription']);
+
+    $this->setCurrentUser($this->account);
+
+    $package = $this->createPackage();
+    $rate_plan = $this->createPackageRatePlan($package);
+
+    $subscription = Subscription::create([
+      'ratePlan' => $rate_plan,
+      'developer' => new Developer(['email' => $this->account->getEmail()]),
+      'startDate' => new \DateTimeImmutable(),
     ]);
 
-    $item_list = $this->package_rate_plan->get('subscribe');
+    $item_list = $subscription->get('termsAndConditions');
     static::assertInstanceOf(FieldItemList::class, $item_list);
-    static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
-    static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());
-    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_subscribe_form', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
-      'settings' => [
-        'label' => 'Subscribe',
-      ],
+    static::assertInstanceOf(TermsAndConditionsFieldItem::class, $item_list->get(0));
+    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\TermsAndConditionsFormatter $instance */
+    $instance = $this->formatter_manager->createInstance('apigee_tnc_default', [
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('subscription')['termsAndConditions'],
+      'settings' => [],
       'label' => TRUE,
       'view_mode' => 'default',
       'third_party_settings' => [],
     ]);
-    static::assertInstanceOf(SubscribeFormFormatter::class, $instance);
+    static::assertInstanceOf(TermsAndConditionsFormatter::class, $instance);
 
     // Render the field item.
     $build = $instance->view($item_list);
 
-    static::assertSame('Purchase', (string) $build['#title']);
+    static::assertSame('Terms And Conditions', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
 
     $this->render($build);

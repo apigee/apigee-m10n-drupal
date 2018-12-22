@@ -21,6 +21,8 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditions;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -57,8 +59,8 @@ interface MonetizationInterface {
   /**
    * Get's the prepaid balance for a developer.
    *
-   * Takes in a developer UUID or email address, and a date specifying the report month and year,
-   * and returns an array of prepaid balances.
+   * Takes in a developer UUID or email address, and a date specifying the
+   * report month and year, and returns an array of prepaid balances.
    *
    * @param \Drupal\user\UserInterface $developer
    *   The developer user.
@@ -134,5 +136,35 @@ interface MonetizationInterface {
    *   A CSV string of prepaid balances.
    */
   public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
+
+  /**
+   * Check if developer accepted latest terms and conditions.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   *
+   * @return bool|null
+   *   User terms and conditions acceptance flag.
+   */
+  public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool;
+
+  /**
+   * Get latest terms and condition.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\TermsAndConditions
+   *   Latest term and condition.
+   */
+  public function getLatestTermsAndConditions(): ?TermsAndConditions;
+
+  /**
+   * Accepts a terms and conditions by its id.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem|null
+   *   Terms and conditions history item.
+   */
+  public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem;
 
 }

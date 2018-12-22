@@ -167,6 +167,16 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   /**
    * {@inheritdoc}
    */
+  protected static function getProperties(): array {
+    $properties = parent::getProperties();
+    $properties['termsAndConditions'] = 'apigee_tnc';
+
+    return $properties;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isDefaultRevision($new_value = NULL) {
     return TRUE;
   }
@@ -201,7 +211,15 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * {@inheritdoc}
    */
   public function isSubscriptionActive(): bool {
-    return $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE;
+    return ($this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE
+      || $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTermsAndConditions(): RatePlanInterface {
+    return $this->getRatePlan();
   }
 
   /**

@@ -35,6 +35,9 @@ use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsController;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
+use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
@@ -74,7 +77,7 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * A cache of reusable controllers.
    *
-   * @var \Apigee\Edge\Controller\EntityControllerInterface[]
+   * @var array
    */
   protected $controllers = [];
 
@@ -108,6 +111,17 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       $this->controllers[__FUNCTION__] = new DeveloperController($this->getOrganization(), $this->getClient());
     }
     return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerTermsAndConditionsController(string $developer_id): DeveloperTermsAndConditionsController {
+    return new DeveloperTermsAndConditionsController(
+      $developer_id,
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
@@ -244,6 +258,20 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       // Create a new org controller.
       $this->controllers[__FUNCTION__] = new PrepaidBalanceReportsController(
         $developer_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function termsAndConditionsController(): TermsAndConditionsControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new TnC controller.
+      $this->controllers[__FUNCTION__] = new TermsAndConditionsController(
         $this->getOrganization(),
         $this->getClient()
       );
