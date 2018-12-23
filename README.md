@@ -20,7 +20,7 @@ The Apigee Monetization module enables you to integrate Drupal 8 with Apigee Edg
    composer require drupal/apigee_m10n
    ```
 
-    For more information about installing contributed modules using composer, see [the official documentation](https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#managing-contributed)
+  For more information about installing contributed modules using composer, see [the official documentation] (https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#managing-contributed)
 4. Click **Extend** in the Drupal administration menu.
 5. Select the **Apigee Monetization** module.
 6. Click **Install**.
@@ -32,8 +32,7 @@ The Apigee Monetization module enables you to integrate Drupal 8 with Apigee Edg
 
 ### Development
 
-@todo add github links when repo is setup
-Development is happening in our [GitHub repository](@todo). The drupal.org issue queue is disabled, we use the [Github issue queue](@todo) to coordinate development.
+Development is happening in our [GitHub repository](https://github.com/apigee/apigee-m10n-drupal). The drupal.org issue queue is disabled, we use the [Github issue queue](https://github.com/apigee/apigee-m10n-drupal/issues) to coordinate development.
 
 ### Disclaimer
 
