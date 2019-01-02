@@ -126,7 +126,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    */
   public function getPageTitle(RouteMatchInterface $route_match): string {
     // TODO: make sure this string is configurable.
-    return $this->t('Purchased Plans');
+    return $this->t('Purchased plans');
   }
 
   /**
