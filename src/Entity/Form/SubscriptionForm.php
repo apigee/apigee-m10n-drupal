@@ -84,7 +84,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      // Auto assign legal name
+      // Auto assign legal name.
       $developer_id = $this->entity->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
       $developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $developer_id);

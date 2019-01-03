@@ -18,8 +18,8 @@ apigee_m10n.settings.subscription:
   weight: 100
 
 apigee_m10n.packages:
-  title: 'Pricing & Plans'
-  description: 'Pricing & Plans.'
+  title: 'Pricing & plans'
+  description: 'Pricing & plans.'
   route_name: apigee_monetization.my_packages
   menu_name: main
   weight: 10
