@@ -22,6 +22,7 @@ namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 use Drupal\apigee_m10n\Controller\PackagesController;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -54,12 +55,17 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $this->installConfig([
       'user',
     ]);
+    // Install user 0 and user 1.
+    \user_install();
 
     $this->developer = $this->createAccount([
       'access monetization packages',
       'view subscription',
+      'view rate_plan',
     ]);
     $this->setCurrentUser($this->developer);
+    // Create an account without access.
+    $this->createAccount([]);
   }
 
   /**
@@ -133,9 +139,18 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
   /**
    * Tests the `monetization-packages` response.
    *
+   * @param int $uid
+   *   The user ID.
+   * @param bool $user_has_access
+   *   Whether or not the user has access to rate_plans.
+   *
+   * @dataProvider renderRatePlanUserDataProvider
+   *
    * @throws \Exception
    */
-  public function testPackageController() {
+  public function testPackageController($uid, $user_has_access) {
+    $user = User::load($uid);
+    $this->setCurrentUser($user);
 
     $packages = [
       $this->createPackage(),
@@ -156,14 +171,41 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
         ->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans[$package->id()]]]);
     }
 
-    $renderable = $page_controller->catalogPage($this->developer);
+    $renderable = $page_controller->catalogPage($user);
 
     self::assertArrayHasKey($packages[0]->id(), $renderable["package_list"]["#package_list"]);
     self::assertArrayHasKey($packages[0]->id(), $renderable["package_list"]["#plan_list"]);
-    self::assertArrayHasKey($plans[$packages[0]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[0]->id()]);
+    if ($user_has_access) {
+      self::assertArrayHasKey($plans[$packages[0]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[0]->id()]);
+    }
+    else {
+      self::assertArrayNotHasKey($plans[$packages[0]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[0]->id()]);
+    }
     self::assertArrayHasKey($packages[1]->id(), $renderable["package_list"]["#package_list"]);
     self::assertArrayHasKey($packages[1]->id(), $renderable["package_list"]["#plan_list"]);
-    self::assertArrayHasKey($plans[$packages[1]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[1]->id()]);
+    if ($user_has_access) {
+      self::assertArrayHasKey($plans[$packages[1]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[1]->id()]);
+    }
+    else {
+      self::assertArrayNotHasKey($plans[$packages[1]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[1]->id()]);
+    }
+  }
+
+  /**
+   * Get's data for testing the rate plan render array.
+   *
+   * This executes before ::setup so entities can't be returned.
+   *
+   * @return array
+   *   An array of user ids and whether they have access to rate plans.
+   */
+  public function renderRatePlanUserDataProvider() {
+    // @TODO Accessing `/user/0/monetization/packages` causes an error.
+    return [
+      [1, TRUE],
+      [2, TRUE],
+      [3, FALSE],
+    ];
   }
 
 }
