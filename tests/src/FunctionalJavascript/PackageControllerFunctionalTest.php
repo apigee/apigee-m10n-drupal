@@ -51,6 +51,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
 
     $this->develoepr = $this->createAccount([
       'access monetization packages',
+      'view rate_plan',
       'view subscription',
     ]);
     $this->drupalLogin($this->develoepr);

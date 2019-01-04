@@ -97,6 +97,10 @@ class PackagesController extends ControllerBase {
    *   The pager render array.
    */
   public function catalogPage(UserInterface $user) {
+    // Get the access control handler for rate plans.
+    $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
+    $admin_access = $user->access('administer rate_plan');
+
     // Get the package controller.
     $package_controller = $this->controller_factory->apiPackageController();
     // Load purchased packages for comparison.
@@ -108,13 +112,14 @@ class PackagesController extends ControllerBase {
     $rate_plan_view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
 
     // Load plans for each package.
-    $plans = array_map(function ($package) use ($rate_plan_view_builder, $view_mode) {
-      // Load the rate plans.
-      $package_rate_plans = RatePlan::loadPackageRatePlans($package->id());
-      if (!empty($package_rate_plans)) {
-        // Return a render-able list of rate plans.
-        return $rate_plan_view_builder->viewMultiple($package_rate_plans, $view_mode);
+    $plans = array_map(function ($package) use ($rate_plan_view_builder, $view_mode, $rate_plan_access_handler, $admin_access, $user) {
+      if (($package_rate_plans = RatePlan::loadPackageRatePlans($package->id())) && !$admin_access) {
+        // Check access for each rate plan since the user is not an admin.
+        $package_rate_plans = array_filter($package_rate_plans, function ($rate_plan) use ($rate_plan_access_handler, $user) {
+          return $rate_plan_access_handler->access($rate_plan, 'view', $user);
+        });
       }
+      return empty($package_rate_plans) ? [] : $rate_plan_view_builder->viewMultiple($package_rate_plans, $view_mode);
     }, $packages);
 
     return [

@@ -125,7 +125,7 @@ function apigee_m10n_preprocess_package_list(&$variables) {
     $package = [
       '#theme' => 'package',
       '#package' => $package,
-      '#plan_list' => $variables['plan_list'][$package->id()],
+      '#plan_list' => $variables['plan_list'][$package->id()] ?? [],
     ];
   });
 }

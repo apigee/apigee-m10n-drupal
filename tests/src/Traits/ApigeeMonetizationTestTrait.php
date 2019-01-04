@@ -144,7 +144,7 @@ trait ApigeeMonetizationTestTrait {
       'first_name' => $this->randomMachineName(),
       'last_name' => $this->randomMachineName(),
       'name' => $this->randomMachineName(),
-      'pass' => user_password(),
+      'pass' => \user_password(),
       'status' => $status,
     ];
     if ($rid) {
