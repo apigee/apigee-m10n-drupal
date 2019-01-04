@@ -214,7 +214,7 @@ class Monetization implements MonetizationInterface {
       }
     }
     catch (\Throwable $t) {
-      $this->logger->warning('Unable check if latest TnC accepted: ' . $t->getMessage());
+      $this->logger->error('Unable check if latest TnC accepted: ' . $t->getMessage());
     }
 
     return NULL;
@@ -252,7 +252,7 @@ class Monetization implements MonetizationInterface {
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
     catch (\Throwable $t) {
-      $this->logger->warning('Unable to accept latest TnC: ' . $t->getMessage());
+      $this->logger->error('Unable to accept latest TnC: ' . $t->getMessage());
     }
     return NULL;
   }
