@@ -24,6 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge\Entity\Developer;
+use Drupal\Core\Url;
 
 /**
  * Subscription entity form.
@@ -91,21 +92,24 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       $developer->save();
 
       $display_name = $this->entity->getRatePlan()->getDisplayName();
+      Cache::invalidateTags(['apigee_my_subscriptions']);
+
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
+        $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
       else {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
           '%label' => $display_name,
         ]));
+        $form_state->setRedirectUrl(Url::fromUserInput($this->entity->getRatePlan()->url()));
       }
-      Cache::invalidateTags(['apigee_my_subscriptions']);
-      $form_state->setRedirect('apigee_monetization.my_subscriptions');
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
+      $form_state->setRedirectUrl(Url::fromUserInput($this->entity->getRatePlan()->url()));
     }
   }
 
