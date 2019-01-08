@@ -118,12 +118,43 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   /**
    * {@inheritdoc}
    */
+  protected static function getProperties(): array {
+    $properties = parent::getProperties();
+    $properties['ratePlans'] = 'entity_reference';
+
+    return $properties;
+  }
+
+  public function getRatePlans() {
+    // Get the access control handler for rate plans.
+    $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
+    $admin_access = \Drupal::currentUser()->access('administer rate_plan');
+
+    $package_rate_plans = RatePlan::loadPackageRatePlans($this->id());
+    // Load plans for each package.
+    if (!$admin_access) {
+      // Check access for each rate plan since the user is not an admin.
+      $package_rate_plans = array_filter($package_rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
+        return $rate_plan_access_handler->access($rate_plan, 'view');
+      });
+    }
+
+    return $package_rate_plans ? array_values($package_rate_plans) : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $definitions */
     $definitions = parent::baseFieldDefinitions($entity_type);
-    // The rate plan details are many-to-one.
+    // The API products are many-to-one.
     $definitions['apiProducts']->setCardinality(-1);
     $definitions['apiProducts']->setSetting('target_type', 'api_product');
+
+    // The rate plans are many-to-one.
+    $definitions['ratePlans']->setCardinality(-1);
+    $definitions['ratePlans']->setSetting('target_type', 'rate_plan');
 
     return $definitions;
   }
