@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\Controller;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\Package;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\Element;
 use Drupal\user\UserInterface;
@@ -136,11 +137,25 @@ class PackagesController extends ControllerBase {
     // Add a wrapper around the list.
     $build['#prefix'] = '<ul class="apigee-package-list">';
     $build['#suffix'] = '</ul>';
-
     // Wrap each package as a list item.
     foreach (Element::children($build) as $index) {
-      $build[$index]['#prefix'] = '<li class="apigee-sdk-package">';
-      $build[$index]['#suffix'] = '</li>';
+      // Header HTML.
+      $header_html = '
+        <div class="apigee-sdk-package-basic">
+          <div class="apigee-package-label">@package_label</div>
+          <div class="apigee-sdk-product-list-basic">(<span class="apigee-sdk-product">@product_labels</span>)</div>
+        </div>
+        <div class="apigee-package-details">';
+      // Build a list of product labels for the basic info header.
+      $product_labels = [];
+      foreach ($build[$index]['#package']->get('apiProducts') as $item) {
+        $product_labels[] = $item->entity->label();
+      }
+      $build[$index]['#prefix'] = new FormattableMarkup('<li class="apigee-sdk-package">' . $header_html, [
+        '@package_label' => $build[$index]['#package']->label(),
+        '@product_labels' => implode(', ', $product_labels),
+      ]);
+      $build[$index]['#suffix'] = '</div></li>';
     }
 
     return $build;
