@@ -73,6 +73,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+    // Redirect to Rate Plan detail page on submit.
     $form['#action'] = $this->getEntity()->getRatePlan()->url();
     return $form;
   }
