@@ -74,6 +74,13 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   public const ENTITY_TYPE_ID = 'package';
 
   /**
+   * Rate plans available for this package.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface[]
+   */
+  protected $ratePlans;
+
+  /**
    * Constructs a `package` entity.
    *
    * @param array $values
@@ -125,23 +132,6 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
     return $properties;
   }
 
-  public function getRatePlans() {
-    // Get the access control handler for rate plans.
-    $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
-    $admin_access = \Drupal::currentUser()->access('administer rate_plan');
-
-    $package_rate_plans = RatePlan::loadPackageRatePlans($this->id());
-    // Load plans for each package.
-    if (!$admin_access) {
-      // Check access for each rate plan since the user is not an admin.
-      $package_rate_plans = array_filter($package_rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
-        return $rate_plan_access_handler->access($rate_plan, 'view');
-      });
-    }
-
-    return $package_rate_plans ? array_values($package_rate_plans) : [];
-  }
-
   /**
    * {@inheritdoc}
    */
@@ -185,7 +175,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
    */
   public static function getAvailableApiPackagesByDeveloper($developer_id) {
     return \Drupal::entityTypeManager()
-      ->getStorage('package')
+      ->getStorage(static::ENTITY_TYPE_ID)
       ->getAvailableApiPackagesByDeveloper($developer_id);
   }
 
@@ -196,6 +186,36 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
     // Modifying packages isn't actually allowed but the `setPropertyValue()`
     // from `\Drupal\apigee_edge\Entity\FieldableEdgeEntityBase` will try to set
     // the property on the `obChange` TypedData event.
+  }
+
+  /**
+   * Gets the rate plans for this package.
+   *
+   * @return array
+   *   An array of rate plan entities.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public function getRatePlans() {
+    if (!isset($this->ratePlans)) {
+      // Get the access control handler for rate plans.
+      $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
+      $admin_access = \Drupal::currentUser()->hasPermission('administer rate_plan');
+
+      $package_rate_plans = RatePlan::loadPackageRatePlans($this->id());
+      // Load plans for each package.
+      if (!$admin_access) {
+        // Check access for each rate plan since the user is not an admin.
+        $package_rate_plans = array_filter($package_rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
+          return $rate_plan_access_handler->access($rate_plan, 'view');
+        });
+      }
+
+      $this->ratePlans = array_values($package_rate_plans);
+    }
+
+    return $this->ratePlans;
   }
 
   /**
