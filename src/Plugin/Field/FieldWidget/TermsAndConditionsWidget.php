@@ -21,13 +21,11 @@ namespace Drupal\apigee_m10n\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 
@@ -52,25 +50,11 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   protected $developer_id;
 
   /**
-   * Rate plan URL.
-   *
-   * @var string
-   */
-  protected $rate_plan_url;
-
-  /**
    * Monetization factory.
    *
    * @var \Drupal\apigee_m10n\MonetizationInterface
    */
   protected $monetization;
-
-  /**
-   * Messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
 
   /**
    * SubscribeLinkFormatter constructor.
@@ -87,13 +71,10 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    *   Any third party settings.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   Monetization factory.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messenger service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationInterface $monetization = NULL, MessengerInterface $messenger = NULL) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationInterface $monetization = NULL) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     $this->monetization = $monetization;
-    $this->messenger = $messenger;
   }
 
   /**
@@ -138,7 +119,6 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
     $this->developer_id = $items->getEntity()->getDeveloper()->getEmail();
-    $this->rate_plan_url = $items->getEntity()->getRatePlan()->url();
     if (!$this->monetization->isLatestTermsAndConditionAccepted($this->developer_id)) {
       $tnc = $this->monetization->getLatestTermsAndConditions();
       $element += [
@@ -165,9 +145,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
     $value = $element['#value'];
     // We only apply checking when terms and conditions checkbox is present in the form.
     if (empty($value)) {
-      $this->messenger->addError($this->t('Terms and conditions acceptance is required.'));
-      $response = new RedirectResponse(Url::fromUserInput($this->rate_plan_url)->toString());
-      $response->send();
+      $form_state->setError($element, $this->t('Terms and conditions acceptance is required.'));
     }
     else {
       // Accept terms and conditions.
