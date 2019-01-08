@@ -29,6 +29,8 @@ use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
@@ -226,7 +228,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function createPackage(): ApiPackage {
+  protected function createPackage(): PackageInterface {
     $products = [];
     for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
@@ -256,7 +258,7 @@ trait ApigeeMonetizationTestTrait {
       },
     ];
 
-    return $package;
+    return Package::createFrom($package);
   }
 
   /**
