@@ -141,10 +141,16 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
     // The API products are many-to-one.
     $definitions['apiProducts']->setCardinality(-1);
     $definitions['apiProducts']->setSetting('target_type', 'api_product');
+    $definitions['apiProducts']->setLabel(t('Included products'));
 
     // The rate plans are many-to-one.
     $definitions['ratePlans']->setCardinality(-1);
     $definitions['ratePlans']->setSetting('target_type', 'rate_plan');
+    $definitions['ratePlans']->setLabel(t('Available rate plans'));
+
+    // Fix some labels because these show up in the UI.
+    $definitions['id']->setLabel(t('ID'));
+    $definitions['displayName']->setLabel(t('Plan name'));
 
     return $definitions;
   }
