@@ -143,7 +143,7 @@ class PackagesController extends ControllerBase {
       $header_html = '
         <div class="apigee-sdk-package-basic">
           <div class="apigee-package-label">@package_label</div>
-          <div class="apigee-sdk-product-list-basic">(<span class="apigee-sdk-product">@product_labels</span>)</div>
+          <div class="apigee-sdk-product-list-basic">(<span class="apigee-sdk-product"> @product_labels </span>)</div>
         </div>
         <div class="apigee-package-details">';
       // Build a list of product labels for the basic info header.
