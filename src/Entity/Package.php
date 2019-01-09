@@ -119,6 +119,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   protected static function propertyToBaseFieldTypeMap(): array {
     return [
       'apiProducts' => 'entity_reference',
+      'organization' => 'apigee_organization',
     ];
   }
 
