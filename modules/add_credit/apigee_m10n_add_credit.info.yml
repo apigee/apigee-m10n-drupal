@@ -11,5 +11,6 @@ dependencies:
   - commerce:commerce_payment
   - commerce:commerce_price
   - commerce:commerce_order
+  - commerce:commerce_cart
 
 php: "7.1"

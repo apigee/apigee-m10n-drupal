@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldWidget;
 
 use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductInterface;
-use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;

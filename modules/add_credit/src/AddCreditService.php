@@ -160,7 +160,7 @@ class AddCreditService implements AddCreditServiceInterface {
 
       $add_credit_custom_amount = clone $base_field_definitions['apigee_add_credit_custom_amount'];
       $add_credit_custom_amount
-        ->setDefaultValue(TRUE)
+        ->setDefaultValue(0)
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);
@@ -168,7 +168,6 @@ class AddCreditService implements AddCreditServiceInterface {
 
       $add_credit_minimum_amount = clone $base_field_definitions['apigee_add_credit_minimum_amount'];
       $add_credit_minimum_amount
-        ->setDefaultValue('0')
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);

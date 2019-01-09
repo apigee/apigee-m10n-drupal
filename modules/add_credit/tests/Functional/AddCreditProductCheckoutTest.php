@@ -38,6 +38,7 @@ use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
  * @group apigee_m10n_add_credit_functional
  */
 class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
+
   use StoreCreationTrait;
 
   /**
@@ -101,12 +102,14 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     parent::setUp();
     // Create the developer account.
     // @todo: Restrict this to a what a developers permissions would be.
-    $this->developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
+    $this->developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')
+      ->getPermissions()));
     $this->drupalLogin($this->developer);
 
     $this->assertNoClientError();
 
-    $this->store = $this->createStore(NULL, $this->config('system.site')->get('mail'));
+    $this->store = $this->createStore(NULL, $this->config('system.site')
+      ->get('mail'));
     $this->store->save();
 
     // Enable add credit for the product type.
@@ -182,6 +185,88 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     $this->assertCssElementContains('h1.page-title', 'Shopping cart');
     $this->assertCssElementContains('.view-commerce-cart-form td:nth-child(1)', $this->product->label());
     // Proceed to checkout.
+    $this->checkout('12.00');
+
+  }
+
+  /**
+   * Tests custom amount for topup credit.
+   *
+   * @dataProvider customAmountProvider
+   *
+   * @throws \Exception
+   */
+  public function testAddCustomAmountCreditToAccount($amount, $is_valid) {
+    // Go to the product page.
+    $this->drupalGet('product/1');
+
+    // Check for custom amount field.
+    $this->assertSession()
+      ->elementNotExists('css', '[name="unit_price[0][amount][number]"]');
+
+    // Enable custom amount for product.
+    $this->product->set('apigee_add_credit_custom_amount', 1)->save();
+    $this->product->set('apigee_add_credit_minimum_amount', [
+      'number' => '12.00',
+      'currency_code' => 'USD',
+    ])->save();
+
+    // Go to the product page.
+    $this->drupalGet('product/1');
+
+    // Check for custom amount field.
+    $this->assertSession()
+      ->elementExists('css', '[name="unit_price[0][amount][number]"]');
+    $this->assertSession()
+      ->elementAttributeContains('css', '[name="unit_price[0][amount][number]"]', 'value', '12.00');
+
+    // Add product to cart.
+    $this->submitForm([
+      'unit_price[0][amount][number]' => $amount,
+    ], 'Add to cart');
+
+    if (!$is_valid) {
+      $this->assertCssElementContains('div.messages--error', 'The minimum credit amount is $12.00.');
+      return;
+    }
+
+    $this->assertCssElementContains('div.messages--status', $this->product->label() . ' added to your cart');
+
+    // Check if custom amount for product is in cart.
+    $this->drupalGet('/cart');
+    $this->assertCssElementContains('.view-commerce-cart-form td:nth-child(1)', $this->product->label());
+    $this->assertCssElementContains('.view-commerce-cart-form td.views-field-unit-price__number', $amount);
+
+    // Test checkout.
+    $this->checkout($amount);
+  }
+
+  /**
+   * Data provider.
+   *
+   * @return array
+   *   Test data.
+   */
+  public function customAmountProvider() {
+    return [
+      ['13.00', TRUE],
+      ['11.00', FALSE],
+      ['-1.00', FALSE],
+    ];
+  }
+
+  /**
+   * Helper to checkout.
+   *
+   * @param string $amount
+   *   The amount in the cart.
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function checkout($amount) {
     $this->submitForm([], 'Checkout');
     $this->assertCssElementContains('h1.page-title', 'Order information');
     // Submit payment information.
@@ -196,7 +281,7 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
     $this->assertCssElementContains('.view-commerce-checkout-order-summary', $this->product->label());
-    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $12.00");
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $$amount");
 
     // Before finalizing the payment, we have to add a couple of responses to
     // the queue.
@@ -204,12 +289,12 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
       // We should now have no existing balance .
       ->queueMockResponse(['get_prepaid_balances_empty'])
       // Queue a developer balance response for the top up (POST).
-      ->queueMockResponse(['post_developer_balances' => ['amount' => '12.00']])
+      ->queueMockResponse(['post_developer_balances' => ['amount' => $amount]])
       // Queue an updated balance response.
       ->queueMockResponse([
         'get_prepaid_balances' => [
-          'amount_usd' => '12.00',
-          'topups_usd' => '12.00',
+          'amount_usd' => $amount,
+          'topups_usd' => $amount,
           'current_usage_usd' => '0',
         ],
       ]);
@@ -233,7 +318,7 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     // The new balance will be re-read so queue the response.
     $this->stack->queueMockResponse([
       'get_developer_balances' => [
-        'amount_usd' => '12.00',
+        'amount_usd' => $amount,
         'developer' => new Developer([
           'email' => $this->developer->getEmail(),
           'uuid' => \Drupal::service('uuid')->generate(),
@@ -241,8 +326,8 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
       ],
     ]);
     $new_balance = $this->balance_controller->getByCurrency('USD');
-    // The new balance should be 12.00.
-    static::assertSame(12.00, $new_balance->getAmount());
+
+    static::assertSame((double) $amount, $new_balance->getAmount());
   }
 
 }
