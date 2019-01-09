@@ -51,7 +51,7 @@ use Drupal\user\Entity\User;
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\PackageListBuilder",
  *   },
  *   links = {
- *     "canonical" = "/user/{user}/monetization/packages/{package}",
+ *     "canonical" = "/user/{user}/monetization/package/{package}",
  *   },
  *   entity_keys = {
  *     "id" = "id",
