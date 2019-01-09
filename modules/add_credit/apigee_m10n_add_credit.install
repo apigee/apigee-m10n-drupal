@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ * Copyright 2018 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+/**
+ * Enable custom amount base fields.
+ */
+function apigee_m10n_add_credit_update_8006() {
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+
+  // Enable and update the widget for the unit price field.
+  Drupal::entityTypeManager()
+    ->getStorage('entity_form_display')
+    ->load('commerce_order_item.default.add_to_cart')
+    ->setComponent('unit_price', ['type' => 'apigee_m10n_add_credit_custom_amount'])
+    ->save();
+}

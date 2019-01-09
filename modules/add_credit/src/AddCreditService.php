@@ -117,6 +117,19 @@ class AddCreditService implements AddCreditServiceInterface {
         ->setTranslatable(TRUE)
         ->setDefaultValue(FALSE);
 
+      // Add base fields to custom amount.
+      $fields['apigee_add_credit_custom_amount'] = BaseFieldDefinition::create('boolean')
+        ->setLabel(t('Allow user to enter a custom amount'))
+        ->setRevisionable(TRUE)
+        ->setTranslatable(TRUE)
+        ->setDefaultValue(FALSE);
+
+      $fields['apigee_add_credit_minimum_amount'] = BaseFieldDefinition::create('commerce_price')
+        ->setLabel(t('Minimum amount'))
+        ->setDescription(t('The minimum amount to add as credit.'))
+        ->setRevisionable(TRUE)
+        ->setTranslatable(TRUE);
+
       return $fields;
     }
   }
@@ -131,6 +144,8 @@ class AddCreditService implements AddCreditServiceInterface {
       && ($product_type = ProductType::load($bundle))
       && $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit')
     ) {
+      $info = [];
+
       // Apigee add credit enabled products will automatically update a
       // developer's balance upon payment completion. This adds a base field to
       // the bundle to allow add credit to be enabled for products of the bundle
@@ -141,7 +156,25 @@ class AddCreditService implements AddCreditServiceInterface {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);
-      return ['apigee_add_credit_enabled' => $add_credit_base_def];
+      $info['apigee_add_credit_enabled'] = $add_credit_base_def;
+
+      $add_credit_custom_amount = clone $base_field_definitions['apigee_add_credit_custom_amount'];
+      $add_credit_custom_amount
+        ->setDefaultValue(TRUE)
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayOptions('form', ['weight' => 25])
+        ->setDisplayConfigurable('view', TRUE);
+      $info['apigee_add_credit_custom_amount'] = $add_credit_custom_amount;
+
+      $add_credit_minimum_amount = clone $base_field_definitions['apigee_add_credit_minimum_amount'];
+      $add_credit_minimum_amount
+        ->setDefaultValue('0')
+        ->setDisplayConfigurable('form', TRUE)
+        ->setDisplayOptions('form', ['weight' => 25])
+        ->setDisplayConfigurable('view', TRUE);
+      $info['apigee_add_credit_minimum_amount'] = $add_credit_minimum_amount;
+
+      return $info;
     }
   }
 
