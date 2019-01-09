@@ -109,10 +109,10 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
       ->getConfig('handler');
 
     if ($this->integration_enabled) {
-      self::assertTrue(($handler instanceof HandlerStack));
+      self::assertInstanceOf(MockHandler::class, $handler);
     }
     else {
-      self::assertTrue(($handler instanceof MockHandler));
+      self::assertInstanceOf(HandlerStack::class, $handler);
     }
   }
 
