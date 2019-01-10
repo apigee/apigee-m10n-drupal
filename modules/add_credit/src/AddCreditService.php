@@ -181,7 +181,7 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function entityTypeBuild(array &$entity_types) {
+  public function entityTypeAlter(array &$entity_types) {
     // Update the form class for the add to cart form.
     $entity_types['commerce_order_item']->setFormClass('add_to_cart', ApigeeAddCreditAddToCartForm::class);
   }
