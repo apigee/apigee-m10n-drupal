@@ -161,6 +161,9 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
       $definitions[$field_name]->setDisplayConfigurable('form', FALSE);
     }
 
+    $definitions['termsAndConditions']
+      ->setRequired(TRUE);
+
     return $definitions;
   }
 
@@ -218,8 +221,10 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   /**
    * {@inheritdoc}
    */
-  public function getTermsAndConditions(): RatePlanInterface {
-    return $this->getRatePlan();
+  public function getTermsAndConditions(): bool {
+    $developer_email = $this->getDeveloper()->getEmail();
+    // Caching is handled by the monetization service.
+    return $this->monetization()->isLatestTermsAndConditionAccepted($developer_email);
   }
 
   /**
@@ -331,6 +336,19 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    */
   public function getDeveloper(): ?DeveloperInterface {
     return $this->decorated->getDeveloper();
+  }
+
+  /**
+   * Gets the monetization service.
+   *
+   * This gets the monetization service as needed avoiding loading the SDK
+   * connector during bootstrap.
+   *
+   * @return \Drupal\apigee_m10n\MonetizationInterface
+   *   The monetization service.
+   */
+  protected function monetization() {
+    return \Drupal::service('apigee_m10n.monetization');
   }
 
 }

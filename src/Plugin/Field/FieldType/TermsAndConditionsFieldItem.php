@@ -40,10 +40,9 @@ class TermsAndConditionsFieldItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-    $properties['value'] = DataDefinition::create('any')
+    $properties['value'] = DataDefinition::create('boolean')
       ->setLabel(new TranslatableMarkup('value'))
-      ->setDescription(new TranslatableMarkup('Terms and conditions.'))
-      ->setComputed(TRUE);
+      ->setDescription(new TranslatableMarkup('Terms and conditions.'));
 
     return $properties;
   }

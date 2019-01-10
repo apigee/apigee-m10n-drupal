@@ -90,6 +90,13 @@ class Monetization implements MonetizationInterface {
   private $currencyFormatter;
 
   /**
+   * Static cache of `acceptLatestTermsAndConditions` results.
+   *
+   * @var array
+   */
+  private $termsAndConditionHistory;
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -202,22 +209,29 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
-    try {
-      $latest_tnc_id = $this->getLatestTermsAndConditions()->id();
-      if ($history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory()) {
-        foreach ($history as $item) {
-          $tnc = $item->getTnc();
-          if ($tnc->id() === $latest_tnc_id) {
-            return ($item->getAction() === 'ACCEPTED');
+    // Check the cache table.
+    if (!isset($this->termsAndConditionHistory[$developer_id])) {
+      try {
+        $latest_tnc_id = $this->getLatestTermsAndConditions()->id();
+        if ($history = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)->getTermsAndConditionsHistory()) {
+          foreach ($history as $item) {
+            $tnc = $item->getTnc();
+            if ($tnc->id() === $latest_tnc_id) {
+              $this->termsAndConditionHistory[$developer_id] = ($item->getAction() === 'ACCEPTED');
+              // No need to continue looping.
+              break;
+            }
           }
         }
+        // Not latest sign of identified.
+        $this->termsAndConditionHistory[$developer_id] = $this->termsAndConditionHistory[$developer_id] ?? FALSE;
+      }
+      catch (\Throwable $t) {
+        $this->logger->error('Unable check if latest TnC accepted: ' . $t->getMessage());
       }
     }
-    catch (\Throwable $t) {
-      $this->logger->error('Unable check if latest TnC accepted: ' . $t->getMessage());
-    }
 
-    return NULL;
+    return $this->termsAndConditionHistory[$developer_id];
   }
 
   /**
@@ -248,6 +262,8 @@ class Monetization implements MonetizationInterface {
    */
   public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem {
     try {
+      // Reset the static cache for this developer.
+      unset($this->termsAndConditionHistory[$developer_id]);
       return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
