@@ -24,6 +24,13 @@ apigee_m10n.packages:
   menu_name: main
   weight: 10
 
+apigee_m10n.profile:
+  title: 'Settings'
+  description: 'Settings'
+  route_name: apigee_monetization.profile
+  menu_name: main
+  weight: 11
+
 entity.package.collection:
   title: 'Packages'
   description: 'Listing of packages.'
