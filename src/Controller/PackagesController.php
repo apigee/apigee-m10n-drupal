@@ -21,9 +21,10 @@ namespace Drupal\apigee_m10n\Controller;
 
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
-use Drupal\apigee_m10n\Entity\RatePlan;
-use Drupal\apigee_m10n\Form\RatePlanConfigForm;
+use Drupal\apigee_m10n\Entity\Package;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Render\Element;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -95,40 +96,18 @@ class PackagesController extends ControllerBase {
    *
    * @return array
    *   The pager render array.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function catalogPage(UserInterface $user) {
-    // Get the access control handler for rate plans.
-    $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
-    $admin_access = $user->access('administer rate_plan');
-
-    // Get the package controller.
-    $package_controller = $this->controller_factory->apiPackageController();
     // Load purchased packages for comparison.
-    $packages = $package_controller->getAvailableApiPackagesByDeveloper($user->getEmail(), TRUE, TRUE);
+    $packages = Package::getAvailableApiPackagesByDeveloper($user->getEmail());
 
-    // Get the view mode to use for rate plans.
-    $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('product_rate_plan_view_mode');
-    // Get an entity view builder for rate plans.
-    $rate_plan_view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
+    $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages)];
+    $build['package_list']['#pre_render'][] = [$this, 'preRender'];
 
-    // Load plans for each package.
-    $plans = array_map(function ($package) use ($rate_plan_view_builder, $view_mode, $rate_plan_access_handler, $admin_access, $user) {
-      if (($package_rate_plans = RatePlan::loadPackageRatePlans($package->id())) && !$admin_access) {
-        // Check access for each rate plan since the user is not an admin.
-        $package_rate_plans = array_filter($package_rate_plans, function ($rate_plan) use ($rate_plan_access_handler, $user) {
-          return $rate_plan_access_handler->access($rate_plan, 'view', $user);
-        });
-      }
-      return empty($package_rate_plans) ? [] : $rate_plan_view_builder->viewMultiple($package_rate_plans, $view_mode);
-    }, $packages);
-
-    return [
-      'package_list' => [
-        '#theme' => 'package_list',
-        '#package_list' => $packages,
-        '#plan_list' => $plans,
-      ],
-    ];
+    return $build;
   }
 
   /**
@@ -142,6 +121,44 @@ class PackagesController extends ControllerBase {
    */
   protected function packageRatePlanController($package_id): RatePlanControllerInterface {
     return $this->controller_factory->ratePlanController($package_id);
+  }
+
+  /**
+   * Call back to pre-process the entity list.
+   *
+   * @param array $build
+   *   A render array as processed by
+   *   `\Drupal\Core\Entity\EntityViewBuilder::buildMultiple()`.
+   *
+   * @return array
+   *   The processed render array.
+   */
+  public function preRender(array $build) {
+    // Add a wrapper around the list.
+    $build['#prefix'] = '<ul class="apigee-package-list">';
+    $build['#suffix'] = '</ul>';
+    // Wrap each package as a list item.
+    foreach (Element::children($build) as $index) {
+      // Header HTML.
+      $header_html = '
+        <div class="apigee-sdk-package-basic">
+          <div class="apigee-package-label">@package_label</div>
+          <div class="apigee-sdk-product-list-basic">(<span class="apigee-sdk-product"> @product_labels </span>)</div>
+        </div>
+        <div class="apigee-package-details">';
+      // Build a list of product labels for the basic info header.
+      $product_labels = [];
+      foreach ($build[$index]['#package']->get('apiProducts') as $item) {
+        $product_labels[] = $item->entity->label();
+      }
+      $build[$index]['#prefix'] = new FormattableMarkup('<li class="apigee-sdk-package">' . $header_html, [
+        '@package_label' => $build[$index]['#package']->label(),
+        '@product_labels' => implode(', ', $product_labels),
+      ]);
+      $build[$index]['#suffix'] = '</div></li>';
+    }
+
+    return $build;
   }
 
 }

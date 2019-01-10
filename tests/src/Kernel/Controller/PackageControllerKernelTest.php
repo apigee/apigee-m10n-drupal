@@ -156,38 +156,38 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
       $this->createPackage(),
       $this->createPackage(),
     ];
-    $plans = [];
+    $sdk_packges = [];
+    $rate_plans = [];
     foreach ($packages as $package) {
-      $plans[$package->id()][] = $this->createPackageRatePlan($package);
+      $rate_plans[$package->id()] = $this->createPackageRatePlan($package);
+      $sdk_packges[] = $package->decorated();
     }
 
     $page_controller = PackagesController::create($this->container);
 
     $this->stack
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packges]]);
 
-    foreach ($packages as $package) {
-      $this->stack
-        ->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans[$package->id()]]]);
+    foreach ($sdk_packges as $package) {
+      foreach ($package->getApiProducts() as $api_product) {
+        $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
+      }
+      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans[$package->id()]]]]);
     }
 
     $renderable = $page_controller->catalogPage($user);
-
-    self::assertArrayHasKey($packages[0]->id(), $renderable["package_list"]["#package_list"]);
-    self::assertArrayHasKey($packages[0]->id(), $renderable["package_list"]["#plan_list"]);
+    $this->setRawContent(\Drupal::service('renderer')->renderRoot($renderable));
+    self::assertArrayHasKey($packages[0]->id(), $renderable['package_list']);
+    self::assertArrayHasKey($packages[1]->id(), $renderable['package_list']);
     if ($user_has_access) {
-      self::assertArrayHasKey($plans[$packages[0]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[0]->id()]);
+      $this->assertRaw('Available rate plans');
+      $this->assertRaw($rate_plans[$packages[0]->id()]->id());
+      $this->assertRaw($rate_plans[$packages[1]->id()]->id());
     }
     else {
-      self::assertArrayNotHasKey($plans[$packages[0]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[0]->id()]);
-    }
-    self::assertArrayHasKey($packages[1]->id(), $renderable["package_list"]["#package_list"]);
-    self::assertArrayHasKey($packages[1]->id(), $renderable["package_list"]["#plan_list"]);
-    if ($user_has_access) {
-      self::assertArrayHasKey($plans[$packages[1]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[1]->id()]);
-    }
-    else {
-      self::assertArrayNotHasKey($plans[$packages[1]->id()][0]->id(), $renderable["package_list"]["#plan_list"][$packages[1]->id()]);
+      $this->assertNoRaw('Available rate plans');
+      $this->assertNoRaw($rate_plans[$packages[0]->id()]->id());
+      $this->assertNoRaw($rate_plans[$packages[1]->id()]->id());
     }
   }
 

@@ -1,55 +1,25 @@
 {#
 /**
+ * @file
  * Template for displaying monetization packages.
  *
  * Available variables:
  * - package: An package from the monetization SDK. @see: \Apigee\Edge\Api\Monetization\Entity\ApiPackage
+ *   - description:     Description of API package.
+ *   - displayName:     User-friendly display name of the API package.
+ *   - id:              ID of the API product.
+ *   - name:            Name of the API product.
+ *   - organization:    The organizaiton the product belongs to.
+ *   - apiProducts:     A list of included product entities.
+ *   - status:          Status indicator for the API product. Valid values include: CREATED, ACTIVE, INACTIVE.
  *
- *   - package.description:     Description of API package.
- *   - package.displayName:     User-friendly display name of the API package.
- *   - package.id:              ID of the API product.
- *   - package.name:            Name of the API product.
- *   - package.organization:    The organizaiton the product belongs to.
- *   - package.apiProducts:     A list of included product entities.
- *   - package.status:          Status indicator for the API product. Valid values include: CREATED, ACTIVE, INACTIVE.
+ * @see \Drupal\apigee_m10n\Entity\Package
+ * @see template_preprocess_package()
  *
- * - product_list: A renerable list of products in this package.
- *
- * @see \Apigee\Edge\Api\Monetization\Controller\ApiPackageController
+ * @ingroup themeable
  */
 #}
-<div class="apigee-sdk-package">
-    <div class="apigee-sdk-package-basic">
-        <div class="apigee-package-label">{{ package.displayName }}</div>
-        <div class="apigee-sdk-product-list-basic">(
-            {% for product in package.apiProducts %}
-                <span class="apigee-sdk-product">{{ product.displayName }}{% if not loop.last %},{% endif %}</span>
-            {% endfor %}
-        )</div>
-    </div>
-    <div class="apigee-package-details">
-        <div class="apigee-package-id">
-            <span class="label id-label">{{ 'ID:'|t }}</span> {{ package.id }}
-        </div>
-        <div  class="apigee-package-name">
-            <span class="label name-label">{{ 'Plan Name:'|t }}</span> {{ package.name }}
-        </div>
-        <div  class="apigee-package-description">
-            <span class="label description-label">{{ 'Description:'|t }}</span> {{ package.description }}
-        </div>
-        <div  class="apigee-package-status">
-            <span class="label status-label">{{ 'Status:'|t }}</span> {{ package.status }}
-        </div>
-        <div class="apigee-sdk-product-list">
-            <div class="label product-list-label">{{ 'Included products:'|t }}</div>
-            <div class="apigee-sdk-product-entity-list">{{ product_list }}</div>
-        </div>
-        {% if plan_list %}
-        <div class="apigee-package-rate-plan-list">
-            <div class="label package-rate-plan-list-label">{{ 'Available rate plans:'|t }}</div>
-            <div class="rate-plan-entity-list">{{ plan_list }}</div>
-        </div>
-        {% endif %}
-    </div>
+<div{{ attributes.addClass('apigee-package') }}>
+    {{ elements }}
 </div>
 {{ attach_library('apigee_m10n/package') }}

@@ -29,6 +29,16 @@ apigee_m10n.settings.subscription:
   options:
     _apigee_monetization_route: TRUE
 
+entity.package.collection:
+  path: 'admin/config/apigee-edge/monetization/packages'
+  defaults:
+    _entity_list: 'package'
+    _title: 'Packages'
+  requirements:
+    _permission: 'administer package'
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:
