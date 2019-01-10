@@ -21,3 +21,8 @@ apigee_m10n.subscriptions:
   route_name: entity.subscription.collection_by_developer
   base_route: entity.user.canonical
   weight: -1
+
+entity.package.collection:
+  title: 'Packages'
+  route_name: entity.package.collection
+  base_route: entity.package.collection

@@ -74,9 +74,44 @@ function template_preprocess_rate_plan(&$variables) {
   /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
   $rate_plan = $variables['rate_plan'];
 
-  $variables['url'] = $rate_plan->toUrl('canonical', [
-    'language' => $rate_plan->language(),
-  ]);
+  $variables['url'] = $rate_plan->toUrl('canonical');
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function apigee_m10n_theme_suggestions_package(array $variables) {
+  $suggestions = [];
+  $package = $variables['elements']['#package'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'apigee_package__' . $sanitized_view_mode;
+  $suggestions[] = 'apigee_package__' . $package->bundle();
+  $suggestions[] = 'apigee_package__' . $package->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'apigee_package__' . $package->id();
+  $suggestions[] = 'apigee_package__' . $package->id() . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Prepares variables for rate-plan templates.
+ *
+ * Default template: rate-plan.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An array of elements to display in view mode.
+ *   - rate_plan: The Apigee  package rate plan entity.
+ *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
+ *   - url: The canonical URL to view the plan directly.
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
+function template_preprocess_package(&$variables) {
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  $variables['package'] = $variables['elements']['#package'];
+  $variables['url'] = $variables['package']->toUrl('canonical');
 }
 
 /**
@@ -91,20 +126,8 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'variables' => ['balances' => NULL],
       'template' => 'prepaid-balances',
     ],
-    'package_list' => [
-      'variables' => ['package_list' => NULL, 'plan_list' => NULL],
-      'template' => 'package-list',
-    ],
     'package' => [
-      'variables' => [
-        'package' => NULL,
-        'product_list' => NULL,
-        'plan_list' => NULL,
-      ],
-      'template' => 'package',
-    ],
-    'product_list' => [
-      'variables' => ['product_list' => NULL],
+      'render element' => 'elements',
     ],
     'api_product' => [
       'variables' => ['api_product' => NULL],
@@ -114,43 +137,4 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'template' => 'rate-plan-detail',
     ],
   ];
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function apigee_m10n_preprocess_package_list(&$variables) {
-  // Convert the package list into individual renderable items.
-  array_walk($variables['package_list'], function (&$package) use ($variables) {
-    $package = [
-      '#theme' => 'package',
-      '#package' => $package,
-      '#plan_list' => $variables['plan_list'][$package->id()] ?? [],
-    ];
-  });
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function apigee_m10n_preprocess_package(&$variables) {
-  /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct[] $products */
-  // Convert apigee monetization products to product entities.
-  $variables['product_list'] = [
-    '#theme' => 'product_list',
-    '#product_list' => $variables['package']->getApiProducts(),
-  ];
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function apigee_m10n_preprocess_product_list(&$variables) {
-  // Convert the package list into individual renderable items.
-  array_walk($variables['product_list'], function (&$api_product) {
-    $api_product = [
-      '#theme' => 'api_product',
-      '#api_product' => $api_product,
-    ];
-  });
 }
