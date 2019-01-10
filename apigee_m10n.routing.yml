@@ -86,6 +86,16 @@ apigee_monetization.my_subscriptions:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_monetization.profile:
+  path: /user/monetization/company
+  defaults:
+    _form: '\Drupal\apigee_m10n\Form\CompanyProfileForm'
+    _title: 'Company Profile'
+  requirements:
+    _permission: 'administer apigee monetization'
+  options:
+    _apigee_monetization_route: TRUE
+
 entity.subscription.collection_by_developer:
   path: '/user/{user}/monetization/subscriptions'
   defaults:
