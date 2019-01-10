@@ -23,3 +23,10 @@ apigee_m10n.packages:
   route_name: apigee_monetization.my_packages
   menu_name: main
   weight: 10
+
+entity.package.collection:
+  title: 'Packages'
+  description: 'Listing of packages.'
+  route_name: entity.package.collection
+  parent: system.admin_apigee_m10n
+  weight: 100

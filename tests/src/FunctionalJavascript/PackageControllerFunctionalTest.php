@@ -67,77 +67,71 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
       $this->createPackage(),
       $this->createPackage(),
     ];
-    $rate_plans = array_map([$this, 'createPackageRatePlan'], $packages);
+    $sdk_packges = [];
+    $rate_plans = [];
+    // Create rate plans for each package.
+    foreach ($packages as $package) {
+      $rate_plans[$package->id()] = $this->createPackageRatePlan($package);
+      $sdk_packges[] = $package->decorated();
+    }
 
     $this->queueOrg();
     $this->stack
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packges]]);
 
-    foreach ($rate_plans as $plan) {
-      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$plan]]]);
+    foreach ($packages as $package) {
+      foreach ($package->decorated()->getApiProducts() as $api_product) {
+        $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
+      }
+      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans[$package->id()]]]]);
     }
-
-    $this->stack
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]])
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => array_slice($packages, -1)]]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.packages', [
       'user' => $this->develoepr->id(),
     ]));
 
     $this->assertCssElementContains('h1.page-title', 'Packages');
-    $prefix = 'ul.apigee-package-list > li:nth-child(1) ';
-    // Details should be hidden before clicking on the row.
-    static::assertFalse($this->getSession()->getPage()->find('css', "{$prefix} div.apigee-package-description")->isVisible());
+    for ($i = 0; $i < 1; $i++) {
+      $css_index = $i + 1;
+      $prefix = "ul.apigee-package-list > li:nth-child({$css_index}) ";
+      // Details should be hidden before clicking on the row.
+      static::assertFalse($this->getSession()->getPage()->find('css', "{$prefix} .field--name-description > .field__item")->isVisible());
 
-    // Click to view product details.
-    $this->click("$prefix div.apigee-sdk-package-basic");
-    $this->assertCssElementContains("{$prefix} div.apigee-package-id", $packages[0]->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-name", $packages[0]->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-description", $packages[0]->getDescription());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-status", $packages[0]->getStatus());
-    // Set the selector prefix for the 1st product of the 1st package.
-    $prefix = 'ul.apigee-package-list > li:nth-child(1) ul.apigee-product-list li:nth-child(1)';
-    // Get the product.
-    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct $product */
-    $product = $packages[0]->getApiProducts()[0];
-    $this->assertCssElementContains("{$prefix} div.apigee-product-display-name", $product->getDisplayName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-id", $product->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-name", $product->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-description", $product->getDescription());
+      // Click to view product details.
+      $this->click("$prefix div.apigee-sdk-package-basic");
+      // Details should be hidden before clicking on the row.
+      static::assertTrue($this->getSession()->getPage()->find('css', "{$prefix} .field--name-description > .field__item")->isVisible());
+      $this->assertCssElementContains("{$prefix} .field--name-id > .field__item", $packages[$i]->id());
+      $this->assertCssElementContains("{$prefix} .field--name-displayname > .field__item", $packages[$i]->getDisplayName());
+      $this->assertCssElementContains("{$prefix} .field--name-description > .field__item", $packages[$i]->getDescription());
+      $this->assertCssElementContains("{$prefix} .field--name-status > .field__item", $packages[$i]->getStatus());
 
-    // Make necessary assertions for the second row.
-    $prefix = 'ul.apigee-package-list > li:nth-child(2)';
-    // Details should be hidden before clicking on the row.
-    static::assertFalse($this->getSession()->getPage()->find('css', "{$prefix} div.apigee-package-description")->isVisible());
+      for ($n = 0; $n < count($packages[$i]->decorated()->getApiProducts()); $n++) {
+        $product_css_index = $n + 1;
+        // Set the selector prefix for the 1st product of the 1st package.
+        $prefix = "ul.apigee-package-list > li:nth-child({$css_index}) .field--name-apiproducts > .field__items > .field__item:nth-child({$product_css_index})";
 
-    // Click to view product details.
-    $this->click("$prefix div.apigee-sdk-package-basic");
-    $this->assertCssElementContains("{$prefix} div.apigee-package-id", $packages[1]->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-name", $packages[1]->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-description", $packages[1]->getDescription());
-    $this->assertCssElementContains("{$prefix} div.apigee-package-status", $packages[1]->getStatus());
-    // Set the selector prefix for the 1st product of the 2nd package.
-    $prefix = 'ul.apigee-package-list > li:nth-child(2) ul.apigee-product-list li:nth-child(1)';
-    // Get the product.
-    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct $product */
-    $product = $packages[1]->getApiProducts()[0];
-    $this->assertCssElementContains("{$prefix} div.apigee-product-display-name", $product->getDisplayName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-id", $product->id());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-name", $product->getName());
-    $this->assertCssElementContains("{$prefix} div.apigee-product-description", $product->getDescription());
+        // Get the product.
+        /** @var \Apigee\Edge\Api\Monetization\Entity\ApiProduct $product */
+        $product = $packages[$i]->decorated()->getApiProducts()[$n];
+        $this->assertCssElementContains("{$prefix} div.apigee-product-display-name", $product->getDisplayName());
+        $this->assertCssElementContains("{$prefix} div.apigee-product-id", $product->id());
+        $this->assertCssElementContains("{$prefix} div.apigee-product-name", $product->getName());
+        $this->assertCssElementContains("{$prefix} div.apigee-product-description", $product->getDescription());
+      }
 
-    // Set the selector prefix for the 1st rate plan of the 1st package.
-    $prefix = 'ul.apigee-package-list > li:nth-child(1) .rate-plan-entity-list .apigee-package-rate-plan:nth-child(1)';
-    // Get the rate plan.
-    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-    $rate_plan = $rate_plans[0];
+      // Set the selector prefix for the 1st rate plan of the 1st package.
+      $prefix = "ul.apigee-package-list > li:nth-child({$css_index}) .field--name-rateplans > .field__items > .field__item:nth-child(1)";
+      // Get the rate plan.
+      /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+      $rate_plan = $rate_plans[$packages[$i]->id()];
 
-    static::assertNotSame($rate_plan->getDisplayName(), $rate_plan->getDescription());
-    $this->assertCssElementContains("{$prefix} .field--name-displayname", $rate_plan->getDisplayName());
-    $this->assertCssElementContains("{$prefix} .field--name-description", $rate_plan->getDescription());
+      static::assertNotSame($rate_plan->getDisplayName(), $rate_plan->getDescription());
+      $this->assertCssElementContains("{$prefix} .field--name-displayname", $rate_plan->getDisplayName());
+      $this->assertCssElementContains("{$prefix} .field--name-description", $rate_plan->getDescription());
 
-    $this->assertCssElementContains("{$prefix} .field--name-rateplandetails .rate-plan-detail", $rate_plan->getRatePlanDetails()[0]->getDuration() . ' ' . strtolower($rate_plan->getRatePlanDetails()[0]->getDurationType()));
+      $this->assertCssElementContains("{$prefix} .field--name-rateplandetails .rate-plan-detail", $rate_plan->getRatePlanDetails()[0]->getDuration() . ' ' . strtolower($rate_plan->getRatePlanDetails()[0]->getDurationType()));
+    }
   }
 
 }

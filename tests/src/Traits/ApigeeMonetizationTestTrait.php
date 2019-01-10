@@ -29,6 +29,8 @@ use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
@@ -226,7 +228,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function createPackage(): ApiPackage {
+  protected function createPackage(): PackageInterface {
     $products = [];
     for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
@@ -256,15 +258,21 @@ trait ApigeeMonetizationTestTrait {
       },
     ];
 
-    return $package;
+    return Package::createFrom($package);
   }
 
   /**
    * Create a package rate plan for a given package.
    *
+   * @param \Drupal\apigee_m10n\Entity\PackageInterface $package
+   *   The rate plan package.
+   *
+   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
+   *   A rate plan entity.
+   *
    * @throws \Exception
    */
-  protected function createPackageRatePlan(ApiPackage $package): RatePlanInterface {
+  protected function createPackageRatePlan(PackageInterface $package): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 
@@ -330,7 +338,7 @@ trait ApigeeMonetizationTestTrait {
       'type'                  => 'STANDARD',
       'organization'          => $org,
       'currency'              => $currency,
-      'package'               => $package,
+      'package'               => $package->decorated(),
       'subscribe'             => [],
     ]);
 
