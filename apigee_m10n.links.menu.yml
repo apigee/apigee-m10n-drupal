@@ -25,8 +25,8 @@ apigee_m10n.packages:
   weight: 10
 
 apigee_m10n.profile:
-  title: 'Settings'
-  description: 'Settings'
+  title: 'Billing Details'
+  description: 'Billing Details'
   route_name: apigee_monetization.profile
   menu_name: main
   weight: 11

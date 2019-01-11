@@ -30,7 +30,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 /**
  * Provides a form to edit developer profile information.
  */
-class CompanyProfileForm extends FormBase {
+class BillingDetailsForm extends FormBase {
 
   /**
    * Developer legal name attribute name.
