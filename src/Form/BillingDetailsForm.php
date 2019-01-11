@@ -104,7 +104,7 @@ class BillingDetailsForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'developer_company_profile_form';
+    return 'user_billing_details_form';
   }
 
   /**
