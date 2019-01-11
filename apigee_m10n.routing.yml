@@ -97,11 +97,12 @@ apigee_monetization.my_subscriptions:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.profile:
-  path: /user/monetization/billing-details
+  path: /user/{user}/monetization/billing-details
   defaults:
     _form: '\Drupal\apigee_m10n\Form\BillingDetailsForm'
     _title: 'Billing Details'
   requirements:
+    user: '\d+'
     _permission: 'administer apigee monetization'
   options:
     _apigee_monetization_route: TRUE

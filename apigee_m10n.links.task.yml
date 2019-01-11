@@ -22,6 +22,12 @@ apigee_m10n.subscriptions:
   base_route: entity.user.canonical
   weight: -1
 
+apigee_m10n.profile:
+  title: 'Billing Details'
+  route_name: apigee_monetization.profile
+  base_route: entity.user.canonical
+  weight: 0
+
 entity.package.collection:
   title: 'Packages'
   route_name: entity.package.collection
