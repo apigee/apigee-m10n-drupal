@@ -24,6 +24,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxy;
+use Drupal\user\UserInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Logger\LoggerChannelFactory;
 
@@ -100,7 +101,7 @@ class BillingDetailsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
     $form['company'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Company Details'),
