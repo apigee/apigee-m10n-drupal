@@ -44,13 +44,6 @@ class BillingDetailsForm extends FormBase {
   const BILLING_TYPE_ATTR = 'MINT_BILLING_TYPE';
 
   /**
-   * The route match object for the current page.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected $routeMatch;
-
-  /**
    * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
@@ -82,8 +75,7 @@ class BillingDetailsForm extends FormBase {
    *   Messenger service.
    */
   public function __construct(RouteMatchInterface $route_match, LoggerChannelFactory $loggerFactory, MessengerInterface $messenger) {
-    $this->routeMatch = $route_match;
-    $account = $this->routeMatch->getParameter('user');
+    $account = $route_match->getParameter('user');
     $this->developer = Developer::load($account->getEmail());
     $this->loggerFactory = $loggerFactory->get('apigee_m10n');
     $this->messenger = $messenger;
