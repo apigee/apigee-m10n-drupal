@@ -23,7 +23,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Session\AccountProxy;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\UserInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Logger\LoggerChannelFactory;
@@ -42,6 +42,13 @@ class BillingDetailsForm extends FormBase {
    * Developer billing type attribute name.
    */
   const BILLING_TYPE_ATTR = 'MINT_BILLING_TYPE';
+
+  /**
+   * The route match object for the current page.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
 
   /**
    * Messenger service.
@@ -67,14 +74,16 @@ class BillingDetailsForm extends FormBase {
   /**
    * Constructs a CompanyProfileForm object.
    *
-   * @param \Drupal\Core\Session\AccountProxy $account
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   Current user service.
    * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
    *   The logger.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
    */
-  public function __construct(AccountProxy $account = NULL, LoggerChannelFactory $loggerFactory = NULL, MessengerInterface $messenger = NULL) {
+  public function __construct(RouteMatchInterface $route_match, LoggerChannelFactory $loggerFactory, MessengerInterface $messenger) {
+    $this->routeMatch = $route_match;
+    $account = $this->routeMatch->getParameter('user');
     $this->developer = Developer::load($account->getEmail());
     $this->loggerFactory = $loggerFactory->get('apigee_m10n');
     $this->messenger = $messenger;
@@ -85,7 +94,7 @@ class BillingDetailsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('current_user'),
+      $container->get('current_route_match'),
       $container->get('logger.factory'),
       $container->get('messenger')
     );
