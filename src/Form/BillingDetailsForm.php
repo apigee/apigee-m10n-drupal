@@ -23,10 +23,11 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\UserInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Provides a form to edit developer profile information.
@@ -67,16 +68,12 @@ class BillingDetailsForm extends FormBase {
   /**
    * Constructs a CompanyProfileForm object.
    *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   Current user service.
    * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
    *   The logger.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
    */
-  public function __construct(RouteMatchInterface $route_match, LoggerChannelFactory $loggerFactory, MessengerInterface $messenger) {
-    $account = $route_match->getParameter('user');
-    $this->developer = Developer::load($account->getEmail());
+  public function __construct(LoggerChannelFactory $loggerFactory, MessengerInterface $messenger) {
     $this->loggerFactory = $loggerFactory->get('apigee_m10n');
     $this->messenger = $messenger;
   }
@@ -86,9 +83,26 @@ class BillingDetailsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('current_route_match'),
       $container->get('logger.factory'),
       $container->get('messenger')
+    );
+  }
+
+  /**
+   * Checks access for a specific request.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   Run access checks for this account.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if passed permissions are present.
+   */
+  public function access(AccountInterface $account) {
+    // Check permissions and combine that with any custom access checking needed. Pass forward
+    // parameters from the route and/or request as needed.
+    return AccessResult::allowedIf(
+      $account->hasPermission('view own monetization billing details') &&
+      $account->hasPermission('view any monetization billing details')
     );
   }
 
@@ -103,6 +117,9 @@ class BillingDetailsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
+    $developer_id = ($user->hasPermission('view any monetization billing details')) ? $user->getEmail() : \Drupal::currentUser()->getEmail();
+    $this->developer = Developer::load($developer_id);
+
     $form['company'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Company Details'),

@@ -103,7 +103,7 @@ apigee_monetization.profile:
     _title: 'Billing Details'
   requirements:
     user: '\d+'
-    _permission: 'administer apigee monetization'
+    _custom_access: '\Drupal\apigee_m10n\Form\BillingDetailsForm::access'
   options:
     _apigee_monetization_route: TRUE
 
