@@ -9,3 +9,6 @@ view mint prepaid reports:
 
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
+
+subscribe rate_plan:
+  title: 'Purchase a rate plan'
