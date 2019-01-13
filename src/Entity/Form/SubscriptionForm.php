@@ -74,7 +74,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     // Redirect to Rate Plan detail page on submit.
-    $form['#action'] = $this->getEntity()->getRatePlan()->url();
+    $form['#action'] = $this->getEntity()->getRatePlan()->url('subscribe');
     return $form;
   }
 
@@ -114,12 +114,12 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
           '%label' => $display_name,
         ]));
-        $form_state->setRedirectUrl(Url::fromUserInput($this->entity->getRatePlan()->url()));
+        $form_state->setRedirectUrl($this->entity->getRatePlan()->toUrl('subscribe'));
       }
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
-      $form_state->setRedirectUrl(Url::fromUserInput($this->entity->getRatePlan()->url()));
+      $form_state->setRedirectUrl($this->entity->getRatePlan()->toUrl('subscribe'));
     }
   }
 
