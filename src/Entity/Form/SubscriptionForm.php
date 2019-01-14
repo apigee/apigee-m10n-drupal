@@ -114,12 +114,10 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
           '%label' => $display_name,
         ]));
-        $form_state->setRedirectUrl($this->entity->getRatePlan()->toUrl('subscribe'));
       }
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
-      $form_state->setRedirectUrl($this->entity->getRatePlan()->toUrl('subscribe'));
     }
   }
 
