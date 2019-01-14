@@ -89,7 +89,7 @@ class BillingDetailsForm extends FormBase {
   }
 
   /**
-   * Checks access for a specific request.
+   * Checks current users access to Billing Profile page.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
@@ -98,12 +98,18 @@ class BillingDetailsForm extends FormBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(AccountInterface $account) {
-    // Check permissions and combine that with any custom access checking needed. Pass forward
-    // parameters from the route and/or request as needed.
-    return AccessResult::allowedIf(
-      $account->hasPermission('view own monetization billing details') &&
-      $account->hasPermission('view any monetization billing details')
-    );
+    $access = AccessResult::forbidden();
+    if ($account->hasPermission('view any monetization billing details')) {
+      $access = AccessResult::allowed();
+    }
+    else {
+      $current_user = \Drupal::currentUser();
+      // Make sure users can edit only their own profile when `view own monetization billing details` permission is present.
+      if ($account->hasPermission('view own monetization billing details') && $account->id() === $current_user->id()) {
+        $access = AccessResult::allowed();
+      }
+    }
+    return $access;
   }
 
   /**
@@ -117,8 +123,7 @@ class BillingDetailsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
-    $developer_id = ($user->hasPermission('view any monetization billing details')) ? $user->getEmail() : \Drupal::currentUser()->getEmail();
-    $this->developer = Developer::load($developer_id);
+    $this->developer = Developer::load($user->getEmail());
 
     $form['company'] = [
       '#type' => 'fieldset',
