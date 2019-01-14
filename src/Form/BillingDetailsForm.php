@@ -23,6 +23,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\UserInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Logger\LoggerChannelFactory;
@@ -45,13 +46,6 @@ class BillingDetailsForm extends FormBase {
   const BILLING_TYPE_ATTR = 'MINT_BILLING_TYPE';
 
   /**
-   * Messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
-
-  /**
    * Developer.
    *
    * @var \Drupal\apigee_edge\Entity\Developer
@@ -66,16 +60,33 @@ class BillingDetailsForm extends FormBase {
   protected $loggerFactory;
 
   /**
+   * The current route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Constructs a CompanyProfileForm object.
    *
    * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
    *   The logger.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
+   *   The current route match.
    */
-  public function __construct(LoggerChannelFactory $loggerFactory, MessengerInterface $messenger) {
+  public function __construct(LoggerChannelFactory $loggerFactory, MessengerInterface $messenger, RouteMatchInterface $routeMatch) {
     $this->loggerFactory = $loggerFactory->get('apigee_m10n');
     $this->messenger = $messenger;
+    $this->routeMatch = $routeMatch;
   }
 
   /**
@@ -84,7 +95,8 @@ class BillingDetailsForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('logger.factory'),
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('current_route_match')
     );
   }
 
@@ -103,9 +115,9 @@ class BillingDetailsForm extends FormBase {
       $access = AccessResult::allowed();
     }
     else {
-      $current_user = \Drupal::currentUser();
+      $userParameter = $this->routeMatch->getParameter('user');
       // Make sure users can edit only their own profile when `view own monetization billing details` permission is present.
-      if ($account->hasPermission('view own monetization billing details') && $account->id() === $current_user->id()) {
+      if ($account->hasPermission('view own monetization billing details') && $account->id() === $userParameter->id()) {
         $access = AccessResult::allowed();
       }
     }
