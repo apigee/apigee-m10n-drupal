@@ -110,18 +110,11 @@ class BillingDetailsForm extends FormBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(AccountInterface $account) {
-    $access = AccessResult::forbidden();
-    if ($account->hasPermission('view any monetization billing details')) {
-      $access = AccessResult::allowed();
-    }
-    else {
-      $userParameter = $this->routeMatch->getParameter('user');
-      // Make sure users can edit only their own profile when `view own monetization billing details` permission is present.
-      if ($account->hasPermission('view own monetization billing details') && $account->id() === $userParameter->id()) {
-        $access = AccessResult::allowed();
-      }
-    }
-    return $access;
+    $userParameter = $this->routeMatch->getParameter('user');
+    return AccessResult::allowedIf(
+      $account->hasPermission('view any monetization billing details') ||
+      ($account->hasPermission('view own monetization billing details') && $account->id() === $userParameter->id())
+    );
   }
 
   /**
