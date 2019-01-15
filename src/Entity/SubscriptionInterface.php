@@ -76,6 +76,6 @@ interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   The rate plan.
    */
-  public function getTermsAndConditions(): RatePlanInterface;
+  public function getTermsAndConditions(): bool;
 
 }

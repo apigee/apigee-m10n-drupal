@@ -97,6 +97,11 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
       'startDate' => new \DateTimeImmutable(),
     ]);
 
+    $this->stack->queueMockResponse([
+      'get_terms_conditions',
+      'get_developer_terms_conditions',
+    ]);
+
     $item_list = $subscription->get('termsAndConditions');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(TermsAndConditionsFieldItem::class, $item_list->get(0));
