@@ -227,6 +227,7 @@ class Monetization implements MonetizationInterface {
     if (!($latest_tnc = $this->getLatestTermsAndConditions())) {
       // If there isn't a latest TnC, and there was no error, there shouldn't be
       // anything to accept.
+      // TODO: Add a test for an org with no TnC defined.
       return TRUE;
     }
     // Check the cache table.
