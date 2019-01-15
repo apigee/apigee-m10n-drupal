@@ -21,8 +21,8 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
-use Apigee\Edge\Api\Monetization\Entity\TermsAndConditions;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -151,10 +151,10 @@ interface MonetizationInterface {
   /**
    * Get latest terms and condition.
    *
-   * @return \Apigee\Edge\Api\Monetization\Entity\TermsAndConditions
+   * @return \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface
    *   Latest term and condition.
    */
-  public function getLatestTermsAndConditions(): ?TermsAndConditions;
+  public function getLatestTermsAndConditions(): ?TermsAndConditionsInterface;
 
   /**
    * Accepts a terms and conditions by its id.

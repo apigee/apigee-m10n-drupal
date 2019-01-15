@@ -23,8 +23,7 @@ namespace Drupal\apigee_m10n\Exception;
 use Drupal\apigee_edge\Exception\ApigeeEdgeExceptionInterface;
 
 /**
- * Module specific invalid operation exception.
+ * SDK entity load exception.
  */
-class InvalidOperationException extends \InvalidArgumentException implements ApigeeEdgeExceptionInterface {
-
+class SdkEntityLoadException extends \RuntimeException implements ApigeeEdgeExceptionInterface {
 }
