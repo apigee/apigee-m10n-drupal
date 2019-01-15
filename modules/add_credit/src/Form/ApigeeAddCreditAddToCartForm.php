@@ -65,23 +65,9 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    *   TRUE is should skip cart.
    */
   protected function shouldSkipCart() {
-    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $order_item */
-    $order_item = $this->entity;
-    /** @var \Drupal\commerce\PurchasableEntityInterface $purchased_entity */
-    $purchased_entity = $order_item->getPurchasedEntity();
-
-    try {
-      $product_type = $this->entityTypeManager->getStorage('commerce_product_type')->load($purchased_entity->bundle());
-
-      if ($product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart')) {
-        return TRUE;
-      }
-    }
-    catch (\Exception $exception) {
-      $this->logger('apigee_m10n_add_credit')->notice($exception->getMessage());
-    }
-
-    return FALSE;
+    return isset($this->entity->purchased_entity->entity->product_id->entity->type->entity)
+      ? $this->entity->purchased_entity->entity->product_id->entity->type->entity->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart', FALSE)
+      : FALSE;
   }
 
 }

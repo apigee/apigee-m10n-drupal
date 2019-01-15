@@ -150,30 +150,23 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function formCommerceProductTypeEditFormAlter(&$form, FormStateInterface $form_state, $form_id) {
-
     /** @var \Drupal\commerce_product\Entity\ProductTypeInterface $product_type */
-    $default_value = (($product_type = $form_state->getFormObject()->getEntity())
-      && $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit')
-    ) ? TRUE : FALSE;
+    $product_type = $form_state->getFormObject()->getEntity();
 
     // Add an option to allow enabling Apigee add credit for a product type.
     $form['apigee_m10n_enable_add_credit'] = [
       '#type' => 'checkbox',
       '#title' => t('Enable <em>Apigee Monetization Add Credit</em> for this product type.'),
-      '#default_value' => $default_value,
+      '#default_value' => $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit'),
     ];
-
-    /** @var \Drupal\commerce_product\Entity\ProductTypeInterface $product_type */
-    $default_value = (($product_type = $form_state->getFormObject()->getEntity())
-      && $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart')
-    ) ? TRUE : FALSE;
 
     // Add an option to allow skip cart for a product type.
     $form['apigee_m10n_enable_skip_cart'] = [
       '#type' => 'checkbox',
       '#title' => t('Skip cart and go directly to checkout for this product type.'),
-      '#default_value' => $default_value,
+      '#default_value' => $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart'),
     ];
+
     // Add our own callback so we can save the add_credit enabled setting.
     array_splice($form["actions"]["submit"]["#submit"], -1, 0, [[static::class, 'formCommerceProductTypeSubmit']]);
   }
