@@ -6,5 +6,12 @@ access monetization packages:
 
 view mint prepaid reports:
   title: 'View Mint Prepaid Reports'
+
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
+
+view own monetization billing details:
+  title: 'View own monetization billing details'
+
+view any monetization billing details:
+  title: 'View any monetization billing details'
