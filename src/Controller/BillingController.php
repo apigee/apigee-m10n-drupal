@@ -20,15 +20,22 @@
 namespace Drupal\apigee_m10n\Controller;
 
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n\Form\BillingConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableDependencyTrait;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Controller for billing related routes.
@@ -125,35 +132,77 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    * @throws \Exception
    */
   public function prepaidBalancePage(UserInterface $user) {
+    $build = [];
+
     // Retrieve the prepaid balances for this user for the current month and
     // year.
     $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
 
-    $output = [
-      'prepaid_balances' => [
-        '#theme' => 'prepaid_balances',
-        '#balances' => $balances,
-        '#cache' => [
-          // Add a custom cache tag so that this page can be invalidated by code
-          // that updates prepaid balances.
-          'tags' => [static::CACHE_PREFIX . ':user:' . $user->id()],
-          // Cache by path for up to 10 minutes.
-          'contexts' => ['url.path'],
-          'max-age' => 600,
-        ],
-      ],
+    $build['prepaid_balances'] = [
+      '#theme' => 'prepaid_balances',
+      '#balances' => $balances,
     ];
 
     // Show the prepaid balance reports download form.
-    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
-      $supported_currencies = $this->monetization->getSupportedCurrencies();
+//    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+//      $supported_currencies = $this->monetization->getSupportedCurrencies();
+//      $billing_documents = $this->monetization->getBillingDocumentsMonths();
+//      $build['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
+//    }
 
-      $billing_documents = $this->monetization->getBillingDocumentsMonths();
-
-      $output['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
+    // Ada a refresh button.
+    if ($this->currentUser->hasPermission('refresh prepaid balance reports')) {
+      $build['refresh_button'] = [
+        '#type' => 'link',
+        '#title' => $this->t('Refresh'),
+        '#url' => Url::fromRoute('apigee_monetization.billing_refresh', [
+          'user' => $user->id(),
+        ]),
+        '#attributes' => [
+          'class' => ['button'],
+        ],
+      ];
     }
 
-    return $output;
+    $build['title'] = [
+      '#markup' => date('h:i:s', time()),
+    ];
+
+    // Add cache config.
+    $build['#cache'] = [
+      'contexts' => ['url.path'],
+      'tags' => [static::CACHE_PREFIX . ':user:' . $user->id()],
+    ];
+
+    // Set the max-age from config.
+    $config = $this->config(BillingConfigForm::CONFIG_NAME);
+    if ($max_age = $config->get('prepaid_balance.cache_max_age')) {
+      $build['#cache']['max-age'] = $max_age;
+    }
+
+    return $build;
+  }
+
+  /**
+   * Callback for refreshing the prepaid balances.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   */
+  public function refreshPrepaidBalancePage(UserInterface $user) {
+    // A user can only refresh own account.
+    if ($this->currentUser->id() !== $user->id()) {
+      throw new AccessDeniedHttpException();
+    }
+
+    Cache::invalidateTags([static::CACHE_PREFIX . ':user:' . $user->id()]);
+
+    // Redirect to billing page.
+    return new RedirectResponse(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $user->id(),
+    ])->toString());
   }
 
 }

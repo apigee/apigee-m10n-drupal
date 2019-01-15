@@ -6,5 +6,9 @@ access monetization packages:
 
 view mint prepaid reports:
   title: 'View Mint Prepaid Reports'
+
+refresh prepaid balance reports:
+  title: 'Refresh prepaid balance reports'
+
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
