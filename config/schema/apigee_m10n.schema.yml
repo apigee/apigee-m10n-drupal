@@ -6,6 +6,17 @@ apigee_m10n.rate_plan.config:
       type: string
       label: 'View mode to use when viewing rate plans within packages.'
 
+apigee_m10n.billing.config:
+  type: config_object
+  label: 'Billing settings'
+  mapping:
+    prepaid_balance:
+      type: mapping
+      mapping:
+        cache_max_age:
+          type: integer
+          label: 'Max age for prepaid balance'
+
 apigee_m10n.subscription.config:
   type: config_object
   label: 'Rate plan purchase settings'
