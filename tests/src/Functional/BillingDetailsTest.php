@@ -78,7 +78,14 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
 
     $this->queueOrg();
     $this->stack->queueMockResponse([
-      'get_developer_attributes' => []
+      'developer' => [
+        'mail'  => ['value' => $this->developer->getEmail()],
+        'uuid' => ['value' => '123123123'],
+        'first_name' => ['value' => 'First Name'],
+        'last_name' => ['value' => 'Last Name'],
+        'name' => ['value' => $this->developer->getEmail()],
+        'org_name' => 'Test Org',
+      ]
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.profile', [
@@ -88,7 +95,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
     // Make sure user has access to the page.
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('Connection error');
-    $this->assertSame('', $this->getSession()->getPage()->findById('edit-legal-company-name')->getValue());
+    $this->assertSame($this->developer->getEmail(), $this->getSession()->getPage()->findById('edit-legal-company-name')->getValue());
     $this->assertCssElementContains('#edit-billing .fieldset-wrapper', 'PREPAID');
 
   }
