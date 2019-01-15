@@ -105,7 +105,6 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
   public function testView() {
 
     $this->stack->queueMockResponse([
-      'get_organization',
       'get_terms_conditions',
       'get_developer_terms_conditions',
     ]);
