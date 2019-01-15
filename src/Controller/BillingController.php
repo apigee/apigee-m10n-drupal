@@ -24,8 +24,6 @@ use Drupal\apigee_m10n\Form\BillingConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheableDependencyTrait;
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormBuilderInterface;
@@ -33,7 +31,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -132,53 +129,50 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    * @throws \Exception
    */
   public function prepaidBalancePage(UserInterface $user) {
-    $build = [];
-
-    // Retrieve the prepaid balances for this user for the current month and
-    // year.
-    $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
-
-    $build['prepaid_balances'] = [
-      '#theme' => 'prepaid_balances',
-      '#balances' => $balances,
+    $build = [
+      '#prefix' => '<div class="apigee-m10n-prepaid-balance">',
+      '#suffix' => '</div>',
     ];
 
-    // Show the prepaid balance reports download form.
-//    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
-//      $supported_currencies = $this->monetization->getSupportedCurrencies();
-//      $billing_documents = $this->monetization->getBillingDocumentsMonths();
-//      $build['prepaid_balances_reports_download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
-//    }
+    $build['prepaid_balances'] = [
+      'balances' => [
+        '#theme' => 'prepaid_balances',
+        '#balances' => $this->getPrepaidBalances($user),
+      ],
+      '#cache' => [
+        'contexts' => ['url.path'],
+        'tags' => $this->getCacheTags($user),
+        'max-age' => $this->getCacheMaxAge(),
+        'keys' => [static::CACHE_PREFIX . ':user:' . $user->id() . ':prepaid_balances'],
+      ],
+    ];
 
-    // Ada a refresh button.
+    // Add a refresh button.
     if ($this->currentUser->hasPermission('refresh prepaid balance reports')) {
-      $build['refresh_button'] = [
+      $build['prepaid_balances']['refresh_button'] = [
         '#type' => 'link',
         '#title' => $this->t('Refresh'),
         '#url' => Url::fromRoute('apigee_monetization.billing_refresh', [
           'user' => $user->id(),
         ]),
         '#attributes' => [
-          'class' => ['button'],
+          'class' => [
+            'button',
+            'apigee-m10n-prepaid-balance__refresh-button',
+          ],
         ],
       ];
     }
 
-    $build['title'] = [
-      '#markup' => date('h:i:s', time()),
-    ];
-
-    // Add cache config.
-    $build['#cache'] = [
-      'contexts' => ['url.path'],
-      'tags' => [static::CACHE_PREFIX . ':user:' . $user->id()],
-    ];
-
-    // Set the max-age from config.
-    $config = $this->config(BillingConfigForm::CONFIG_NAME);
-    if ($max_age = $config->get('prepaid_balance.cache_max_age')) {
-      $build['#cache']['max-age'] = $max_age;
+    // Show the prepaid balance reports download form.
+    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+      // Build the form.
+      $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $this->getSupportedCurrencies($user), $this->getBillingDocuments($user));
+      $build['download_form']['#cache']['keys'] = [static::CACHE_PREFIX . ':user:' . $user->id() . ':download_form'];
     }
+
+    // Attach library.
+    $build['#attached']['library'][] = 'apigee_m10n/billing';
 
     return $build;
   }
@@ -190,6 +184,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   The user entity.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   The redirect response.
    */
   public function refreshPrepaidBalancePage(UserInterface $user) {
     // A user can only refresh own account.
@@ -197,12 +192,119 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       throw new AccessDeniedHttpException();
     }
 
-    Cache::invalidateTags([static::CACHE_PREFIX . ':user:' . $user->id()]);
+    // Invalidate the billing cache tag.
+    // This handles both the current balance and the previous balance reports.
+    Cache::invalidateTags($this->getCacheTags($user));
 
     // Redirect to billing page.
     return new RedirectResponse(Url::fromRoute('apigee_monetization.billing', [
       'user' => $user->id(),
     ])->toString());
+  }
+
+  /**
+   * Returns the prepaid balances for a user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[]|array|null
+   *   An array of prepaid balances.
+   *
+   * @throws \Exception
+   */
+  protected function getPrepaidBalances(UserInterface $user) {
+    $cid = static::CACHE_PREFIX . ':user:' . $user->id() . ':prepaid_balances';
+
+    // Check cache.
+    if ($cache = $this->cache()->get($cid)) {
+      return $cache->data;
+    }
+
+    // Retrieve prepaid balances for this user for the current month and year.
+    $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
+    $this->cache()->set($cid, $balances, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
+
+    return $balances;
+  }
+
+  /**
+   * Returns the supported currencies for a user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @return array|null
+   *   An array of supported currencies.
+   */
+  protected function getSupportedCurrencies(UserInterface $user) {
+    $cid = static::CACHE_PREFIX . ':user:' . $user->id() . ':supported_currencies';
+
+    // Check cache.
+    if ($cache = $this->cache()->get($cid)) {
+      return $cache->data;
+    }
+
+    // Retrieve the supported currencies.
+    $supported_currencies = $this->monetization->getSupportedCurrencies();
+    $this->cache()->set($cid, $supported_currencies, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
+
+    return $supported_currencies;
+  }
+
+  /**
+   * Returns billing documents for a user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @return array|null
+   *   An array of billing documents.
+   */
+  protected function getBillingDocuments(UserInterface $user) {
+    $cid = static::CACHE_PREFIX . ':user:' . $user->id() . ':billing_documents';
+
+    // Check cache.
+    if ($cache = $this->cache()->get($cid)) {
+      return $cache->data;
+    }
+
+    // Retrieve the billing documents.
+    $billing_documents = $this->monetization->getBillingDocumentsMonths();
+    $this->cache()->set($cid, $billing_documents, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
+
+    return $billing_documents;
+  }
+
+  /**
+   * Returns the cache max age.
+   *
+   * @return int
+   *   The cache max age.
+   */
+  protected function getCacheMaxAge() {
+    // Get the max-age from config.
+    if ($config = $this->config(BillingConfigForm::CONFIG_NAME)) {
+      return $config->get('prepaid_balance.cache_max_age');
+    }
+
+    return 0;
+  }
+
+  /**
+   * Helper to get the billing cache tags.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @return array
+   *   The cache tags.
+   */
+  protected function getCacheTags(UserInterface $user) {
+    return [
+      static::CACHE_PREFIX,
+      static::CACHE_PREFIX . ':user:' . $user->id()
+    ];
   }
 
 }

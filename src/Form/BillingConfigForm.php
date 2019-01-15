@@ -18,6 +18,8 @@
 
 namespace Drupal\apigee_m10n\Form;
 
+use Drupal\apigee_m10n\Controller\BillingController;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\ConfigFormBase;
@@ -25,7 +27,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class BillingConfigForm
+ * Config form for billing.
  *
  * @package Drupal\apigee_m10n
  */
@@ -83,7 +85,7 @@ class BillingConfigForm extends ConfigFormBase {
     $config = $this->config(static::CONFIG_NAME);
 
     // Build options.
-    $period = [0, 60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400];
+    $period = [0, 60, 300, 600, 900, 1800, 3600, 21600, 32400, 43200, 86400];
     $period = array_map([$this->dateFormatter, 'formatInterval'], array_combine($period, $period));
     $period[0] = '<' . $this->t('no caching') . '>';
 
@@ -98,7 +100,7 @@ class BillingConfigForm extends ConfigFormBase {
       '#title' => $this->t('Cache max age'),
       '#default_value' => $config->get('prepaid_balance.cache_max_age'),
       '#options' => $period,
-      '#description' => $this->t('How long to cache the prepaid balance for a developer.'),
+      '#description' => $this->t('Set the cache age for the prepaid balance for a developer.'),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -112,8 +114,10 @@ class BillingConfigForm extends ConfigFormBase {
       ->set('prepaid_balance.cache_max_age', $form_state->getValue('cache_max_age'))
       ->save();
 
+    // Clear caches.
+    Cache::invalidateTags([BillingController::CACHE_PREFIX]);
+
     parent::submitForm($form, $form_state);
   }
-
 
 }

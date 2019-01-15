@@ -9,3 +9,8 @@ package:
     - core/jquery
     - core/jquery.once
     - core/drupal
+
+billing:
+  css:
+    theme:
+      css/billing.css: {}
