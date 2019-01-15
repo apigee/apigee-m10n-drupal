@@ -123,6 +123,21 @@ You can read more about running Drupal 8 PHPUnit tests [here](https://www.drupal
 For setting up PHPStorm to run tests with a click of a button, see:
 <https://www.drupal.org/docs/8/phpunit/running-phpunit-tests-within-phpstorm>.
 
+### The API response mocking system
+
+The `apigee_mock_client` module included under `./tests` is responsible for faking API
+responses from the Apigee SDK. Tests are written to queue API responses for all API calls
+that will be made by the SDK connector. The response mocking system avoids the need for
+an actual Apigee organization credentials to contribute to this module. There are many 
+examples in the test suite on how to write tests and queue mock responses. Responses are
+returned in the chronological order they are queued.
+
+In order to run tests against an actual Apigee organization, you must first set up 
+credentials according to the instructions in the instructions in the [Apigee Edge Drupal module](https://github.com/apigee/apigee-edge-drupal/blob/8.x-1.x/CONTRIBUTING.md#running-tests).
+Then integration can be enabled by setting `APIGEE_INTEGRATION_ENABLE` environment variable
+to "1" i.e. by setting `<env name="APIGEE_INTEGRATION_ENABLE" value='1' />` in phpunit.xml.
+
+
 ## Best practices
 
 ### Pulling in un-merged dependencies:

@@ -33,26 +33,6 @@ use Http\Message\Authentication\AutoBasicAuth;
 class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
   /**
-   * The SDK Connector.
-   *
-   * A client which should have it's http client stack replaced with our mock.
-   *
-   * @var \Apigee\Edge\ClientInterface
-   */
-  protected $sdk_client;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-
-    if (!$this->integration_enabled) {
-      $this->sdk_client = $this->sdk_connector->buildClient(new AutoBasicAuth());
-    }
-  }
-
-  /**
    * Tests that the service override is working properly.
    */
   public function testServiceModification() {
@@ -103,17 +83,25 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
    * Tests that the sdk client will be unaffected while integration is enabled.
    */
   public function testIntegrationToggle() {
+    $this->container->set('apigee_mock_client.mock_http_client_factory', NULL);
+    putenv('APIGEE_INTEGRATION_ENABLE=0');
     $handler = $this->container
       ->get('apigee_mock_client.mock_http_client_factory')
       ->fromOptions([])
       ->getConfig('handler');
 
-    if ($this->integration_enabled) {
-      self::assertInstanceOf(MockHandler::class, $handler);
-    }
-    else {
-      self::assertInstanceOf(HandlerStack::class, $handler);
-    }
+    self::assertInstanceOf(MockHandler::class, $handler);
+
+    $this->container->set('apigee_mock_client.mock_http_client_factory', NULL);
+    putenv('APIGEE_INTEGRATION_ENABLE=1');
+
+    $handler = $this->container
+      ->get('apigee_mock_client.mock_http_client_factory')
+      ->fromOptions([])
+      ->getConfig('handler');
+
+    self::assertInstanceOf(HandlerStack::class, $handler);
+    putenv('APIGEE_INTEGRATION_ENABLE=' . $this->integration_enabled ? 1 : 0);
   }
 
 }
