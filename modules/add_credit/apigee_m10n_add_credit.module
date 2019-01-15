@@ -65,6 +65,13 @@ function apigee_m10n_add_credit_form_commerce_product_type_edit_form_alter(&$for
 }
 
 /**
+ * Implements hook_entity_type_alter().
+ */
+function apigee_m10n_add_credit_entity_type_alter(array &$entity_types) {
+  apigee_m10n_add_credit_service()->entityTypeAlter($entity_types);
+}
+
+/**
  * Helper to get the `apigee_m10n.add_credit` service.
  *
  * @return \Drupal\apigee_m10n_add_credit\AddCreditServiceInterface

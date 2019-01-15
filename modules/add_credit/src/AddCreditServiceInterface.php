@@ -104,4 +104,12 @@ interface AddCreditServiceInterface {
    */
   public function formCommerceProductTypeEditFormAlter(&$form, FormStateInterface $form_state, $form_id);
 
+  /**
+   * Handles `hook_entity_type_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $entity_types
+   *   An array of entity types.
+   */
+  public function entityTypeAlter(array &$entity_types);
+
 }
