@@ -24,7 +24,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge\Entity\Developer;
-use Drupal\Core\Url;
 
 /**
  * Subscription entity form.
