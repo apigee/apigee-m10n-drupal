@@ -12,3 +12,9 @@ refresh prepaid balance reports:
 
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
+
+view own monetization billing details:
+  title: 'View own monetization billing details'
+
+view any monetization billing details:
+  title: 'View any monetization billing details'
