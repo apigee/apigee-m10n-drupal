@@ -134,10 +134,15 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       '#suffix' => '</div>',
     ];
 
+    // Retrieve prepaid balances for this user for the current month and year.
+    $prepaid_balances = $this->getDataFromCache($user, 'prepaid_balances', function () use ($user) {
+      return $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
+    });
+
     $build['prepaid_balances'] = [
       'balances' => [
         '#theme' => 'prepaid_balances',
-        '#balances' => $this->getPrepaidBalances($user),
+        '#balances' => $prepaid_balances,
       ],
       '#cache' => [
         'contexts' => ['url.path'],
@@ -166,8 +171,16 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
 
     // Show the prepaid balance reports download form.
     if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+      $supported_currencies = $this->getDataFromCache($user, 'supported_currencies', function () {
+        return $this->monetization->getSupportedCurrencies();
+      });
+
+      $billing_documents = $this->getDataFromCache($user, 'billing_documents', function () {
+        return $this->monetization->getBillingDocumentsMonths();
+      });
+
       // Build the form.
-      $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $this->getSupportedCurrencies($user), $this->getBillingDocuments($user));
+      $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
       $build['download_form']['#cache']['keys'] = [$this->getCacheId($user, 'download_form')];
     }
 
@@ -203,77 +216,30 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   }
 
   /**
-   * Returns the prepaid balances for a user.
+   * Helper to retrieve data from cache.
    *
    * @param \Drupal\user\UserInterface $user
    *   The user entity.
+   * @param string $suffix
+   *   The cache id suffix.
+   * @param callable $callback
+   *   The callback if not in cache.
    *
-   * @return \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[]|array|null
-   *   An array of prepaid balances.
-   *
-   * @throws \Exception
+   * @return mixed
+   *   The data.
    */
-  protected function getPrepaidBalances(UserInterface $user) {
-    $cid = $this->getCacheId($user, 'prepaid_balances');
+  protected function getDataFromCache(UserInterface $user, string $suffix, callable $callback) {
+    $cid = $this->getCacheId($user, $suffix);
 
     // Check cache.
     if ($cache = $this->cache()->get($cid)) {
       return $cache->data;
     }
 
-    // Retrieve prepaid balances for this user for the current month and year.
-    $balances = $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
-    $this->cache()->set($cid, $balances, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
+    $data = $callback();
+    $this->cache()->set($cid, $data, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
 
-    return $balances;
-  }
-
-  /**
-   * Returns the supported currencies for a user.
-   *
-   * @param \Drupal\user\UserInterface $user
-   *   The user entity.
-   *
-   * @return array|null
-   *   An array of supported currencies.
-   */
-  protected function getSupportedCurrencies(UserInterface $user) {
-    $cid = $this->getCacheId($user, 'supported_currencies');
-
-    // Check cache.
-    if ($cache = $this->cache()->get($cid)) {
-      return $cache->data;
-    }
-
-    // Retrieve the supported currencies.
-    $supported_currencies = $this->monetization->getSupportedCurrencies();
-    $this->cache()->set($cid, $supported_currencies, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
-
-    return $supported_currencies;
-  }
-
-  /**
-   * Returns billing documents for a user.
-   *
-   * @param \Drupal\user\UserInterface $user
-   *   The user entity.
-   *
-   * @return array|null
-   *   An array of billing documents.
-   */
-  protected function getBillingDocuments(UserInterface $user) {
-    $cid = $this->getCacheId($user, 'billing_documents');
-
-    // Check cache.
-    if ($cache = $this->cache()->get($cid)) {
-      return $cache->data;
-    }
-
-    // Retrieve the billing documents.
-    $billing_documents = $this->monetization->getBillingDocumentsMonths();
-    $this->cache()->set($cid, $billing_documents, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
-
-    return $billing_documents;
+    return $data;
   }
 
   /**
