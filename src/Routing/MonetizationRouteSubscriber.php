@@ -47,6 +47,14 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
       "entity.field_config.subscription_field_delete_form",
       "entity.subscription.field_ui_fields",
       "field_ui.field_storage_config_add_subscription",
+      // Packages.
+      "entity.field_config.package_field_edit_form",
+      "entity.field_config.package_storage_edit_form",
+      "entity.field_config.package_field_delete_form",
+      "entity.package.field_ui_fields",
+      "field_ui.field_storage_config_add_package",
+      "entity.entity_form_display.package.default",
+      "entity.entity_form_display.package.form_mode",
     ];
 
     foreach ($routes_to_block as $route_id) {

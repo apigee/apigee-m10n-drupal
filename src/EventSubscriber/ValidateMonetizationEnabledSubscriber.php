@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -30,8 +31,19 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface {
 
-  private $monetization;
-  private $messenger;
+  /**
+   * The `apigee_m10n.monetization` service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
 
   /**
    * ValidateMonetizationEnabledSubscriber constructor.
@@ -48,10 +60,16 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
 
   /**
    * If monetization isn't enabled alert the user.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   *   The event.
    */
-  public function validateMonetizationEnabled() {
-    if (!$this->monetization->isMonetizationEnabled()) {
-      $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
+  public function validateMonetizationEnabled(GetResponseEvent $event) {
+    /** @var \Symfony\Component\Routing\Route $current_route */
+    if (($current_route = $event->getRequest()->get('_route_object')) && ($current_route->hasOption('_apigee_monetization_route'))) {
+      if (!$this->monetization->isMonetizationEnabled()) {
+        $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
+      }
     }
   }
 

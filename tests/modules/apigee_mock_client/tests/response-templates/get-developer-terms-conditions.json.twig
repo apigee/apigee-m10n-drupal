@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org_name}/developers/{dev_id}/developer-tncs
+ *
+ * Response Code: 200
+ */
+#}
+{
+    "developerTnc": [
+        {
+            "action": "{{ developerTnc.action|default('ACCEPTED') }}",
+            "auditDate": "{{ developerTnc.auditDate|default('2018-12-10 21:00:00') }}",
+            "id": "{{ developerTnc.id|default('12345678-0000-1111-2222-a1b3a716ea91') }}",
+            "tnc": {
+                "id": "{{ developerTnc.tnc.id|default('123123001-0000-1111-2222-00290d41d3ce') }}",
+                "organization": {% include 'org.json.twig' %},
+                "startDate": "{{ developerTnc.tnc.startDate|default('2018-12-10 00:00:00') }}",
+                "url": "{{ developerTnc.tnc.url|default('https://myterms-site.com/v1') }}",
+                "version": "{{ developerTnc.tnc.version|default('1') }}"
+            }
+        },
+        {
+            "action": "{{ developerTnc.action|default('ACCEPTED') }}",
+            "auditDate": "{{ developerTnc.auditDate|default('2018-12-09 17:00:00') }}",
+            "id": "{{ developerTnc.id|default('22345678-0000-1111-2222-a1b3a716ea91') }}",
+            "tnc": {
+                "id": "{{ developerTnc.tnc.id|default('223123001-0000-1111-2222-00290d41d3ce') }}",
+                "organization": {% include 'org.json.twig' %},
+                "startDate": "{{ developerTnc.tnc.startDate|default('2018-12-11 00:00:00') }}",
+                "url": "{{ developerTnc.tnc.url|default('https://myterms-site.com/v2') }}",
+                "version": "{{ developerTnc.tnc.version|default('2') }}"
+            }
+        }
+    ],
+    "totalRecords": 2
+}

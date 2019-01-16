@@ -19,9 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -31,7 +28,7 @@ use Drupal\apigee_edge\Entity\Developer;
 /**
  * Subscription entity form.
  */
-class SubscriptionForm extends EdgeContentEntityForm {
+class SubscriptionForm extends FieldableMonetizationEntityForm {
 
   /**
    * Developer legal name attribute name.
@@ -48,17 +45,10 @@ class SubscriptionForm extends EdgeContentEntityForm {
   /**
    * Constructs a SubscriptionEditForm object.
    *
-   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
-   *   The entity repository service.
-   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
-   *   The entity type bundle service.
-   * @param \Drupal\Component\Datetime\TimeInterface $time
-   *   The time service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
    */
-  public function __construct(EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL, TimeInterface $time = NULL, MessengerInterface $messenger = NULL) {
-    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
+  public function __construct(MessengerInterface $messenger = NULL) {
     $this->messenger = $messenger;
   }
 
@@ -67,9 +57,6 @@ class SubscriptionForm extends EdgeContentEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.repository'),
-      $container->get('entity_type.bundle.info'),
-      $container->get('datetime.time'),
       $container->get('messenger')
     );
   }
@@ -81,7 +68,7 @@ class SubscriptionForm extends EdgeContentEntityForm {
     // @TODO: Make sure we find a better way to handle names
     // without adding rate plan ID this form is getting cached
     // and when rendered as a formatter.
-    // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146
+    // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146.
     return parent::getFormId() . '_' . $this->entity->getRatePlan()->id();
   }
 
@@ -102,7 +89,7 @@ class SubscriptionForm extends EdgeContentEntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      // Auto assign legal name
+      // Auto assign legal name.
       $developer_id = $this->entity->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
       // Autopopulate legal name when developer has no legal name attribute set.
@@ -113,12 +100,12 @@ class SubscriptionForm extends EdgeContentEntityForm {
 
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have purchased <em>%label</em> plan', [
+        $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
       }
       else {
-        $this->messenger->addWarning($this->t('Unable purchase <em>%label</em> plan', [
+        $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
           '%label' => $display_name,
         ]));
       }

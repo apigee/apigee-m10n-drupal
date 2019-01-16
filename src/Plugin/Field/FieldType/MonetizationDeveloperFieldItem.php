@@ -45,7 +45,7 @@ class MonetizationDeveloperFieldItem extends FieldItemBase {
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     $properties['value'] = DataDefinition::create('any')
       ->setLabel(new TranslatableMarkup('value'))
-      ->setDescription(new TranslatableMarkup('The Apigee Monetization developer.'))
+      ->setDescription(new TranslatableMarkup('The Apigee monetization developer.'))
       ->setComputed(TRUE);
 
     return $properties;

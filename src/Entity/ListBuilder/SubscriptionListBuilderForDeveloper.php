@@ -64,7 +64,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   protected $logger;
 
   /**
-   * Messanger service.
+   * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -89,7 +89,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * @param \Psr\Log\LoggerInterface $logger
    *   Logger service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
    */
   public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger, MessengerInterface $messenger) {
     parent::__construct($entity_type, $storage);
@@ -125,7 +125,8 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    * {@inheritdoc}
    */
   public function getPageTitle(RouteMatchInterface $route_match): string {
-    return $this->t('Purchased Plans');
+    // TODO: make sure this string is configurable.
+    return $this->t('Purchased plans');
   }
 
   /**
@@ -142,10 +143,10 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
    */
   public function buildHeader() {
     return [
-      'status' => [
-        'data' => $this->t('Status'),
-        'field' => 'status',
-        'class' => ['field-status'],
+      'plan' => [
+        'data' => $this->t('Plan Name'),
+        'class' => ['rate-plan-name'],
+        'field' => 'plan',
       ],
       'package' => [
         'data'  => $this->t('Package'),
@@ -157,11 +158,6 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         'data' => $this->t('Products'),
         'class' => ['products'],
         'field' => 'products',
-      ],
-      'plan' => [
-        'data' => $this->t('Plan Name'),
-        'class' => ['rate-plan-name'],
-        'field' => 'plan',
       ],
       'start_date' => [
         'data' => $this->t('Start Date'),
@@ -182,6 +178,11 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         'data' => $this->t('Renewal Date'),
         'class' => ['subscription-renewal-date'],
         'field' => 'renewal_date',
+      ],
+      'status' => [
+        'data' => $this->t('Status'),
+        'field' => 'status',
+        'class' => ['field-status'],
       ],
       'operations' => [
         'data' => $this->t('Actions'),
@@ -209,9 +210,9 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
 
     return [
       'data' => [
-        'status' => [
-          'data' => $entity->getSubscriptionStatus(),
-          'class' => ['field-status'],
+        'plan' => [
+          'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $rate_plan_url),
+          'class' => ['rate-plan-name'],
         ],
         'package' => [
           'data' => $rate_plan->getPackage()->getDisplayName(),
@@ -220,10 +221,6 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         'products' => [
           'data' => $products,
           'class' => ['products'],
-        ],
-        'plan' => [
-          'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $rate_plan_url),
-          'class' => ['rate-plan-name'],
         ],
         'start_date' => [
           'data' => $entity->getStartDate()->format('m/d/Y'),
@@ -240,6 +237,10 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
         'renewal_date' => [
           'data' => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : NULL,
           'class' => ['subscription-renewal-date'],
+        ],
+        'status' => [
+          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
+          'class' => ['field-status'],
         ],
         'operations'    => ['data' => $this->buildOperations($entity)],
       ],
@@ -309,9 +310,10 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $operations = parent::getDefaultOperations($entity);
     // TODO: Is a custom unsubscribe access check is really necessary?
     if ($entity->access('update') && $entity->hasLinkTemplate('unsubscribe-form')) {
+      // TODO: Allow cancelation of future plans.
       if ($entity->isSubscriptionActive()) {
         $operations['unsubscribe'] = [
-          'title' => $this->t('Cancel Plan'),
+          'title' => $this->t('Cancel'),
           'weight' => 10,
           'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
         ];

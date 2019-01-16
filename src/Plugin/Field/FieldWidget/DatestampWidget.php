@@ -31,7 +31,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @FieldWidget(
  *   id = "apigee_datestamp",
- *   label = @Translation("Apigee Date"),
+ *   label = @Translation("Apigee date"),
  *   field_types = {
  *     "apigee_datestamp",
  *   }

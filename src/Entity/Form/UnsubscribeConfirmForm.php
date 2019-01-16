@@ -49,7 +49,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   protected $subscription;
 
   /**
-   * Messanger service.
+   * Messenger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -68,7 +68,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   Route match service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messanger service.
+   *   Messenger service.
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdkControllerFactory
    *   SDK Controller factory.
    */
@@ -136,9 +136,9 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#title' => $this->t('Plan End Date'),
       '#options' => [
         'now'     => $this->t('Now'),
-        'on_date' => $this->t('Future Date')
+        'on_date' => $this->t('Future Date'),
       ],
-      '#default_value' => 'now'
+      '#default_value' => 'now',
     ];
     $form['endDate'] = [
       '#type'  => 'date',
@@ -146,7 +146,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       '#states' => [
         'visible' => [
           ':input[name="end_type"]' => ['value' => 'on_date'],
-        ]
+        ],
       ],
     ];
     return $form;
@@ -172,15 +172,17 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
       if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have successfully cancelled <em>%label</em> plan', [
+        $this->messenger->addStatus($this->t('You have successfully cancelled %label plan', [
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
         Cache::invalidateTags(['apigee_my_subscriptions']);
         $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
     }
+    // TODO: Check to see if `EntityStorageException` is the only type of error
+    // to we need to catch here.
     catch (\Exception $e) {
-      $this->messenger->addError($e->getMessage());
+      $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
   }
 

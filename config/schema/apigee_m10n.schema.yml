@@ -8,7 +8,7 @@ apigee_m10n.rate_plan.config:
 
 apigee_m10n.subscription.config:
   type: config_object
-  label: 'Subscription settings'
+  label: 'Rate plan purchase settings'
   mapping:
     subscribe_label:
       type: label
@@ -58,3 +58,11 @@ field.formatter.settings.apigee_datestamp:
     timezone:
       type: string
       label: 'Timezone'
+
+field.formatter.settings.apigee_tnc_default:
+  type: mapping
+  label: 'Terms and Conditions'
+  mapping:
+    default_description:
+      type: string
+      label: 'Terms and Conditions'

@@ -37,6 +37,7 @@ use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Defines the Package Rate Plan entity class.
@@ -159,7 +160,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // The rate plan details are many-to-one.
     $definitions['ratePlanDetails']->setCardinality(-1);
     // Allow the package to be accessed as a field but not rendered because
-    // rendering the package within a reate plan would cause recursion.
+    // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
     // If the subscription label setting is available, use it.
     $subscribe_label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_label');
@@ -241,8 +242,12 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    *   Returns user entity.
    */
   private function getUser() {
-    // The route parameters still need tobe set.
+    // The route parameters still need to be set.
     $route_user = \Drupal::routeMatch()->getParameter('user');
+    // Sometimes the param converter hasn't converted the user.
+    if (is_string($route_user)) {
+      $route_user = User::load($route_user);
+    }
     return $route_user ?: \Drupal::currentUser();
   }
 

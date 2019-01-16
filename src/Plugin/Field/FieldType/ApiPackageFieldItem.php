@@ -34,8 +34,8 @@ use Drupal\Core\TypedData\DataDefinition;
  *
  * @FieldType(
  *   id = "apigee_api_package",
- *   label = @Translation("Apigee API Package field item"),
- *   description = @Translation("Apigee API Package."),
+ *   label = @Translation("Apigee API package field item"),
+ *   description = @Translation("Apigee API package."),
  *   default_formatter = "apigee_api_package"
  * )
  */

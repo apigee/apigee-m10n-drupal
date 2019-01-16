@@ -61,23 +61,23 @@ class NavigationTest extends MonetizationFunctionalTestBase {
       'view subscription',
     ]);
 
-    $this->queueOrg();
     $this->drupalLogin($this->developer);
 
+    $this->queueOrg();
     // Check the manage profile link.
-    $this->clickLink('Manage profile');
+    $this->clickLink('My account');
 
     // Check the Pricing & Plans link.
     $session = $this->assertSession();
-    $session->linkExists('Pricing & Plans');
-    $session->linkExists('Manage profile');
-    $session->linkExists('Prepaid Balance');
-    $session->linkExists('Purchased Plans');
+    $session->linkExists('Pricing & plans');
+    $session->linkExists('My account');
+    $session->linkExists('Prepaid balance');
+    $session->linkExists('Purchased plans');
 
-    $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & Plans');
-    $this->assertCssElementContains('.block-menu.navigation.menu--account', 'Manage profile');
-    $this->assertCssElementContains('nav.tabs', 'Prepaid Balance');
-    $this->assertCssElementContains('nav.tabs', 'Purchased Plans');
+    $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & plans');
+    $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
+    $this->assertCssElementContains('nav.tabs', 'Prepaid balance');
+    $this->assertCssElementContains('nav.tabs', 'Purchased plans');
   }
 
 }

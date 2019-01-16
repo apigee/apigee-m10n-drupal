@@ -76,21 +76,18 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
 
     $form['notifications'] = [
       '#type' => 'fieldset',
-      '#title' => $this
-        ->t('Notifications'),
+      '#title' => $this->t('Notifications'),
     ];
     // Whether or not to sent an email if there is an error adding credit.
-    $description = 'This notification is sent when an %add_credit product is 
-                    processed. Normally this would result in the application of 
-                    the purchased amount to the developer or the team account. 
-                    If an error occurs while attempting to apply the credit to 
-                    the users account the following recipient will be notified. 
-                    Select the %always_option to receive a notification even if 
-                    the credit is applied successfully.';
+    $description = 'Notification sent when an %add_credit product is processed 
+                    to add credit to a developer or team account. If an error 
+                    occurs while applying the credit, a notification is sent to
+                    the specified email address. Select %add_credit to send a
+                    notification even if the credit is applied successfully.';
 
     $form['notifications']['notify_on'] = [
       '#type' => 'radios',
-      '#title' => $this->t('When to notify an administrator'),
+      '#title' => $this->t('Notify administrator'),
       '#options' => [
         static::NOTIFY_ALWAYS => $this->t('Always'),
         static::NOTIFY_ON_ERROR => $this->t('Only on error'),
@@ -112,25 +109,16 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
     // Add a note about configuring notifications in drupal commerce.
-    $note = '<div class="apigee-add-credit-notification-note"><strong><em>Note:</em></strong><br />
-             <p>It is possible to configure drupal commerce to send 
-             an email to the purchaser upon order completion.
-             <br />
-             See @commerce_notification_link for more information.</p></div>';
     $form['notifications']['note'] = [
-      '#markup' => $this->t($note, [
+      '#markup' => $this->t('<div class="apigee-add-credit-notification-note"><div class="label">@note</div><div>@description<br />@see @commerce_notification_link.</div></div>', [
+        '@note' => 'Note:',
+        '@description' => 'You can configure Drupal Commerce to send an email to the consumer to confirm completion of the order.',
+        '@see' => 'See',
         '@commerce_notification_link' => Link::fromTextAndUrl('Drupal commerce documentation', Url::fromUri('https://docs.drupalcommerce.org/commerce2/user-guide/orders/customer-emails', ['external' => TRUE]))->toString(),
       ]),
     ];
 
     return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
   }
 
   /**

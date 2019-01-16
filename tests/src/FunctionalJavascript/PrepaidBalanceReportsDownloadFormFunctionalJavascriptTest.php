@@ -57,12 +57,11 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
       'view mint prepaid reports',
     ]);
 
-    $this->queueOrg();
-
     $this->drupalLogin($this->account);
 
     $this->queueMockResponses(['get-prepaid-balances']);
 
+    $this->queueOrg();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->account->id(),
     ]));
@@ -87,10 +86,9 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
       'download prepaid balance reports',
     ]);
 
-    $this->queueOrg();
-
     $this->drupalLogin($this->account);
 
+    $this->queueOrg();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
