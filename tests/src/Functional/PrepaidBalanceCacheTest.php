@@ -153,7 +153,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // Check if max age is properly set.
     $this->assertCacheIdsExpire($cache_ids, $expected_expiration_time);
 
-    // Check if caches are rebuild when refresh button is clicked.
+    // Check if caches are rebuilt when refresh button is clicked.
     $this->assertCacheIdsRebuilt($cache_ids, function () {
       $this->queueResponses();
 
