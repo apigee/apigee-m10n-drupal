@@ -143,7 +143,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
         'contexts' => ['url.path'],
         'tags' => $this->getCacheTags($user),
         'max-age' => $this->getCacheMaxAge(),
-        'keys' => [static::CACHE_PREFIX . ':user:' . $user->id() . ':prepaid_balances'],
+        'keys' => $this->getCacheId($user, 'prepaid_balances'),
       ],
     ];
 
@@ -168,7 +168,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     if ($this->currentUser->hasPermission('download prepaid balance reports')) {
       // Build the form.
       $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $this->getSupportedCurrencies($user), $this->getBillingDocuments($user));
-      $build['download_form']['#cache']['keys'] = [static::CACHE_PREFIX . ':user:' . $user->id() . ':download_form'];
+      $build['download_form']['#cache']['keys'] = $this->getCacheId($user, 'download_form');
     }
 
     // Attach library.
@@ -214,7 +214,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    * @throws \Exception
    */
   protected function getPrepaidBalances(UserInterface $user) {
-    $cid = static::CACHE_PREFIX . ':user:' . $user->id() . ':prepaid_balances';
+    $cid = $this->getCacheId($user, 'prepaid_balances');
 
     // Check cache.
     if ($cache = $this->cache()->get($cid)) {
@@ -238,7 +238,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   An array of supported currencies.
    */
   protected function getSupportedCurrencies(UserInterface $user) {
-    $cid = static::CACHE_PREFIX . ':user:' . $user->id() . ':supported_currencies';
+    $cid = $this->getCacheId($user, 'supported_currencies');
 
     // Check cache.
     if ($cache = $this->cache()->get($cid)) {
@@ -262,7 +262,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   An array of billing documents.
    */
   protected function getBillingDocuments(UserInterface $user) {
-    $cid = static::CACHE_PREFIX . ':user:' . $user->id() . ':billing_documents';
+    $cid = $this->getCacheId($user, 'billing_documents');
 
     // Check cache.
     if ($cache = $this->cache()->get($cid)) {
@@ -300,11 +300,26 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    * @return array
    *   The cache tags.
    */
-  protected function getCacheTags(UserInterface $user) {
+  public static function getCacheTags(UserInterface $user) {
     return [
       static::CACHE_PREFIX,
       static::CACHE_PREFIX . ':user:' . $user->id()
     ];
+  }
+
+  /**
+   * Helper to get the cache id.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   * @param null $suffix
+   *   The suffix for the cache id.
+   *
+   * @return string
+   *   The cache id.
+   */
+  public static function getCacheId(UserInterface $user, $suffix = NULL) {
+    return static::CACHE_PREFIX . ':user:' . $user->id() . ($suffix ? ':' . $suffix : '');
   }
 
 }
