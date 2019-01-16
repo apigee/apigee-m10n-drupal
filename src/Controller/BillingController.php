@@ -132,23 +132,20 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     $build = [
       '#prefix' => '<div class="apigee-m10n-prepaid-balance">',
       '#suffix' => '</div>',
+      '#attached' => [
+        'library' => [
+          'apigee_m10n/billing',
+        ],
+      ],
     ];
 
     // Retrieve prepaid balances for this user for the current month and year.
-    $prepaid_balances = $this->getDataFromCache($user, 'prepaid_balances', function () use ($user) {
-      return $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
-    });
-
     $build['prepaid_balances'] = [
       'balances' => [
         '#theme' => 'prepaid_balances',
-        '#balances' => $prepaid_balances,
-      ],
-      '#cache' => [
-        'contexts' => ['url.path'],
-        'tags' => $this->getCacheTags($user),
-        'max-age' => $this->getCacheMaxAge(),
-        'keys' => [$this->getCacheId($user, 'prepaid_balances')],
+        '#balances' => $this->getDataFromCache($user, 'prepaid_balances', function () use ($user) {
+          return $this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now'));
+        }),
       ],
     ];
 
@@ -169,6 +166,16 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       ];
     }
 
+    // Cache the render array if enabled.
+    if ($max_age = $this->getCacheMaxAge()) {
+      $build['prepaid_balances']['#cache'] = [
+        'contexts' => ['url.path'],
+        'tags' => $this->getCacheTags($user),
+        'max-age' => $max_age,
+        'keys' => [$this->getCacheId($user, 'prepaid_balances')],
+      ];
+    }
+
     // Show the prepaid balance reports download form.
     if ($this->currentUser->hasPermission('download prepaid balance reports')) {
       $supported_currencies = $this->getDataFromCache($user, 'supported_currencies', function () {
@@ -183,9 +190,6 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
       $build['download_form']['#cache']['keys'] = [$this->getCacheId($user, 'download_form')];
     }
-
-    // Attach library.
-    $build['#attached']['library'][] = 'apigee_m10n/billing';
 
     return $build;
   }
@@ -229,6 +233,13 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    *   The data.
    */
   protected function getDataFromCache(UserInterface $user, string $suffix, callable $callback) {
+    $max_age = $this->getCacheMaxAge();
+
+    // If caching is disable, run callback and return.
+    if ($max_age == 0) {
+      return $callback();
+    }
+
     $cid = $this->getCacheId($user, $suffix);
 
     // Check cache.
@@ -237,7 +248,8 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     }
 
     $data = $callback();
-    $this->cache()->set($cid, $data, time() + $this->getCacheMaxAge(), $this->getCacheTags($user));
+    $this->cache()
+      ->set($cid, $data, time() + $max_age, $this->getCacheTags($user));
 
     return $data;
   }
@@ -269,7 +281,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   public static function getCacheTags(UserInterface $user) {
     return [
       static::CACHE_PREFIX,
-      static::CACHE_PREFIX . ':user:' . $user->id()
+      static::CACHE_PREFIX . ':user:' . $user->id(),
     ];
   }
 

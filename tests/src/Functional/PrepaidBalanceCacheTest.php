@@ -71,9 +71,9 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->queueResponses();
 
     // Enable prepaid balance cache.
-    $config = $this->config(BillingConfigForm::CONFIG_NAME);
-    $config->set('prepaid_balance.cache_max_age', static::CACHE_MAX_AGE);
-    $config->save();
+    $this->config(BillingConfigForm::CONFIG_NAME)
+      ->set('prepaid_balance.cache_max_age', static::CACHE_MAX_AGE)
+      ->save();
 
     $this->cacheBackend = $this->container->get('cache.default');
   }
@@ -144,10 +144,14 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     // Visit the prepaid balance page.
     $this->queueResponses();
+    $expected_expiration_time = time() + static::CACHE_MAX_AGE;
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
     $this->assertCacheIdsExist($cache_ids);
+
+    // Check if max age is properly set.
+    $this->assertCacheIdsExpire($cache_ids, $expected_expiration_time);
 
     // Check if caches are rebuild when refresh button is clicked.
     $this->assertCacheIdsRebuilt($cache_ids, function () {
@@ -176,6 +180,29 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   }
 
   /**
+   * Test if cache can be disabled.
+   */
+  public function testPrepaidBalanceCacheDisable() {
+    // Disable the cache.
+    $this->config(BillingConfigForm::CONFIG_NAME)
+      ->set('prepaid_balance.cache_max_age', 0)
+      ->save();
+
+    $cache_ids = [
+      BillingController::getCacheId($this->developer, 'prepaid_balances'),
+      BillingController::getCacheId($this->developer, 'supported_currencies'),
+      BillingController::getCacheId($this->developer, 'billing_documents'),
+    ];
+
+    // Visit the prepaid balance page.
+    $this->queueResponses();
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]));
+    $this->assertCacheIdsNotExist($cache_ids);
+  }
+
+  /**
    * Helper to queue mock responses.
    */
   protected function queueResponses() {
@@ -190,7 +217,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    * Check if cache with given IDs exist.
    *
    * @param array $cids
-   *   An array of cache ids.
+   *   An array of cache IDs.
    */
   protected function assertCacheIdsExist(array $cids) {
     foreach ($cids as $cid) {
@@ -199,10 +226,39 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   }
 
   /**
+   * Check if cache with given IDs do not exist.
+   *
+   * @param array $cids
+   *   An array of cache IDs.
+   */
+  protected function assertCacheIdsNotExist(array $cids) {
+    foreach ($cids as $cid) {
+      $this->assertFalse($this->cacheBackend->get($cid));
+    }
+  }
+
+  /**
+   * Check the expiration time for cache with given IDs.
+   *
+   * @param array $cids
+   *   An array of cache IDs.
+   * @param int $expected
+   *   The expected cache expiration time.
+   */
+  protected function assertCacheIdsExpire(array $cids, int $expected) {
+    foreach ($cids as $cid) {
+      if ($cache = $this->cacheBackend->get($cid)) {
+        // The cache expiration must be greater or equal to the expected time.
+        $this->assertGreaterThanOrEqual($expected, $cache->expire);
+      }
+    }
+  }
+
+  /**
    * Checks if cache with given IDs have been rebuilt.
    *
    * @param array $cids
-   *   An array of cache ids.
+   *   An array of cache IDs.
    * @param callable $callback
    *   The callback that invalidates the cache.
    */
