@@ -143,7 +143,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
         'contexts' => ['url.path'],
         'tags' => $this->getCacheTags($user),
         'max-age' => $this->getCacheMaxAge(),
-        'keys' => $this->getCacheId($user, 'prepaid_balances'),
+        'keys' => [$this->getCacheId($user, 'prepaid_balances')],
       ],
     ];
 
@@ -168,7 +168,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
     if ($this->currentUser->hasPermission('download prepaid balance reports')) {
       // Build the form.
       $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $this->getSupportedCurrencies($user), $this->getBillingDocuments($user));
-      $build['download_form']['#cache']['keys'] = $this->getCacheId($user, 'download_form');
+      $build['download_form']['#cache']['keys'] = [$this->getCacheId($user, 'download_form')];
     }
 
     // Attach library.
