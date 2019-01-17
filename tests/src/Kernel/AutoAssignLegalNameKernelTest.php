@@ -58,6 +58,10 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
    * Tests legal name auto assignment routine.
    */
   public function testAutoAssignLegalName() {
+    $package = $this->createPackage();
+    $rate_plan = $this->createPackageRatePlan($package);
+    $subscription = $this->createsubscription($this->developer, $rate_plan);
+    $this->queueOrg();
     $this->stack
       ->queueMockResponse([
         'developer' => [
@@ -67,7 +71,9 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
           'last_name' => ['value' => 'Last Name'],
           'name' => ['value' => $this->developer->getEmail()],
           'org_name' => 'Test Org',
-        ]
+        ],
+        'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
+        'get_package_rate_plan' => ['plan' => $rate_plan]
       ]);
     $current_developer = Developer::load($this->developer->getEmail());
     static::assertSame($this->developer->getEmail(), $current_developer->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
