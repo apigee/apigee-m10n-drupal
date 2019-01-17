@@ -130,8 +130,10 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
    */
   public function prepaidBalancePage(UserInterface $user) {
     $build = [
-      '#prefix' => '<div class="apigee-m10n-prepaid-balance">',
-      '#suffix' => '</div>',
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['apigee-m10n-prepaid-balance-wrapper'],
+      ],
       '#attached' => [
         'library' => [
           'apigee_m10n/billing',
