@@ -32,7 +32,12 @@ use Drupal\Core\Url;
 class SubscriptionForm extends FieldableMonetizationEntityForm {
 
   /**
-   * Messenger service.
+   * Developer legal name attribute name.
+   */
+  const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
+
+  /**
+   * Messanger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -98,8 +103,11 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       // Auto assign legal name.
       $developer_id = $this->entity->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
-      $developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $developer_id);
-      $developer->save();
+      // Autopopulate legal name when developer has no legal name attribute set.
+      if (empty($developer->getAttributeValue(static::LEGAL_NAME_ATTR))) {
+        $developer->setAttribute(static::LEGAL_NAME_ATTR, $developer_id);
+        $developer->save();
+      }
 
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       Cache::invalidateTags(['apigee_my_subscriptions']);
