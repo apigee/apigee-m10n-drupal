@@ -10,10 +10,10 @@ package:
     - core/jquery.once
     - core/drupal
 
-billing:
+prepaid_balance:
   css:
     theme:
-      css/billing.css: {}
+      css/apigee_m10n.prepaid-balance.css: {}
 
 tnc-widget:
   version: 1.0

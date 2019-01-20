@@ -19,12 +19,15 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\apigee_m10n\Controller\BillingController;
+use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n\Form\BillingConfigForm;
+use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Traits\PrepaidBalanceReportsDownloadFormTestTrait;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
+use Drupal\user\Entity\Role;
+use Drupal\user\UserInterface;
 
 /**
  * Functional test for prepaid balance cache.
@@ -62,13 +65,9 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     $this->developer = $this->createAccount([
       'view mint prepaid reports',
-      'refresh prepaid balance reports',
       'download prepaid balance reports',
     ]);
-
     $this->drupalLogin($this->developer);
-    $this->queueOrg();
-    $this->queueResponses();
 
     // Enable prepaid balance cache.
     $this->config(BillingConfigForm::CONFIG_NAME)
@@ -79,71 +78,70 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   }
 
   /**
-   * User without proper permissions cannot refresh balance reports.
+   * Test user with no refresh prepaid balance permission..
    *
    * @throws \Exception
    */
-  public function testPrepaidBalanceRefreshPermission() {
-    // Given that we have a user with no 'refresh prepaid balance reports'
-    // permissions.
-    $user = $this->createAccount(['view mint prepaid reports']);
-    $this->drupalLogin($user);
-    $this->queueOrg();
-
-    // Access denied on refresh route.
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing_refresh', [
-      'user' => $user->id(),
-    ]));
-    $this->assertSession()->responseContains('Access denied');
-
-    // The user cannot see the refresh button on the billing page.
+  public function testNoPermission() {
+    // User cannot refresh prepaid balance.
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $user->id(),
+      'user' => $this->developer->id(),
     ]));
+    $this->assertSession()->responseContains('Prepaid balance');
     $this->assertSession()->responseNotContains('Refresh');
   }
 
   /**
-   * A user can only refresh own balance.
+   * Test user with "refresh own prepaid balance" permission.
    */
-  public function testPrepaidBalanceOwnBalanceRefresh() {
-    // Access denied on refresh route for another user.
-    $other_user = $this->createAccount([
-      'view mint prepaid reports',
-      'refresh prepaid balance reports',
-    ]);
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing_refresh', [
-      'user' => $other_user->id(),
-    ]));
-    $this->assertSession()->responseContains('Access denied');
-
-    // Access allowed on refresh route for own account.
+  public function testRefreshOwnPrepaidBalancePermission() {
+    // Given a user with the 'refresh own prepaid balance permission'.
+    $user_roles = $this->developer->getRoles();
+    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh own prepaid balance']);
+    $this->queueOrg();
     $this->queueResponses();
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing_refresh', [
-      'user' => $this->developer->id(),
-    ]));
-    $this->assertSession()->responseNotContains('Access denied');
 
-    // The user can see the refresh button on the billing page.
-    $this->queueResponses();
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->developer->id(),
-    ]));
-    $this->assertSession()->responseContains('Refresh');
+    // User can refresh own account.
+    $this->assertRefreshPrepaidBalanceForUser($this->developer);
   }
 
   /**
-   * Test if the prepaid balances are properly cached.
+   * Test user with "refresh any prepaid balance" permission.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
    */
-  public function testPrepaidBalanceCache() {
+  public function testRefreshAnyPrepaidBalancePermission() {
+    // Given a user with "refresh any prepaid balance" permission.
+    // TODO: Update permissions when 'view any prepaid balance' permission is added.
+    $user_roles = $this->developer->getRoles();
+    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh any prepaid balance']);
+    $this->queueOrg();
+    $this->queueResponses();
+
+    // User can refresh own account.
+    $this->assertRefreshPrepaidBalanceForUser($this->developer);
+
+    // User can refresh another user account.
+    $other_user = $this->createAccount(['view mint prepaid reports']);
+    $this->assertRefreshPrepaidBalanceForUser($other_user);
+  }
+
+  /**
+   * Test if the prepaid balances Ids are properly cached.
+   */
+  public function testPrepaidBalanceCacheIds() {
+    $user_roles = $this->developer->getRoles();
+    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh own prepaid balance']);
+    $this->queueOrg();
+    $this->queueResponses();
+
     $cache_ids = [
-      BillingController::getCacheId($this->developer, 'prepaid_balances'),
-      BillingController::getCacheId($this->developer, 'supported_currencies'),
-      BillingController::getCacheId($this->developer, 'billing_documents'),
+      PrepaidBalanceController::getCacheId($this->developer, 'prepaid_balances'),
+      PrepaidBalanceController::getCacheId($this->developer, 'supported_currencies'),
+      PrepaidBalanceController::getCacheId($this->developer, 'billing_documents'),
     ];
 
     // Visit the prepaid balance page.
-    $this->queueResponses();
     $expected_expiration_time = time() + static::CACHE_MAX_AGE;
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -153,15 +151,10 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // Check if max age is properly set.
     $this->assertCacheIdsExpire($cache_ids, $expected_expiration_time);
 
-    // Check if caches are rebuilt when refresh button is clicked.
+    // Check if caches are rebuilt when refresh form is submitted.
     $this->assertCacheIdsRebuilt($cache_ids, function () {
-      $this->queueResponses();
-
-      $this->clickLink('Refresh');
-
-      $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-        'user' => $this->developer->id(),
-      ]));
+      $this->submitForm([], 'Refresh');
+      $this->assertSession()->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
     });
   }
 
@@ -174,8 +167,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
-
-    $expected_tags = Cache::mergeTags(BillingController::getCacheTags($this->developer), ['rendered']);
+    $expected_tags = Cache::mergeTags(PrepaidBalanceController::getCacheTags($this->developer), ['rendered']);
     $this->assertCacheTags($expected_tags);
   }
 
@@ -189,9 +181,9 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
       ->save();
 
     $cache_ids = [
-      BillingController::getCacheId($this->developer, 'prepaid_balances'),
-      BillingController::getCacheId($this->developer, 'supported_currencies'),
-      BillingController::getCacheId($this->developer, 'billing_documents'),
+      PrepaidBalanceController::getCacheId($this->developer, 'prepaid_balances'),
+      PrepaidBalanceController::getCacheId($this->developer, 'supported_currencies'),
+      PrepaidBalanceController::getCacheId($this->developer, 'billing_documents'),
     ];
 
     // Visit the prepaid balance page.
@@ -211,6 +203,23 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
       'get-supported-currencies',
       'get-billing-documents-months',
     ]);
+  }
+
+  /**
+   * Asserts current user can refresh account for given user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @throws \Behat\Mink\Exception\ExpectationException
+   */
+  protected function assertRefreshPrepaidBalanceForUser(UserInterface $user) {
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $user->id(),
+    ]));
+    $this->assertSession()->responseContains('Prepaid balance');
+    $this->submitForm([], 'Refresh');
+    $this->assertSession()->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
   }
 
   /**

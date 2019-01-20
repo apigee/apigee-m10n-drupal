@@ -52,7 +52,7 @@ entity.package.collection:
 apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\BillingController::myPrepaidBalance
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myPrepaidBalance
   requirements:
     _permission: 'view mint prepaid reports'
   options:
@@ -61,20 +61,10 @@ apigee_monetization.my_billing:
 apigee_monetization.billing:
   path: /user/{user}/monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalancePage
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::prepaidBalancePage
     _title: 'Prepaid balance'
   requirements:
     _permission: 'view mint prepaid reports'
-  options:
-    _apigee_monetization_route: TRUE
-
-apigee_monetization.billing_refresh:
-  path: /user/{user}/monetization/billing/refresh
-  defaults:
-    _controller: \Drupal\apigee_m10n\Controller\BillingController::refreshPrepaidBalancePage
-    _title: 'Refresh prepaid balance'
-  requirements:
-    _permission: 'refresh prepaid balance reports'
   options:
     _apigee_monetization_route: TRUE
 

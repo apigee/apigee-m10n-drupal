@@ -21,23 +21,23 @@ namespace Drupal\apigee_m10n\Controller;
 
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Form\BillingConfigForm;
+use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\Core\Cache\Cache;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Controller for billing related routes.
  */
-class BillingController extends ControllerBase implements ContainerInjectionInterface {
+class PrepaidBalanceController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
    * Cache prefix that is used for cache tags for this controller.
@@ -136,7 +136,7 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       ],
       '#attached' => [
         'library' => [
-          'apigee_m10n/billing',
+          'apigee_m10n/prepaid_balance',
         ],
       ],
     ];
@@ -151,23 +151,6 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       ],
     ];
 
-    // Add a refresh button.
-    if ($this->currentUser->hasPermission('refresh prepaid balance reports')) {
-      $build['prepaid_balances']['refresh_button'] = [
-        '#type' => 'link',
-        '#title' => $this->t('Refresh'),
-        '#url' => Url::fromRoute('apigee_monetization.billing_refresh', [
-          'user' => $user->id(),
-        ]),
-        '#attributes' => [
-          'class' => [
-            'button',
-            'apigee-m10n-prepaid-balance__refresh-button',
-          ],
-        ],
-      ];
-    }
-
     // Cache the render array if enabled.
     if ($max_age = $this->getCacheMaxAge()) {
       $build['prepaid_balances']['#cache'] = [
@@ -176,6 +159,11 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
         'max-age' => $max_age,
         'keys' => [$this->getCacheId($user, 'prepaid_balances')],
       ];
+    }
+
+    // Add a refresh cache form.
+    if ($this->canRefreshBalance($user)) {
+      $build['refresh_form'] = $this->formBuilder()->getForm(PrepaidBalanceRefreshForm::class, $this->getCacheTags($user));
     }
 
     // Show the prepaid balance reports download form.
@@ -197,28 +185,39 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
   }
 
   /**
-   * Callback for refreshing the prepaid balances.
+   * Returns the cache max age.
+   *
+   * @return int
+   *   The cache max age.
+   */
+  protected function getCacheMaxAge() {
+    // Get the max-age from config.
+    if ($config = $this->config(BillingConfigForm::CONFIG_NAME)) {
+      return $config->get('prepaid_balance.cache_max_age');
+    }
+
+    return 0;
+  }
+
+  /**
+   * Helper to check if user has access to refresh prepaid balance.
    *
    * @param \Drupal\user\UserInterface $user
    *   The user entity.
    *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   The redirect response.
+   * @return \Drupal\Core\Access\AccessResult
+   *   If $condition is TRUE, isAllowed() will be TRUE, otherwise isNeutral()
+   *   will be TRUE.
    */
-  public function refreshPrepaidBalancePage(UserInterface $user) {
-    // A user can only refresh own account.
-    if ($this->currentUser->id() !== $user->id()) {
-      throw new AccessDeniedHttpException();
-    }
+  protected function canRefreshBalance(UserInterface $user) {
+    return $this->currentUser->hasPermission('refresh any prepaid balance') ||
+      ($this->currentUser->hasPermission('refresh own prepaid balance') && $this->currentUser->id() === $user->id());
 
-    // Invalidate the billing cache tag.
-    // This handles both the current balance and the previous balance reports.
-    Cache::invalidateTags($this->getCacheTags($user));
-
-    // Redirect to billing page.
-    return new RedirectResponse(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $user->id(),
-    ])->toString());
+    // @TODO Figure out why AccessResult is not working her.
+    return AccessResult::allowedIf(
+      $this->currentUser->hasPermission('refresh any prepaid balance') ||
+      ($this->currentUser->hasPermission('refresh own prepaid balance') && $this->currentUser->id() === $user->id())
+    )->cachePerPermissions();
   }
 
   /**
@@ -254,21 +253,6 @@ class BillingController extends ControllerBase implements ContainerInjectionInte
       ->set($cid, $data, time() + $max_age, $this->getCacheTags($user));
 
     return $data;
-  }
-
-  /**
-   * Returns the cache max age.
-   *
-   * @return int
-   *   The cache max age.
-   */
-  protected function getCacheMaxAge() {
-    // Get the max-age from config.
-    if ($config = $this->config(BillingConfigForm::CONFIG_NAME)) {
-      return $config->get('prepaid_balance.cache_max_age');
-    }
-
-    return 0;
   }
 
   /**

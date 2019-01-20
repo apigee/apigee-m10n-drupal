@@ -18,9 +18,12 @@
   position: relative;
 }
 
-.apigee-m10n-prepaid-balance__refresh-button.button {
+.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form .form-submit {
   margin-right: 0;
 }

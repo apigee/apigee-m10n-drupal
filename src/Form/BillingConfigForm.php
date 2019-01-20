@@ -18,7 +18,7 @@
 
 namespace Drupal\apigee_m10n\Form;
 
-use Drupal\apigee_m10n\Controller\BillingController;
+use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
@@ -115,7 +115,7 @@ class BillingConfigForm extends ConfigFormBase {
       ->save();
 
     // Clear caches.
-    Cache::invalidateTags([BillingController::CACHE_PREFIX]);
+    Cache::invalidateTags([PrepaidBalanceController::CACHE_PREFIX]);
 
     parent::submitForm($form, $form_state);
   }
