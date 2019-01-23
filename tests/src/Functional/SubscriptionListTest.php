@@ -83,8 +83,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $this->queueOrg();
     $this->stack
-      ->queueMockResponse(['get_developer_subscriptions' => ['subscriptions' => [$subscription]]])
-      ->queueMockResponse(['get_package_rate_plan' => ['plan' => $rate_plan]]);
+      ->queueMockResponse(['get_developer_subscriptions' => ['subscriptions' => [$subscription]]]);
 
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->developer->id(),
