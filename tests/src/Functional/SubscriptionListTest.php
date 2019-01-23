@@ -60,7 +60,6 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    * Tests permissions for `My Plans/Subscriptions` page.
    */
   public function testSubscriptionListAccessDenied() {
-    $this->queueOrg();
     $this->drupalGet(Url::fromRoute('entity.subscription.collection_by_developer', [
       'user' => $this->developer->id(),
     ]));

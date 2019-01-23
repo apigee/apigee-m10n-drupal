@@ -63,7 +63,6 @@ class NavigationTest extends MonetizationFunctionalTestBase {
 
     $this->drupalLogin($this->developer);
 
-    $this->queueOrg();
     // Check the manage profile link.
     $this->clickLink('My account');
 
