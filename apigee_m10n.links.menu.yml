@@ -10,10 +10,10 @@ apigee_m10n.settings.rate_plan:
   parent: system.admin_apigee_m10n
   weight: 99
 
-apigee_m10n.settings.billing:
-  title: 'Billing'
-  route_name: apigee_m10n.settings.billing
-  description: 'Configure billing and prepaid balances.'
+apigee_m10n.settings.prepaid_balance:
+  title: 'Prepaid balance'
+  route_name: apigee_m10n.settings.prepaid_balance
+  description: 'Configure prepaid balances.'
   parent: system.admin_apigee_m10n
   weight: 100
 

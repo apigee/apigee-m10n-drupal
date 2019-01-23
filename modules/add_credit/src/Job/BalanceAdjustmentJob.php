@@ -137,7 +137,7 @@ class BalanceAdjustmentJob extends EdgeJob {
         // total so we have to grab that from the balance controller again.
         $balance_after = $this->getPrepaidBalance($controller, $currency_code);
         $new_balance = new Price((string) ($balance_after->getTopUps()), $currency_code);
-        Cache::invalidateTags([PrepaidBalanceController::CACHE_PREFIX . ':user:' . $this->developer->id()]);
+        Cache::invalidateTags([PrepaidBalanceController::getCacheId($this->developer)]);
       }
       catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.

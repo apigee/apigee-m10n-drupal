@@ -19,11 +19,11 @@ apigee_m10n.settings.rate_plan:
   options:
     _apigee_monetization_route: TRUE
 
-apigee_m10n.settings.billing:
-  path: 'admin/config/apigee-edge/monetization/billing-settings'
+apigee_m10n.settings.prepaid_balance:
+  path: 'admin/config/apigee-edge/monetization/prepaid-balance'
   defaults:
-    _form: '\Drupal\apigee_m10n\Form\BillingConfigForm'
-    _title: 'Billing settings'
+    _form: '\Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm'
+    _title: 'Prepaid balance'
   requirements:
     _permission: 'administer apigee monetization'
   options:

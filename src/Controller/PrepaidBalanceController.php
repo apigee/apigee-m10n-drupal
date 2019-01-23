@@ -20,12 +20,10 @@
 namespace Drupal\apigee_m10n\Controller;
 
 use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n\Form\BillingConfigForm;
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormBuilderInterface;
@@ -42,7 +40,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
   /**
    * Cache prefix that is used for cache tags for this controller.
    */
-  const CACHE_PREFIX = 'apigee.monetization.billing';
+  const CACHE_PREFIX = 'apigee.monetization.prepaid_balance';
 
   /**
    * The current user.
@@ -157,7 +155,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
         'contexts' => ['url.path'],
         'tags' => $this->getCacheTags($user),
         'max-age' => $max_age,
-        'keys' => [$this->getCacheId($user, 'prepaid_balances')],
+        'keys' => [static::getCacheId($user, 'prepaid_balances')],
       ];
     }
 
@@ -178,7 +176,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
 
       // Build the form.
       $build['download_form'] = $this->formBuilder->getForm(PrepaidBalanceReportsDownloadForm::class, $user, $supported_currencies, $billing_documents);
-      $build['download_form']['#cache']['keys'] = [$this->getCacheId($user, 'download_form')];
+      $build['download_form']['#cache']['keys'] = [static::getCacheId($user, 'download_form')];
     }
 
     return $build;
@@ -192,8 +190,8 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
    */
   protected function getCacheMaxAge() {
     // Get the max-age from config.
-    if ($config = $this->config(BillingConfigForm::CONFIG_NAME)) {
-      return $config->get('prepaid_balance.cache_max_age');
+    if ($config = $this->config(PrepaidBalanceConfigForm::CONFIG_NAME)) {
+      return $config->get('cache.max_age');
     }
 
     return 0;
@@ -205,19 +203,13 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
    * @param \Drupal\user\UserInterface $user
    *   The user entity.
    *
-   * @return \Drupal\Core\Access\AccessResult
-   *   If $condition is TRUE, isAllowed() will be TRUE, otherwise isNeutral()
-   *   will be TRUE.
+   * @return bool
+   *   TRUE is user can refresh balance.
    */
   protected function canRefreshBalance(UserInterface $user) {
+    // @TODO Figure out why AccessResult is not working here.
     return $this->currentUser->hasPermission('refresh any prepaid balance') ||
       ($this->currentUser->hasPermission('refresh own prepaid balance') && $this->currentUser->id() === $user->id());
-
-    // @TODO Figure out why AccessResult is not working her.
-    return AccessResult::allowedIf(
-      $this->currentUser->hasPermission('refresh any prepaid balance') ||
-      ($this->currentUser->hasPermission('refresh own prepaid balance') && $this->currentUser->id() === $user->id())
-    )->cachePerPermissions();
   }
 
   /**
@@ -267,7 +259,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
   public static function getCacheTags(UserInterface $user) {
     return [
       static::CACHE_PREFIX,
-      static::CACHE_PREFIX . ':user:' . $user->id(),
+      static::getCacheId($user),
     ];
   }
 

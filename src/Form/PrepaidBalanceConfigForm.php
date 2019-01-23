@@ -27,16 +27,16 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Config form for billing.
+ * Config form for prepaid balance.
  *
  * @package Drupal\apigee_m10n
  */
-class BillingConfigForm extends ConfigFormBase {
+class PrepaidBalanceConfigForm extends ConfigFormBase {
 
   /**
    * The config named used by this form.
    */
-  const CONFIG_NAME = 'apigee_m10n.billing.config';
+  const CONFIG_NAME = 'apigee_m10n.prepaid_balance.config';
 
   /**
    * The date formatter service.
@@ -75,7 +75,7 @@ class BillingConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'billing_config_form';
+    return 'prepaid_balance_config_form';
   }
 
   /**
@@ -89,16 +89,16 @@ class BillingConfigForm extends ConfigFormBase {
     $period = array_map([$this->dateFormatter, 'formatInterval'], array_combine($period, $period));
     $period[0] = '<' . $this->t('no caching') . '>';
 
-    $form['prepaid_balance'] = [
-      '#title' => $this->t('Prepaid balance'),
+    $form['cache'] = [
+      '#title' => $this->t('Caching'),
       '#type' => 'details',
       '#open' => TRUE,
     ];
 
-    $form['prepaid_balance']['cache_max_age'] = [
+    $form['cache']['max_age'] = [
       '#type' => 'select',
-      '#title' => $this->t('Cache max age'),
-      '#default_value' => $config->get('prepaid_balance.cache_max_age'),
+      '#title' => $this->t('Max age'),
+      '#default_value' => $config->get('cache.max_age'),
       '#options' => $period,
       '#description' => $this->t('Set the cache age for the prepaid balance for a developer.'),
     ];
@@ -111,7 +111,7 @@ class BillingConfigForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config(static::CONFIG_NAME)
-      ->set('prepaid_balance.cache_max_age', $form_state->getValue('cache_max_age'))
+      ->set('cache.max_age', $form_state->getValue('max_age'))
       ->save();
 
     // Clear caches.

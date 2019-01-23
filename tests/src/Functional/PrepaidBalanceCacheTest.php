@@ -20,7 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
-use Drupal\apigee_m10n\Form\BillingConfigForm;
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
@@ -70,8 +70,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->drupalLogin($this->developer);
 
     // Enable prepaid balance cache.
-    $this->config(BillingConfigForm::CONFIG_NAME)
-      ->set('prepaid_balance.cache_max_age', static::CACHE_MAX_AGE)
+    $this->config(PrepaidBalanceConfigForm::CONFIG_NAME)
+      ->set('cache.max_age', static::CACHE_MAX_AGE)
       ->save();
 
     $this->cacheBackend = $this->container->get('cache.default');
@@ -176,8 +176,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   public function testPrepaidBalanceCacheDisable() {
     // Disable the cache.
-    $this->config(BillingConfigForm::CONFIG_NAME)
-      ->set('prepaid_balance.cache_max_age', 0)
+    $this->config(PrepaidBalanceConfigForm::CONFIG_NAME)
+      ->set('cache.max_age', 0)
       ->save();
 
     $cache_ids = [

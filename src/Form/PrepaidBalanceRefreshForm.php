@@ -64,7 +64,7 @@ class PrepaidBalanceRefreshForm extends FormBase {
     if ($tags = $form_state->get('tags')) {
       Cache::invalidateTags($tags);
 
-      $this->messenger()->addStatus(static::SUCCESS_MESSAGE);
+      $this->messenger()->addStatus($this->t(static::SUCCESS_MESSAGE));
     }
   }
 
