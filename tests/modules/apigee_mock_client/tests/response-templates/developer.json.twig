@@ -20,13 +20,19 @@
     "userName" : "{{ developer.name.value }}",
     "organizationName" : "{{ org_name }}",
     "status" : "active",
-    "attributes" : [ {
-        "name" : "MINT_BILLING_TYPE",
-        "value" : "PREPAID"
-    }, {
-        "name" : "MINT_DEVELOPER_TYPE",
-        "value" : "UNTRUSTED"
-    } ],
+    "attributes" : [
+        {
+            "name" : "MINT_BILLING_TYPE",
+            "value" : "PREPAID"
+        },
+        {
+            "name" : "MINT_DEVELOPER_TYPE",
+            "value" : "UNTRUSTED"
+        },
+        {
+            "name": "MINT_DEVELOPER_LEGAL_NAME",
+            "value": "{{ developer.mail.value }}"
+        } ],
     "createdAt" : 1537547358558,
     "createdBy" : "user@example.com",
     "lastModifiedAt" : 1537547358558,

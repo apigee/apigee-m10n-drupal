@@ -330,4 +330,25 @@ class AddCreditProductCheckoutTest extends MonetizationFunctionalTestBase {
     static::assertSame((double) $amount, $new_balance->getAmount());
   }
 
+  /**
+   * Test skip cart feature.
+   *
+   * @throws \Exception
+   */
+  public function testSkipCart() {
+    // Enable skip cart for the default product type.
+    $product_type = ProductType::load('default');
+    $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart', 1);
+    $product_type->save();
+
+    // Visit a default product.
+    $this->drupalGet($this->product->toUrl());
+    $this->submitForm([], 'Checkout');
+
+    // We should be on the checkout page.
+    $this->assertCssElementContains('h1.page-title', 'Order information');
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', $this->product->label());
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $12.00");
+  }
+
 }

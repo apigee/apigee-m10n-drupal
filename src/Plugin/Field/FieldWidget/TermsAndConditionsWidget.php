@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Validator\ConstraintViolationInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
@@ -88,7 +87,8 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
-      $container->get('apigee_m10n.monetization')
+      $container->get('apigee_m10n.monetization'),
+      $container->get('messenger')
     );
   }
 
@@ -118,21 +118,19 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
-    $this->developer_id = $items->getEntity()->getDeveloper()->getEmail();
-    if (!$this->monetization->isLatestTermsAndConditionAccepted($this->developer_id)) {
+    if (!$items[$delta]->value) {
       $tnc = $this->monetization->getLatestTermsAndConditions();
       $element += [
-        '#type'          => 'checkbox',
-        '#default_value' => !empty($items[0]->value),
-        '#element_validate' => [
-          [$this, 'validate'],
-        ],
+        '#type'             => 'checkbox',
+        '#default_value'    => !empty($items[0]->value),
+        '#element_validate' => [[$this, 'validate']],
       ];
       // Accept TnC description.
       $element['#description'] = $this->t('%description @link', [
         '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
         '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
       ]);
+      $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
       return ['value' => $element];
     }
 

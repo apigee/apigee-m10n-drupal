@@ -19,7 +19,10 @@
     "extra": {
         "patches": {
             "apigee/apigee-client-php": {
-              "Fix developer ID issue when unsubscribing from a rate plan": "https://github.com/apigee/apigee-client-php/files/2627181/unsubscribe-rate-plan-developer-id.patch.txt"
+                "Fix developer ID issue when unsubscribing from a rate plan": "https://github.com/apigee/apigee-client-php/files/2627181/unsubscribe-rate-plan-developer-id.patch.txt"
+            },
+            "drupal/core": {
+                "`EntityViewBuilder::getBuildDefaults()` doesn't check for `RevisionableInterface`.": "https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch"
             }
         }
     }

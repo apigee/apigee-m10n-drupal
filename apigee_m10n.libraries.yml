@@ -9,3 +9,8 @@ package:
     - core/jquery
     - core/jquery.once
     - core/drupal
+tnc-widget:
+  version: 1.0
+  css:
+    theme:
+      css/tnc-widget.css: {}

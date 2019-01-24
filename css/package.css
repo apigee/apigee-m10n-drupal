@@ -41,7 +41,7 @@ div.product-list-label {
   display: block;
   margin-bottom: 5px;
 }
-div.apigee-sdk-product-entity-list li.apigee-sdk-product {
+.apigee-sdk-package .field--name-apiproducts > .field__items > .field__item {
   background-color: #fff;
   border: 1px solid #e3e3e3;
   border-radius: 4px;
@@ -49,7 +49,7 @@ div.apigee-sdk-product-entity-list li.apigee-sdk-product {
   margin-bottom: 15px;
   list-style-type: none;
 }
-div.apigee-sdk-product-entity-list li.apigee-sdk-product:last-child {
+.apigee-sdk-package .field--name-apiproducts > .field__items > .field__item:last-child {
   margin-bottom: 5px;
 }
 li.apigee-sdk-package div.apigee-package-details {
@@ -65,13 +65,13 @@ div.apigee-package-id {
   margin-top: 5px;
 }
 /* Add a little formatting to the plan grid. */
-.apigee-sdk-package .rate-plan-entity-list {
+.apigee-sdk-package .field--name-rateplans > .field__items {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   padding: 5px;
 }
-.apigee-sdk-package .apigee-package-rate-plan {
+.apigee-sdk-package .field--name-rateplans > .field__items > .field__item {
   flex:1 1 auto;
   width: 29%;
   margin:5px;
@@ -81,3 +81,12 @@ div.apigee-package-id {
   padding: 10px;
 }
 
+.apigee-sdk-package .field--type-entity-reference .field__label, .field--type-entity-reference ul.links {
+  font-size: inherit;
+}
+
+.apigee-sdk-package .field--type-entity-reference .field__label {
+  font-weight: bold;
+  margin: inherit;
+  font-family: Georgia, "Times New Roman", Times, serif;
+}

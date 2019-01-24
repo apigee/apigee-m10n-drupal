@@ -24,6 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge\Entity\Developer;
+use Drupal\Core\Url;
 
 /**
  * Subscription entity form.
@@ -31,7 +32,12 @@ use Drupal\apigee_edge\Entity\Developer;
 class SubscriptionForm extends FieldableMonetizationEntityForm {
 
   /**
-   * Messenger service.
+   * Developer legal name attribute name.
+   */
+  const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
+
+  /**
+   * Messanger service.
    *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
@@ -70,6 +76,16 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   /**
    * {@inheritdoc}
    */
+  public function form(array $form, FormStateInterface $form_state) {
+    $form = parent::form($form, $form_state);
+    // Redirect to Rate Plan detail page on submit.
+    $form['#action'] = $this->getEntity()->getRatePlan()->url('subscribe');
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
     // Set the save label if one has been passed into storage.
@@ -87,22 +103,26 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       // Auto assign legal name.
       $developer_id = $this->entity->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
-      $developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $developer_id);
-      $developer->save();
+      // Autopopulate legal name when developer has no legal name attribute set.
+      if (empty($developer->getAttributeValue(static::LEGAL_NAME_ATTR))) {
+        $developer->setAttribute(static::LEGAL_NAME_ATTR, $developer_id);
+        $developer->save();
+      }
 
       $display_name = $this->entity->getRatePlan()->getDisplayName();
+      Cache::invalidateTags(['apigee_my_subscriptions']);
+
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
+        $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
       else {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
           '%label' => $display_name,
         ]));
       }
-      Cache::invalidateTags(['apigee_my_subscriptions']);
-      $form_state->setRedirect('apigee_monetization.my_subscriptions');
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());

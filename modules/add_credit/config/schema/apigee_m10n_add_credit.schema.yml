@@ -16,6 +16,9 @@ commerce_product.commerce_product_type.*.third_party.apigee_m10n_add_credit:
     apigee_m10n_enable_add_credit:
       type: boolean
       label: 'Whether to enable "Add credit" for this product.'
+    apigee_m10n_enable_skip_cart:
+      type: boolean
+      label: 'Where to skip cart for this product'
 
 field.value.price_range:
   type: mapping
