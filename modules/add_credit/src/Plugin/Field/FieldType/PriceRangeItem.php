@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
 use Drupal\apigee_m10n_add_credit\Element\PriceRange;
+use Drupal\commerce_price\Price;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -93,8 +94,8 @@ class PriceRangeItem extends FieldItemBase {
    */
   public static function defaultFieldSettings() {
     return [
-        'available_currencies' => [],
-      ] + parent::defaultFieldSettings();
+      'available_currencies' => [],
+    ] + parent::defaultFieldSettings();
   }
 
   /**
@@ -126,6 +127,21 @@ class PriceRangeItem extends FieldItemBase {
       || $this->maximum === NULL || $this->maximum === ''
       || $this->default === NULL || $this->default === ''
       || empty($this->currency_code);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave() {
+    parent::preSave();
+
+    // Set the variation price from the price range default.
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $entity */
+    $entity = $this->getEntity();
+    if ($this->default) {
+      $price = new Price($this->default, $this->currency_code);
+      $entity->setPrice($price);
+    }
   }
 
 }

@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use CommerceGuys\Intl\Formatter\NumberFormatterInterface;
 use Drupal;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -56,7 +57,7 @@ class PriceRangeMinimumTopUpAmountConstraintValidator extends ConstraintValidato
    * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
    *   The currency formatter service.
    */
-  public function __construct(Drupal\apigee_m10n\MonetizationInterface $monetization, CurrencyFormatterInterface $currency_formatter) {
+  public function __construct(MonetizationInterface $monetization, CurrencyFormatterInterface $currency_formatter) {
     $this->monetization = $monetization;
     $this->currencyFormatter = $currency_formatter;
   }

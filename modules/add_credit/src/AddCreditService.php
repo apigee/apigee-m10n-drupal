@@ -107,31 +107,31 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
-    if ($entity_type->id() === 'commerce_product') {
-      // The base field needs to be added to all product types for the storage
-      // to be allocated but the option to enable will be hidden and unused
-      // unless enabled for that bundle.
-      $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
-        ->setLabel(t('This is an Apigee add credit product'))
-        ->setRevisionable(TRUE)
-        ->setTranslatable(TRUE)
-        ->setDefaultValue(FALSE);
+    $fields = [];
 
-      // Add base fields to custom amount.
-      $fields['apigee_add_credit_custom_amount'] = BaseFieldDefinition::create('boolean')
-        ->setLabel(t('Allow user to enter a custom amount'))
-        ->setRevisionable(TRUE)
-        ->setTranslatable(TRUE)
-        ->setDefaultValue(FALSE);
+    switch ($entity_type->id()) {
+      case 'commerce_product':
+        // The base field needs to be added to all product types for the storage
+        // to be allocated but the option to enable will be hidden and unused
+        // unless enabled for that bundle.
+        $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
+          ->setLabel(t('This is an Apigee add credit product'))
+          ->setRevisionable(TRUE)
+          ->setTranslatable(TRUE)
+          ->setDefaultValue(FALSE);
+        break;
 
-      $fields['apigee_add_credit_minimum_amount'] = BaseFieldDefinition::create('commerce_price')
-        ->setLabel(t('Minimum amount'))
-        ->setDescription(t('The minimum amount to add as credit.'))
-        ->setRevisionable(TRUE)
-        ->setTranslatable(TRUE);
-
-      return $fields;
+      case 'commerce_product_variation':
+        $fields['apigee_price_range'] = BaseFieldDefinition::create('apigee_price_range')
+          ->setLabel(t('Price range'))
+          ->setRevisionable(TRUE)
+          ->setTranslatable(TRUE)
+          ->setDisplayConfigurable('form', TRUE)
+          ->setDisplayConfigurable('view', TRUE);
+        break;
     }
+
+    return $fields;
   }
 
   /**
@@ -157,21 +157,6 @@ class AddCreditService implements AddCreditServiceInterface {
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);
       $info['apigee_add_credit_enabled'] = $add_credit_base_def;
-
-      $add_credit_custom_amount = clone $base_field_definitions['apigee_add_credit_custom_amount'];
-      $add_credit_custom_amount
-        ->setDefaultValue(0)
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayOptions('form', ['weight' => 25])
-        ->setDisplayConfigurable('view', TRUE);
-      $info['apigee_add_credit_custom_amount'] = $add_credit_custom_amount;
-
-      $add_credit_minimum_amount = clone $base_field_definitions['apigee_add_credit_minimum_amount'];
-      $add_credit_minimum_amount
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayOptions('form', ['weight' => 25])
-        ->setDisplayConfigurable('view', TRUE);
-      $info['apigee_add_credit_minimum_amount'] = $add_credit_minimum_amount;
 
       return $info;
     }

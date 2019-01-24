@@ -181,7 +181,6 @@ class PriceRange extends FormElement {
     return isset($input['price_range']['fields']) ? $input['price_range']['fields'] : NULL;
   }
 
-
   /**
    * Helper to get the number fields for price range element.
    *
@@ -197,4 +196,3 @@ class PriceRange extends FormElement {
   }
 
 }
-

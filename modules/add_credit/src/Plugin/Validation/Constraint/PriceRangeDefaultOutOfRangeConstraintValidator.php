@@ -37,6 +37,8 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
       throw new UnexpectedTypeException($value, PriceRangeItem::class);
     }
 
+    // $value->getParent()->getEntity()->getPrice()
+
     $price_range = $value->getValue();
     if ($price_range['default'] < $price_range['minimum'] || $price_range['default'] > $price_range['maximum']) {
       $this->context->addViolation($constraint->message);
