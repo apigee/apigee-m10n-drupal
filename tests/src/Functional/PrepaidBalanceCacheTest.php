@@ -84,6 +84,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   public function testNoPermission() {
     // User cannot refresh prepaid balance.
+    $this->queueOrg();
+    $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
@@ -98,10 +100,9 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // Given a user with the 'refresh own prepaid balance permission'.
     $user_roles = $this->developer->getRoles();
     $this->grantPermissions(Role::load(reset($user_roles)), ['refresh own prepaid balance']);
-    $this->queueOrg();
-    $this->queueResponses();
 
     // User can refresh own account.
+    $this->queueOrg();
     $this->assertRefreshPrepaidBalanceForUser($this->developer);
   }
 
@@ -115,14 +116,10 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // TODO: Update permissions when 'view any prepaid balance' permission is added.
     $user_roles = $this->developer->getRoles();
     $this->grantPermissions(Role::load(reset($user_roles)), ['refresh any prepaid balance']);
-    $this->queueOrg();
-    $this->queueResponses();
-
-    // User can refresh own account.
-    $this->assertRefreshPrepaidBalanceForUser($this->developer);
 
     // User can refresh another user account.
     $other_user = $this->createAccount(['view mint prepaid reports']);
+    $this->queueOrg();
     $this->assertRefreshPrepaidBalanceForUser($other_user);
   }
 
@@ -132,30 +129,47 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalanceCacheIds() {
     $user_roles = $this->developer->getRoles();
     $this->grantPermissions(Role::load(reset($user_roles)), ['refresh own prepaid balance']);
-    $this->queueOrg();
-    $this->queueResponses();
-
-    $cache_ids = [
-      PrepaidBalanceController::getCacheId($this->developer, 'prepaid_balances'),
-      PrepaidBalanceController::getCacheId($this->developer, 'supported_currencies'),
-      PrepaidBalanceController::getCacheId($this->developer, 'billing_documents'),
-    ];
 
     // Visit the prepaid balance page.
     $expected_expiration_time = time() + static::CACHE_MAX_AGE;
+    $this->queueOrg();
+    $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
-    $this->assertCacheIdsExist($cache_ids);
+    $this->assertCacheIdsExist($this->getCacheIds());
 
     // Check if max age is properly set.
-    $this->assertCacheIdsExpire($cache_ids, $expected_expiration_time);
+    $this->assertCacheIdsExpire($this->getCacheIds(), $expected_expiration_time);
+  }
 
-    // Check if caches are rebuilt when refresh form is submitted.
-    $this->assertCacheIdsRebuilt($cache_ids, function () {
-      $this->submitForm([], 'Refresh');
-      $this->assertSession()->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
-    });
+  /**
+   * Test if the prepaid balances Ids are properly rebuilt.
+   */
+  public function testPrepaidBalanceCacheIdsRebuild() {
+    // Visit the prepaid balance page to set the caches.
+    $this->queueOrg();
+    $this->queueResponses();
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]));
+
+    $cache_before = [];
+    foreach ($this->getCacheIds() as $cid) {
+      $cache_before[$cid] = $this->cacheBackend->get($cid);
+      $this->cacheBackend->delete($cid);
+    }
+
+    // Visit prepaid balance to rebuild caches.
+    $this->queueResponses();
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]));
+
+    foreach ($this->getCacheIds() as $cid) {
+      $cache_after = $this->cacheBackend->get($cid);
+      $this->assertGreaterThan($cache_before[$cid]->created, $cache_after->created);
+    }
   }
 
   /**
@@ -164,6 +178,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalanceCacheTags() {
     $this->checkDriverHeaderSupport();
 
+    $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
@@ -180,18 +195,12 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
       ->set('cache.max_age', 0)
       ->save();
 
-    $cache_ids = [
-      PrepaidBalanceController::getCacheId($this->developer, 'prepaid_balances'),
-      PrepaidBalanceController::getCacheId($this->developer, 'supported_currencies'),
-      PrepaidBalanceController::getCacheId($this->developer, 'billing_documents'),
-    ];
-
     // Visit the prepaid balance page.
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
-    $this->assertCacheIdsNotExist($cache_ids);
+    $this->assertCacheIdsNotExist($this->getCacheIds());
   }
 
   /**
@@ -206,6 +215,20 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   }
 
   /**
+   * Returns an array of cache ids.
+   *
+   * @return array
+   *   An array of cache ids.
+   */
+  protected function getCacheIds() {
+    return [
+      PrepaidBalanceController::getCacheId($this->developer, 'prepaid_balances'),
+      PrepaidBalanceController::getCacheId($this->developer, 'supported_currencies'),
+      PrepaidBalanceController::getCacheId($this->developer, 'billing_documents'),
+    ];
+  }
+
+  /**
    * Asserts current user can refresh account for given user.
    *
    * @param \Drupal\user\UserInterface $user
@@ -214,12 +237,14 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    * @throws \Behat\Mink\Exception\ExpectationException
    */
   protected function assertRefreshPrepaidBalanceForUser(UserInterface $user) {
+    $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $user->id(),
     ]));
     $this->assertSession()->responseContains('Prepaid balance');
     $this->submitForm([], 'Refresh');
-    $this->assertSession()->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
+    $this->assertSession()
+      ->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
   }
 
   /**
@@ -260,23 +285,6 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
         // The cache expiration must be greater or equal to the expected time.
         $this->assertGreaterThanOrEqual($expected, $cache->expire);
       }
-    }
-  }
-
-  /**
-   * Checks if cache with given IDs have been rebuilt.
-   *
-   * @param array $cids
-   *   An array of cache IDs.
-   * @param callable $callback
-   *   The callback that invalidates the cache.
-   */
-  protected function assertCacheIdsRebuilt(array $cids, callable $callback) {
-    foreach ($cids as $cid) {
-      $cache_before = $this->cacheBackend->get($cid);
-      $callback();
-      $cache_after = $this->cacheBackend->get($cid);
-      $this->assertGreaterThan($cache_before->created, $cache_after->created);
     }
   }
 
