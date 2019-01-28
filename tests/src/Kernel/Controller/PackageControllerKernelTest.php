@@ -175,19 +175,19 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
       $this->createPackage(),
       $this->createPackage(),
     ];
-    $sdk_packges = [];
+    $sdk_packages = [];
     $rate_plans = [];
     foreach ($packages as $package) {
       $rate_plans[$package->id()] = $this->createPackageRatePlan($package);
-      $sdk_packges[] = $package->decorated();
+      $sdk_packages[] = $package->decorated();
     }
 
     $page_controller = PackagesController::create($this->container);
 
     $this->stack
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packges]]);
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packages]]);
 
-    foreach ($sdk_packges as $package) {
+    foreach ($sdk_packages as $package) {
       foreach ($package->getApiProducts() as $api_product) {
         if (!$this->container->has('apigee_edge.controller.cache.api_product')) {
           // TODO: Remove this queue when `apigee_edge` beta 2 is released.
