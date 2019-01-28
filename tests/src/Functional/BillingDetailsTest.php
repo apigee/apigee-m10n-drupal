@@ -87,7 +87,6 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
     $this->drupalGet(Url::fromRoute('apigee_monetization.profile', [
       'user' => $this->developer->id(),
     ]));
-    sleep(15);
 
     // Make sure user has access to the page.
     $this->assertSession()->responseNotContains('Access denied');
