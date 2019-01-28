@@ -10,7 +10,7 @@
  */
 #}
 {
-    "code" : "mint.resourceDoesNotExist",
-    "message" : "{{ message|default('The requested object does nto exist.') }}",
+    "code" : "{{ code|default('mint.resourceDoesNotExist') }}",
+    "message" : "{{ message|default('The requested object does not exist.') }}",
     "contexts" : [ ]
 }

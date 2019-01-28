@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\Controller;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Form\PackageConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\Element;
@@ -103,8 +104,9 @@ class PackagesController extends ControllerBase {
   public function catalogPage(UserInterface $user) {
     // Load purchased packages for comparison.
     $packages = Package::getAvailableApiPackagesByDeveloper($user->getEmail());
-
-    $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages)];
+    // Get the view mode from package config.
+    $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
+    $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];
     $build['package_list']['#pre_render'][] = [$this, 'preRender'];
 
     return $build;

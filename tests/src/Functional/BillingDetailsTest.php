@@ -60,7 +60,6 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
    * Tests permissions for `Billing Details` page.
    */
   public function testBillingDetailsAccessDenied() {
-    $this->queueOrg();
     $this->drupalGet(Url::fromRoute('apigee_monetization.profile', [
       'user' => $this->developer->id(),
     ]));
