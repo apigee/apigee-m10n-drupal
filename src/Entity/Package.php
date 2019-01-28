@@ -58,7 +58,7 @@ use Drupal\user\Entity\User;
  *   },
  *   permission_granularity = "entity_type",
  *   admin_permission = "administer package",
- *   field_ui_base_route = "entity.package.collection",
+ *   field_ui_base_route = "apigee_m10n.settings.package",
  * )
  */
 class Package extends FieldableEdgeEntityBase implements PackageInterface {
