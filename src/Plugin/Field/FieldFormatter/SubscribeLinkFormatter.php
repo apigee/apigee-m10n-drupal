@@ -23,7 +23,9 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Link;
+use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 
 /**
  * Plugin implementation of the 'apigee_subscription_form' formatter.
@@ -83,9 +85,23 @@ class SubscribeLinkFormatter extends FormatterBase {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
+      $developer_id = $value['user']->id();
+      if ($subscriptions = Subscription::loadRatePlansByDeveloperEmail($developer_id)) {
+        foreach ($subscriptions as $developer_rate_plan) {
+          if ($developer_rate_plan->id() == $rate_plan->id()) {
+            $label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
+            return [
+              '#type'  => 'item',
+              '#value' => $this->t($label ?? 'Already purchased %rate_plan', [
+                '%rate_plan' => $rate_plan->getDisplayName()
+              ])
+            ];
+          }
+        }
+      }
       return Link::createFromRoute(
         $this->getSetting('label'), 'entity.rate_plan.subscribe', [
-          'user'      => $value['user']->id(),
+          'user'      => $developer_id,
           'package'   => $rate_plan->getPackage()->id(),
           'rate_plan' => $rate_plan->id(),
         ]

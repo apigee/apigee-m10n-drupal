@@ -29,6 +29,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 
 /**
  * Plugin implementation of the 'apigee_subscription_form' formatter.
@@ -138,11 +139,25 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
+      $developer_id = $value['user']->id();
+      if ($subscriptions = Subscription::loadRatePlansByDeveloperEmail($developer_id)) {
+        foreach ($subscriptions as $developer_rate_plan) {
+          if ($developer_rate_plan->id() == $rate_plan->id()) {
+            $label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
+            return [
+              '#type'  => 'item',
+              '#value' => $this->t($label ?? 'Already purchased %rate_plan', [
+                '%rate_plan' => $rate_plan->getDisplayName()
+              ])
+            ];
+          }
+        }
+      }
       $subscription = Subscription::create([
         'ratePlan' => $rate_plan,
         // TODO: User a controller proxy that caches the developer entity.
         // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
-        'developer' => new Developer(['email' => $value['user']->getEmail()]),
+        'developer' => new Developer(['email' => $developer_id]),
         'startDate' => new \DateTimeImmutable(),
       ]);
       return $this->entityFormBuilder->getForm($subscription, 'default', [

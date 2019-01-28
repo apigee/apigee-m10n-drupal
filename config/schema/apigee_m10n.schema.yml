@@ -39,6 +39,9 @@ apigee_m10n.subscription.config:
     unsubscribe_button_label:
       type: label
       label: 'Unsubscribe button label.'
+    already_purchased_label:
+      type: label
+      label: 'Already subscribed title.'
 
 field.formatter.settings.apigee_subscribe_link:
   type: mapping
