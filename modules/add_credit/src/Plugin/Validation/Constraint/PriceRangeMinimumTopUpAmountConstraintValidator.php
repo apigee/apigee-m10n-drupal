@@ -20,8 +20,6 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use CommerceGuys\Intl\Formatter\NumberFormatterInterface;
-use Drupal;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;

@@ -32,11 +32,14 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "apigee_price_range",
  *   label = @Translation("Apigee price range"),
- *   description = @Translation("Stores a price range with minimum, maximum and
- *   default values."), default_widget = "price_range_default",
- *   default_formatter = "price_range_default", constraints =
- *   {"PriceRangeMinimumGreaterMaximum" = {}, "PriceRangeDefaultOutOfRange" =
- *   {}, "PriceRangeMinimumTopUpAmount" = {}}
+ *   description = @Translation("Stores a price range with minimum, maximum and default values."),
+ *   default_widget = "price_range_default",
+ *   default_formatter = "price_range_default",
+ *   constraints = {
+ *     "PriceRangeMinimumGreaterMaximum" = {},
+ *     "PriceRangeDefaultOutOfRange" = {},
+ *     "PriceRangeMinimumTopUpAmount" = {}
+ *   }
  * )
  */
 class PriceRangeItem extends FieldItemBase {

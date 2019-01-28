@@ -128,9 +128,7 @@ class AddCreditService implements AddCreditServiceInterface {
         $fields['apigee_price_range'] = BaseFieldDefinition::create('apigee_price_range')
           ->setLabel(t('Price range'))
           ->setRevisionable(TRUE)
-          ->setTranslatable(TRUE)
-          ->setDisplayConfigurable('form', TRUE)
-          ->setDisplayConfigurable('view', TRUE);
+          ->setTranslatable(TRUE);
         break;
     }
 

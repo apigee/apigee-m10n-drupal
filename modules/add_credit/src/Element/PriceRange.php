@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * @file
  * Copyright 2018 Google Inc.
  *
@@ -53,7 +53,7 @@ class PriceRange extends FormElement {
    * {@inheritdoc}
    */
   public function getInfo() {
-    $class = get_class($this);
+    $class = static::class;
 
     return [
       '#available_currencies' => [],
@@ -149,6 +149,7 @@ class PriceRange extends FormElement {
       ];
 
       if (isset($element['#ajax'])) {
+        // TODO: Explain why we have are copying ajax over to number fields.
         $element['price_range']['fields'][$name]['#ajax'] = $element['#ajax'];
       }
     }
