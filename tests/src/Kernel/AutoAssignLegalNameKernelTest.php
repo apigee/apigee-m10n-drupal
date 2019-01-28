@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
 use Drupal\apigee_edge\Entity\Developer;
+use Drupal\Core\Form\FormState;
 
 /**
  * AutoAssignLegalNameKernelTest tests.
@@ -61,22 +62,30 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
     $subscription = $this->createsubscription($this->developer, $rate_plan);
+    $current_developer = Developer::load($this->developer->getEmail());
+    $current_developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $this->developer->getEmail());
     $this->queueOrg();
     $this->stack
       ->queueMockResponse([
-        'developer' => [
-          'mail'  => ['value' => $this->developer->getEmail()],
-          'uuid' => ['value' => rand(0, 1000)],
-          'first_name' => ['value' => 'First Name'],
-          'last_name' => ['value' => 'Last Name'],
-          'name' => ['value' => $this->developer->getEmail()],
-          'org_name' => 'Test Org',
-        ],
+        'developer' => ['developer' => $current_developer],
         'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
         'get_package_rate_plan' => ['plan' => $rate_plan]
       ]);
-    $current_developer = Developer::load($this->developer->getEmail());
     static::assertSame($this->developer->getEmail(), $current_developer->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
+
+    /*
+    $form_object = \Drupal::entityTypeManager()->getFormObject('subscription', 'default');
+    $form_object->setEntity($subscription);
+    $form = $form_object->buildForm([], new FormState());
+    $form_state = new FormState();
+    $form_state->setValues([]);
+    $form_builder = $this->container->get('form_builder');
+    $form_builder->submitForm($form, $form_state);
+
+    $messages = \Drupal::messenger()->all();
+    \Drupal::messenger()->deleteAll();
+    static::assertFalse(!isset($messages['error']));*/
+
   }
 
 }
