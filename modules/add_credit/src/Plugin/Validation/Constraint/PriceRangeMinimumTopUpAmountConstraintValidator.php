@@ -81,6 +81,11 @@ class PriceRangeMinimumTopUpAmountConstraintValidator extends ConstraintValidato
     }
 
     $price_range = $value->getValue();
+
+    if (!isset($price_range['minimum'])) {
+      return;
+    }
+
     $currency_code = $price_range['currency_code'];
     $minimum_top_up_amount = $this->getMinimumTopUpAmountForCurrency($currency_code);
     if ($price_range['minimum'] < $minimum_top_up_amount) {

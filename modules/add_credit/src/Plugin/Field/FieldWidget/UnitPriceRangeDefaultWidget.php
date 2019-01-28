@@ -20,21 +20,19 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldWidget;
 
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use Drupal\commerce_order\Plugin\Field\FieldWidget\UnitPriceWidget;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'unit_price_range_default' widget.
+ *
+ * This field is applicable to the 'unit_price' of the 'commerce_order_item'
+ * only.
  *
  * @FieldWidget(
  *   id = "unit_price_range_default",
@@ -80,6 +78,8 @@ class UnitPriceRangeDefaultWidget extends WidgetBase {
     if ($amount['number']) {
       $product = $form_state->get('product');
       $parents = ['purchased_entity', 0, 'variation'];
+
+      // Find the selected variation from the variation_id set in the form_state.
       if ($variation_id = NestedArray::getValue($form_state->getValues(), $parents)) {
         $selected_variations = array_filter($product->getVariations(), function (ProductVariationInterface $variation) use ($variation_id) {
           return $variation->id() == $variation_id;
@@ -88,11 +88,38 @@ class UnitPriceRangeDefaultWidget extends WidgetBase {
 
         // Get the top up price range.
         if (($selected_variation->hasField('apigee_price_range')) && ($price_range = $selected_variation->get('apigee_price_range'))) {
-          if ($amount['number'] < $price_range->minimum || $amount['number'] > $price_range->maximum || $amount['currency_code'] !== $price_range->currency_code) {
-            $form_state->setError($element, t('The custom amount must be between @minimum and @maximum.', [
-              '@minimum' => \Drupal::service('commerce_price.currency_formatter')->format($price_range->minimum, $price_range->currency_code),
-              '@maximum' => \Drupal::service('commerce_price.currency_formatter')->format($price_range->maximum, $price_range->currency_code),
-            ]));
+          $error_message = FALSE;
+          $number = $amount['number'];
+          $currency_formatter = \Drupal::service('commerce_price.currency_formatter');
+          $formatter_options = [
+            'currency_display' => 'code',
+          ];
+
+          // Validate currency code.
+          if (isset($price_range->currency_code) && ($amount['currency_code'] !== $price_range->currency_code)) {
+            $error_message = t('The select currency is invalid.');
+          }
+
+          // Validate range.
+          if (isset($price_range->minimum) && isset($price_range->maximum) && ($number < $price_range->minimum || $number > $price_range->maximum)) {
+            $error_message = t('The custom amount must be between @minimum and @maximum.', [
+              '@minimum' => $currency_formatter->format($price_range->minimum, $price_range->currency_code, $formatter_options),
+              '@maximum' => $currency_formatter->format($price_range->maximum, $price_range->currency_code, $formatter_options),
+            ]);
+          }
+          elseif ((isset($price_range->minimum) && !isset($price_range->maximum)) && ($number < $price_range->minimum)) {
+            $error_message = t('The minimum amount is @minimum.', [
+              '@minimum' => $currency_formatter->format($price_range->minimum, $price_range->currency_code, $formatter_options),
+            ]);
+          }
+          elseif (isset($price_range->maximum) && ($number > $price_range->maximum)) {
+            $error_message = t('The maximum amount is @maximum.', [
+              '@maximum' => $currency_formatter->format($price_range->maximum, $price_range->currency_code, $formatter_options),
+            ]);
+          }
+
+          if ($error_message) {
+            $form_state->setError($element, $error_message);
           }
         }
       }

@@ -159,8 +159,10 @@ class PriceRange extends FormElement {
       '#default_value' => $default_value ? $default_value['currency_code'] : NULL,
       '#options' => array_combine($currency_codes, $currency_codes),
       '#field_suffix' => '',
+      '#required' => $element['#required'],
     ];
 
+    // Set currency code to use AJAX.
     if (isset($element['#ajax'])) {
       $element['price_range']['fields']['currency_code']['#ajax'] = $element['#ajax'];
     }
@@ -168,7 +170,6 @@ class PriceRange extends FormElement {
     // Remove the keys that were transferred to child elements.
     unset($element['#description']);
     unset($element['#maxlength']);
-    unset($element['#ajax']);
     unset($element['#ajax']);
 
     return $element;
@@ -178,7 +179,7 @@ class PriceRange extends FormElement {
    * {@inheritdoc}
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
-    return isset($input['price_range']['fields']) ? $input['price_range']['fields'] : NULL;
+    return isset($input['price_range']['fields']) ? array_filter($input['price_range']['fields']) : NULL;
   }
 
   /**

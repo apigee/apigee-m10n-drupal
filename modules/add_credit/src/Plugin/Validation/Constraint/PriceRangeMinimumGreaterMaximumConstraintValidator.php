@@ -38,7 +38,12 @@ class PriceRangeMinimumGreaterMaximumConstraintValidator extends ConstraintValid
     }
 
     $price_range = $value->getValue();
-    if ($price_range['minimum'] > $price_range['maximum']) {
+
+    if (!isset($price_range['maximum'])) {
+      return;
+    }
+
+    if (($price_range['minimum'] > $price_range['maximum'])) {
       $this->context->addViolation($constraint->message);
     }
   }

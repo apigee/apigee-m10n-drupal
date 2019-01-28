@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -145,8 +146,6 @@ class AddCreditService implements AddCreditServiceInterface {
       && ($product_type = ProductType::load($bundle))
       && $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit')
     ) {
-      $info = [];
-
       // Apigee add credit enabled products will automatically update a
       // developer's balance upon payment completion. This adds a base field to
       // the bundle to allow add credit to be enabled for products of the bundle
@@ -157,9 +156,7 @@ class AddCreditService implements AddCreditServiceInterface {
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);
-      $info['apigee_add_credit_enabled'] = $add_credit_base_def;
-
-      return $info;
+      return ['apigee_add_credit_enabled' => $add_credit_base_def];
     }
   }
 
@@ -197,6 +194,18 @@ class AddCreditService implements AddCreditServiceInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function inlineEntityFormTableFieldsAlter(&$fields, $context) {
+    if ($context['entity_type'] == 'commerce_product_variation') {
+      if (isset($fields['price'])) {
+        $fields['price']['type'] = 'callback';
+        $fields['price']['callback'] = [static::class, 'inlineEntityFormTableFieldsPriceCallback'];
+      }
+    }
+  }
+
+  /**
    * Submit callback for `::formCommerceProductTypeEditFormAlter()`.
    *
    * Add a third party setting to the product type to flag whether or not this
@@ -223,6 +232,37 @@ class AddCreditService implements AddCreditServiceInterface {
         $form_state->getValue('apigee_m10n_enable_skip_cart')
       );
     }
+  }
+
+  /**
+   * Callback for the price inline table field.
+   *
+   * @param \Drupal\commerce_product\Entity\ProductVariationInterface $variation
+   *   The commerce variation entity.
+   * @param array $variables
+   *   The variables array.
+   *
+   * @return \Drupal\commerce_price\Price|null
+   *   Renderable array of price.
+   */
+  public static function inlineEntityFormTableFieldsPriceCallback(ProductVariationInterface $variation, array $variables) {
+    $formatter = \Drupal::service('commerce_price.currency_formatter');
+
+    // If product variation has a price range return the default.
+    if (($variation->hasField('apigee_price_range'))
+      && ($price_range = $variation->get('apigee_price_range'))
+      && (isset($price_range->default))
+      && (isset($price_range->currency_code))
+    ) {
+      return $formatter->format($price_range->default, $price_range->currency_code);
+    }
+
+    // Fallback to the default price.
+    if ($price = $variation->getPrice()) {
+      return $formatter->format($price->getNumber(), $price->getCurrencyCode());
+    }
+
+    return t('N/A');
   }
 
 }

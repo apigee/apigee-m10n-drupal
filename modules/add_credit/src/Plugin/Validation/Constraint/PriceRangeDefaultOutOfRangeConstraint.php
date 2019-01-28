@@ -31,6 +31,10 @@ use Symfony\Component\Validator\Constraint;
  */
 class PriceRangeDefaultOutOfRangeConstraint extends Constraint {
 
-  public $message = 'The default value is out of range.';
+  public $outOfRangeMessage = 'The default value must be between the minimum and maximum.';
+
+  public $minMessage = 'This default value cannot be less than the minimum.';
+
+  public $maxMessage = 'This default value cannot be greater than the maximum.';
 
 }

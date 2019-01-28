@@ -69,41 +69,7 @@ function apigee_m10n_add_credit_form_commerce_product_type_edit_form_alter(&$for
  * Implements hook_inline_entity_form_table_fields_alter().
  */
 function apigee_m10n_add_credit_inline_entity_form_table_fields_alter(&$fields, $context) {
-  // TODO: Move this to AddCreditService.
-  if ($context['entity_type'] == 'commerce_product_variation') {
-    if (isset($fields['price'])) {
-      $fields['price']['type'] = 'callback';
-      $fields['price']['callback'] = 'apigee_m10n_add_credit_inline_entity_form_table_fields_price';
-    }
-  }
-}
-
-/**
- * Callback for the price inline table field.
- *
- * @param \Drupal\commerce_product\Entity\ProductVariationInterface $variation
- *   The commerce variation entity.
- * @param array $variables
- *   The variables array.
- *
- * @return \Drupal\commerce_price\Price|null
- *   Renderable array of price.
- */
-function apigee_m10n_add_credit_inline_entity_form_table_fields_price(ProductVariationInterface $variation, array $variables) {
-  $formatter = \Drupal::service('commerce_price.currency_formatter');
-
-  // If product variation has a price range return the default.
-  if (($variation->hasField('apigee_price_range'))
-    && ($price_range = $variation->get('apigee_price_range'))
-    && (isset($price_range->default))
-    && (isset($price_range->currency_code))
-  ) {
-    return $formatter->format($price_range->default, $price_range->currency_code);
-  }
-
-  // Fallback to the default price.
-  $price = $variation->getPrice();
-  return $formatter->format($price->getNumber(), $price->getCurrencyCode());
+  apigee_m10n_add_credit_service()->inlineEntityFormTableFieldsAlter($fields, $context);
 }
 
 /**

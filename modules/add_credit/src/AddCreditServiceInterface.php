@@ -112,4 +112,21 @@ interface AddCreditServiceInterface {
    */
   public function entityTypeAlter(array &$entity_types);
 
+  /**
+   * Handles `hook_inline_entity_form_table_fields_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $fields
+   *   The fields, keyed by field name.
+   * @param array $context
+   *   An array with the following keys:
+   *   - parent_entity_type: The type of the parent entity.
+   *   - parent_bundle: The bundle of the parent entity.
+   *   - field_name: The name of the reference field on which IEF is operating.
+   *   - entity_type: The type of the referenced entities.
+   *   - allowed_bundles: Bundles allowed on the reference field.
+   *
+   * @see \Drupal\inline_entity_form\InlineFormInterface::getTableFields()
+   */
+  public function inlineEntityFormTableFieldsAlter(&$fields, $context);
+
 }

@@ -32,10 +32,11 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "apigee_price_range",
  *   label = @Translation("Apigee price range"),
- *   description = @Translation("Stores a price range with minimum, maximum and default values."),
- *   default_widget = "price_range_default",
- *   default_formatter = "price_range_default",
- *   constraints = {"PriceRangeMinimumGreaterMaximum" = {}, "PriceRangeDefaultOutOfRange" = {}, "PriceRangeMinimumTopUpAmount" = {}}
+ *   description = @Translation("Stores a price range with minimum, maximum and
+ *   default values."), default_widget = "price_range_default",
+ *   default_formatter = "price_range_default", constraints =
+ *   {"PriceRangeMinimumGreaterMaximum" = {}, "PriceRangeDefaultOutOfRange" =
+ *   {}, "PriceRangeMinimumTopUpAmount" = {}}
  * )
  */
 class PriceRangeItem extends FieldItemBase {
@@ -102,7 +103,9 @@ class PriceRangeItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
-    $currencies = \Drupal::entityTypeManager()->getStorage('commerce_currency')->loadMultiple();
+    $currencies = \Drupal::entityTypeManager()
+      ->getStorage('commerce_currency')
+      ->loadMultiple();
     $currency_codes = array_keys($currencies);
 
     $element = [];
@@ -123,10 +126,10 @@ class PriceRangeItem extends FieldItemBase {
    * {@inheritdoc}
    */
   public function isEmpty() {
-    return $this->minimum === NULL || $this->minimum === ''
-      || $this->maximum === NULL || $this->maximum === ''
-      || $this->default === NULL || $this->default === ''
-      || empty($this->currency_code);
+    return empty($this->minimum)
+      && empty($this->maximum)
+      && empty($this->default)
+      && empty($this->currency_code);
   }
 
   /**
@@ -138,7 +141,7 @@ class PriceRangeItem extends FieldItemBase {
     // Set the variation price from the price range default.
     /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $entity */
     $entity = $this->getEntity();
-    if ($this->default) {
+    if (isset($this->default)) {
       $price = new Price($this->default, $this->currency_code);
       $entity->setPrice($price);
     }
