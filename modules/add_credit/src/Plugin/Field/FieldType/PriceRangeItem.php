@@ -139,12 +139,12 @@ class PriceRangeItem extends FieldItemBase {
     parent::preSave();
 
     // Set the variation price from the price range default.
-    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $entity */
-    $entity = $this->getEntity();
+    $price = new Price(0, $this->currency_code);
     if (isset($this->default)) {
       $price = new Price($this->default, $this->currency_code);
-      $entity->setPrice($price);
     }
+
+    $this->getEntity()->setPrice($price);
   }
 
 }

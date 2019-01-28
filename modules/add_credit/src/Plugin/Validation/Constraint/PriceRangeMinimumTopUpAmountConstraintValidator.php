@@ -91,7 +91,9 @@ class PriceRangeMinimumTopUpAmountConstraintValidator extends ConstraintValidato
     if ($price_range['minimum'] < $minimum_top_up_amount) {
       $this->context->addViolation($constraint->message, [
         '@currency_code' => $currency_code,
-        '@amount' => $this->currencyFormatter->format($minimum_top_up_amount, $currency_code),
+        '@amount' => $this->currencyFormatter->format($minimum_top_up_amount, $currency_code, [
+          'currency_display' => 'code',
+        ]),
       ]);
     }
   }

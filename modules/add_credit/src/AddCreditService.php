@@ -206,6 +206,17 @@ class AddCreditService implements AddCreditServiceInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function fieldInfoAlter(&$info) {
+    // Add a constraint to commerce_price.
+    // This is used to validate the unit price if a price range is available.
+    if (isset($info['commerce_price'])) {
+      $info['commerce_price']['constraints']['PriceRangeUnitPrice'] = [];
+    }
+  }
+
+  /**
    * Submit callback for `::formCommerceProductTypeEditFormAlter()`.
    *
    * Add a third party setting to the product type to flag whether or not this

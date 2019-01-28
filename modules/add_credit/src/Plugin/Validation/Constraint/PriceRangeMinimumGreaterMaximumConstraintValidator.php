@@ -37,13 +37,14 @@ class PriceRangeMinimumGreaterMaximumConstraintValidator extends ConstraintValid
       throw new UnexpectedTypeException($value, PriceRangeItem::class);
     }
 
-    $price_range = $value->getValue();
+    $range = $value->getValue();
 
-    if (!isset($price_range['maximum'])) {
+    // No validation if a maximum is not set.
+    if (!isset($range['maximum'])) {
       return;
     }
 
-    if (($price_range['minimum'] > $price_range['maximum'])) {
+    if (($range['minimum'] > $range['maximum'])) {
       $this->context->addViolation($constraint->message);
     }
   }

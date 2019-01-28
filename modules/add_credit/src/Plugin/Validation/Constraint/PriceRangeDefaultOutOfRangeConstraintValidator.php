@@ -19,44 +19,151 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
+use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
+use Drupal\commerce_price\Price;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * Validates the PriceRangeDefaultOutOfRange constraint.
+ * Validates the 'PriceRangeDefaultOutOfRange' constraint.
+ *
+ * @package Drupal\apigee_m10n_add_credit.
  */
-class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator {
+class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
+
+  /**
+   * The currency formatter service.
+   *
+   * @var \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface
+   */
+  protected $currencyFormatter;
+
+  /**
+   * PriceRangeValidatorBase constructor.
+   *
+   * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
+   *   The currency formatter service.
+   */
+  public function __construct(CurrencyFormatterInterface $currency_formatter) {
+    $this->currencyFormatter = $currency_formatter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('commerce_price.currency_formatter')
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint) {
-    if (!($value instanceof PriceRangeItem)) {
-      throw new UnexpectedTypeException($value, PriceRangeItem::class);
-    }
+    $this->validateInstance($value);
+    $price = $this->getPrice($value);
+    $range = $this->getRange($value);
 
-    $price_range = $value->getValue();
-
-    if (!$price_range['default']) {
+    // Do nothing if we do not have a price or a range.
+    if (!$price || empty($range)) {
       return;
     }
 
-    $default = $price_range['default'];
+    // Validate currency.
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint $constraint */
+    if ($price->getCurrencyCode() !== $range['currency_code']) {
+      $this->context->addViolation(t($constraint->currencyMessage));
+    }
 
-    if (isset($price_range['minimum']) && isset($price_range['maximum'])
-      && ($default < $price_range['minimum'] || $default > $price_range['maximum'])) {
-      $this->context->addViolation($constraint->outOfRangeMessage);
+    // Validate price against range.
+    $number = $price->getNumber();
+    if (isset($range['minimum']) && isset($range['maximum'])
+      && ($number < $range['minimum'] || $number > $range['maximum'])) {
+      $this->context->addViolation(t($constraint->rangeMessage, [
+        '@minimum' => $this->formatPrice($range['minimum'], $range['currency_code']),
+        '@maximum' => $this->formatPrice($range['maximum'], $range['currency_code']),
+      ]));
     }
-    elseif (isset($price_range['minimum']) && !isset($price_range['maximum'])
-      && ($default < $price_range['minimum'])) {
-      $this->context->addViolation($constraint->minMessage);
+    elseif (isset($range['minimum']) && !isset($range['maximum'])
+      && ($number < $range['minimum'])) {
+      $this->context->addViolation(t($constraint->minMessage, [
+        '@minimum' => $this->formatPrice($range['minimum'], $range['currency_code']),
+      ]));
     }
-    elseif (isset($price_range['maximum'])
-      && ($default > $price_range['maximum'])) {
-      $this->context->addViolation($constraint->maxMessage);
+    elseif (isset($range['maximum'])
+      && ($number > $range['maximum'])) {
+      $this->context->addViolation(t($constraint->maxMessage, [
+        '@maximum' => $this->formatPrice($range['maximum'], $range['currency_code']),
+      ]));
     }
+  }
+
+  /**
+   * Validates the instance of value.
+   *
+   * @param mixed $value
+   *   The value instance.
+   */
+  protected function validateInstance($value): void {
+    if (!($value instanceof PriceRangeItem)) {
+      throw new UnexpectedTypeException($value, PriceRangeItem::class);
+    }
+  }
+
+  /**
+   * Finds the price from the provided range.
+   *
+   * @param mixed $value
+   *   The value instance.
+   *
+   * @return \Drupal\commerce_price\Price|null
+   *   The price entity.
+   */
+  protected function getPrice($value): ?Price {
+    $price_range = $value->getValue();
+    if (isset($price_range['default']) && isset($price_range['currency_code'])) {
+      return Price::fromArray([
+        'number' => $price_range['default'],
+        'currency_code' => $price_range['currency_code'],
+      ]);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Helper to get the price range.
+   *
+   * @param mixed $value
+   *   The value instance.
+   *
+   * @return array
+   *   An array of price range with minimum, maximum, default and currency code.
+   */
+  protected function getRange($value): array {
+    return $value->getValue();
+  }
+
+  /**
+   * Helper to format price.
+   *
+   * @param string $number
+   *   The number.
+   * @param string $currency_code
+   *   The currency code.
+   *
+   * @return string
+   *   The formatted number with currency code prefixed.
+   */
+  protected function formatPrice(string $number, string $currency_code): string {
+    return $this->currencyFormatter->format($number, $currency_code, [
+      'currency_display' => 'code',
+    ]);
   }
 
 }

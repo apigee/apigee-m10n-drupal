@@ -22,20 +22,20 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Validates the default value range.
+ * Validates the default unit price.
  *
  * @Constraint(
- *   id = "PriceRangeDefaultOutOfRange",
- *   label = @Translation("The default value is out of range.", context = "Validation"),
+ *   id = "PriceRangeUnitPrice",
+ *   label = @Translation("The unit price is out of range.", context = "Validation"),
  * )
  */
-class PriceRangeDefaultOutOfRangeConstraint extends Constraint {
+class PriceRangeUnitPriceConstraint extends Constraint {
 
-  public $rangeMessage = 'The default value must be between the minimum and the maximum price.';
+  public $rangeMessage = 'The unit price value must be between @minimum and @maximum.';
 
-  public $minMessage = 'This default value cannot be less than the minimum price.';
+  public $minMessage = 'This unit price cannot be less than @minimum.';
 
-  public $maxMessage = 'This default value cannot be greater than the maximum price.';
+  public $maxMessage = 'This unit price cannot be greater than @maximum.';
 
   public $currencyMessage = 'The selected currency is invalid.';
 

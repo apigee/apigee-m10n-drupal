@@ -129,4 +129,13 @@ interface AddCreditServiceInterface {
    */
   public function inlineEntityFormTableFieldsAlter(&$fields, $context);
 
+  /**
+   * Handles `hook_field_info_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $info
+   *   Array of information on field types as collected by the "field type" plugin
+   *   manager.
+   */
+  public function fieldInfoAlter(&$info);
+
 }

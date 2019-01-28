@@ -80,6 +80,13 @@ function apigee_m10n_add_credit_entity_type_alter(array &$entity_types) {
 }
 
 /**
+ * Implements hook_field_info_alter().
+ */
+function apigee_m10n_add_credit_field_info_alter(&$info) {
+  apigee_m10n_add_credit_service()->fieldInfoAlter($info);
+}
+
+/**
  * Helper to get the `apigee_m10n.add_credit` service.
  *
  * @return \Drupal\apigee_m10n_add_credit\AddCreditServiceInterface
