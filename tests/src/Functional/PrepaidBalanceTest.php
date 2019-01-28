@@ -50,7 +50,6 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     $this->developer = $this->createAccount([]);
 
     $this->drupalLogin($this->developer);
-    $this->queueOrg();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));

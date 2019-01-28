@@ -1,10 +1,10 @@
-apigee_m10n.rate_plan.config:
+apigee_m10n.package.config:
   type: config_object
-  label: 'Rate plan settings'
+  label: 'Package settings'
   mapping:
-    product_rate_plan_view_mode:
+    catalog_view_mode:
       type: string
-      label: 'View mode to use when viewing rate plans within packages.'
+      label: 'View mode to use for packages on the "Pricing and plans" page.'
 
 apigee_m10n.subscription.config:
   type: config_object

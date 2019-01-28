@@ -55,6 +55,25 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $this->installConfig([
       'user',
     ]);
+
+    // User install is going to try to create a developer for the root user.
+    $this->stack->queueMockResponse([
+      'get_not_found'  => [
+        'status_code' => 404,
+        'code' => 'developer.service.DeveloperIdDoesNotExist',
+        'message' => 'DeveloperId v1 does not exist in organization foo-org',
+      ],
+    ])->queueMockResponse([
+      'get_developer' => [
+        'status_code' => 201,
+      ],
+    ])->queueMockResponse([
+      // The call to save happens twice in a row because of `setStatus()`.
+      // See: \Drupal\apigee_edge\Entity\Storage\DeveloperStorage::doSave()`.
+      'get_developer' => [
+        'status_code' => 201,
+      ],
+    ]);
     // Install user 0 and user 1.
     \user_install();
 
@@ -156,21 +175,24 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
       $this->createPackage(),
       $this->createPackage(),
     ];
-    $sdk_packges = [];
+    $sdk_packages = [];
     $rate_plans = [];
     foreach ($packages as $package) {
       $rate_plans[$package->id()] = $this->createPackageRatePlan($package);
-      $sdk_packges[] = $package->decorated();
+      $sdk_packages[] = $package->decorated();
     }
 
     $page_controller = PackagesController::create($this->container);
 
     $this->stack
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packges]]);
+      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packages]]);
 
-    foreach ($sdk_packges as $package) {
+    foreach ($sdk_packages as $package) {
       foreach ($package->getApiProducts() as $api_product) {
-        $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
+        if (!$this->container->has('apigee_edge.controller.cache.api_product')) {
+          // TODO: Remove this queue when `apigee_edge` beta 2 is released.
+          $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
+        }
       }
       $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans[$package->id()]]]]);
     }
