@@ -9,11 +9,22 @@ apigee_m10n.settings:
     # This enables monetization check for this route.
     _apigee_monetization_route: TRUE
 
+# This route is required for field UI routes to be attached to.
 apigee_m10n.settings.rate_plan:
-  path: 'admin/config/apigee-edge/monetization/rate-plan-settings'
+  path: 'admin/config/apigee-edge/monetization/rate-plan'
   defaults:
-    _form: '\Drupal\apigee_m10n\Form\RatePlanConfigForm'
-    _title: 'Rate plan settings'
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
+    _title: "Rate Plans"
+  requirements:
+    _permission: 'administer apigee monetization'
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n.settings.package:
+  path: 'admin/config/apigee-edge/monetization/package'
+  defaults:
+    _form: '\Drupal\apigee_m10n\Form\PackageConfigForm'
+    _title: 'Package settings'
   requirements:
     _permission: 'administer apigee monetization'
   options:
@@ -40,7 +51,7 @@ apigee_m10n.settings.subscription:
     _apigee_monetization_route: TRUE
 
 entity.package.collection:
-  path: 'admin/config/apigee-edge/monetization/packages'
+  path: 'admin/config/apigee-edge/monetization/package/list'
   defaults:
     _entity_list: 'package'
     _title: 'Packages'

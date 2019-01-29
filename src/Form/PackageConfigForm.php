@@ -25,16 +25,16 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class for managing `apigee_m10n.rate_plan.config` settings.
+ * Class for managing `apigee_m10n.package.config` settings.
  *
  * @package Drupal\apigee_m10n\Form
  */
-class RatePlanConfigForm extends ConfigFormBase {
+class PackageConfigForm extends ConfigFormBase {
 
   /**
    * The config named used by this form.
    */
-  const CONFIG_NAME = 'apigee_m10n.rate_plan.config';
+  const CONFIG_NAME = 'apigee_m10n.package.config';
 
   /**
    * The entity display repository.
@@ -44,7 +44,7 @@ class RatePlanConfigForm extends ConfigFormBase {
   protected $entity_display_repository;
 
   /**
-   * Constructs a \Drupal\apigee_m10n\Form\RatePlanConfigForm object.
+   * Constructs a \Drupal\apigee_m10n\Form\PackageConfigForm object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
@@ -77,7 +77,7 @@ class RatePlanConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'rate_plan_config';
+    return 'package_settings';
   }
 
   /**
@@ -88,14 +88,14 @@ class RatePlanConfigForm extends ConfigFormBase {
     $config = $this->config(static::CONFIG_NAME);
 
     // Get view mode options from the repository service.
-    $options = $this->entity_display_repository->getViewModeOptionsByBundle('rate_plan', 'rate_plan');
+    $options = $this->entity_display_repository->getViewModeOptionsByBundle('package', 'package');
 
-    $form['product_rate_plan_view_mode'] = [
+    $form['catalog_view_mode'] = [
       '#type' => 'select',
-      '#title' => $this->t('Product rate plan view mode'),
-      '#description' => $this->t('Select the view mode to use for displaying plans for packages.'),
+      '#title' => $this->t('Catalog view mode'),
+      '#description' => $this->t('View mode to use for packages on the "Pricing and plans" page.'),
       '#options' => $options,
-      '#default_value' => $config->get('product_rate_plan_view_mode'),
+      '#default_value' => $config->get('catalog_view_mode'),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -108,7 +108,7 @@ class RatePlanConfigForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
 
     $this->config(static::CONFIG_NAME)
-      ->set('product_rate_plan_view_mode', $form_state->getValue('product_rate_plan_view_mode'))
+      ->set('catalog_view_mode', $form_state->getValue('catalog_view_mode'))
       ->save();
   }
 
