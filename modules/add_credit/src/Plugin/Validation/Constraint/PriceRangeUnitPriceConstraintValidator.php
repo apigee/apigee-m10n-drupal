@@ -41,9 +41,9 @@ class PriceRangeUnitPriceConstraintValidator extends PriceRangeDefaultOutOfRange
   /**
    * {@inheritdoc}
    */
-  public function getPrice($value): ?Price {
-    if ($price = $value->getValue()) {
-      return Price::fromArray($price);
+  public function getPrice($value): ?array {
+    if ($this->getPurchasedEntity($value) && $price = $value->getValue()) {
+      return $price;
     }
 
     return NULL;
@@ -53,18 +53,32 @@ class PriceRangeUnitPriceConstraintValidator extends PriceRangeDefaultOutOfRange
    * {@inheritdoc}
    */
   public function getRange($value): array {
-    $order = $value->getParent()->getEntity();
-    if ($order instanceof OrderItemInterface) {
-
-      // Get the range from the product variation.
-      $purchased_entity = $order->getPurchasedEntity();
-      if ($purchased_entity->hasField('apigee_price_range') && !$purchased_entity->get('apigee_price_range')->isEmpty()) {
-        $value = $purchased_entity->get('apigee_price_range')->getValue();
-        return reset($value);
-      }
+    if ($purchased_entity = $this->getPurchasedEntity($value)) {
+      $value = $purchased_entity->get('apigee_price_range')->getValue();
+      return reset($value);
     }
 
     return [];
+  }
+
+  /**
+   * Returns the purchased entity with a valid price range field.
+   *
+   * @param mixed $value
+   *   The value instance.
+   *
+   * @return \Drupal\commerce\PurchasableEntityInterface|null
+   *   The purchasable entity.
+   */
+  protected function getPurchasedEntity($value) {
+    $order = $value->getParent()->getEntity();
+    if (($order instanceof OrderItemInterface)
+    && ($purchased_entity = $order->getPurchasedEntity())
+    && ($purchased_entity->hasField('apigee_price_range'))) {
+      return $purchased_entity;
+    }
+
+    return NULL;
   }
 
 }

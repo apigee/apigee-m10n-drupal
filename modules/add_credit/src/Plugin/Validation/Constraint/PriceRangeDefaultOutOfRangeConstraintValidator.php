@@ -70,18 +70,18 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
     $range = $this->getRange($value);
 
     // Do nothing if we do not have a price or a range.
-    if (!$price || empty($range)) {
+    if (empty($price['number']) || empty($price['currency_code']) || empty($range)) {
       return;
     }
 
     // Validate currency.
     /** @var \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint $constraint */
-    if ($price->getCurrencyCode() !== $range['currency_code']) {
+    if ($price['currency_code'] !== $range['currency_code']) {
       $this->context->addViolation(t($constraint->currencyMessage));
     }
 
     // Validate price against range.
-    $number = $price->getNumber();
+    $number = $price['number'];
     if (isset($range['minimum']) && isset($range['maximum'])
       && ($number < $range['minimum'] || $number > $range['maximum'])) {
       $this->context->addViolation(t($constraint->rangeMessage, [
@@ -121,16 +121,16 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
    * @param mixed $value
    *   The value instance.
    *
-   * @return \Drupal\commerce_price\Price|null
-   *   The price entity.
+   * @return array
+   *   An array with the number and currency_code.
    */
-  protected function getPrice($value): ?Price {
+  protected function getPrice($value): ?array {
     $price_range = $value->getValue();
     if (isset($price_range['default']) && isset($price_range['currency_code'])) {
-      return Price::fromArray([
+      return [
         'number' => $price_range['default'],
         'currency_code' => $price_range['currency_code'],
-      ]);
+      ];
     }
 
     return NULL;
