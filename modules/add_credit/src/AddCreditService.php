@@ -289,6 +289,9 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * Callback for the price inline table field.
    *
+   * Formats the price field for the product variation when the variation is
+   * in table mode on the product edit page.
+   *
    * @param \Drupal\commerce_product\Entity\ProductVariationInterface $variation
    *   The commerce variation entity.
    * @param array $variables
