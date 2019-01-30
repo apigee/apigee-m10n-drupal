@@ -152,9 +152,10 @@ code_sniffer: &code_sniffer
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
-          ./code-sniffer.sh apigee_m10n
+          vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+          vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile artifacts/phpmd/index.html
+          vendor/bin/phpmetrics --extensions=php,inc,module --report-html=artifacts/phpmetrics --git modules/apigee_m10n
+          vendor/bin/phpcs -s -n --colors --standard=modules/apigee_m10n/phpcs.xml.dist --report=junit --report-junit=artifacts/phpcs/phpcs.xml modules/apigee_m10n
 
     - store_test_results:
         path: /var/www/html/artifacts/phpcs
