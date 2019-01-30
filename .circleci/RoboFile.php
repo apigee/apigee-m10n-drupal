@@ -386,36 +386,10 @@ class RoboFile extends \Robo\Tasks
     {
       $config = json_decode(file_get_contents('composer.json'));
 
-      // configure repositories needed for m10n dependencies
-      $config->repositories['forked-ch3-apigee-client-php'] = (object) [
-        "type" => "vcs",
-        "url" => "git@github.com:chapter-three/apigee-client-php.git"
-      ];
-
-      $config->repositories['gh-apigee-m10n-drupal'] = (object) [
-        "type" => "vcs",
-        "url" => "git@github.com:apigee/apigee-m10n-drupal.git"
-      ];
-
-      $config->config->{'preferred-install'} = (object) [
-        "drupal/apigee_edge" => "source",
-        "drupal/apigee_m10n" => "source",
-        "apigee/apigee-client-php" => "source",
-        "*" => "dist"
-      ];
-
-      // Give the dev-mint branch alias of 2.0
-      $config->extra->{"branch-alias"} = (object) [
-        "dev-mint" => "2.0"
-      ];
-
-      $config->require->{"apigee/apigee-client-php"} = "dev-mint as 2.0";
-
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
 
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
-
     }
 }
