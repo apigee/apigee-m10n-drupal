@@ -140,25 +140,6 @@ functional_js_tests: &functional_js_tests
     - store_artifacts:
         path: /var/www/html/artifacts
 
-# Run Behat tests. This command invokes the behat.sh hook.
-behat_tests: &behat_tests
-  <<: *defaults
-  steps:
-    - attach_workspace:
-        at: /var/www/html
-
-    - checkout
-
-    - run:
-        working_directory: /var/www/html
-        command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
-          ./behat.sh apigee_m10n
-
-    - store_artifacts:
-        path: /var/www/html/artifacts
-
 # Run code quality tests. This invokes code-sniffer.sh.
 code_sniffer: &code_sniffer
   <<: *defaults
@@ -209,8 +190,6 @@ jobs:
      <<: *functional_tests
   run-functional-js-tests:
      <<: *functional_js_tests
-  run-behat-tests:
-     <<: *behat_tests
   run-code-sniffer:
      <<: *code_sniffer
   run-code-coverage:
@@ -230,9 +209,6 @@ workflows:
           requires:
             - update-dependencies
       - run-functional-js-tests:
-          requires:
-            - update-dependencies
-      - run-behat-tests:
           requires:
             - update-dependencies
       - run-code-sniffer:
