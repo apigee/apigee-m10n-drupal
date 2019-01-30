@@ -386,6 +386,12 @@ class RoboFile extends \Robo\Tasks
     {
       $config = json_decode(file_get_contents('composer.json'));
 
+      // Install apigee Edge from source.
+      $config->config->{'preferred-install'} = (object) [
+        "drupal/apigee_edge" => "source",
+        "*" => "dist"
+      ];
+
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
