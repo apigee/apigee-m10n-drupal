@@ -20,7 +20,6 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
-use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript\AddCreditFunctionalJavascriptTestBase;
 
