@@ -139,14 +139,13 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
-      $developer_id = $value['user']->id();
-      if ($subscriptions = Subscription::loadRatePlansByDeveloperEmail($developer_id)) {
-        foreach ($subscriptions as $developer_rate_plan) {
-          if ($developer_rate_plan->id() == $rate_plan->id()) {
-            $label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
+      $developer_id = $value['user']->getEmail();
+      if ($subscriptions = Subscription::loadByDeveloperId($developer_id)) {
+        foreach ($subscriptions as $subscription) {
+          if ($subscription->getRatePlan()->id() == $rate_plan->id() && $subscription->isSubscriptionActive()) {
+            $label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
             return [
-              '#type'  => 'item',
-              '#value' => $this->t($label ?? 'Already purchased %rate_plan', [
+              '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
                 '%rate_plan' => $rate_plan->getDisplayName()
               ])
             ];

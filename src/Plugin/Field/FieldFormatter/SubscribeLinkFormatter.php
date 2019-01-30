@@ -85,14 +85,12 @@ class SubscribeLinkFormatter extends FormatterBase {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
-      $developer_id = $value['user']->id();
-      if ($subscriptions = Subscription::loadRatePlansByDeveloperEmail($developer_id)) {
-        foreach ($subscriptions as $developer_rate_plan) {
-          if ($developer_rate_plan->id() == $rate_plan->id()) {
-            $label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
+      if ($subscriptions = Subscription::loadByDeveloperId($value['user']->getEmail())) {
+        foreach ($subscriptions as $subscription) {
+          if ($subscription->getRatePlan()->id() == $rate_plan->id() && $subscription->isSubscriptionActive()) {
+            $label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
             return [
-              '#type'  => 'item',
-              '#value' => $this->t($label ?? 'Already purchased %rate_plan', [
+              '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
                 '%rate_plan' => $rate_plan->getDisplayName()
               ])
             ];
@@ -101,7 +99,7 @@ class SubscribeLinkFormatter extends FormatterBase {
       }
       return Link::createFromRoute(
         $this->getSetting('label'), 'entity.rate_plan.subscribe', [
-          'user'      => $developer_id,
+          'user'      => $value['user']->id(),
           'package'   => $rate_plan->getPackage()->id(),
           'rate_plan' => $rate_plan->id(),
         ]
