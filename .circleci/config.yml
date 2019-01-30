@@ -66,6 +66,7 @@ update_dependencies: &update_dependencies
           cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
           cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
           ./update-dependencies.sh apigee_m10n
+          wget -q -O - https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch | patch -p1 < 2951487_15_no-tests.patch
 
     - save_cache: *save_cache
 
