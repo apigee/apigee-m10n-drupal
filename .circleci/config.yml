@@ -53,6 +53,8 @@ save_cache: &save_cache
   key: v4-dependencies-{{ checksum "composer.json" }}-{{ checksum "../../composer.json" }}
 
 # Install composer dependencies into the workspace to share with all jobs.
+# Core patch is installed manually since composer is using `replace:drupal/core` and root packages can't be patched with
+# composer patches.
 update_dependencies: &update_dependencies
   <<: *defaults
   steps:
