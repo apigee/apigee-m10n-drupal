@@ -21,8 +21,6 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\commerce_product\Entity\Product;
-use Drupal\commerce_store\StoreCreationTrait;
-use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
 
 /**
  * Tests the testing framework for testing offline.
@@ -32,60 +30,7 @@ use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_functional
  */
-class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
-  use StoreCreationTrait;
-
-  /**
-   * The admin user.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  protected $admin;
-
-  /**
-   * A test product.
-   *
-   * @var \Drupal\commerce_product\Entity\ProductInterface
-   */
-  protected $product;
-
-  /**
-   * The commerce store.
-   *
-   * @var \Drupal\commerce_store\Entity\StoreInterface
-   */
-  protected $store;
-
-  /**
-   * The SDK balance controller.
-   *
-   * @var \Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController
-   */
-  protected $balance_controller;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static $modules = [
-    // Base modules.
-    'key',
-    'file',
-    'apigee_edge',
-    'apigee_m10n',
-    'apigee_mock_client',
-    'system',
-    // Modules for this test.
-    'apigee_m10n_add_credit',
-    'commerce_order',
-    'commerce_price',
-    'commerce_cart',
-    'commerce_checkout',
-    'commerce_product',
-    'commerce_payment_test',
-    'commerce_store',
-    'commerce',
-    'user',
-  ];
+class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
 
   /**
    * {@inheritdoc}
@@ -94,13 +39,12 @@ class AddCreditProductAdminTest extends MonetizationFunctionalTestBase {
    */
   public function setUp() {
     parent::setUp();
-    // Create an admin account.
-    $this->admin = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
-    $this->drupalLogin($this->admin);
+
+    $this->signInAsAdmin();
+
     $this->assertNoClientError();
 
-    $this->store = $this->createStore(NULL, $this->config('system.site')->get('mail'));
-    $this->store->save();
+    $this->createCommerceStore();
   }
 
   /**

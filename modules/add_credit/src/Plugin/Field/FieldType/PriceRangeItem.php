@@ -142,12 +142,16 @@ class PriceRangeItem extends FieldItemBase {
     parent::preSave();
 
     // Set the variation price from the price range default.
-    $price = new Price(0, $this->currency_code);
-    if (isset($this->default)) {
-      $price = new Price($this->default, $this->currency_code);
+    // Use the minimum otherwise use the default if set.
+    $number = 0;
+    if (isset($this->minimum)) {
+      $number = $this->minimum;
+    }
+    elseif (isset($this->default)) {
+      $number = $this->default;
     }
 
-    $this->getEntity()->setPrice($price);
+    $this->getEntity()->setPrice(new Price($number, $this->currency_code));
   }
 
 }

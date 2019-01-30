@@ -148,6 +148,10 @@ class PriceRange extends FormElement {
         '#error_no_message' => TRUE,
       ];
 
+      // The minimum price is required for minimum top up amount when buying a
+      // product.
+      $element['price_range']['fields']['minimum']['#required'] = TRUE;
+
       if (isset($element['#ajax'])) {
         // TODO: Explain why we have are copying ajax over to number fields.
         $element['price_range']['fields'][$name]['#ajax'] = $element['#ajax'];

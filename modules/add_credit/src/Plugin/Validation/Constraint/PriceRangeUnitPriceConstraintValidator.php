@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_price\Plugin\Field\FieldType\PriceItem;
-use Drupal\commerce_price\Price;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
