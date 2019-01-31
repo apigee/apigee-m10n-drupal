@@ -7,6 +7,12 @@ access monetization packages:
 view mint prepaid reports:
   title: 'View Mint Prepaid Reports'
 
+refresh own prepaid balance:
+  title: 'Refresh own prepaid balance'
+
+refresh any prepaid balance:
+  title: 'Refresh any prepaid balance'
+
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
 

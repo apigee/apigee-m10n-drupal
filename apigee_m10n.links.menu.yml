@@ -18,6 +18,13 @@ entity.entity_view_display.rate_plan.default:
   parent: system.admin_apigee_m10n
   weight: 99
 
+apigee_m10n.settings.prepaid_balance:
+  title: 'Prepaid balance'
+  route_name: apigee_m10n.settings.prepaid_balance
+  description: 'Configure prepaid balances.'
+  parent: system.admin_apigee_m10n
+  weight: 100
+
 apigee_m10n.settings.subscription:
   title: 'Rate plan purchases'
   route_name: apigee_m10n.settings.subscription

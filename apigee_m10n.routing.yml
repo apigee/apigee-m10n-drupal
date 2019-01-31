@@ -30,6 +30,16 @@ apigee_m10n.settings.package:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_m10n.settings.prepaid_balance:
+  path: 'admin/config/apigee-edge/monetization/prepaid-balance'
+  defaults:
+    _form: '\Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm'
+    _title: 'Prepaid balance'
+  requirements:
+    _permission: 'administer apigee monetization'
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_m10n.settings.subscription:
   path: 'admin/config/apigee-edge/monetization/subscription-settings'
   defaults:
@@ -53,7 +63,7 @@ entity.package.collection:
 apigee_monetization.my_billing:
   path: /user/monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\BillingController::myPrepaidBalance
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myPrepaidBalance
   requirements:
     _permission: 'view mint prepaid reports'
   options:
@@ -62,7 +72,7 @@ apigee_monetization.my_billing:
 apigee_monetization.billing:
   path: /user/{user}/monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\BillingController::prepaidBalancePage
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::prepaidBalancePage
     _title: 'Prepaid balance'
   requirements:
     _permission: 'view mint prepaid reports'
