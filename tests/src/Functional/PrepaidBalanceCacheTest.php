@@ -178,6 +178,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalanceCacheTags() {
     $this->checkDriverHeaderSupport();
 
+    $this->queueOrg();
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -196,6 +197,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
       ->save();
 
     // Visit the prepaid balance page.
+    $this->queueOrg();
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
