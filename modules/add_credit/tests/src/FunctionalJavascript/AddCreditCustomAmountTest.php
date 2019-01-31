@@ -192,8 +192,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $title = 'Name of product';
     $this->submitForm([
       'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-PRODUCT',
-      'variations[form][inline_entity_form][price][0][number]' => $value,
+      'edit-variations-form-inline-entity-form-sku-0-value' => 'SKU-PRODUCT',
+      'edit-variations-form-inline-entity-form-price-0-number' => $value,
     ], 'Save');
 
     $this->assertSession()->pageTextContains(t($message, [
