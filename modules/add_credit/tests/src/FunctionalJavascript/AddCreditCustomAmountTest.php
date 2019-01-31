@@ -59,6 +59,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * Tests the price range field on a variation.
    */
   public function testPriceRangeField() {
+    $this->configureVariationsField();
+
     // Enable apigee add credit for default product.
     $this->drupalGet('admin/commerce/config/product-types/default/edit');
     $this->submitForm(['apigee_m10n_enable_add_credit' => 1], 'Save');
@@ -187,15 +189,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @dataProvider providerPriceField
    */
   public function testPriceFieldOnDefaultProduct($value, string $message) {
-    // Enable the variation field on the form display.
-    $this->container->get('entity.manager')
-      ->getStorage('entity_form_display')
-      ->load('commerce_product.default.default')
-      ->setComponent('variations', [
-        'type' => 'inline_entity_form_complex',
-        'region' => 'content',
-      ])
-      ->save();
+    $this->configureVariationsField();
 
     $this->drupalGet('product/add/default');
 
@@ -316,6 +310,20 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
+   * Helper to enable the variation field on the form display.
+   */
+  protected function configureVariationsField() {
+    $this->container->get('entity.manager')
+      ->getStorage('entity_form_display')
+      ->load('commerce_product.default.default')
+      ->setComponent('variations', [
+        'type' => 'inline_entity_form_complex',
+        'region' => 'content',
+      ])
+      ->save();
+  }
+
+  /**
    * Helper to configure price range field for default product type.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -325,6 +333,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $product_type = ProductType::load('default');
     $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
     $product_type->save();
+
+    $this->configureVariationsField();
 
     // Disable the price field and enable the price range field.
     $this->container->get('entity.manager')
