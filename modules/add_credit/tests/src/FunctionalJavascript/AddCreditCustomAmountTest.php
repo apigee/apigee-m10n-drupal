@@ -179,26 +179,27 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @param mixed $value
    *   The value for the price field.
-   * @param string $message
-   *   The expected message.
+   * @param bool $valid
+   *   Whether the value is valid or not.
    *
    * @throws \Behat\Mink\Exception\ResponseTextException
    *
    * @dataProvider providerPriceField
    */
-  public function testPriceFieldOnDefaultProduct($value, string $message) {
+  public function testPriceFieldOnDefaultProduct($value, bool $valid) {
     $this->drupalGet('product/add/default');
 
-    $title = 'Name of product';
     $this->submitForm([
-      'title[0][value]' => $title,
-      'edit-variations-form-inline-entity-form-sku-0-value' => 'SKU-PRODUCT',
       'edit-variations-form-inline-entity-form-price-0-number' => $value,
-    ], 'Save');
+    ], 'Create variation');
+    $this->assertSession()->assertWaitOnAjaxRequest();
 
-    $this->assertSession()->pageTextContains(t($message, [
-      '@title' => $title,
-    ]));
+    if (!$valid) {
+      $this->assertSession()->pageTextContains('Price must be a number');
+    }
+    else {
+      $this->assertSession()->pageTextNotContains('Price must be a number');
+    }
   }
 
   /**
@@ -296,11 +297,11 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     return [
       [
         'string',
-        'Price must be a number',
+        FALSE,
       ],
       [
         10.00,
-        'The product @title has been successfully saved.',
+        TRUE,
       ],
     ];
   }
