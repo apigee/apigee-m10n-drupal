@@ -79,6 +79,16 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
       'Failed asserting the "Add credit" toggle is not disabled.'
     );
 
+    // Enable the variations field.
+    $this->container->get('entity.manager')
+      ->getStorage('entity_form_display')
+      ->load('commerce_product.default.default')
+      ->setComponent('variations', [
+        'type' => 'inline_entity_form_complex',
+        'region' => 'content',
+      ])
+      ->save();
+
     // Go to the "Add product" page.
     $this->drupalGet('product/add/default');
     $this->assertSession()->checkboxChecked('apigee_add_credit_enabled[value]');
