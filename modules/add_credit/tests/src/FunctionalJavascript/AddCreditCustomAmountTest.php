@@ -187,13 +187,23 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @dataProvider providerPriceField
    */
   public function testPriceFieldOnDefaultProduct($value, string $message) {
+    // Enable the variation field on the form display.
+    $this->container->get('entity.manager')
+      ->getStorage('entity_form_display')
+      ->load('commerce_product.default.default')
+      ->setComponent('variations', [
+        'type' => 'inline_entity_form_complex',
+        'region' => 'content',
+      ])
+      ->save();
+
     $this->drupalGet('product/add/default');
 
     $title = 'Name of product';
     $this->submitForm([
       'title[0][value]' => $title,
-      'edit-variations-form-inline-entity-form-sku-0-value' => 'SKU-PRODUCT',
-      'edit-variations-form-inline-entity-form-price-0-number' => $value,
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-PRODUCT',
+      'variations[form][inline_entity_form][price][0][number]' => $value,
     ], 'Save');
 
     $this->assertSession()->pageTextContains(t($message, [
