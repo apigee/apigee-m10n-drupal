@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<ruleset name="Apigee Edge coding standards">
+<ruleset name="Apigee Monetization coding standards">
   <exclude-pattern>*/.git/*</exclude-pattern>
   <exclude-pattern>*/config/*</exclude-pattern>
   <exclude-pattern>*/css/*</exclude-pattern>
