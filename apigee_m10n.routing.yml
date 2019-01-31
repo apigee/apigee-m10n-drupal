@@ -130,7 +130,7 @@ entity.subscription.collection_by_developer:
     _apigee_monetization_route: TRUE
 
 entity.rate_plan.canonical:
-  path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}'
+  path: '/user/{user}/monetization/package/{package}/plan/{rate_plan}'
   defaults:
     _entity_view: 'rate_plan.full'
     _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
@@ -146,7 +146,7 @@ entity.rate_plan.canonical:
         converter: paramconverter.entity.rate_plan
 
 entity.rate_plan.subscribe:
-  path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe'
+  path: '/user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe'
   defaults:
     _controller: '\Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm'
     _title_callback: '\Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title'
