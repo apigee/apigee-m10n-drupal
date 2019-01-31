@@ -28,41 +28,37 @@ This project follows [Google's Open Source Community Guidelines](https://opensou
 
 # Suggested contributing workflow
 
-## For a start
+## To start
+
 * Fork this project on Github.
-* If you do not have an Apigee Edge trial organization please create a new one
-[here](https://login.apigee.com/login).
-* Register on https://travis-ci.org.
-* Open https://travis-ci.org/[YOUR-GITHUB-USERNAME]/apigee-edge-drupal and click
-on "Activate repository".
-* Open https://travis-ci.org/[YOUR-GITHUB-USERNAME]/apigee-edge-drupal/settings
-and setup required environment variables for running tests. (See the list of
-required environment variables in the [Testing](#testing) section.)
+* Install the module from for your fork instead of Drupal.org on your local. (See below.)
+* If you want to run this module against an actual Apigee org, you can [create an Apigee Edge trial organization](https://login.apigee.com/login).
+  However, the automated tests use mock Apigee Edge server response and no Apigee org or account is needed.
 * Install the module from for your fork instead of Drupal.org on your local. (See below.)
 
 ## For daily work
+
 * Create a new branch in your fork repository, ex.: patch-1.
-* Add changes to the code. If you implement new features please always add new
-tests to cover the implemented functionality. If you modify existing features please always update related tests if needed.
-* Push your changes to your repo's patch-1 branch.
-* Wait until all Travis CI test jobs finish and _pass_.
-* Create [new pull request](https://github.com/apigee/apigee-edge-drupal/pull/new/8.x-1.x)
-and do not forget to add a link to Travis CI build that can confirm your code is working.
+* Add changes to the code. If you implement new features, add new
+tests to cover the implemented functionality. If you modify existing features, update related tests.
+* Push your changes to your repo's patch-1 branch
+* Create a pull request for the project
 
 ## Installing module from your fork instead of Drupal.org
 
 Create a new branch on Github.com in your fork for your fix, ex.: patch-1.
 
-Update your `composer.json` and install the module from your fork:
-
+Update your composer.json and install the module from your fork:
 ```bash
 cd [DRUPAL_ROOT]
 composer config repositories.forked-apigee_m10n vcs https://github.com/[YOUR-GITHUB-USERNAME]/apigee-edge-drupal
+```
 
-# It is important to require a branch/tag here that does not exist in the 
-# Drupal.org repo otherwise code gets pulled from there. For example, dev-8.x-1.x
- condition would pull the code from Drupal.org repo instead of your fork.
+It is important to require a branch/tag here that does not exist in the Drupal.org repo otherwise code
+gets pulled from that repo. For example, dev-8.x-1.x condition would pull the code from Drupal.org repo
+instead of your fork. The command below will clone the `patch-1` branch:
 
+```bash
 composer require drupal/apigee_m10n:dev-patch-1
 ```
 
@@ -98,18 +94,9 @@ git push -u origin patch-2:patch-2 # Push changes to your repo.
 
 ## Running tests
 
-If needed, you can set environment variables multiple ways, either by defining them with
-`export` or `set` in the terminal or creating a copy of the `core/phpunit.xml.dist`
-file as `phpunit.xml` and specifying them in that file.
-
-This module is tested with the following driver configuration in `phpunit.xml`. This approach uses 
-[ChromeDriver](http://chromedriver.chromium.org/) directly without the use of selenium server for
-functional javascript tests and [`GoutteDriver`](http://mink.behat.org/en/latest/drivers/goutte.html)
-for functional tests.
-
-```xml
-<env name="MINK_DRIVER_ARGS_WEBDRIVER" value='["chrome", {"chromeOptions":{"args":["--headless"]}}, "http://localhost:9515"]' />
-```
+This module has [Drupal kernel and functional tests](https://www.drupal.org/docs/8/testing/types-of-tests-in-drupal-8). These
+tests are ran against pull requests using [CircleCi](https://circleci.com/). To learn more about the CircleCi setup, see
+the README.md in the [.circleci directory](.circleci).
 
 You can execute tests of this module with the following command (note the location
 of the `phpunit` executable may vary):
@@ -128,21 +115,24 @@ For setting up PHPStorm to run tests with a click of a button, see:
 The `apigee_mock_client` module included under `./tests` is responsible for faking API
 responses from the Apigee SDK. Tests are written to queue API responses for all API calls
 that will be made by the SDK connector. The response mocking system avoids the need for
-an actual Apigee organization credentials to contribute to this module. There are many 
+an actual Apigee organization credentials to contribute to this module. There are many
 examples in the test suite on how to write tests and queue mock responses. Responses are
 returned in the chronological order they are queued.
 
-In order to run tests against an actual Apigee organization, you must first set up 
+In order to run tests against an actual Apigee organization, you must first set up
 credentials according to the instructions in the instructions in the [Apigee Edge Drupal module](https://github.com/apigee/apigee-edge-drupal/blob/8.x-1.x/CONTRIBUTING.md#running-tests).
 Then integration can be enabled by setting `APIGEE_INTEGRATION_ENABLE` environment variable
 to "1" i.e. by setting `<env name="APIGEE_INTEGRATION_ENABLE" value='1' />` in phpunit.xml.
 
+If needed, you can set environment variables multiple ways, either by defining them with
+`export` or `set` in the terminal or creating a copy of the `core/phpunit.xml.dist`
+file as `phpunit.xml` and specifying them in that file.
 
 ## Best practices
 
 ### Pulling in un-merged dependencies:
 
-If your pull request relies on changes that are not yet available in Apigee Edge 
+If your pull request relies on changes that are not yet available in Apigee Edge
 Client Library for PHP's or the Apigee Edge Drupal module's latest stable release,
 It is still possible to. pull in changes from an existing pull request.
 
