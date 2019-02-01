@@ -4,6 +4,7 @@
 !/.gitattributes
 !/.editorconfig
 !.gitkeep
+!/.circleci
 
 ## Ignore working copies of dist files ##
 phpcs.xml
@@ -11,3 +12,4 @@ phpcs.xml
 ## Other ignored paths and files ##
 /vendor
 composer.lock
+tests/src/Behat/behat.local.yml
