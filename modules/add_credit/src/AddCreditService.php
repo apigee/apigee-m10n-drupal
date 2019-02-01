@@ -21,6 +21,8 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_product\Entity\ProductVariationInterface;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -108,18 +110,31 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
-    if ($entity_type->id() === 'commerce_product') {
-      // The base field needs to be added to all product types for the storage
-      // to be allocated but the option to enable will be hidden and unused
-      // unless enabled for that bundle.
-      $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
-        ->setLabel(t('This is an Apigee add credit product'))
-        ->setRevisionable(TRUE)
-        ->setTranslatable(TRUE)
-        ->setDefaultValue(FALSE);
+    $fields = [];
 
-      return $fields;
+    switch ($entity_type->id()) {
+      case 'commerce_product':
+        // The base field needs to be added to all product types for the storage
+        // to be allocated but the option to enable will be hidden and unused
+        // unless enabled for that bundle.
+        $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
+          ->setLabel(t('This is an Apigee add credit product'))
+          ->setRevisionable(TRUE)
+          ->setTranslatable(TRUE)
+          ->setDefaultValue(FALSE);
+        break;
+
+      case 'commerce_product_variation':
+        $fields['apigee_price_range'] = BaseFieldDefinition::create('apigee_price_range')
+          ->setLabel(t('Price range'))
+          ->setRevisionable(TRUE)
+          ->setTranslatable(TRUE)
+          ->setDisplayConfigurable('form', TRUE)
+          ->setDisplayConfigurable('view', TRUE);
+        break;
     }
+
+    return $fields;
   }
 
   /**
@@ -180,6 +195,69 @@ class AddCreditService implements AddCreditServiceInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function inlineEntityFormTableFieldsAlter(&$fields, $context) {
+    if ($context['entity_type'] == 'commerce_product_variation') {
+      if (isset($fields['price'])) {
+        $fields['price']['type'] = 'callback';
+        $fields['price']['callback'] = [static::class, 'inlineEntityFormTableFieldsPriceCallback'];
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldInfoAlter(&$info) {
+    // Add a constraint to commerce_price.
+    // This is used to validate the unit price if a price range is available.
+    if (isset($info['commerce_price'])) {
+      $info['commerce_price']['constraints']['PriceRangeUnitPrice'] = [];
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context) {
+    $field_definition = $context['items']->getFieldDefinition();
+    $field_name = $field_definition->getName();
+    $entity = $context['items']->getEntity();
+
+    // No changes if field is not unit_price or entity is not commerce_order_item.
+    if ($field_name != 'unit_price' || (!$entity instanceof OrderItemInterface)) {
+      return;
+    }
+
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $selected_variation */
+    $selected_variation = $entity->getPurchasedEntity();
+    $product = $selected_variation->getProduct();
+
+    // Get the purchased entity from the form_state.
+    $parents = ['purchased_entity', 0, 'variation'];
+    if ($variation_id = NestedArray::getValue($form_state->getValues(), $parents)) {
+      $selected_variations = array_filter($product->getVariations(), function (ProductVariationInterface $variation) use ($variation_id) {
+        return $variation->id() == $variation_id;
+      });
+      $selected_variation = reset($selected_variations);
+    }
+
+    // Get the default value from the product variation.
+    if ($selected_variation->hasField('apigee_price_range') && !$selected_variation->get('apigee_price_range')->isEmpty()) {
+      $value = $selected_variation->get('apigee_price_range')->getValue();
+      $value = reset($value);
+
+      if (isset($value['default'])) {
+        $element['amount']['#default_value'] = [
+          'number' => $value['default'],
+          'currency_code' => $value['currency_code'],
+        ];
+      }
+    }
+  }
+
+  /**
    * Submit callback for `::formCommerceProductTypeEditFormAlter()`.
    *
    * Add a third party setting to the product type to flag whether or not this
@@ -206,6 +284,40 @@ class AddCreditService implements AddCreditServiceInterface {
         $form_state->getValue('apigee_m10n_enable_skip_cart')
       );
     }
+  }
+
+  /**
+   * Callback for the price inline table field.
+   *
+   * Formats the price field for the product variation when the variation is
+   * in table mode on the product edit page.
+   *
+   * @param \Drupal\commerce_product\Entity\ProductVariationInterface $variation
+   *   The commerce variation entity.
+   * @param array $variables
+   *   The variables array.
+   *
+   * @return \Drupal\commerce_price\Price|null
+   *   Renderable array of price.
+   */
+  public static function inlineEntityFormTableFieldsPriceCallback(ProductVariationInterface $variation, array $variables) {
+    $formatter = \Drupal::service('commerce_price.currency_formatter');
+
+    // If product variation has a price range return the default.
+    if (($variation->hasField('apigee_price_range'))
+      && ($price_range = $variation->get('apigee_price_range'))
+      && (isset($price_range->default))
+      && (isset($price_range->currency_code))
+    ) {
+      return $formatter->format($price_range->default, $price_range->currency_code);
+    }
+
+    // Fallback to the default price.
+    if ($price = $variation->getPrice()) {
+      return $formatter->format($price->getNumber(), $price->getCurrencyCode());
+    }
+
+    return t('N/A');
   }
 
 }

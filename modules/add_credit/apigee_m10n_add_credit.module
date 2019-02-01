@@ -18,6 +18,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -65,10 +66,31 @@ function apigee_m10n_add_credit_form_commerce_product_type_edit_form_alter(&$for
 }
 
 /**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ */
+function apigee_m10n_add_credit_inline_entity_form_table_fields_alter(&$fields, $context) {
+  apigee_m10n_add_credit_service()->inlineEntityFormTableFieldsAlter($fields, $context);
+}
+
+/**
  * Implements hook_entity_type_alter().
  */
 function apigee_m10n_add_credit_entity_type_alter(array &$entity_types) {
   apigee_m10n_add_credit_service()->entityTypeAlter($entity_types);
+}
+
+/**
+ * Implements hook_field_info_alter().
+ */
+function apigee_m10n_add_credit_field_info_alter(&$info) {
+  apigee_m10n_add_credit_service()->fieldInfoAlter($info);
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function apigee_m10n_add_credit_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  apigee_m10n_add_credit_service()->fieldWidgetFormAlter($element, $form_state, $context);
 }
 
 /**
