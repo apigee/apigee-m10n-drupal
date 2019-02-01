@@ -18,7 +18,7 @@
     "firstName" : "{{ developer.first_name.value }}",
     "lastName" : "{{ developer.last_name.value }}",
     "userName" : "{{ developer.name.value }}",
-    "organizationName" : "{{ org_name }}",
+    "organizationName" : "{{ org_name|default('example') }}",
     "status" : "active",
     "attributes" : [
         {

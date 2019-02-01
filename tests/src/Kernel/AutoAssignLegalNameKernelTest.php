@@ -71,7 +71,7 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
         'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
         'get_package_rate_plan' => ['plan' => $rate_plan]
       ]);
-    static::assertSame($this->developer->getEmail(), $current_developer->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
+    static::assertSame($current_developer->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'), $this->developer->getEmail());
 
     /*
     $form_object = \Drupal::entityTypeManager()->getFormObject('subscription', 'default');
