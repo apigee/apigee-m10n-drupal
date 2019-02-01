@@ -1,0 +1,3 @@
+services:
+  apigee_m10n.teams:
+    class: Drupal\apigee_m10n_teams\MonetizationTeams
