@@ -7,7 +7,7 @@
         "php": ">=7.1",
         "cweagans/composer-patches": "^1.6",
         "commerceguys/intl": "^1.0",
-        "drupal/apigee_edge": "^1.0-beta1"
+        "drupal/apigee_edge": "dev-8.x-1.x-devteams"
     },
     "require-dev": {
         "behat/mink-extension": "v2.2",
@@ -18,6 +18,12 @@
         "phpmd/phpmd": "^2.6",
         "phpmetrics/phpmetrics": "^2.4",
         "phpunit/phpunit": "^6.5"
+    },
+    "repositories": {
+        "gh-apigee-edge-drupal": {
+            "type": "vcs",
+            "url": "git@github.com:apigee/apigee-edge-drupal.git"
+        }
     },
     "config": {
         "sort-packages": true
