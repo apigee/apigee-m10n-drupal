@@ -396,6 +396,8 @@ class RoboFile extends \Robo\Tasks
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
 
+      // Remove `replace` so drupal core get's updated.
+      unset($config->replace);
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
 }
