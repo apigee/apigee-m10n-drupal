@@ -112,4 +112,51 @@ interface AddCreditServiceInterface {
    */
   public function entityTypeAlter(array &$entity_types);
 
+  /**
+   * Handles `hook_inline_entity_form_table_fields_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $fields
+   *   The fields, keyed by field name.
+   * @param array $context
+   *   An array with the following keys:
+   *   - parent_entity_type: The type of the parent entity.
+   *   - parent_bundle: The bundle of the parent entity.
+   *   - field_name: The name of the reference field on which IEF is operating.
+   *   - entity_type: The type of the referenced entities.
+   *   - allowed_bundles: Bundles allowed on the reference field.
+   *
+   * @see \Drupal\inline_entity_form\InlineFormInterface::getTableFields()
+   */
+  public function inlineEntityFormTableFieldsAlter(&$fields, $context);
+
+  /**
+   * Handles `hook_field_info_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $info
+   *   Array of information on field types as collected by the "field type" plugin
+   *   manager.
+   */
+  public function fieldInfoAlter(&$info);
+
+  /**
+   * Handles `hook_field_widget_form_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $element
+   *   The field widget form element as constructed by
+   *   \Drupal\Core\Field\WidgetBaseInterface::form().
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array $context
+   *   An associative array containing the following key-value pairs:
+   *   - form: The form structure to which widgets are being attached. This may be
+   *     a full form structure, or a sub-element of a larger form.
+   *   - widget: The widget plugin instance.
+   *   - items: The field values, as a
+   *     \Drupal\Core\Field\FieldItemListInterface object.
+   *   - delta: The order of this item in the array of subelements (0, 1, 2, etc).
+   *   - default: A boolean indicating whether the form is being shown as a dummy
+   *     form to set default values.
+   */
+  public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context);
+
 }

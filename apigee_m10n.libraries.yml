@@ -9,6 +9,12 @@ package:
     - core/jquery
     - core/jquery.once
     - core/drupal
+
+prepaid_balance:
+  css:
+    theme:
+      css/apigee_m10n.prepaid-balance.css: {}
+
 tnc-widget:
   version: 1.0
   css:

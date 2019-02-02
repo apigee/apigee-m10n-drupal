@@ -23,7 +23,7 @@ use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Exception\ApiResponseException;
 use Drupal\apigee_edge\Job\EdgeJob;
-use Drupal\apigee_m10n\Controller\BillingController;
+use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
@@ -137,7 +137,7 @@ class BalanceAdjustmentJob extends EdgeJob {
         // total so we have to grab that from the balance controller again.
         $balance_after = $this->getPrepaidBalance($controller, $currency_code);
         $new_balance = new Price((string) ($balance_after->getTopUps()), $currency_code);
-        Cache::invalidateTags([BillingController::CACHE_PREFIX . ':user:' . $this->developer->id()]);
+        Cache::invalidateTags([PrepaidBalanceController::getCacheId($this->developer)]);
       }
       catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.
