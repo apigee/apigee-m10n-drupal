@@ -19,9 +19,16 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity;
 
+use Drupal\apigee_edge\Entity\EdgeEntityType;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n\Entity\PackageInterface;
+use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
+use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Test the `package` entity.
@@ -39,21 +46,28 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
   protected $package;
 
   /**
+   * A test user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $user;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
 
     $this->package = $this->createPackage();
-  }
-
-  /**
-   * Test that we can pass random data and create a rate plan.
-   *
-   * @throws \Exception
-   */
-  public function testEntityInstantiation() {
     static::assertInstanceOf(Package::class, $this->package);
+
+    // Prepare to create a user.
+    $this->installEntitySchema('user');
+    $this->installSchema('system', ['sequences']);
+    $this->installSchema('user', ['users_data']);
+
+    $this->user = $this->createAccount(array_keys($this->container->get('user.permissions')->getPermissions()));
+    $this->setCurrentUser($this->user);
   }
 
   /**
@@ -61,11 +75,34 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
    *
    * @throws \Exception
    */
-  public function testLoadPackage() {
+  public function testPackageEntity() {
+    $this->setCurrentRouteMatch();
+
+    // Get the package entity definition.
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('package');
+    static::assertInstanceOf(EdgeEntityType::class, $entity_type);
+
+    // Check that the entity class remains unchanged.
+    static::assertSame(Package::class, $entity_type->getClass());
+
+    // Make sure we are using our custom route provider.
+    static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
+
+    // Queue a package API response.
     $this->stack
       ->queueMockResponse(['get_monetization_package' => ['package' => $this->package]]);
+    // Test that package canonical urls are redirecting to developer urls.
+    $request = Request::create(Url::fromRoute('entity.package.canonical', ['package' => $this->package->id()])->toString(), 'GET');
+    $response = $this->container->get('http_kernel')->handle($request);
+    static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
+    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/package/{$this->package->id()}", $response->headers->get('location'));
 
-    // Load the package.
+    // Make sure we get a team context when getting a package url.
+    $url = $this->package->toUrl('canonical');
+    static::assertSame("/user/1/monetization/package/{$this->package->id()}", $url->toString());
+    static::assertSame('entity.package.developer', $url->getRouteName());
+
+    // Load the cached package.
     $package = Package::load($this->package->id());
 
     static::assertInstanceOf(PackageInterface::class, $package);
@@ -85,6 +122,21 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
     foreach ($this->package->getApiProducts() as $product_id => $product) {
       static::assertArrayHasKey($product_id, $products);
     }
+  }
+
+  /**
+   * Helper to set up a mock current route match.
+   */
+  private function setCurrentRouteMatch() {
+    // Create a request stack for the user page.
+    $request = Request::create(Url::fromRoute('entity.user.canonical', ['user' => $this->user->id()])->toString(), 'GET');
+    $route = $this->container->get('router.no_access_checks')->matchRequest($request);
+    $request->attributes->replace($route);
+    $request_stack = new RequestStack();
+    $request_stack->push($request);
+    $current_route_match = new CurrentRouteMatch($request_stack);
+    // Set the current route match to the current user route.
+    $this->container->set('current_route_match', $current_route_match);
   }
 
 }
