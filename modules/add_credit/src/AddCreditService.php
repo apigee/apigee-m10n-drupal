@@ -123,15 +123,6 @@ class AddCreditService implements AddCreditServiceInterface {
           ->setTranslatable(TRUE)
           ->setDefaultValue(FALSE);
         break;
-
-      case 'commerce_product_variation':
-        $fields['apigee_price_range'] = BaseFieldDefinition::create('apigee_price_range')
-          ->setLabel(t('Price range'))
-          ->setRevisionable(TRUE)
-          ->setTranslatable(TRUE)
-          ->setDisplayConfigurable('form', TRUE)
-          ->setDisplayConfigurable('view', TRUE);
-        break;
     }
 
     return $fields;
@@ -211,49 +202,9 @@ class AddCreditService implements AddCreditServiceInterface {
    */
   public function fieldInfoAlter(&$info) {
     // Add a constraint to commerce_price.
-    // This is used to validate the unit price if a price range is available.
+    // This is used to validate the unit price for add credit products.
     if (isset($info['commerce_price'])) {
-      $info['commerce_price']['constraints']['PriceRangeUnitPrice'] = [];
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context) {
-    $field_definition = $context['items']->getFieldDefinition();
-    $field_name = $field_definition->getName();
-    $entity = $context['items']->getEntity();
-
-    // No changes if field is not unit_price or entity is not commerce_order_item.
-    if ($field_name != 'unit_price' || (!$entity instanceof OrderItemInterface)) {
-      return;
-    }
-
-    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $selected_variation */
-    $selected_variation = $entity->getPurchasedEntity();
-    $product = $selected_variation->getProduct();
-
-    // Get the purchased entity from the form_state.
-    $parents = ['purchased_entity', 0, 'variation'];
-    if ($variation_id = NestedArray::getValue($form_state->getValues(), $parents)) {
-      $selected_variations = array_filter($product->getVariations(), function (ProductVariationInterface $variation) use ($variation_id) {
-        return $variation->id() == $variation_id;
-      });
-      $selected_variation = reset($selected_variations);
-    }
-
-    // Get the default value from the product variation.
-    if ($selected_variation->hasField('apigee_price_range') && !$selected_variation->get('apigee_price_range')->isEmpty()) {
-      $value = $selected_variation->get('apigee_price_range')->getValue();
-      $value = reset($value);
-
-      if (isset($value['default'])) {
-        $element['amount']['#default_value'] = [
-          'number' => $value['default'],
-          'currency_code' => $value['currency_code'],
-        ];
-      }
+      $info['commerce_price']['constraints']['TopUpAmountUnitPrice'] = [];
     }
   }
 

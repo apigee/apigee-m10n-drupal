@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
+use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -29,9 +29,9 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * Validates the PriceRangeMinimumTopUpAmount constraint.
+ * Validates the TopUpAmountMinimumAmount constraint.
  */
-class PriceRangeMinimumTopUpAmountConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
+class TopUpAmountMinimumAmountConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
 
   /**
    * The monetization service.
@@ -74,19 +74,21 @@ class PriceRangeMinimumTopUpAmountConstraintValidator extends ConstraintValidato
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint) {
-    if (!($value instanceof PriceRangeItem)) {
-      throw new UnexpectedTypeException($value, PriceRangeItem::class);
+    if (!($value instanceof TopUpAmountItem)) {
+      throw new UnexpectedTypeException($value, TopUpAmountItem::class);
     }
 
-    $price_range = $value->getValue();
+    $range = $value->toRange();
 
-    if (!isset($price_range['minimum'])) {
+    // No validation if a minimum is not set.
+    if (!isset($range['minimum'])) {
       return;
     }
 
-    $currency_code = $price_range['currency_code'];
+    $currency_code = $range['currency_code'];
+    $minimum = $range['minimum'];
     $minimum_top_up_amount = $this->getMinimumTopUpAmountForCurrency($currency_code);
-    if ($price_range['minimum'] < $minimum_top_up_amount) {
+    if ($minimum < $minimum_top_up_amount) {
       $this->context->addViolation($constraint->message, [
         '@currency_code' => $currency_code,
         '@amount' => $this->currencyFormatter->format($minimum_top_up_amount, $currency_code, [

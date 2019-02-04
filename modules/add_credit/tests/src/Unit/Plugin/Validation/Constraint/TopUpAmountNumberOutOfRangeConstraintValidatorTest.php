@@ -21,26 +21,28 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraintValidator;
+use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountNumberOutOfRangeConstraint;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountNumberOutOfRangeConstraintValidator;
 use Drupal\commerce_price\CurrencyFormatter;
+use Drupal\commerce_price\Price;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Tests the PriceRangeDefaultOutOfRangeConstraint validator.
+ * Tests the TopUpAmountNumberOutOfRangeConstraint validator.
  *
- * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraintValidator
+ * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountNumberOutOfRangeConstraintValidator
  *
  * @group apigee_m10n
  * @group apigee_m10n_unit
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_unit
  */
-class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
+class TopUpAmountNumberOutOfRangeConstraintValidatorTest extends UnitTestCase {
 
   /**
-   * Tests PriceRangeDefaultOutOfRangeConstraintValidator::validate().
+   * Tests TopUpAmountNumberOutOfRangeConstraintValidator::validate().
    *
    * @param mixed $value
    *   The price range field instance.
@@ -52,8 +54,8 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
    * @dataProvider providerValidate
    */
   public function testValidate($value, bool $valid, CurrencyFormatterInterface $currency_formatter) {
-    $constraint = new PriceRangeDefaultOutOfRangeConstraint();
-    $validator = new PriceRangeDefaultOutOfRangeConstraintValidator($currency_formatter);
+    $constraint = new TopUpAmountNumberOutOfRangeConstraint();
+    $validator = new TopUpAmountNumberOutOfRangeConstraintValidator($currency_formatter);
 
     $context = $this->createMock(ExecutionContextInterface::class);
     $context->expects($valid ? $this->never() : $this->once())
@@ -69,14 +71,14 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
   public function providerValidate() {
     $data = [];
 
-    $constraint = new PriceRangeDefaultOutOfRangeConstraint();
+    $constraint = new TopUpAmountNumberOutOfRangeConstraint();
 
     $cases = [
       [
         'range' => [
           'minimum' => 5.00,
           'maximum' => 10.00,
-          'default' => 6.00,
+          'number' => 6.00,
           'currency_code' => 'USD',
         ],
         'message' => NULL,
@@ -86,7 +88,7 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
         'range' => [
           'minimum' => 20.00,
           'maximum' => 30.00,
-          'default' => 10.00,
+          'number' => 10.00,
           'currency_code' => 'USD',
         ],
         'message' => $constraint->rangeMessage,
@@ -96,7 +98,7 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
         'range' => [
           'minimum' => 5.00,
           'maximum' => NULL,
-          'default' => 3.00,
+          'number' => 3.00,
           'currency_code' => 'USD',
         ],
         'message' => $constraint->minMessage,
@@ -105,10 +107,14 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceRangeItem::class);
+      $value = $this->createMock(TopUpAmountItem::class);
       $value->expects($this->any())
-        ->method('getValue')
+        ->method('toRange')
         ->willReturn($case['range']);
+
+      $value->expects($this->any())
+        ->method('toPrice')
+        ->willReturn(new Price((string) $case['range']['number'], $case['range']['currency_code']));
 
       $currencyFormatter = $this->createMock(CurrencyFormatter::class);
       $currencyFormatter->expects($this->any())

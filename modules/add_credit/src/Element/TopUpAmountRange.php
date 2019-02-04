@@ -24,17 +24,17 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
 
 /**
- * Provides a price range form element.
+ * Provides a top_up_amount form element.
  *
  * Usage example:
  * @code
- * $form['price_range'] = [
- *   '#type' => 'price_range',
- *   '#title' => $this->t('Price range'),
+ * $form['amount'] = [
+ *   '#type' => 'top_up_amount_range',
+ *   '#title' => $this->t('Amount'),
  *   '#default_value' => [
  *      'minimum' => '99.99',
  *      'maximum' => '99.99',
- *      'default' => '99.99',
+ *      'number' => '99.99',
  *      'currency_code' => 'USD'
  *    ],
  *   '#allow_negative' => FALSE,
@@ -45,9 +45,9 @@ use Drupal\Core\Render\Element\FormElement;
  * ];
  * @endcode
  *
- * @FormElement("price_range")
+ * @FormElement("top_up_amount_range")
  */
-class PriceRange extends FormElement {
+class TopUpAmountRange extends FormElement {
 
   /**
    * {@inheritdoc}
@@ -75,17 +75,17 @@ class PriceRange extends FormElement {
   }
 
   /**
-   * Builds the price_range form element.
+   * Builds the form element.
    *
    * @param array $element
-   *   The initial price_range form element.
+   *   The initial form element.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    * @param array $complete_form
    *   The complete form structure.
    *
    * @return array
-   *   The built price_range form element.
+   *   The built form element.
    */
   public static function processElement(array $element, FormStateInterface $form_state, array &$complete_form) {
     $default_value = $element['#default_value'];
@@ -109,17 +109,17 @@ class PriceRange extends FormElement {
       $fraction_digits[] = $currency->getFractionDigits();
     }
 
-    $element['price_range'] = [
+    $element['top_up_amount'] = [
       '#type' => 'fieldset',
       '#title' => $element['#title'],
       '#attributes' => [
         'class' => [
-          'form-type-price-range',
+          'form-type-top-up-amount',
         ],
       ],
       '#attached' => [
         'library' => [
-          'apigee_m10n_add_credit/price_range'
+          'apigee_m10n_add_credit/top_up_amount'
         ],
       ],
       'fields' => [
@@ -129,13 +129,13 @@ class PriceRange extends FormElement {
 
     // Add the help text if specified.
     if (!empty($element['#description'])) {
-      $element['price_range']['#description'] = $element['#description'];
+      $element['top_up_amount']['#description'] = $element['#description'];
     }
 
     $number_fields = static::getNumberFields();
 
     foreach ($number_fields as $name => $title) {
-      $element['price_range']['fields'][$name] = [
+      $element['top_up_amount']['fields'][$name] = [
         '#type' => 'commerce_number',
         '#title' => $title,
         '#title_display' => $element['#title_display'],
@@ -148,17 +148,13 @@ class PriceRange extends FormElement {
         '#error_no_message' => TRUE,
       ];
 
-      // The minimum price is required for minimum top up amount when buying a
-      // product.
-      $element['price_range']['fields']['minimum']['#required'] = TRUE;
-
       if (isset($element['#ajax'])) {
         // TODO: Explain why we have are copying ajax over to number fields.
-        $element['price_range']['fields'][$name]['#ajax'] = $element['#ajax'];
+        $element['top_up_amount']['fields'][$name]['#ajax'] = $element['#ajax'];
       }
     }
 
-    $element['price_range']['fields']['currency_code'] = [
+    $element['top_up_amount']['fields']['currency_code'] = [
       '#type' => 'select',
       '#title' => t('Currency'),
       '#default_value' => $default_value ? $default_value['currency_code'] : NULL,
@@ -169,7 +165,7 @@ class PriceRange extends FormElement {
 
     // Set currency code to use AJAX.
     if (isset($element['#ajax'])) {
-      $element['price_range']['fields']['currency_code']['#ajax'] = $element['#ajax'];
+      $element['top_up_amount']['fields']['currency_code']['#ajax'] = $element['#ajax'];
     }
 
     // Remove the keys that were transferred to child elements.
@@ -184,11 +180,11 @@ class PriceRange extends FormElement {
    * {@inheritdoc}
    */
   public static function valueCallback(&$element, $input, FormStateInterface $form_state) {
-    return isset($input['price_range']['fields']) ? array_filter($input['price_range']['fields']) : NULL;
+    return isset($input['top_up_amount']['fields']) ? array_filter($input['top_up_amount']['fields']) : NULL;
   }
 
   /**
-   * Helper to get the number fields for price range element.
+   * Helper to get the number fields for element.
    *
    * @return array
    *   An array of number fields.
@@ -197,7 +193,7 @@ class PriceRange extends FormElement {
     return [
       'minimum' => t('Minimum'),
       'maximum' => t('Maximum'),
-      'default' => t('Default'),
+      'number' => t('Default'),
     ];
   }
 

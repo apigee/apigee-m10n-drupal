@@ -1,4 +1,4 @@
-price_range:
+top_up_amount:
   css:
     theme:
-      css/apigee_m10n_add_credit.price_range.css: {}
+      css/apigee_m10n_add_credit.top_up_amount.css: {}

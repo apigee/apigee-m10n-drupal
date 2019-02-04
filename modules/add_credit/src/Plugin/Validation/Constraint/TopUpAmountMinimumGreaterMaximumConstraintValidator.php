@@ -19,24 +19,34 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
+use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * Validates the default value range.
- *
- * @Constraint(
- *   id = "PriceRangeDefaultOutOfRange",
- *   label = @Translation("The default value is out of range.", context = "Validation"),
- * )
+ * Validates the TopUpAmountMinimumGreaterMaximum constraint.
  */
-class PriceRangeDefaultOutOfRangeConstraint extends Constraint {
+class TopUpAmountMinimumGreaterMaximumConstraintValidator extends ConstraintValidator {
 
-  public $rangeMessage = 'The default value must be between the minimum and the maximum price.';
+  /**
+   * {@inheritdoc}
+   */
+  public function validate($value, Constraint $constraint) {
+    if (!($value instanceof TopUpAmountItem)) {
+      throw new UnexpectedTypeException($value, TopUpAmountItem::class);
+    }
 
-  public $minMessage = 'This default value cannot be less than the minimum price.';
+    $range = $value->getValue();
 
-  public $maxMessage = 'This default value cannot be greater than the maximum price.';
+    // No validation if a maximum is not set.
+    if (!isset($range['maximum'])) {
+      return;
+    }
 
-  public $currencyMessage = 'The selected currency is invalid.';
+    if (($range['minimum'] > $range['maximum'])) {
+      $this->context->addViolation($constraint->message);
+    }
+  }
 
 }

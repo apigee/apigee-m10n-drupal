@@ -22,15 +22,15 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Validates minimum is greater than maximum value.
+ * Validates the minimum top up amount.
  *
  * @Constraint(
- *   id = "PriceRangeMinimumGreaterMaximum",
- *   label = @Translation("The minimum value is greater than the maximum value.", context = "Validation"),
+ *   id = "TopUpAmountMinimumAmount",
+ *   label = @Translation("The minium top up amount is invalid.", context = "Validation"),
  * )
  */
-class PriceRangeMinimumGreaterMaximumConstraint extends Constraint {
+class TopUpAmountMinimumAmountConstraint extends Constraint {
 
-  public $message = 'The minimum value is greater than the maximum value.';
+  public $message = 'The minimum top up amount for @currency_code is @amount.';
 
 }

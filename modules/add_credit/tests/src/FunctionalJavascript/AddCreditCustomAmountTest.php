@@ -21,6 +21,8 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\commerce_product\Entity\ProductType;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript\AddCreditFunctionalJavascriptTestBase;
 
 /**
@@ -32,6 +34,11 @@ use Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript\AddCreditFunctional
  * @group apigee_m10n_add_credit_functional
  */
 class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
+
+  /**
+   * The name of the top up amount field used for tests.
+   */
+  const TOP_UP_AMOUNT_FIELD_NAME = 'field_amount';
 
   /**
    * The user entity.
@@ -56,38 +63,43 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Tests the price range field on a variation.
+   * Tests the apigee_top_up_amount_price field widget.
    */
-  public function testPriceRangeField() {
+  public function testTopUpAmountFieldPriceWidget() {
     $this->configureVariationsField();
 
-    // Enable apigee add credit for default product.
-    $this->drupalGet('admin/commerce/config/product-types/default/edit');
-    $this->submitForm(['apigee_m10n_enable_add_credit' => 1], 'Save');
-
-    // Disable the price field and enable the price range field.
-    $this->drupalGet('admin/commerce/config/product-variation-types/default/edit/form-display');
-    $page = $this->getSession()->getPage();
-    $page->pressButton('Show row weights');
-    $page->selectFieldOption('fields[price][region]', 'hidden');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-    $page->selectFieldOption('fields[apigee_price_range][region]', 'content');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->submitForm([], 'Save');
-
-    // Check if price field is disabled and all price range fields are visible.
+    // Configure an apigee_top_up_amount field with the default price widget.
+    // Check if price field is disabled and all top_up_amount fields are visible.
+    $this->configureTopUpAmountField();
     $this->drupalGet('product/add/default');
     $this->assertSession()
       ->elementNotExists('css', '[name="variations[form][inline_entity_form][price][0][number]"]');
-    $price_range_fields = ['minimum', 'maximum', 'default', 'currency_code'];
-    foreach ($price_range_fields as $field_name) {
+    $top_up_fields = ['number', 'currency_code'];
+    foreach ($top_up_fields as $field_name) {
       $this->assertSession()
-        ->elementExists('css', '[name="variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][' . $field_name . ']"]');
+        ->elementExists('css', '[name="variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][' . $field_name . ']"]');
     }
   }
 
   /**
-   * Tests validation for the price range field.
+   * Tests the apigee_top_up_amount_range field widget.
+   */
+  public function testTopUpAmountFieldRangeWidget() {
+    $this->configureVariationsField();
+
+    // Configure an apigee_top_up_amount field with the price range widget.
+    // Check if price field is disabled and all top_up_amount fields are visible.
+    $this->configureTopUpAmountField('apigee_top_up_amount_range');
+    $this->drupalGet('product/add/default');
+    $top_up_fields = ['minimum', 'maximum', 'number', 'currency_code'];
+    foreach ($top_up_fields as $field_name) {
+      $this->assertSession()
+        ->elementExists('css', '[name="variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][' . $field_name . ']"]');
+    }
+  }
+
+  /**
+   * Tests validation for the top up amount field with range.
    *
    * @param float|null $minimum
    *   The minimum amount.
@@ -106,8 +118,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerPriceRange
    */
-  public function testPriceRangeFieldValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, string $message = NULL) {
-    $this->configurePriceRangeField();
+  public function testTopUpAmountRangeFieldValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, string $message = NULL) {
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField();
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -118,9 +131,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     // Validate price range fields.
     $this->submitForm([
       'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][minimum]' => $minimum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][default]' => $default,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME.'][0][top_up_amount][fields][minimum]' => $minimum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME.'][0][top_up_amount][fields][maximum]' => $maximum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME.'][0][top_up_amount][fields][number]' => $default,
     ], 'Create variation');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->pageTextContains($message);
@@ -150,7 +163,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @dataProvider providerUnitPrice
    */
   public function testUnitPriceValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, float $amount = NULL, string $message = NULL) {
-    $this->configurePriceRangeField();
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField();
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -160,9 +174,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'title[0][value]' => $title,
       'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][minimum]' => $minimum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][default]' => $default,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME. '][0][top_up_amount][fields][minimum]' => $minimum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME. '][0][top_up_amount][fields][maximum]' => $maximum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME. '][0][top_up_amount][fields][number]' => $default,
     ], 'Save');
 
     // Check if default value is set.
@@ -209,7 +223,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * Tests adding a custom amount and checking out.
    */
   public function testCustomAmountPriceCheckout() {
-    $this->configurePriceRangeField();
+    $this->configureTopUpAmountField();
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -324,29 +338,53 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Helper to configure price range field for default product type.
+   * Helper to configure an apigee_top_up_amount field for default product type.
+   *
+   * @param string $widget
+   *   The widget type for the field.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function configurePriceRangeField() {
+  protected function configureTopUpAmountField($widget = 'apigee_top_up_amount_price') {
     // Enable add credit for the default product type.
     $product_type = ProductType::load('default');
     $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
     $product_type->save();
 
-    $this->configureVariationsField();
+//    $this->configureVariationsField();
 
-    // Disable the price field and enable the price range field.
+    // Add an apigee_top_up_amount_field.
+    FieldStorageConfig::create([
+      'field_name' => static::TOP_UP_AMOUNT_FIELD_NAME,
+      'entity_type' => 'commerce_product_variation',
+      'type' => 'apigee_top_up_amount',
+    ])->save();
+
+    $currencies = \Drupal::entityTypeManager()->getStorage('commerce_currency')->loadMultiple();
+    $currency_codes = array_keys($currencies);
+
+    FieldConfig::create([
+      'entity_type' => 'commerce_product_variation',
+      'field_name' => static::TOP_UP_AMOUNT_FIELD_NAME,
+      'bundle' => 'default',
+      'field_type' => 'apigee_top_up_amount',
+      'settings' => [
+        'available_currencies' => array_combine($currency_codes, $currency_codes),
+      ],
+    ])->save();
+
+    // Disable the price field and enable the apigee_top_up_amount field.
     $this->container->get('entity.manager')
       ->getStorage('entity_form_display')
       ->load('commerce_product_variation.default.default')
       ->removeComponent('price')
-      ->setComponent('apigee_price_range', [
+      ->setComponent(static::TOP_UP_AMOUNT_FIELD_NAME, [
         'region' => 'content',
+        'type' => $widget,
       ])
       ->save();
 
-    // Enable the unit price field.
+    // Enable the unit price field on the default order item.
     $this->container->get('entity.manager')
       ->getStorage('entity_form_display')
       ->load('commerce_order_item.default.add_to_cart')

@@ -20,7 +20,8 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
+use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
+use Drupal\commerce_price\Price;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -28,11 +29,11 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * Validates the 'PriceRangeDefaultOutOfRange' constraint.
+ * Validates the 'TopUpAmountDefaultOutOfRange' constraint.
  *
  * @package Drupal\apigee_m10n_add_credit.
  */
-class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
+class TopUpAmountNumberOutOfRangeConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
 
   /**
    * The currency formatter service.
@@ -69,18 +70,18 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
     $range = $this->getRange($value);
 
     // Do nothing if we do not have a price or a range.
-    if (empty($price['number']) || empty($price['currency_code']) || empty($range)) {
+    if (!$price || empty($price->getNumber()) || empty($price->getCurrencyCode()) || empty($range)) {
       return;
     }
 
     // Validate currency.
-    /** @var \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint $constraint */
-    if ($price['currency_code'] !== $range['currency_code']) {
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountNumberOutOfRangeConstraint $constraint */
+    if ($price->getCurrencyCode() !== $range['currency_code']) {
       $this->context->addViolation(t($constraint->currencyMessage));
     }
 
     // Validate price against range.
-    $number = $price['number'];
+    $number = $price->getNumber();
     if (isset($range['minimum']) && isset($range['maximum'])
       && ($number < $range['minimum'] || $number > $range['maximum'])) {
       $this->context->addViolation(t($constraint->rangeMessage, [
@@ -109,8 +110,8 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
    *   The value instance.
    */
   protected function validateInstance($value): void {
-    if (!($value instanceof PriceRangeItem)) {
-      throw new UnexpectedTypeException($value, PriceRangeItem::class);
+    if (!($value instanceof TopUpAmountItem)) {
+      throw new UnexpectedTypeException($value, TopUpAmountItem::class);
     }
   }
 
@@ -120,19 +121,11 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
    * @param mixed $value
    *   The value instance.
    *
-   * @return array
-   *   An array with the number and currency_code.
+   * @return \Drupal\commerce_price\Price
+   *   The price.
    */
-  protected function getPrice($value): ?array {
-    $price_range = $value->getValue();
-    if (isset($price_range['default']) && isset($price_range['currency_code'])) {
-      return [
-        'number' => $price_range['default'],
-        'currency_code' => $price_range['currency_code'],
-      ];
-    }
-
-    return NULL;
+  protected function getPrice($value): ?Price {
+    return $value->toPrice();
   }
 
   /**
@@ -145,7 +138,7 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
    *   An array of price range with minimum, maximum, default and currency code.
    */
   protected function getRange($value): array {
-    return $value->getValue();
+    return $value->toRange();
   }
 
   /**

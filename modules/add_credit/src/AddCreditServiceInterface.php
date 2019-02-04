@@ -138,25 +138,4 @@ interface AddCreditServiceInterface {
    */
   public function fieldInfoAlter(&$info);
 
-  /**
-   * Handles `hook_field_widget_form_alter` for the `apigee_m10n_add_credit` module.
-   *
-   * @param array $element
-   *   The field widget form element as constructed by
-   *   \Drupal\Core\Field\WidgetBaseInterface::form().
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   * @param array $context
-   *   An associative array containing the following key-value pairs:
-   *   - form: The form structure to which widgets are being attached. This may be
-   *     a full form structure, or a sub-element of a larger form.
-   *   - widget: The widget plugin instance.
-   *   - items: The field values, as a
-   *     \Drupal\Core\Field\FieldItemListInterface object.
-   *   - delta: The order of this item in the array of subelements (0, 1, 2, etc).
-   *   - default: A boolean indicating whether the form is being shown as a dummy
-   *     form to set default values.
-   */
-  public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context);
-
 }

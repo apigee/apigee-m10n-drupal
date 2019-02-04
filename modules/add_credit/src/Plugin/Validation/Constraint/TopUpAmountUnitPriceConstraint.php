@@ -19,34 +19,24 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
-use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
- * Validates the PriceRangeMinimumGreaterMaximum constraint.
+ * Validates the default unit price.
+ *
+ * @Constraint(
+ *   id = "TopUpAmountUnitPrice",
+ *   label = @Translation("The unit price is out of range.", context = "Validation"),
+ * )
  */
-class PriceRangeMinimumGreaterMaximumConstraintValidator extends ConstraintValidator {
+class TopUpAmountUnitPriceConstraint extends Constraint {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function validate($value, Constraint $constraint) {
-    if (!($value instanceof PriceRangeItem)) {
-      throw new UnexpectedTypeException($value, PriceRangeItem::class);
-    }
+  public $rangeMessage = 'The unit price value must be between @minimum and @maximum.';
 
-    $range = $value->getValue();
+  public $minMessage = 'The unit price cannot be less than @minimum.';
 
-    // No validation if a maximum is not set.
-    if (!isset($range['maximum'])) {
-      return;
-    }
+  public $maxMessage = 'The unit price cannot be greater than @maximum.';
 
-    if (($range['minimum'] > $range['maximum'])) {
-      $this->context->addViolation($constraint->message);
-    }
-  }
+  public $currencyMessage = 'The selected currency is invalid.';
 
 }

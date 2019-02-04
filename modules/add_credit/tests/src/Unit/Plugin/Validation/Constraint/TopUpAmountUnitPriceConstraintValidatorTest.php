@@ -20,30 +20,35 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeUnitPriceConstraint;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeUnitPriceConstraintValidator;
+use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountNumberOutOfRangeConstraint;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountUnitPriceConstraint;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountUnitPriceConstraintValidator;
 use Drupal\commerce_order\Entity\OrderItem;
+use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_price\CurrencyFormatter;
 use Drupal\commerce_price\Plugin\Field\FieldType\PriceItem;
+use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariation;
+use Drupal\commerce_product\Entity\ProductVariationInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Tests the PriceRangeUnitPriceConstraint validator.
+ * Tests the TopUpAmountUnitPriceConstraint validator.
  *
- * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeUnitPriceConstraintValidator
+ * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountUnitPriceConstraintValidator
  *
  * @group apigee_m10n
  * @group apigee_m10n_unit
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_unit
  */
-class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfRangeConstraintValidatorTest {
+class TopUpAmountUnitPriceConstraintValidatorTest extends TopUpAmountNumberOutOfRangeConstraintValidatorTest {
 
   /**
-   * Tests PriceRangeUnitPriceConstraintValidator::validate().
+   * Tests TopUpAmountUnitPriceConstraintValidator::validate().
    *
    * @param mixed $value
    *   The price field instance.
@@ -55,8 +60,8 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
    * @dataProvider providerValidate
    */
   public function testValidate($value, bool $valid, CurrencyFormatterInterface $currency_formatter) {
-    $constraint = new PriceRangeUnitPriceConstraint();
-    $validator = new PriceRangeUnitPriceConstraintValidator($currency_formatter);
+    $constraint = new TopUpAmountUnitPriceConstraint();
+    $validator = new TopUpAmountUnitPriceConstraintValidator($currency_formatter);
 
     $context = $this->createMock(ExecutionContextInterface::class);
     $context->expects($valid ? $this->never() : $this->once())
@@ -72,14 +77,14 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
   public function providerValidate() {
     $data = [];
 
-    $constraint = new PriceRangeDefaultOutOfRangeConstraint();
+    $constraint = new TopUpAmountNumberOutOfRangeConstraint();
 
     $cases = [
       [
         'range' => [
           'minimum' => 10.00,
           'maximum' => 20.00,
-          'default' => 15.00,
+          'number' => 15.00,
           'currency_code' => 'USD',
         ],
         'price' => [
@@ -93,7 +98,7 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
         'range' => [
           'minimum' => 10.00,
           'maximum' => 20.00,
-          'default' => 15.00,
+          'number' => 15.00,
           'currency_code' => 'USD',
         ],
         'price' => [
@@ -107,7 +112,7 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
         'range' => [
           'minimum' => 10.00,
           'maximum' => NULL,
-          'default' => 15.00,
+          'number' => 15.00,
           'currency_code' => 'USD',
         ],
         'price' => [
@@ -121,7 +126,7 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
         'range' => [
           'minimum' => 10.00,
           'maximum' => 20.00,
-          'default' => 15.00,
+          'number' => 15.00,
           'currency_code' => 'USD',
         ],
         'price' => [
@@ -134,41 +139,48 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceItem::class);
+      $value = $this->createMock(TopUpAmountItem::class);
       $value->expects($this->any())
-        ->method('getValue')
-        ->willReturn($case['price']);
+        ->method('toRange')
+        ->willReturn($case['range']);
+
+      $value->expects($this->any())
+        ->method('toPrice')
+        ->willReturn(new Price((string) $case['price']['number'], $case['price']['currency_code']));
 
       $items = $this->createMock(FieldItemListInterface::class);
       $items->expects($this->any())
-        ->method('getValue')
-        ->willReturn([$case['range']]);
+        ->method('first')
+        ->willReturn($value);
 
-      $variation = $this->createMock(ProductVariation::class);
+      $definition = $this->createMock(FieldDefinitionInterface::class);
+      $definition->expects($this->any())
+        ->method('getType')
+        ->willReturn('apigee_top_up_amount');
+
+      $variation = $this->createMock(ProductVariationInterface::class);
+      $variation->expects($this->any())
+        ->method('getFieldDefinitions')
+        ->willReturn([$definition]);
       $variation->expects($this->any())
         ->method('get')
-        ->with('apigee_price_range')
         ->willReturn($items);
-      $variation->expects($this->any())
-        ->method('hasField')
-        ->with('apigee_price_range')
-        ->willReturn(TRUE);
 
-      $order = $this->createMock(OrderItem::class);
+      $order = $this->createMock(OrderItemInterface::class);
       $order->expects($this->any())
         ->method('getPurchasedEntity')
         ->willReturn($variation);
 
-      $field = $this->createMock(FieldItemListInterface::class);
-      $field->expects($this->any())
+      $list = $this->createMock(FieldItemListInterface::class);
+      $list->expects($this->any())
         ->method('getEntity')
         ->willReturn($order);
 
       $value->expects($this->any())
         ->method('getParent')
-        ->willReturn($field);
+        ->willReturn($list);
 
-      $currencyFormatter = $this->createMock(CurrencyFormatter::class);
+      $currencyFormatter = $this->createMock(CurrencyFormatterInterface::class);
       $currencyFormatter->expects($this->any())
         ->method('format')
         ->willReturn("USD10.00");

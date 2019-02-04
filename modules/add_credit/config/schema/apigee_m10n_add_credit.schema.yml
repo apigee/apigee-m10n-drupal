@@ -20,9 +20,9 @@ commerce_product.commerce_product_type.*.third_party.apigee_m10n_add_credit:
       type: boolean
       label: 'Where to skip cart for this product'
 
-field.value.price_range:
+field.value.apigee_top_up_amount:
   type: mapping
-  label: 'Price range'
+  label: 'Top up amount'
   mapping:
     mininum:
       type: string
@@ -30,16 +30,16 @@ field.value.price_range:
     maximum:
       type: string
       label: 'Maximum'
-    default:
+    number:
       type: string
-      label: 'Default'
+      label: 'Number'
     currencyCode:
       type: string
       label: 'Currency code'
 
-field.field_settings.price_range:
+field.field_settings.apigee_top_up_amount:
   type: mapping
-  label: 'Price field settings'
+  label: 'Top up amount settings'
   mapping:
     available_currencies:
       type: sequence

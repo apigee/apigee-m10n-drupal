@@ -23,29 +23,29 @@ use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraint;
-use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraintValidator;
+use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountMinimumAmountConstraint;
+use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountMinimumAmountConstraintValidator;
 use Drupal\commerce_price\CurrencyFormatter;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Tests the PriceRangeMinimumTopUpAmountConstraint validator.
+ * Tests the TopUpAmountMinimumAmountConstraint validator.
  *
- * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraintValidator
+ * @coversDefaultClass \Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountMinimumAmountConstraintValidator
  *
  * @group apigee_m10n
  * @group apigee_m10n_unit
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_unit
  */
-class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
+class TopUpAmountMinimumAmountConstraintValidatorTest extends UnitTestCase {
 
   /**
-   * Tests PriceRangeMinimumTopUpAmountConstraint::validate().
+   * Tests TopUpAmountMinimumAmountConstraint::validate().
    *
-   * @param \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem $value
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem $value
    *   The price item field instance.
    * @param bool $valid
    *   TRUE if valid is expected.
@@ -56,9 +56,9 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
    *
    * @dataProvider providerValidate
    */
-  public function testValidate(PriceRangeItem $value, bool $valid, MonetizationInterface $monetization, CurrencyFormatterInterface $currency_formatter) {
-    $constraint = new PriceRangeMinimumTopUpAmountConstraint();
-    $validator = new PriceRangeMinimumTopUpAmountConstraintValidator($monetization, $currency_formatter);
+  public function testValidate(TopUpAmountItem $value, bool $valid, MonetizationInterface $monetization, CurrencyFormatterInterface $currency_formatter) {
+    $constraint = new TopUpAmountMinimumAmountConstraint();
+    $validator = new TopUpAmountMinimumAmountConstraintValidator($monetization, $currency_formatter);
 
     $context = $this->createMock(ExecutionContextInterface::class);
     $context->expects($valid ? $this->never() : $this->once())
@@ -80,9 +80,9 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceRangeItem::class);
+      $value = $this->createMock(TopUpAmountItem::class);
       $value->expects($this->any())
-        ->method('getValue')
+        ->method('toRange')
         ->willReturn([
           'minimum' => $case['minimum'],
           'currency_code' => $case['currency_code'],

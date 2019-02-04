@@ -20,34 +20,19 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\WidgetBase;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\commerce_price\Plugin\Field\FieldWidget\PriceDefaultWidget;
 
 /**
- * Plugin implementation of the 'price_range_default' widget.
+ * Plugin implementation of the 'apigee_top_up_amount_price' widget.
  *
  * @FieldWidget(
- *   id = "price_range_default",
- *   label = @Translation("Price range"),
+ *   id = "apigee_top_up_amount_price",
+ *   label = @Translation("Top up amount"),
  *   field_types = {
- *     "apigee_price_range"
+ *     "apigee_top_up_amount"
  *   }
  * )
  */
-class PriceRangeDefaultWidget extends WidgetBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $element['#type'] = 'price_range';
-    if (!$items[$delta]->isEmpty()) {
-      $element['#default_value'] = $items[$delta]->toArray();
-    }
-    $element['#available_currencies'] = array_filter($this->getFieldSetting('available_currencies'));
-
-    return $element;
-  }
+class TopUpAmountPriceWidget extends PriceDefaultWidget {
 
 }

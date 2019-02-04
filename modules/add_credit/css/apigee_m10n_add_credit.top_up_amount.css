@@ -14,15 +14,19 @@
  * with this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-.form-type-price-range .fieldset-wrapper .form-wrapper {
+.field--type-top-up-amount {
+  margin-bottom: 1em;
+}
+
+.form-type-top-up-amount .fieldset-wrapper .form-wrapper {
   display: flex;
 }
 
-.form-type-price-range .fieldset-wrapper .form-item {
+.form-type-top-up-amount .fieldset-wrapper .form-item {
   display: flex;
   flex-direction: column;
 }
 
-.form-type-price-range .fieldset-wrapper .form-item + .form-item {
+.form-type-top-up-amount .fieldset-wrapper .form-item + .form-item {
   margin-left: 0.5em;
 }
