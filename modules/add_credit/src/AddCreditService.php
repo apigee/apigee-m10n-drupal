@@ -173,7 +173,12 @@ class AddCreditService implements AddCreditServiceInterface {
     ];
 
     // Add our own callback so we can save the add_credit enabled setting.
-    array_splice($form["actions"]["submit"]["#submit"], -1, 0, [[static::class, 'formCommerceProductTypeSubmit']]);
+    array_splice($form["actions"]["submit"]["#submit"], -1, 0, [
+      [
+        static::class,
+        'formCommerceProductTypeSubmit',
+      ],
+    ]);
   }
 
   /**
@@ -181,7 +186,9 @@ class AddCreditService implements AddCreditServiceInterface {
    */
   public function entityTypeAlter(array &$entity_types) {
     // Update the form class for the add to cart form.
-    $entity_types['commerce_order_item']->setFormClass('add_to_cart', ApigeeAddCreditAddToCartForm::class);
+    if (isset($entity_types['commerce_order_item'])) {
+      $entity_types['commerce_order_item']->setFormClass('add_to_cart', ApigeeAddCreditAddToCartForm::class);
+    }
   }
 
   /**
@@ -191,7 +198,10 @@ class AddCreditService implements AddCreditServiceInterface {
     if ($context['entity_type'] == 'commerce_product_variation') {
       if (isset($fields['price'])) {
         $fields['price']['type'] = 'callback';
-        $fields['price']['callback'] = [static::class, 'inlineEntityFormTableFieldsPriceCallback'];
+        $fields['price']['callback'] = [
+          static::class,
+          'inlineEntityFormTableFieldsPriceCallback',
+        ];
       }
     }
   }
@@ -249,6 +259,8 @@ class AddCreditService implements AddCreditServiceInterface {
    *
    * @return \Drupal\commerce_price\Price|null
    *   Renderable array of price.
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public static function inlineEntityFormTableFieldsPriceCallback(ProductVariationInterface $variation, array $variables) {
     $price = $variation->getPrice();
@@ -256,8 +268,11 @@ class AddCreditService implements AddCreditServiceInterface {
 
     // If product variation has an apigee_top_up_amount field use this for the price.
     $add_credit_entity_manager = \Drupal::service('apigee_m10n_add_credit.product_entity_manager');
-    if ($top_up_field = $add_credit_entity_manager->getApigeeTopUpAmountField($variation)) {
-      $price = $top_up_field->toPrice();
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem $item */
+    if (($top_up_field_name = $add_credit_entity_manager->getApigeeTopUpAmountFieldName($variation))
+      && ($item = $variation->get($top_up_field_name)->first())
+    ) {
+      $price = $item->toPrice();
     };
 
     return $price ? $formatter->format($price->getNumber(), $price->getCurrencyCode()) : t('N/A');

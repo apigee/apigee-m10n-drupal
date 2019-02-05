@@ -6,6 +6,7 @@ services:
       - { name: event_subscriber }
   apigee_m10n_add_credit.product_entity_manager:
     class: Drupal\apigee_m10n_add_credit\AddCreditProductEntityManager
+    arguments: ['@entity_field.manager']
   apigee_m10n.add_credit:
     class: Drupal\apigee_m10n_add_credit\AddCreditService
     arguments: ['@config.factory', '@current_user']

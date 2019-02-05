@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
-use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
 use Drupal\Core\Entity\FieldableEntityInterface;
 
 /**
@@ -30,14 +29,14 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 interface AddCreditProductEntityManagerInterface {
 
   /**
-   * Helper to get a field of type apigee_top_up_amount from an entity.
+   * Helper to get a field name of type apigee_top_up_amount from an entity.
    *
    * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
    *   The fieldable entity.
    *
-   * @return \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem|null
-   *   The field of type apigee_top_up_amount or NULL if not found.
+   * @return string|null
+   *   The field name of type apigee_top_up_amount or NULL if not found.
    */
-  public function getApigeeTopUpAmountField(FieldableEntityInterface $entity): ?TopUpAmountItem;
+  public function getApigeeTopUpAmountFieldName(FieldableEntityInterface $entity): ?string;
 
 }

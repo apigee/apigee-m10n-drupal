@@ -76,8 +76,11 @@ class TopUpAmountUnitPriceConstraintValidator extends TopUpAmountNumberOutOfRang
   public function getRange($value): array {
     // This finds the apigee_top_up_amount field from the purchased entity.
     // Skipped if no valid field of type apigee_top_up_amount is found.
-    if (($purchased_entity = $this->getPurchasedEntity($value)) && ($top_up_field = $this->productEntityManager->getApigeeTopUpAmountField($purchased_entity))) {
-      return $top_up_field->toRange();
+    if (($purchased_entity = $this->getPurchasedEntity($value))
+      && ($top_up_field_name = $this->productEntityManager->getApigeeTopUpAmountFieldName($purchased_entity))
+      && ($item = $purchased_entity->get($top_up_field_name)->first())
+    ) {
+      return $item->toRange();
     }
 
     return [];

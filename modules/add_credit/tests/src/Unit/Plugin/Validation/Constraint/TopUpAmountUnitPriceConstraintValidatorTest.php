@@ -65,8 +65,8 @@ class TopUpAmountUnitPriceConstraintValidatorTest extends TopUpAmountNumberOutOf
 
     $add_credit_product_entity_manager = $this->createMock(AddCreditProductEntityManagerInterface::class);
     $add_credit_product_entity_manager->expects($this->any())
-      ->method('getApigeeTopUpAmountField')
-      ->willReturn($value);
+      ->method('getApigeeTopUpAmountFieldName')
+      ->willReturn('field_amount');
 
     $validator = new TopUpAmountUnitPriceConstraintValidator($currency_formatter, $add_credit_product_entity_manager);
 
@@ -150,7 +150,6 @@ class TopUpAmountUnitPriceConstraintValidatorTest extends TopUpAmountNumberOutOf
       $value->expects($this->any())
         ->method('toRange')
         ->willReturn($case['range']);
-
       $value->expects($this->any())
         ->method('toPrice')
         ->willReturn(new Price((string) $case['price']['number'], $case['price']['currency_code']));
@@ -160,17 +159,10 @@ class TopUpAmountUnitPriceConstraintValidatorTest extends TopUpAmountNumberOutOf
         ->method('first')
         ->willReturn($value);
 
-      $definition = $this->createMock(FieldDefinitionInterface::class);
-      $definition->expects($this->any())
-        ->method('getType')
-        ->willReturn('apigee_top_up_amount');
-
       $variation = $this->createMock(ProductVariationInterface::class);
       $variation->expects($this->any())
-        ->method('getFieldDefinitions')
-        ->willReturn([$definition]);
-      $variation->expects($this->any())
         ->method('get')
+        ->with('field_amount')
         ->willReturn($items);
 
       $order = $this->createMock(OrderItemInterface::class);

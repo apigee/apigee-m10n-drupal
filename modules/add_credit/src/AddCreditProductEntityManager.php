@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\Core\TypedData\Exception\MissingDataException;
@@ -34,20 +35,30 @@ class AddCreditProductEntityManager implements AddCreditProductEntityManagerInte
   use LoggerChannelTrait;
 
   /**
+   * The entity field manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * AddCreditProductEntityManager constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
+   */
+  public function __construct(EntityFieldManagerInterface $entity_field_manager) {
+    $this->entityFieldManager = $entity_field_manager;
+  }
+
+  /**
    * {@inheritdoc}
    */
-  public function getApigeeTopUpAmountField(FieldableEntityInterface $entity): ?TopUpAmountItem {
-    try {
-      foreach ($entity->getFieldDefinitions() as $field_name => $definition) {
-        if ($definition->getType() === 'apigee_top_up_amount') {
-          return !$entity->get($field_name)
-            ->isEmpty() ? $entity->get($field_name)->first() : NULL;
-        }
+  public function getApigeeTopUpAmountFieldName(FieldableEntityInterface $entity): ?string {
+    foreach ($this->entityFieldManager->getFieldDefinitions($entity->getEntityTypeId(), $entity->bundle()) as $field_name => $definition) {
+      if ($definition->getType() === 'apigee_top_up_amount') {
+        return $field_name;
       }
-    }
-    catch (MissingDataException $exception) {
-      $this->getLogger('apigee_m10n_add_credit')
-        ->notice($exception->getMessage());
     }
 
     return NULL;
