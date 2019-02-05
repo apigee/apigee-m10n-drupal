@@ -19,6 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
+use Apigee\Edge\Structure\AttributesProperty;
+use Drupal\apigee_edge\Entity\Developer;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
@@ -77,6 +79,49 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
     self::assertEquals("200", $response->getStatusCode());
     self::assertEquals('{"status": "success", "catalog_version": "1.0"}', (string) $response->getBody());
+  }
+
+  /**
+   * Tests the Apigee Edge developer response.
+   *
+   * @throws \Http\Client\Exception
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  public function testDeveloperResponse() {
+    $email = "{$this->randomMachineName()}@example.com";
+    $developer = Developer::create([
+      'developerId' => $email,
+      'email' => $email,
+      'firstName' => $this->randomMachineName(),
+      'lastName' => $this->randomMachineName(),
+      'userName' => $this->randomMachineName(),
+      'status' => 'ACTIVE',
+    ]);
+    $developer->setAttributes(new AttributesProperty([
+      'MINT_BILLING_TYPE' => 'foo',
+      'MINT_DEVELOPER_TYPE' => 'bar',
+      'MINT_DEVELOPER_LEGAL_NAME' => 'baz',
+    ]));
+
+    $this->stack->queueMockResponse(['developer' => ['developer' => $developer]]);
+
+    // Execute a client call.
+    $response = $this->sdk_connector->buildClient(new AutoBasicAuth())->get('/');
+
+    self::assertEquals("200", $response->getStatusCode());
+
+    $developer_array = json_decode($response->getBody(), TRUE);
+    static::assertSame($developer->id(), $developer_array['developerId']);
+    static::assertSame($developer->getEmail(), $developer_array['email']);
+    static::assertSame($developer->getFirstName(), $developer_array['firstName']);
+    static::assertSame($developer->getLastName(), $developer_array['lastName']);
+    static::assertSame($developer->getUserName(), $developer_array['userName']);
+    static::assertSame($developer->getStatus(), strtoupper($developer_array['status']));
+    static::assertSame($developer->getAttributeValue('MINT_BILLING_TYPE'), $developer_array["attributes"][0]["value"]);
+    static::assertSame($developer->getAttributeValue('MINT_DEVELOPER_TYPE'), $developer_array["attributes"][1]["value"]);
+    static::assertSame($developer->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'), $developer_array["attributes"][2]["value"]);
   }
 
   /**

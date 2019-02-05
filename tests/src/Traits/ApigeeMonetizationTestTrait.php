@@ -165,7 +165,7 @@ trait ApigeeMonetizationTestTrait {
     $account = User::create($edit);
 
     // Queue up a created response.
-    $this->queueDeveloperResponse($account, 201);
+    $this->queueDeveloperResponse($account, 200);
 
     // Save the user.
     $account->save();

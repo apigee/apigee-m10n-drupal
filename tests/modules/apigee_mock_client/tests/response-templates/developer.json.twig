@@ -13,8 +13,8 @@
 {
     "apps" : [ ],
     "companies" : [ ],
-    "email" : "{{ developer.mail }}",
-    "developerId" : "{{ developer.id }}",
+    "email" : "{{ developer.email }}",
+    "developerId" : "{{ developer.uuid|default('00112233-4455-6677-8899-aabbccddeeff') }}",
     "firstName" : "{{ developer.firstName }}",
     "lastName" : "{{ developer.lastName }}",
     "userName" : "{{ developer.userName }}",
@@ -23,15 +23,15 @@
     "attributes" : [
         {
             "name" : "MINT_BILLING_TYPE",
-            "value" : "{{ developer.attributes['MINT_BILLING_TYPE']|default('PREPAID') }}"
+            "value" : "{{ developer.attributeValue('MINT_BILLING_TYPE')|default('PREPAID') }}"
         },
         {
             "name" : "MINT_DEVELOPER_TYPE",
-            "value" : "{{ developer.attributes['MINT_DEVELOPER_TYPE']|default('UNTRUSTED') }}"
+            "value" : "{{ developer.attributeValue('MINT_DEVELOPER_TYPE')|default('UNTRUSTED') }}"
         },
         {
             "name": "MINT_DEVELOPER_LEGAL_NAME",
-            "value": "{{ developer.attributes['MINT_DEVELOPER_LEGAL_NAME']|default('foo') }}"
+            "value": "{{ developer.attributeValue("MINT_DEVELOPER_LEGAL_NAME") }}"
         } ],
     "createdAt" : 1537547358558,
     "createdBy" : "user@example.com",
