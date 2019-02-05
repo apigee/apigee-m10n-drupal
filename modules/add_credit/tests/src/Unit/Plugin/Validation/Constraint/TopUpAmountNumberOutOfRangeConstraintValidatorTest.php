@@ -45,7 +45,7 @@ class TopUpAmountNumberOutOfRangeConstraintValidatorTest extends UnitTestCase {
    * Tests TopUpAmountNumberOutOfRangeConstraintValidator::validate().
    *
    * @param mixed $value
-   *   The price range field instance.
+   *   The apigee_top_up_amount field instance.
    * @param bool $valid
    *   TRUE if valid is expected.
    * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter

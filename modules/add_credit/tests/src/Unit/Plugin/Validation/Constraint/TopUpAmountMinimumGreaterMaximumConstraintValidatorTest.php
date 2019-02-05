@@ -41,7 +41,7 @@ class TopUpAmountMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCa
    * Tests TopUpAmountMinimumGreaterMaximumConstraintValidator::validate().
    *
    * @param \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem $value
-   *   The price range field instance.
+   *   The apigee_top_up_amount field instance.
    * @param bool $valid
    *   TRUE if valid is expected.
    *
