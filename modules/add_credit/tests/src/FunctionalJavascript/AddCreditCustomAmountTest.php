@@ -293,6 +293,68 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
+   * Tests the inline entity form fields for the price widget.
+   *
+   * @param float|null $amount
+   *   The amount for the price field.
+   * @param string|null $expected
+   *   The expected string for the form table.
+   *
+   * @throws \Exception
+   *
+   * @dataProvider providerInlineEntityFormTableFieldsPrice
+   */
+  public function testInlineEntityFormTableFieldsPrice(float $amount = NULL, string $expected = NULL) {
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField();
+
+    // Add a product.
+    $this->drupalGet('product/add/default');
+    $this->queueSupportedCurrencyResponse();
+
+    $this->submitForm([
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][number]' => $amount,
+    ], 'Create variation');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    $this->assertCssElementContains('td.inline-entity-form-commerce_product_variation-price', $expected);
+  }
+
+  /**
+   * Tests the inline entity form fields for the range widget.
+   *
+   * @param float|null $minimum
+   *   The minimum amount for the price field.
+   * @param float|null $amount
+   *   The amount for the price field.
+   * @param string|null $expected
+   *   The expected string for the form table.
+   *
+   * @throws \Exception
+   *
+   * @dataProvider providerInlineEntityFormTableFieldsRange
+   */
+  public function testInlineEntityFormTableFieldsRange(float $minimum = NULL, float $amount = NULL, string $expected = NULL) {
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField('apigee_top_up_amount_range');
+
+    // Add a product.
+    $this->drupalGet('product/add/default');
+    $this->queueSupportedCurrencyResponse();
+
+    $this->submitForm([
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][minimum]' => $minimum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][number]' => $amount,
+    ], 'Create variation');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+
+    $this->assertCssElementContains('td.inline-entity-form-commerce_product_variation-price', $expected);
+  }
+
+  /**
    * Provides data to self::testTopUpAmountPriceFieldValidation().
    */
   public function providerTopUpAmountPrice() {
@@ -375,6 +437,36 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         25.00,
         'The unit price cannot be less than USD30.00.',
       ],
+    ];
+  }
+
+  /**
+   * Provides data to self::testInlineEntityFormTableFieldsPrice().
+   */
+  public function providerInlineEntityFormTableFieldsPrice() {
+    return [
+      [
+        15.00,
+        '$15.00',
+      ],
+    ];
+  }
+
+  /**
+   * Provides data to self::testInlineEntityFormTableFieldsRange().
+   */
+  public function providerInlineEntityFormTableFieldsRange() {
+    return [
+      [
+        15.00,
+        NULL,
+        '$15.00',
+      ],
+      [
+        15.00,
+        20.00,
+        '$20.00',
+      ]
     ];
   }
 

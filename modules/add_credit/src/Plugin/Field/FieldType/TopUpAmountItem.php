@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
 use Drupal\apigee_m10n_add_credit\Element\TopUpAmountRange;
 use Drupal\commerce_price\Plugin\Field\FieldType\PriceItem;
+use Drupal\commerce_price\Plugin\Validation\Constraint\CurrencyConstraint;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
@@ -95,11 +96,28 @@ class TopUpAmountItem extends PriceItem {
   /**
    * {@inheritdoc}
    */
+  public function getConstraints() {
+    // Update the available currencies for the price item.
+    // @see https://www.drupal.org/project/commerce/issues/3027863
+    // TODO: Remove this when patch is merged.
+    $constraints = parent::getConstraints();
+    foreach ($constraints as $constraint) {
+      if ($constraint instanceof CurrencyConstraint) {
+        $constraint->availableCurrencies = array_filter($this->getSetting('available_currencies'));
+      }
+    }
+
+    return $constraints;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isEmpty() {
     return empty($this->minimum)
       && empty($this->maximum)
       && empty($this->number)
-      && empty($this->currency_code);
+      || empty($this->currency_code);
   }
 
   /**

@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n_add_credit;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -252,23 +251,16 @@ class AddCreditService implements AddCreditServiceInterface {
    *   Renderable array of price.
    */
   public static function inlineEntityFormTableFieldsPriceCallback(ProductVariationInterface $variation, array $variables) {
+    $price = $variation->getPrice();
     $formatter = \Drupal::service('commerce_price.currency_formatter');
 
-    // If product variation has a price range return the default.
-    if (($variation->hasField('apigee_price_range'))
-      && ($price_range = $variation->get('apigee_price_range'))
-      && (isset($price_range->default))
-      && (isset($price_range->currency_code))
-    ) {
-      return $formatter->format($price_range->default, $price_range->currency_code);
-    }
+    // If product variation has an apigee_top_up_amount field use this for the price.
+    $add_credit_entity_manager = \Drupal::service('apigee_m10n_add_credit.product_entity_manager');
+    if ($top_up_field = $add_credit_entity_manager->getApigeeTopUpAmountField($variation)) {
+      $price = $top_up_field->toPrice();
+    };
 
-    // Fallback to the default price.
-    if ($price = $variation->getPrice()) {
-      return $formatter->format($price->getNumber(), $price->getCurrencyCode());
-    }
-
-    return t('N/A');
+    return $price ? $formatter->format($price->getNumber(), $price->getCurrencyCode()) : t('N/A');
   }
 
 }

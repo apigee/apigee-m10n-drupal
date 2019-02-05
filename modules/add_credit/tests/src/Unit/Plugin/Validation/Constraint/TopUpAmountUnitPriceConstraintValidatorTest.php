@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditProductEntityManagerInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountNumberOutOfRangeConstraint;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\TopUpAmountUnitPriceConstraint;
@@ -61,7 +62,13 @@ class TopUpAmountUnitPriceConstraintValidatorTest extends TopUpAmountNumberOutOf
    */
   public function testValidate($value, bool $valid, CurrencyFormatterInterface $currency_formatter) {
     $constraint = new TopUpAmountUnitPriceConstraint();
-    $validator = new TopUpAmountUnitPriceConstraintValidator($currency_formatter);
+
+    $add_credit_product_entity_manager = $this->createMock(AddCreditProductEntityManagerInterface::class);
+    $add_credit_product_entity_manager->expects($this->any())
+      ->method('getApigeeTopUpAmountField')
+      ->willReturn($value);
+
+    $validator = new TopUpAmountUnitPriceConstraintValidator($currency_formatter, $add_credit_product_entity_manager);
 
     $context = $this->createMock(ExecutionContextInterface::class);
     $context->expects($valid ? $this->never() : $this->once())

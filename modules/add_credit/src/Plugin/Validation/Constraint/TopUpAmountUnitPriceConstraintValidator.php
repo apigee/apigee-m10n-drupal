@@ -19,16 +19,47 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
 
-use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem;
+use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditProductEntityManagerInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_price\Plugin\Field\FieldType\PriceItem;
-use Drupal\Core\Entity\FieldableEntityInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Validates the TopUpAmountUnitPrice constraint.
  */
 class TopUpAmountUnitPriceConstraintValidator extends TopUpAmountNumberOutOfRangeConstraintValidator {
+
+  /**
+   * The add credit product entity manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\AddCreditProductEntityManagerInterface
+   */
+  protected $productEntityManager;
+
+  /**
+   * TopUpAmountUnitPriceConstraintValidator constructor.
+   *
+   * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
+   *   The currency formatter service.
+   * @param \Drupal\apigee_m10n_add_credit\AddCreditProductEntityManagerInterface $add_credit_product_entity_manager
+   *   The add credit product entity manager.
+   */
+  public function __construct(CurrencyFormatterInterface $currency_formatter, AddCreditProductEntityManagerInterface $add_credit_product_entity_manager) {
+    parent::__construct($currency_formatter);
+    $this->productEntityManager = $add_credit_product_entity_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('commerce_price.currency_formatter'),
+      $container->get('apigee_m10n_add_credit.product_entity_manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -45,7 +76,7 @@ class TopUpAmountUnitPriceConstraintValidator extends TopUpAmountNumberOutOfRang
   public function getRange($value): array {
     // This finds the apigee_top_up_amount field from the purchased entity.
     // Skipped if no valid field of type apigee_top_up_amount is found.
-    if (($purchased_entity = $this->getPurchasedEntity($value)) && ($top_up_field = $this->getTopUpField($purchased_entity))) {
+    if (($purchased_entity = $this->getPurchasedEntity($value)) && ($top_up_field = $this->productEntityManager->getApigeeTopUpAmountField($purchased_entity))) {
       return $top_up_field->toRange();
     }
 
@@ -65,28 +96,6 @@ class TopUpAmountUnitPriceConstraintValidator extends TopUpAmountNumberOutOfRang
     $order = $value->getParent()->getEntity();
     if ($order instanceof OrderItemInterface) {
       return $order->getPurchasedEntity();
-    }
-
-    return NULL;
-  }
-
-  /**
-   * Helper to get a field of type apigee_top_up_amount from an entity.
-   *
-   * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
-   *   The fieldable entity.
-   *
-   * @return \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\TopUpAmountItem|null
-   *   The field of type apigee_top_up_amount or NULL if not found.
-   *
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-   */
-  public function getTopUpField(FieldableEntityInterface $entity): ?TopUpAmountItem {
-    // TODO: Extract this to a service if this is needed elsewhere.
-    foreach ($entity->getFieldDefinitions() as $field_name => $definition) {
-      if ($definition->getType() === 'apigee_top_up_amount') {
-        return $entity->get($field_name)->first();
-      }
     }
 
     return NULL;
