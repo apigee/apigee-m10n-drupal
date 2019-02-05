@@ -21,7 +21,6 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\Core\Url;
 use Drupal\user\Entity\Role;
-use Drupal\apigee_edge\Entity\Developer;
 
 /**
  * Class BillingDetailsTest.
@@ -49,8 +48,8 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // If the user doesn't have the "view any monetization billing details" permission, they should
-    // get access denied.
+    // If the user doesn't have the "view any monetization billing details"
+    // permission, they should get access denied.
     $this->developer = $this->createAccount([]);
 
     $this->drupalLogin($this->developer);
@@ -76,8 +75,8 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
     $user_roles = $this->developer->getRoles();
     $this->grantPermissions(Role::load(reset($user_roles)), ['view any monetization billing details']);
 
-    $dev = Developer::load($this->developer->getEmail());
-    $dev->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $this->developer->getEmail());
+    $dev = $this->convertUserToEdgeDeveloper($this->developer, ['MINT_DEVELOPER_LEGAL_NAME' => $this->developer->getEmail()]);
+    \Drupal::cache('apigee_edge_entity')->delete("values:developer:{$dev->id()}");
     $this->queueOrg();
     $this->stack->queueMockResponse([
       'developer' => ['developer' => $dev],
