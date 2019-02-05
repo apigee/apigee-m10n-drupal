@@ -62,8 +62,7 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
     $subscription = $this->createsubscription($this->developer, $rate_plan);
-    $current_developer = Developer::load($this->developer->getEmail());
-    $current_developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $this->developer->getEmail());
+    $current_developer = $this->convertUserToEdgeDeveloper($this->developer, ['MINT_DEVELOPER_LEGAL_NAME' => $this->developer->getEmail()]);
     $this->queueOrg();
     $this->stack
       ->queueMockResponse([

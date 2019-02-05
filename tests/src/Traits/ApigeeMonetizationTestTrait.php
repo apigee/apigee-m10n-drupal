@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
+use Apigee\Edge\Api\Management\Entity\DeveloperInterface;
 use Apigee\Edge\Api\Monetization\Controller\OrganizationProfileController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
@@ -29,6 +30,8 @@ use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
+use Drupal\apigee_edge\UserDeveloperConverterInterface;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
@@ -395,17 +398,18 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Queues up a mock developer response.
    *
-   * @param \Drupal\user\UserInterface $developer
+   * @param \Drupal\user\UserInterface $user
    *   The developer user to get properties from.
    * @param string|null $response_code
    *   Add a response code to override the default.
    *
    * @throws \Exception
    */
-  protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL) {
+  protected function queueDeveloperResponse(UserInterface $user, $response_code = NULL) {
     $context = empty($response_code) ? [] : ['status_code' => $response_code];
 
-    $context['developer'] = $developer;
+    $context['developer'] = $this->convertUserToEdgeDeveloper($user);
+
     $context['org_name'] = $this->sdk_connector->getOrganization();
 
     $this->stack->queueMockResponse(['get_developer' => $context]);
@@ -529,6 +533,33 @@ trait ApigeeMonetizationTestTrait {
     catch (UnsupportedDriverActionException $exception) {
       $this->markTestSkipped($exception->getMessage());
     }
+  }
+
+  /**
+   * Convert a Drupal developer to a Apigee Edge developer.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The Drupal user.
+   * @param array $attributes
+   *   any attributes that should be added to the Apigee Edge developer.
+   *
+   * @return \Apigee\Edge\Api\Management\Entity\DeveloperInterface
+   *   An edge developer.
+   */
+  public function convertUserToEdgeDeveloper(UserInterface $user, $attributes = []): DeveloperInterface {
+    // Create a developer.
+    $developer = EdgeDeveloper::create([]);
+    // Synchronise values of base fields.
+    foreach (UserDeveloperConverterInterface::DEVELOPER_PROP_USER_BASE_FIELD_MAP as $developer_prop => $base_field) {
+      $setter = 'set' . ucfirst($developer_prop);
+      $developer->{$setter}($user->get($base_field)->value);
+    }
+    // Set the developer attributes.
+    foreach ($attributes as $name => $value) {
+      $developer->setAttribute($name, $value);
+    }
+
+    return $developer;
   }
 
 }
