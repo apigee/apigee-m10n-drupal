@@ -33,9 +33,9 @@ class TopUpAmountNumberOutOfRangeConstraint extends Constraint {
 
   public $rangeMessage = 'The default value must be between the minimum and the maximum price.';
 
-  public $minMessage = 'This default value cannot be less than the minimum price.';
+  public $minMessage = 'The default value cannot be less than the minimum price.';
 
-  public $maxMessage = 'This default value cannot be greater than the maximum price.';
+  public $maxMessage = 'The default value cannot be greater than the maximum price.';
 
   public $currencyMessage = 'The selected currency is invalid.';
 

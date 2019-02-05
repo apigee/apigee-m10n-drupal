@@ -99,7 +99,40 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Tests validation for the top up amount field with range.
+   * Tests validation for the top up amount field with price widget.
+   *
+   * @param float|null $number
+   *   The amount.
+   * @param string|null $message
+   *   The expected message.
+   *
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   *
+   * @dataProvider providerTopUpAmountPrice
+   */
+  public function testTopUpAmountPriceFieldValidation(float $number = NULL, string $message = NULL) {
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField();
+
+    // Add a product.
+    $this->drupalGet('product/add/default');
+    $this->queueSupportedCurrencyResponse();
+
+    // Validate price range fields.
+    $this->submitForm([
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][number]' => $number,
+    ], 'Create variation');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->pageTextContains($message);
+  }
+
+  /**
+   * Tests validation for the top up amount field with range widget.
    *
    * @param float|null $minimum
    *   The minimum amount.
@@ -116,11 +149,11 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    *
-   * @dataProvider providerPriceRange
+   * @dataProvider providerTopUpAmountRange
    */
   public function testTopUpAmountRangeFieldValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, string $message = NULL) {
     $this->configureVariationsField();
-    $this->configureTopUpAmountField();
+    $this->configureTopUpAmountField('apigee_top_up_amount_range');
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -131,16 +164,59 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     // Validate price range fields.
     $this->submitForm([
       'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME.'][0][top_up_amount][fields][minimum]' => $minimum,
-      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME.'][0][top_up_amount][fields][maximum]' => $maximum,
-      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME.'][0][top_up_amount][fields][number]' => $default,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][minimum]' => $minimum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][maximum]' => $maximum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][number]' => $default,
     ], 'Create variation');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->pageTextContains($message);
   }
 
   /**
-   * Tests the unit price range field validation.
+   * Tests the unit field validation and top up amount field with price widget.
+   *
+   * @param float|null $number
+   *   The amount.
+   * @param float|null $amount
+   *   The amount for the unit price field.
+   * @param string|null $message
+   *   The expected message.
+   *
+   * @throws \Exception
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   *
+   * @dataProvider providerUnitPricePrice
+   */
+  public function testUnitPricePriceValidation(float $number = NULL, float $amount = NULL, string $message = NULL) {
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField();
+
+    // Add a product.
+    $this->drupalGet('product/add/default');
+    $this->queueSupportedCurrencyResponse();
+
+    $title = $this->randomString(16);
+    $this->submitForm([
+      'title[0][value]' => $title,
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][number]' => $number,
+    ], 'Save');
+
+    // Check if default value is set.
+    $this->assertSession()
+      ->elementAttributeContains('css', '[name="unit_price[0][amount][number]"]', 'value', $number);
+
+    // Check if unit price is properly validated.
+    $this->submitForm([
+      'unit_price[0][amount][number]' => $amount,
+    ], 'Add to cart');
+    $this->assertSession()->pageTextContains($message);
+  }
+
+  /**
+   * Tests the unit field validation and top up amount field with range widget.
    *
    * @param float|null $minimum
    *   The minimum amount.
@@ -153,18 +229,16 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @param string|null $message
    *   The expected message.
    *
-   * @throws \Behat\Mink\Exception\ElementHtmlException
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Exception
    * @throws \Twig_Error_Loader
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    *
-   * @dataProvider providerUnitPrice
+   * @dataProvider providerUnitPriceRange
    */
-  public function testUnitPriceValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, float $amount = NULL, string $message = NULL) {
+  public function testUnitPriceRangeValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, float $amount = NULL, string $message = NULL) {
     $this->configureVariationsField();
-    $this->configureTopUpAmountField();
+    $this->configureTopUpAmountField('apigee_top_up_amount_range');
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -174,9 +248,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'title[0][value]' => $title,
       'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME. '][0][top_up_amount][fields][minimum]' => $minimum,
-      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME. '][0][top_up_amount][fields][maximum]' => $maximum,
-      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME. '][0][top_up_amount][fields][number]' => $default,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][minimum]' => $minimum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][maximum]' => $maximum,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][number]' => $default,
     ], 'Save');
 
     // Check if default value is set.
@@ -191,39 +265,11 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Make sure that the price field does not break if price range is not used.
-   *
-   * @param mixed $value
-   *   The value for the price field.
-   * @param string $message
-   *   The expected message.
-   *
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   *
-   * @dataProvider providerPriceField
-   */
-  public function testPriceFieldOnDefaultProduct($value, string $message) {
-    $this->configureVariationsField();
-
-    $this->drupalGet('product/add/default');
-
-    $title = 'Name of product';
-    $this->submitForm([
-      'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-PRODUCT',
-      'variations[form][inline_entity_form][price][0][number]' => $value,
-    ], 'Save');
-
-    $this->assertSession()->pageTextContains(t($message, [
-      '@title' => $title,
-    ]));
-  }
-
-  /**
    * Tests adding a custom amount and checking out.
    */
   public function testCustomAmountPriceCheckout() {
-    $this->configureTopUpAmountField();
+    $this->configureVariationsField();
+    $this->configureTopUpAmountField('apigee_top_up_amount_range');
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -233,9 +279,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'title[0][value]' => $title,
       'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][minimum]' => 20,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][maximum]' => 500,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][default]' => 40,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][minimum]' => 20,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][maximum]' => 500,
+      'variations[form][inline_entity_form][' . static::TOP_UP_AMOUNT_FIELD_NAME . '][0][top_up_amount][fields][number]' => 40,
     ], 'Save');
 
     $this->submitForm([
@@ -247,9 +293,21 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Provides data to self::testPriceRangeFieldValidation().
+   * Provides data to self::testTopUpAmountPriceFieldValidation().
    */
-  public function providerPriceRange() {
+  public function providerTopUpAmountPrice() {
+    return [
+      [
+        5.00,
+        'The minimum top up amount for USD is USD10.00.',
+      ],
+    ];
+  }
+
+  /**
+   * Provides data to self::testTopUpAmountRangeFieldValidation().
+   */
+  public function providerTopUpAmountRange() {
     return [
       [
         5.00,
@@ -267,7 +325,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         20.00,
         NULL,
         15.00,
-        'This default value cannot be less than the minimum price.',
+        'The default value cannot be less than the minimum price.',
       ],
       [
         20.00,
@@ -279,9 +337,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Provides data to self::testUnitPriceValidation().
+   * Provides data to self::testUnitPriceRangeValidation().
    */
-  public function providerUnitPrice() {
+  public function providerUnitPriceRange() {
     return [
       [
         20.00,
@@ -295,30 +353,27 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         NULL,
         25.00,
         15.00,
-        'This unit price cannot be less than USD20.00.',
+        'The unit price cannot be less than USD20.00.',
       ],
       [
         20.00,
         NULL,
         NULL,
         15.00,
-        'This unit price cannot be less than USD20.00.',
+        'The unit price cannot be less than USD20.00.',
       ],
     ];
   }
 
   /**
-   * Providers data for self::testPriceFieldOnDefaultProduct().
+   * Provides data to self::testUnitPricePriceValidation().
    */
-  public function providerPriceField() {
+  public function providerUnitPricePrice() {
     return [
       [
-        'string',
-        'Price must be a number',
-      ],
-      [
-        10.00,
-        'The product @title has been successfully saved.',
+        30.00,
+        25.00,
+        'The unit price cannot be less than USD30.00.',
       ],
     ];
   }
@@ -343,6 +398,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @param string $widget
    *   The widget type for the field.
    *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function configureTopUpAmountField($widget = 'apigee_top_up_amount_price') {
@@ -351,8 +408,6 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
     $product_type->save();
 
-//    $this->configureVariationsField();
-
     // Add an apigee_top_up_amount_field.
     FieldStorageConfig::create([
       'field_name' => static::TOP_UP_AMOUNT_FIELD_NAME,
@@ -360,7 +415,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'type' => 'apigee_top_up_amount',
     ])->save();
 
-    $currencies = \Drupal::entityTypeManager()->getStorage('commerce_currency')->loadMultiple();
+    $currencies = \Drupal::entityTypeManager()
+      ->getStorage('commerce_currency')
+      ->loadMultiple();
     $currency_codes = array_keys($currencies);
 
     FieldConfig::create([
