@@ -184,7 +184,6 @@ class RoboFile extends \Robo\Tasks
         $this->taskExec('cat artifacts/core-stats.txt')->run();
         // Add php info to an artifact file.
         $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
-        $this->taskExec('cat artifacts/phpinfo.txt')->run();
     }
 
     /**
