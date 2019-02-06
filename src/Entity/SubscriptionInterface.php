@@ -19,13 +19,12 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
-use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface;
-use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface;
 
 /**
  * Defines the interface for subscription entity objects.
  */
-interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
+interface SubscriptionInterface extends AcceptedRatePlanInterface {
 
   /**
    * Status text for ended subscriptions.

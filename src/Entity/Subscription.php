@@ -53,8 +53,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     },
  *   },
  *   links = {
- *     "collection-by-developer" = "/user/{user}/monetization/subscriptions",
- *     "unsubscribe-form"        = "/user/{user}/monetization/subscription/{subscription}/unsubscribe",
+ *     "developer-collection"       = "/user/{user}/monetization/subscriptions",
+ *     "developer-unsubscribe-form" = "/user/{user}/monetization/subscription/{subscription}/unsubscribe",
  *   },
  *   entity_keys = {
  *     "id" = "id",

@@ -309,7 +309,7 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
     // TODO: Is a custom unsubscribe access check is really necessary?
-    if ($entity->access('update') && $entity->hasLinkTemplate('unsubscribe-form')) {
+    if ($entity->access('update') && $entity->hasLinkTemplate('developer-unsubscribe-form')) {
       // TODO: Allow cancelation of future plans.
       if ($entity->isSubscriptionActive()) {
         $operations['unsubscribe'] = [
