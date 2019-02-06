@@ -53,10 +53,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
  *     },
  *   },
- *   links = {
- *     "developer-collection"       = "/user/{user}/monetization/subscriptions",
- *     "developer-unsubscribe-form" = "/user/{user}/monetization/subscription/{subscription}/unsubscribe",
- *   },
+ *   links = {},
  *   entity_keys = {
  *     "id" = "id",
  *   },
