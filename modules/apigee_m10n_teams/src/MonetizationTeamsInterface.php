@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * @file
  * Copyright 2018 Google Inc.
  *
@@ -19,29 +19,19 @@
  * MA 02110-1301, USA.
  */
 
-/**
- * Implements hook_entity_type_alter().
- */
-function apigee_m10n_teams_entity_type_alter(array &$entity_types) {
-  apigee_m10n_teams_service()->entityTypeAlter($entity_types);
-}
+namespace Drupal\apigee_m10n_teams;
 
 /**
- * Helper to get the teams service.
- *
- * This uses static caching for performance rather than to maintain a singleton.
- * The container handles singleton instantiation. As for performance, see:
- * `\Symfony\Component\DependencyInjection\Container::get()`.
- *
- * @return \Drupal\apigee_m10n_teams\MonetizationTeamsInterface
- *   The `apigee_m10n.teams` service.
+ * Interface for the `apigee_m10n.teams` service.
  */
-function apigee_m10n_teams_service() {
-  static $service;
+interface MonetizationTeamsInterface {
 
-  if (!isset($service)) {
-    $service = \Drupal::service('apigee_m10n.teams');
-  }
+  /**
+   * Handles `hook_entity_type_alter` for the `apigee_m10n_teams` module.
+   *
+   * @param array $entity_types
+   *   An array of entity types.
+   */
+  public function entityTypeAlter(array &$entity_types);
 
-  return $service;
 }
