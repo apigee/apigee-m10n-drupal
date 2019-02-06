@@ -188,10 +188,10 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public static function loadRatePlansByDeveloperEmail(string $developer_email): array {
+  public static function loadByDeveloperId(string $developer_id): array {
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
-      ->loadRatePlansByDeveloperEmail($developer_email);
+      ->loadByDeveloperId($developer_id);
   }
 
   /**

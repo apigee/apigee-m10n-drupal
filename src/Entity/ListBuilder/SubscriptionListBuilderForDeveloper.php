@@ -19,309 +19,66 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
+use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Entity\EntityStorageException;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Defines implementation of a subscriptions listing page.
  *
  * @ingroup entity_api
  */
-class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements ContainerInjectionInterface {
+class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
 
   /**
-   * Subscription storage.
-   *
-   * @var \Drupal\apigee_m10n\Entity\Storage\SubscriptionStorageInterface
-   */
-  protected $storage;
-
-  /**
-   * Entity manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Logger service.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected $logger;
-
-  /**
-   * Messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
-
-  /**
-   * The user for the listing page.
+   * The developer's user that is used to load subscriptions.
    *
    * @var \Drupal\user\UserInterface
    */
   protected $user;
 
   /**
-   * SubscriptionListBuilderForDeveloper constructor.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   Entity type service.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   Entity storage.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   Entity type manager service.
-   * @param \Psr\Log\LoggerInterface $logger
-   *   Logger service.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   Messenger service.
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger, MessengerInterface $messenger) {
-    parent::__construct($entity_type, $storage);
-
-    $this->storage = $storage;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->logger = $logger;
-    $this->messenger = $messenger;
-  }
-
-  /**
    * {@inheritdoc}
    */
-  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    return new static(
-      $entity_type,
-      $container->get('entity.manager')->getStorage($entity_type->id()),
-      $container->get('entity_type.manager'),
-      $container->get('logger.channel.apigee_m10n'),
-      $container->get('messenger')
-    );
-  }
+  public function render(UserInterface $user = NULL) {
+    // Return 404 if the user is not set and keep a compatible method signature.
+    if (!($user instanceof UserInterface)) {
+      return new RedirectResponse(Url::fromRoute('system.404'));
+    }
+    // From this point forward `$this->user` is a safe assumption.
+    $this->user = $user;
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    $entityType = $container->get('entity_type.manager')->getDefinition('subscription');
-    return static::createInstance($container, $entityType);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPageTitle(RouteMatchInterface $route_match): string {
-    // TODO: make sure this string is configurable.
-    return $this->t('Purchased plans');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getTitle() {
-    return $this->t('@subscriptions', [
-      '@subscriptions' => (string) $this->entityTypeManager->getDefinition('subscription')->getPluralLabel(),
-    ]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildHeader() {
-    return [
-      'plan' => [
-        'data' => $this->t('Plan Name'),
-        'class' => ['rate-plan-name'],
-        'field' => 'plan',
-      ],
-      'package' => [
-        'data'  => $this->t('Package'),
-        'field' => 'package',
-        'class' => ['package-name'],
-        'sort'  => 'desc',
-      ],
-      'products' => [
-        'data' => $this->t('Products'),
-        'class' => ['products'],
-        'field' => 'products',
-      ],
-      'start_date' => [
-        'data' => $this->t('Start Date'),
-        'class' => ['subscription-start-date'],
-        'field' => 'start_date',
-      ],
-      'end_date' => [
-        'data' => $this->t('End Date'),
-        'class' => ['subscription-end-date'],
-        'field' => 'end_date',
-      ],
-      'plan_end_date' => [
-        'data' => $this->t('Plan End Date'),
-        'class' => ['rate-plan-end-date'],
-        'field' => 'plan_end_date',
-      ],
-      'renewal_date' => [
-        'data' => $this->t('Renewal Date'),
-        'class' => ['subscription-renewal-date'],
-        'field' => 'renewal_date',
-      ],
-      'status' => [
-        'data' => $this->t('Status'),
-        'field' => 'status',
-        'class' => ['field-status'],
-      ],
-      'operations' => [
-        'data' => $this->t('Actions'),
-      ],
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildRow(EntityInterface $entity) {
-    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
-    $rate_plan = $entity->getRatePlan();
-
-    // Concatenate all of the product names.
-    $products = implode(', ', array_map(function ($product) {
-      return $product->getDisplayName();
-    }, $rate_plan->getPackage()->getApiProducts()));
-
-    $rate_plan_url = $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
-      'user' => $this->user->id(),
-      'package' => $rate_plan->getPackage()->id(),
-      'rate_plan' => $rate_plan->id(),
-    ]));
-
-    return [
-      'data' => [
-        'plan' => [
-          'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $rate_plan_url),
-          'class' => ['rate-plan-name'],
-        ],
-        'package' => [
-          'data' => $rate_plan->getPackage()->getDisplayName(),
-          'class' => ['package-name'],
-        ],
-        'products' => [
-          'data' => $products,
-          'class' => ['products'],
-        ],
-        'start_date' => [
-          'data' => $entity->getStartDate()->format('m/d/Y'),
-          'class' => ['subscription-start-date'],
-        ],
-        'end_date' => [
-          'data' => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : NULL,
-          'class' => ['subscription-end-date'],
-        ],
-        'plan_end_date' => [
-          'data' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : NULL,
-          'class' => ['rate-plan-end-date'],
-        ],
-        'renewal_date' => [
-          'data' => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : NULL,
-          'class' => ['subscription-renewal-date'],
-        ],
-        'status' => [
-          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
-          'class' => ['field-status'],
-        ],
-        'operations'    => ['data' => $this->buildOperations($entity)],
-      ],
-      'class' => ['subscription-row', Html::cleanCssIdentifier(strtolower($rate_plan->getDisplayName()))],
-    ];
+    return parent::render();
   }
 
   /**
    * {@inheritdoc}
    */
   public function load() {
-    throw new EntityStorageException('Unable to load subscriptions directly. Use `SubscriptionStorage::loadPackageRatePlans`.');
+    return Subscription::loadByDeveloperId($this->user->getEmail());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function render(UserInterface $user = NULL) {
-    $this->user = $user;
-    $developer_id = $user->getEmail();
-
-    $header = $this->buildHeader();
-
-    $build['table'] = [
-      '#type'   => 'table',
-      '#header' => $header,
-      '#title'  => $this->getTitle(),
-      '#rows'   => [],
-      '#empty'  => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
-      '#cache'  => [
-        'contexts' => $this->entityType->getListCacheContexts() + ['url.query_args'],
-        'tags'     => $this->entityType->getListCacheTags() + ['apigee_my_subscriptions'],
-      ],
-      '#attributes' => ['class' => ['developer-subscription-list']],
-    ];
-
-    if (!$developer_id) {
-      $this->logger->error($this->t('Developer with email @email not found.', ['@email' => $user->getEmail()]));
-      $this->messenger->addError($this->t('Developer with email @email not found.', ['@email' => $user->getEmail()]));
-      return $build;
-    }
-
-    $rows = [];
-
-    foreach ($this->entityTypeManager->getStorage('subscription')->loadByDeveloperId($developer_id) as $entity) {
-      if ($row = $this->buildRow($entity)) {
-        $rows[$entity->id()] = $row;
-      }
-    }
-
-    $build['table']['#rows'] = $rows;
-
-    // Only add the pager if a limit is specified.
-    if ($this->limit) {
-      $build['pager'] = [
-        '#type' => 'pager',
-      ];
-    }
-
-    return $build;
+  protected function unsubscribeUrl(SubscriptionInterface $subscription) {
+    return $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
+      'user' => $this->user->id(),
+      'subscription' => $subscription->id(),
+    ]));
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultOperations(EntityInterface $entity) {
-    $operations = parent::getDefaultOperations($entity);
-    // TODO: Is a custom unsubscribe access check is really necessary?
-    if ($entity->access('update')) {
-      // TODO: Allow cancelation of future plans.
-      if ($entity->isSubscriptionActive()) {
-        $operations['unsubscribe'] = [
-          'title' => $this->t('Cancel'),
-          'weight' => 10,
-          'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
-        ];
-      }
-    }
-
-    return $operations;
+  protected function ratePlanUrl(SubscriptionInterface $subscription) {
+    return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $this->user->id(),
+      'package' => $subscription->getRatePlan()->getPackage()->id(),
+      'rate_plan' => $subscription->getRatePlan()->id(),
+    ]));
   }
 
 }

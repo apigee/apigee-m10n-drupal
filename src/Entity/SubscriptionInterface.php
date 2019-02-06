@@ -45,14 +45,14 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
   /**
    * Loads subscriptions by developer email.
    *
-   * @param string $developer_email
+   * @param string $developer_id
    *   The email of a developer registered with apigee edge.
    *
    * @return \Drupal\apigee_m10n\Entity\Subscription[]
    *   An array of subscription entities for a given developer (identified by
    *   email).
    */
-  public static function loadRatePlansByDeveloperEmail(string $developer_email): array;
+  public static function loadByDeveloperId(string $developer_id): array;
 
   /**
    * Getter for the `isSubscriptionActive` call.
