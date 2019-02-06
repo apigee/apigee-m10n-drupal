@@ -28,7 +28,7 @@ apigee_m10n.billing:
 
 apigee_m10n.subscriptions:
   title: 'Purchased plans'
-  route_name: entity.subscription.collection_by_developer
+  route_name: entity.subscription.developer_collection
   base_route: entity.user.canonical
   weight: -1
 

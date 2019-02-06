@@ -83,7 +83,7 @@ class PackagesController extends ControllerBase {
    */
   public function mySubscriptions(): RedirectResponse {
     return $this->redirect(
-      'entity.subscription.collection_by_developer',
+      'entity.subscription.developer_collection',
       ['user' => \Drupal::currentUser()->id()],
       ['absolute' => TRUE]
     );

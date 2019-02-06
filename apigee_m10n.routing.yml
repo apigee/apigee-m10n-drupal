@@ -118,7 +118,7 @@ apigee_monetization.profile:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.collection_by_developer:
+entity.subscription.developer_collection:
   path: '/user/{user}/monetization/subscriptions'
   defaults:
     _controller: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render'
