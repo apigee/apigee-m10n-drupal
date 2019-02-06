@@ -178,6 +178,13 @@ class RoboFile extends \Robo\Tasks
           ->copy('composer.json', 'artifacts/composer.json')
           ->copy('composer.lock', 'artifacts/composer.lock')
           ->run();
+
+        // Write drush status results to an artifact file.
+        $this->taskExec('vendor/bin/drush status > artifacts/core-stats.txt')->run();
+        $this->taskExec('cat artifacts/core-stats.txt')->run();
+        // Add php info to an artifact file.
+        $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
+        $this->taskExec('cat artifacts/phpinfo.txt')->run();
     }
 
     /**
