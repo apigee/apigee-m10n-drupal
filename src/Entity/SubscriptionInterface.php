@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 
 /**
  * Defines the interface for subscription entity objects.
@@ -76,5 +77,17 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
    *   The rate plan.
    */
   public function getTermsAndConditions(): bool;
+
+  /**
+   * Get's the developer of a developer accepted rate plan.
+   *
+   * Assuming this subscription decorates a developer accepted rate plan, the
+   * developer will be returned, The developer can be null for a new developer
+   * accepted rate plan.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperInterface|null
+   *   The developer accepted rate plan developer.
+   */
+  public function getDeveloper(): ?DeveloperInterface;
 
 }
