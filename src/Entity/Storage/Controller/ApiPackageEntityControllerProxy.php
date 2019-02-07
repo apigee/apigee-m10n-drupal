@@ -20,6 +20,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage\Controller;
 
+use Apigee\Edge\Controller\EntityControllerInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Exception\InvalidOperationException;
 
@@ -29,22 +30,10 @@ use Drupal\apigee_m10n\Exception\InvalidOperationException;
 class ApiPackageEntityControllerProxy extends MonetizationEntityControllerProxy implements ApiPackageEntityControllerProxyInterface {
 
   /**
-   * The decorated controller from the SDK.
-   *
-   * @var \Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface
+   * {@inheritdoc}
    */
-  private $controller;
-
-  /**
-   * ApiPackageEntityControllerProxy constructor.
-   *
-   * @param \Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface $controller
-   *   A monetization package controller from the SDK.
-   */
-  public function __construct($controller) {
-    parent::__construct($controller);
-
-    $this->controller = $controller;
+  protected function controller(): EntityControllerInterface {
+    return $this->controllerFactory()->apiPackageController();
   }
 
   /**
@@ -58,14 +47,14 @@ class ApiPackageEntityControllerProxy extends MonetizationEntityControllerProxy 
    * {@inheritdoc}
    */
   public function getAvailableApiPackagesByDeveloper(string $developerId, bool $active = FALSE, bool $allAvailable = TRUE): array {
-    return $this->controller->getAvailableApiPackagesByDeveloper($developerId, $active, $allAvailable);
+    return $this->controller()->getAvailableApiPackagesByDeveloper($developerId, $active, $allAvailable);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getAvailableApiPackagesByCompany(string $company, bool $active = FALSE, bool $allAvailable = TRUE): array {
-    return $this->controller->getAvailableApiPackagesByDeveloper($company, $active, $allAvailable);
+    return $this->controller()->getAvailableApiPackagesByCompany($company, $active, $allAvailable);
   }
 
 }

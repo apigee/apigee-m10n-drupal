@@ -23,18 +23,62 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
 use Drupal\apigee_m10n\Entity\Storage\Controller\ApiPackageEntityControllerProxy;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * The storage controller for the `package` entity.
  */
 class PackageStorage extends EdgeEntityStorageBase implements PackageStorageInterface {
-  use ApigeeSdkControllerFactoryAwareTrait;
+
+  /**
+   * The controller proxy.
+   *
+   * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface
+   */
+  protected $controller_proxy;
+
+  /**
+   * Constructs an RatePlanStorage instance.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type definition.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
+   *   The cache backend to be used.
+   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
+   *   The memory cache.
+   * @param \Drupal\Component\Datetime\TimeInterface $system_time
+   *   The system time.
+   * @param \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface $controller_proxy
+   *   The controller proxy.
+   */
+  public function __construct(EntityTypeInterface $entity_type, CacheBackendInterface $cache_backend, MemoryCacheInterface $memory_cache, TimeInterface $system_time, EdgeEntityControllerInterface $controller_proxy) {
+    parent::__construct($entity_type, $cache_backend, $memory_cache, $system_time);
+
+    $this->controller_proxy = $controller_proxy;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    return new static(
+      $entity_type,
+      $container->get('cache.apigee_edge_entity'),
+      $container->get('entity.memory_cache'),
+      $container->get('datetime.time'),
+      $container->get('apigee_m10n.sdk_controller_proxy.package')
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   public function entityController(): EdgeEntityControllerInterface {
-    return new ApiPackageEntityControllerProxy($this->controllerFactory()->apiPackageController());
+    return $this->controller_proxy;
   }
 
   /**
