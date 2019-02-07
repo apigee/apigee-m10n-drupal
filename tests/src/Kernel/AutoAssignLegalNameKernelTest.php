@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Form\FormState;
 
 /**
@@ -62,28 +61,32 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
     $subscription = $this->createsubscription($this->developer, $rate_plan);
-    $current_developer = $this->convertUserToEdgeDeveloper($this->developer, ['MINT_DEVELOPER_LEGAL_NAME' => $this->developer->getEmail()]);
+    $dev = $this->convertUserToEdgeDeveloper($this->developer, ['MINT_DEVELOPER_LEGAL_NAME' => $this->developer->getEmail()]);
+    \Drupal::cache('apigee_edge_entity')->delete("values:developer:{$dev->id()}");
     $this->queueOrg();
     $this->stack
       ->queueMockResponse([
-        'developer' => ['developer' => $current_developer],
+        'developer' => ['developer' => $dev],
         'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
-        'get_package_rate_plan' => ['plan' => $rate_plan]
+        'get_package_rate_plan' => ['plan' => $rate_plan],
+        'get_terms_conditions',
+        'get_developer_terms_conditions',
       ]);
-    static::assertSame($current_developer->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'), $this->developer->getEmail());
 
-    /*
-    $form_object = \Drupal::entityTypeManager()->getFormObject('subscription', 'default');
-    $form_object->setEntity($subscription);
-    $form = $form_object->buildForm([], new FormState());
-    $form_state = new FormState();
-    $form_state->setValues([]);
+   /* $form = \Drupal::service('entity.form_builder')->getForm($subscription, 'default');
+
+    $form_state = (new FormState())
+      ->setValues([
+        'termsAndConditions' => TRUE,
+        'startDate' => new \DateTimeImmutable(),
+      ]);
     $form_builder = $this->container->get('form_builder');
     $form_builder->submitForm($form, $form_state);
 
     $messages = \Drupal::messenger()->all();
     \Drupal::messenger()->deleteAll();
     static::assertFalse(!isset($messages['error']));*/
+    static::assertSame($this->developer->getEmail(), $dev->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
 
   }
 
