@@ -69,23 +69,9 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
         'developer' => ['developer' => $dev],
         'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
         'get_package_rate_plan' => ['plan' => $rate_plan],
-        'get_terms_conditions',
-        'get_developer_terms_conditions',
+        'get_terms_conditions' => [],
+        'get_developer_terms_conditions' => [],
       ]);
-
-   /* $form = \Drupal::service('entity.form_builder')->getForm($subscription, 'default');
-
-    $form_state = (new FormState())
-      ->setValues([
-        'termsAndConditions' => TRUE,
-        'startDate' => new \DateTimeImmutable(),
-      ]);
-    $form_builder = $this->container->get('form_builder');
-    $form_builder->submitForm($form, $form_state);
-
-    $messages = \Drupal::messenger()->all();
-    \Drupal::messenger()->deleteAll();
-    static::assertFalse(!isset($messages['error']));*/
     static::assertSame($this->developer->getEmail(), $dev->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
 
   }
