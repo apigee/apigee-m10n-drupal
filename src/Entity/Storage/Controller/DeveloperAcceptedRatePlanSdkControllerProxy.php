@@ -101,7 +101,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function loadByDeveloperId(string $developer_id): array {
-    // Get all plans for this package.
+    // Get all subscriptions for this developer.
     return $this->getSubscriptionControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }

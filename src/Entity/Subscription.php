@@ -333,7 +333,8 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * {@inheritdoc}
    */
   public function getDeveloper(): ?DeveloperInterface {
-    return $this->decorated instanceof DeveloperAcceptedRatePlanInterface ? $this->decorated->getDeveloper() : NULL;
+    // TODO: Return the `apigee_edge` developer entity reference.
+    return $this->decorated->getDeveloper();
   }
 
   /**
