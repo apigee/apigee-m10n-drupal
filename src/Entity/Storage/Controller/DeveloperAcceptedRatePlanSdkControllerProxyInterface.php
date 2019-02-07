@@ -49,6 +49,6 @@ interface DeveloperAcceptedRatePlanSdkControllerProxyInterface extends EdgeEntit
    * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface
    *   The subscription.
    */
-  public function loadById(string $developer_id, string $id): EntityInterface;
+  public function loadById(string $developer_id, string $id): ?EntityInterface;
 
 }

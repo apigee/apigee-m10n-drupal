@@ -109,7 +109,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
   /**
    * {@inheritdoc}
    */
-  public function loadById(string $developer_id, string $id): EntityInterface {
+  public function loadById(string $developer_id, string $id): ?EntityInterface {
     return $this->getSubscriptionControllerByDeveloperId($developer_id)->load($id);
   }
 
