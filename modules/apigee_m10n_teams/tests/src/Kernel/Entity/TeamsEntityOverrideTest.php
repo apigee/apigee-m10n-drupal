@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n_teams\Kernel;
+namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
 use Drupal\apigee_edge\Entity\EdgeEntityType;
 use Drupal\apigee_m10n\Entity\Package;
