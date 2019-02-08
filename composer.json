@@ -7,7 +7,7 @@
         "php": ">=7.1",
         "cweagans/composer-patches": "^1.6",
         "commerceguys/intl": "^1.0",
-        "drupal/apigee_edge": "dev-8.x-1.x"
+        "drupal/apigee_edge": "^1.0-beta2"
     },
     "require-dev": {
         "behat/mink-extension": "v2.2",
@@ -20,12 +20,6 @@
         "phpmetrics/phpmetrics": "^2.4",
         "phpunit/phpunit": "^6.5"
     },
-    "repositories": {
-        "gh-apigee-edge-drupal": {
-            "type": "vcs",
-            "url": "git@github.com:apigee/apigee-edge-drupal.git"
-        }
-    },
     "config": {
         "sort-packages": true
     },
@@ -34,7 +28,7 @@
     "extra": {
         "patches": {
             "apigee/apigee-client-php": {
-                "Fix developer ID issue when unsubscribing from a rate plan": "https://github.com/apigee/apigee-client-php/files/2627181/unsubscribe-rate-plan-developer-id.patch.txt"
+                "Fix company ID issue for subscriptions": "https://github.com/apigee/apigee-client-php/files/2847006/company-accepted-company-id-fix.patch.txt"
             },
             "drupal/core": {
                 "`EntityViewBuilder::getBuildDefaults()` doesn't check for `RevisionableInterface`.": "https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch"
