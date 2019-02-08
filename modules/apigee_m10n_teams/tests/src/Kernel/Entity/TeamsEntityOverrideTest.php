@@ -22,7 +22,9 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 use Drupal\apigee_edge\Entity\EdgeEntityType;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
+use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\KernelTests\KernelTestBase;
 
@@ -80,6 +82,21 @@ class TeamsEntityOverrideTest extends KernelTestBase {
     $url = $package->toUrl('canonical');
     static::assertSame("/teams/{$team_id}/monetization/package/{$package->id()}", $url->toString());
     static::assertSame('entity.package.team', $url->getRouteName());
+  }
+
+  /**
+   * Tests the package entity overrides.
+   *
+   * @throws \Exception
+   */
+  public function testSubscriptionEntityOverrides() {
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('subscription');
+    static::assertInstanceOf(EdgeEntityType::class, $entity_type);
+
+    // Make sure our entity class has taken over.
+    static::assertSame(TeamRouteAwareSubscription::class, $entity_type->getClass());
+    // Make sure our entity storage class has taken over.
+    static::assertSame(TeamSubscriptionStorage::class, $entity_type->getStorageClass());
   }
 
 }
