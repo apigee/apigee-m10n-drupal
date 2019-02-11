@@ -40,7 +40,7 @@ use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\key\Entity\Key;
-use Drupal\Tests\apigee_edge\Functional\ApigeeEdgeTestTrait;
+use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeTestTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
