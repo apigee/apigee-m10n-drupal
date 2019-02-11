@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n_teams\Entity;
 
+use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
@@ -54,6 +55,18 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
     $definitions['team']->setDisplayConfigurable('form', FALSE);
 
     return $definitions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function decoratedClass(): string {
+    if ($team = \Drupal::routeMatch()->getParameter('team')) {
+      return CompanyAcceptedRatePlan::class;
+    }
+    else {
+      return parent::decoratedClass();
+    }
   }
 
   /**
