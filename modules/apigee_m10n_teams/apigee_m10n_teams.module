@@ -27,6 +27,13 @@ function apigee_m10n_teams_entity_type_alter(array &$entity_types) {
 }
 
 /**
+ * Implements hook_field_formatter_info_alter().
+ */
+function apigee_m10n_teams_field_formatter_info_alter(array &$info) {
+  apigee_m10n_teams_service()->fieldFormatterInfoAlter($info);
+}
+
+/**
  * Helper to get the teams service.
  *
  * This uses static caching for performance rather than to maintain a singleton.

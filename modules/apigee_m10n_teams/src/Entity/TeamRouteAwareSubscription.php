@@ -59,6 +59,19 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
   /**
    * {@inheritdoc}
    */
+  public function getTermsAndConditions(): bool {
+    if ($this->isTeamSubscription()) {
+      // TODO: Implement TnC for team subscriptions.
+      return TRUE;
+    }
+    else {
+      return parent::getTermsAndConditions();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getTeam() {
     // Returns an entity reference. If you need the monetization company
     // reference, you can use `$subscription->decorated()->getCompany()` but you

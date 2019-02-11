@@ -34,4 +34,12 @@ interface MonetizationTeamsInterface {
    */
   public function entityTypeAlter(array &$entity_types);
 
+  /**
+   * Handles `hook_field_formatter_info_alter` for `apigee_m10n_teams`.
+   *
+   * @param array $info
+   *   An array of field formatter plugin definitions.
+   */
+  public function fieldFormatterInfoAlter(array &$info);
+
 }

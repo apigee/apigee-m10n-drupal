@@ -23,8 +23,11 @@ namespace Drupal\apigee_m10n_teams;
 
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
+use Drupal\apigee_m10n_teams\Entity\TeamAwareRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
 
 /**
  * The `apigee_m10n.teams` service.
@@ -48,6 +51,18 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['package']->setHandlerClass('route_provider', $route_providers);
     }
 
+    // Overrides for the `rate_plan` entity.
+    if (isset($entity_types['rate_plan'])) {
+      // Use our class to override the original entity class.
+      $entity_types['rate_plan']->setClass(TeamAwareRatePlan::class);
+      $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
+      // Get the entity route providers.
+      $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
+      // Override the `html` route provider.
+      $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
+      $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
+    }
+
     // Overrides for the subscription entity.
     if (isset($entity_types['subscription'])) {
       // Use our class to override the original entity class.
@@ -55,6 +70,15 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Override the storage class.
       $entity_types['subscription']->setStorageClass(TeamSubscriptionStorage::class);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldFormatterInfoAlter(array &$info) {
+    // Override the subscribe link and form formatters.
+    $info['apigee_subscribe_form']['class'] = TeamSubscribeFormFormatter::class;
+    $info['apigee_subscribe_link']['class'] = TeamSubscribeLinkFormatter::class;
   }
 
 }
