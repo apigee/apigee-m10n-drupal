@@ -32,3 +32,13 @@ entity.subscription.team_unsubscribe_form:
       subscription:
         type: 'entity:subscription'
         converter: paramconverter.entity.subscription
+
+apigee_monetization.team_packages:
+  path: '/teams/{team}/monetization/packages'
+  defaults:
+    _controller: \Drupal\apigee_m10n_teams\Controller\TeamPackagesController::teamCatalogPage
+    _title: "Packages"
+  requirements:
+    _permission: 'access monetization packages'
+  options:
+    _apigee_monetization_route: TRUE
