@@ -178,6 +178,12 @@ class RoboFile extends \Robo\Tasks
           ->copy('composer.json', 'artifacts/composer.json')
           ->copy('composer.lock', 'artifacts/composer.lock')
           ->run();
+
+        // Write drush status results to an artifact file.
+        $this->taskExec('vendor/bin/drush status > artifacts/core-stats.txt')->run();
+        $this->taskExec('cat artifacts/core-stats.txt')->run();
+        // Add php info to an artifact file.
+        $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
     }
 
     /**
@@ -396,8 +402,6 @@ class RoboFile extends \Robo\Tasks
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
 
-      // Remove `replace` so drupal core get's updated.
-      unset($config->replace);
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
 }

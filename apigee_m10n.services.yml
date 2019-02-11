@@ -11,6 +11,9 @@ services:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
     arguments: ['@apigee_edge.sdk_connector']
 
+  apigee_m10n.sdk_controller_proxy.package:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\ApiPackageEntityControllerProxy
+
   apigee_m10n.sdk_controller_proxy.rate_plan:
     class: Drupal\apigee_m10n\Entity\Storage\RatePlanSdkControllerProxy
 
