@@ -22,6 +22,7 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamAwareRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
@@ -49,6 +50,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Override the `html` route provider.
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
       $entity_types['package']->setHandlerClass('route_provider', $route_providers);
+      // Override the storage class.
+      $entity_types['package']->setStorageClass(TeamPackageStorage::class);
     }
 
     // Overrides for the `rate_plan` entity.
