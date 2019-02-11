@@ -9,6 +9,16 @@ entity.subscription.team_collection:
   options:
     _apigee_monetization_route: TRUE
 
+entity.rate_plan.team_subscribe:
+  path: '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/subscribe'
+  defaults:
+    _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamRatePlanSubscribeController::teamSubscribeForm'
+    _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamRatePlanSubscribeController::teamTitle'
+  requirements:
+    _entity_access: 'rate_plan.subscribe'
+  options:
+    _apigee_monetization_route: TRUE
+
 entity.subscription.team_unsubscribe_form:
   path: '/teams/{team}/monetization/subscription/{subscription}/unsubscribe'
   defaults:
@@ -19,8 +29,6 @@ entity.subscription.team_unsubscribe_form:
   options:
     _apigee_monetization_route: TRUE
     parameters:
-      team:
-        type: 'entity:team'
       subscription:
         type: 'entity:subscription'
         converter: paramconverter.entity.subscription
