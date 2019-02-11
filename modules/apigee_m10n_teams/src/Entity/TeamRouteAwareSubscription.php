@@ -22,7 +22,10 @@ namespace Drupal\apigee_m10n_teams\Entity;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
+use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
@@ -31,6 +34,43 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * This is a class for purchased plans that is aware of teams.
  */
 class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareSubscriptionInterface {
+
+  /**
+   * EdgeEntityBase constructor.
+   *
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   * @param null|string $entity_type
+   *   Type of the entity.
+   * @param \Apigee\Edge\Entity\EntityInterface|null $decorated
+   *   The SDK entity that this Drupal entity decorates.
+   *
+   * @throws \ReflectionException
+   */
+  public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
+    // The entity type is not passed from `EdgeEntityBase::createFrom`.
+    $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
+    // Bypass the `Subscription` and `EdgeEntityBase` constructors.
+    Entity::__construct([], $entity_type);
+    // Set the decorated value.
+    if ($decorated) {
+      $this->decorated = $decorated;
+    }
+    else {
+      // We override this constructor so we can determine the decorated class.
+      $decorated_class = isset($values['team']) ? CompanyAcceptedRatePlan::class : static::decoratedClass();
+      $rc = new \ReflectionClass($decorated_class);
+      // Get rid of useless but also problematic null values.
+      $values = array_filter($values, function ($value) {
+        return !is_null($value);
+      });
+      $this->decorated = $rc->newInstance($values);
+    }
+    // Save entity references in this class as well as the decorated instance.
+    if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof RatePlanInterface) {
+      $this->setRatePlan($values['ratePlan']);
+    }
+  }
 
   /**
    * {@inheritdoc}
@@ -55,18 +95,6 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
     $definitions['team']->setDisplayConfigurable('form', FALSE);
 
     return $definitions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected static function decoratedClass(): string {
-    if ($team = \Drupal::routeMatch()->getParameter('team')) {
-      return CompanyAcceptedRatePlan::class;
-    }
-    else {
-      return parent::decoratedClass();
-    }
   }
 
   /**

@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlan;
-use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
