@@ -72,9 +72,7 @@ class TeamSubscriptionListBuilder extends SubscriptionListBuilder {
    * {@inheritdoc}
    */
   protected function ratePlanUrl(SubscriptionInterface $subscription) {
-    // TODO: Switch route to `entity.rate_plan.team` and drop user.
-    return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
-      'user' => \Drupal::currentUser()->id(),
+    return $this->ensureDestination(Url::fromRoute('entity.rate_plan.team', [
       'team' => $this->team->id(),
       'package' => $subscription->getRatePlan()->getPackage()->id(),
       'rate_plan' => $subscription->getRatePlan()->id(),
