@@ -26,6 +26,7 @@ use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\user\UserInterface;
@@ -61,7 +62,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
    *
    * @var \Drupal\apigee_m10n\MonetizationInterface
    */
-  private $monetization;
+  protected $monetization;
 
   /**
    * The Apigee SDK connector.
@@ -266,16 +267,16 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
   /**
    * Helper to get the cache id.
    *
-   * @param \Drupal\user\UserInterface $user
-   *   The user entity.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    * @param null $suffix
    *   The suffix for the cache id.
    *
    * @return string
    *   The cache id.
    */
-  public static function getCacheId(UserInterface $user, $suffix = NULL) {
-    return static::CACHE_PREFIX . ':user:' . $user->id() . ($suffix ? ':' . $suffix : '');
+  public static function getCacheId(EntityInterface $entity, $suffix = NULL) {
+    return static::CACHE_PREFIX . ":{$entity->getEntityTypeId()}:{$entity->id()}" . ($suffix ? ":{$suffix}" : '');
   }
 
 }
