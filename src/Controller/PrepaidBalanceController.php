@@ -251,16 +251,16 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
   /**
    * Helper to get the billing cache tags.
    *
-   * @param \Drupal\user\UserInterface $user
-   *   The user entity.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    *
    * @return array
    *   The cache tags.
    */
-  public static function getCacheTags(UserInterface $user) {
+  public static function getCacheTags(EntityInterface $entity) {
     return [
       static::CACHE_PREFIX,
-      static::getCacheId($user),
+      static::getCacheId($entity),
     ];
   }
 
