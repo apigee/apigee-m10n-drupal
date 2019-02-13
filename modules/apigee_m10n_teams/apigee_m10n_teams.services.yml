@@ -1,3 +1,7 @@
 services:
   apigee_m10n.teams:
     class: Drupal\apigee_m10n_teams\MonetizationTeams
+
+  apigee_m10n_teams.sdk_controller_factory:
+    class: Drupal\apigee_m10n_teams\TeamSdkControllerFactory
+    arguments: ['@apigee_edge.sdk_connector']
