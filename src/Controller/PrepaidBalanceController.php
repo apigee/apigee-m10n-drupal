@@ -216,8 +216,8 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
   /**
    * Helper to retrieve data from cache.
    *
-   * @param \Drupal\user\UserInterface $user
-   *   The user entity.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
    * @param string $suffix
    *   The cache id suffix.
    * @param callable $callback
@@ -226,7 +226,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
    * @return mixed
    *   The data.
    */
-  protected function getDataFromCache(UserInterface $user, string $suffix, callable $callback) {
+  protected function getDataFromCache(EntityInterface $entity, string $suffix, callable $callback) {
     $max_age = $this->getCacheMaxAge();
 
     // If caching is disable, run callback and return.
@@ -234,7 +234,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
       return $callback();
     }
 
-    $cid = $this->getCacheId($user, $suffix);
+    $cid = $this->getCacheId($entity, $suffix);
 
     // Check cache.
     if ($cache = $this->cache()->get($cid)) {
@@ -243,7 +243,7 @@ class PrepaidBalanceController extends ControllerBase implements ContainerInject
 
     $data = $callback();
     $this->cache()
-      ->set($cid, $data, time() + $max_age, $this->getCacheTags($user));
+      ->set($cid, $data, time() + $max_age, $this->getCacheTags($entity));
 
     return $data;
   }
