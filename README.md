@@ -47,7 +47,7 @@ to get you started quickly.
 
 ## Development
 
-Development is happening in our [GitHub repository](https://github.com/apigee/apigee-m10n-drupal). The Drupal.org issue queue is disabled, we use the [Github issue queue](https://github.com/apigee/apigee-m10n-drupal/issues) to coordinate development.
+Development is happening in our [GitHub repository](https://github.com/apigee/apigee-m10n-drupal). The Drupal.org issue queue is disabled; we use the [Github issue queue](https://github.com/apigee/apigee-m10n-drupal/issues) to coordinate development.
 
 ## Disclaimer
 
