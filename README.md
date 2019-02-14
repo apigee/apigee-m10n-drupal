@@ -1,7 +1,7 @@
 # Apigee Monetization Drupal module
 
 The Apigee Monetization module enables you to integrate Drupal 8 with Apigee Edge Monetization features. You must have
-a [monetization enabled Apigee Edge organization](https://docs.apigee.com/api-platform/monetization/enabling-monetization-organization)
+an Apigee Edge organization with [monetization enabled](https://docs.apigee.com/api-platform/monetization/enabling-monetization-organization)
 to use this module.
 
 The Drupal documentation pages for this module give an [overview of the features of the Apigee monetization module](https://www.drupal.org/docs/8/modules/apigee-monetization/understand-how-app-developers-interact-with-apigee-monetization#explore-the-apigee-monetization-features-in-the-developer-portal).
