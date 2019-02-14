@@ -252,7 +252,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->queueSupportedCurrencyResponse();
     $this->submitForm([], 'Pay and complete purchase');
 
-    $text = $valid ? 'Complete' : 'The minimum top up amount for USD is USD11.00';
+    $text = $valid ? 'Complete' : 'The minimum top up amount for USD is USD10.00';
     $this->assertSession()->pageTextContains($text);
   }
 
