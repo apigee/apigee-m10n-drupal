@@ -25,7 +25,7 @@ or log issues.
 
 This module must be installed on a Drupal site that is managed by Composer.  Drupal.org has documentation on how to
 [use Composer to manage Drupal site dependencies](https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies) 
-to get you quickly started.
+to get you started quickly.
   
 **Note**: The Apigee Monetization module is dependent on the [Apigee Edge](https://www.drupal.org/project/apigee_edge) module.
   
