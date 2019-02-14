@@ -38,9 +38,9 @@ to get you started quickly.
    composer require drupal/apigee_m10n
    ```
    For more information about installing contributed modules using Composer, read [how to download contributed modules and themes using Composer](https://www.drupal.org/docs/develop/using-composer/using-composer-to-manage-drupal-site-dependencies#managing-contributed).
-2. Click **Extend** in the Drupal administration menu.
+2. Choose **Extend** in the Drupal administration menu.
 3. Select the **Apigee monetization** module.
-4. Click **Install**.
+4. Choose **Install**.
 5. Configure the [site to connect to Apigee Edge](https://www.drupal.org/docs/8/modules/apigee-edge/configure-the-connection-to-apigee-edge) 
    under **Configuration** > **Apigee Edge** > **General** in the administration toolbar.
    
