@@ -19,14 +19,40 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
+use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxyInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Overridden storage controller for the `subscription` entity for teams.
  */
 class TeamSubscriptionStorage extends SubscriptionStorage implements TeamSubscriptionStorageInterface {
+
+  /**
+   * {@inheritdoc}
+   *
+   * `\Drupal\Core\Entity\EntityStorageBase::doPreSave` is going to try to try
+   * to load the original entity but `::loadUnchanged()` isn't aware of team
+   * context since it only takes the entity ID as a parameter. We can avoid the
+   * issue be setting the original while we still have context.
+   */
+  protected function doPreSave(EntityInterface $entity) {
+    // Check for team context.
+    if (!$entity->isNew()
+      && $entity->decorated() instanceof CompanyAcceptedRatePlanInterface
+      && ($team_id = $entity->decorated()->getCompany()->id())
+    ) {
+      // Reset the static and persistent cache so we can load unchanged.
+      $this->resetControllerCache([$entity->id()]);
+      $this->resetCache([$entity->id()]);
+      // Load the unchanged entity from the API.
+      $entity->original = $this->loadTeamSubscriptionById($team_id, $entity->id());
+    }
+
+    return parent::doPreSave($entity);
+  }
 
   /**
    * {@inheritdoc}
