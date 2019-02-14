@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 
-use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy;
@@ -47,8 +46,7 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    */
   public function loadTeamSubscriptionById(string $team_id, string $id): ?EntityInterface {
     // Get all subscriptions for this team.
-    return $this->getSubscriptionControllerByTeamId($team_id)
-      ->load($id);
+    return $this->getSubscriptionControllerByTeamId($team_id)->load($id);
   }
 
   /**
@@ -56,7 +54,7 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    */
   public function update(EntityInterface $entity): void {
     $controller = $entity instanceof CompanyAcceptedRatePlanInterface
-      ? $this->getSubscriptionControllerByTeamId($entity->id())
+      ? $this->getSubscriptionControllerByTeamId($entity->getCompany()->id())
       : $this->getSubscriptionController($entity);
 
     $controller->updateSubscription($entity);

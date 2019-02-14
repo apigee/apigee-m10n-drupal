@@ -53,8 +53,8 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    */
   public function load(string $id): EntityInterface {
     // A little secret is that the real package ID is not required for loading
-    // a rate plan.
-    return $this->getSubscriptionControllerByDeveloperId('default')->load($id);
+    // a rate plan but may be required for saving it.
+    return $this->loadById('default', $id);
   }
 
   /**

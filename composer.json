@@ -27,9 +27,6 @@
     "prefer-stable": true,
     "extra": {
         "patches": {
-            "apigee/apigee-client-php": {
-                "Fix company ID issue for subscriptions": "https://github.com/apigee/apigee-client-php/files/2847006/company-accepted-company-id-fix.patch.txt"
-            },
             "drupal/core": {
                 "`EntityViewBuilder::getBuildDefaults()` doesn't check for `RevisionableInterface`.": "https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch"
             }
