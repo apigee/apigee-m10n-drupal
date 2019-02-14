@@ -12,7 +12,7 @@ This module includes the following submodules:
 
 ## Module status
 
-The core functionality of this module is complete and we are currently completing final testing and critical
+The core functionality of this module is complete and we are conducting final testing and critical
 issue fixes. We encourage you to download and evaluate the module, and to use our 
 [GitHub issue queue](https://github.com/apigee/apigee-m10n-drupal/issues) to give feedback, ask questions, 
 or log issues.
