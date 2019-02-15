@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_teams\Controller;
 use Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface;
 use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
+use Drupal\apigee_m10n_teams\Form\TeamPrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n_teams\TeamSdkControllerFactoryAwareTrait;
 
 /**
@@ -80,6 +81,21 @@ abstract class PrepaidBalanceControllerBase extends PrepaidBalanceController imp
     // TODO: Handle access control for teams.
     if (TRUE) {
       $build['refresh_form'] = $this->formBuilder()->getForm(PrepaidBalanceRefreshForm::class, $this->getCacheTags($this->entity));
+    }
+
+    // Show the prepaid balance reports download form.
+    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+      $supported_currencies = $this->getDataFromCache($this->entity, 'supported_currencies', function () {
+        return $this->monetization->getSupportedCurrencies();
+      });
+
+      $billing_documents = $this->getDataFromCache($this->entity, 'billing_documents', function () {
+        return $this->monetization->getBillingDocumentsMonths();
+      });
+
+      // Build the form.
+      $build['download_form'] = $this->formBuilder->getForm(TeamPrepaidBalanceReportsDownloadForm::class, $this->entity, $supported_currencies, $billing_documents);
+      $build['download_form']['#cache']['keys'] = [static::getCacheId($this->entity, 'download_form')];
     }
 
     return $build;
