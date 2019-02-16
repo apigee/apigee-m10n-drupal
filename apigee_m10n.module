@@ -122,10 +122,6 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'rate_plan' => [
       'render element' => 'elements',
     ],
-    'prepaid_balances' => [
-      'variables' => ['balances' => NULL],
-      'template' => 'prepaid-balances',
-    ],
     'package' => [
       'render element' => 'elements',
     ],

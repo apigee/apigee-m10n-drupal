@@ -20,14 +20,16 @@
 namespace Drupal\apigee_m10n_teams\Controller;
 
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\apigee_m10n\Controller\PrepaidBalanceControllerBase;
+use Drupal\apigee_m10n_teams\Form\TeamPrepaidBalanceReportsDownloadForm;
+use Drupal\apigee_m10n_teams\TeamSdkControllerFactoryAwareTrait;
 
 /**
  * Controller for team balances.
- *
- * This is modeled after an entity list builder with some additions.
- * See: `\Drupal\Core\Entity\EntityListBuilder`
  */
 class TeamPrepaidBalanceController extends PrepaidBalanceControllerBase {
+
+  use TeamSdkControllerFactoryAwareTrait;
 
   /**
    * View prepaid balance and account statements for teams.
@@ -52,7 +54,23 @@ class TeamPrepaidBalanceController extends PrepaidBalanceControllerBase {
    */
   public function load() {
     $balance_controller = $this->teamControllerFactory()->teamBalanceController($this->entity->id());
-    return $balance_controller->getPrepaidBalance(new \DateTimeImmutable('now'));
+    // Make sure to return an array.
+    return ($list = $balance_controller->getPrepaidBalance(new \DateTimeImmutable('now'))) ? $list : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDownloadFormClass() {
+    return TeamPrepaidBalanceReportsDownloadForm::class;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function canRefreshBalance() {
+    // TODO: Implement access control for teams.
+    return TRUE;
   }
 
 }

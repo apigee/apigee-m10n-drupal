@@ -17,9 +17,10 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_teams\Controller;
+namespace Drupal\apigee_m10n\Controller;
 
 use Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Controller for balances.
@@ -28,6 +29,11 @@ use Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface;
  * See: `\Drupal\Core\Entity\EntityListBuilderInterface`.
  */
 interface PrepaidBalanceControllerInterface {
+
+  /**
+   * Cache prefix that is used for cache tags for this controller.
+   */
+  const CACHE_PREFIX = 'apigee.monetization.prepaid_balance';
 
   /**
    * View prepaid balance and account statements for teams.
@@ -70,11 +76,35 @@ interface PrepaidBalanceControllerInterface {
   /**
    * Loads the balances for the listing.
    *
-   * @return \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[]|array
+   * @return \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[]
    *   A list of apigee monetization prepaid balance entities.
    *
    * @throws \Exception
    */
   public function load();
+
+  /**
+   * Helper to get the billing cache tags.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
+   *
+   * @return array
+   *   The cache tags.
+   */
+  public static function getCacheTags(EntityInterface $entity);
+
+  /**
+   * Helper to get the cache id.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
+   * @param null $suffix
+   *   The suffix for the cache id.
+   *
+   * @return string
+   *   The cache id.
+   */
+  public static function getCacheId(EntityInterface $entity, $suffix = NULL);
 
 }
