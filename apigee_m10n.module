@@ -45,8 +45,6 @@ function apigee_m10n_theme_suggestions_rate_plan(array $variables) {
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 
   $suggestions[] = 'apigee_rate_plan__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->bundle();
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->bundle() . '__' . $sanitized_view_mode;
   $suggestions[] = 'apigee_rate_plan__' . $rate_plan->id();
   $suggestions[] = 'apigee_rate_plan__' . $rate_plan->id() . '__' . $sanitized_view_mode;
 
@@ -86,8 +84,6 @@ function apigee_m10n_theme_suggestions_package(array $variables) {
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 
   $suggestions[] = 'apigee_package__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_package__' . $package->bundle();
-  $suggestions[] = 'apigee_package__' . $package->bundle() . '__' . $sanitized_view_mode;
   $suggestions[] = 'apigee_package__' . $package->id();
   $suggestions[] = 'apigee_package__' . $package->id() . '__' . $sanitized_view_mode;
 
