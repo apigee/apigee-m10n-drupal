@@ -125,8 +125,9 @@ class TeamPermissionAccessCheck implements AccessInterface {
       }
     }
 
+    // TODO: Add a `team.permissions` cache context.
+    // See: `\Drupal\Core\Cache\Context\AccountPermissionsCacheContext`
     $access_result = AccessResult::allowedIf($access)
-      ->addCacheContexts(empty($permissions) ? [] : ['team.permissions'])
       ->addCacheableDependency($team)
       ->addCacheableDependency($account);
 
