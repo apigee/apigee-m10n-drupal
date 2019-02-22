@@ -23,14 +23,13 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultReasonInterface;
-use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
  * Access check for team permission.
  */
-class TeamPermissionAccessCheck implements AccessInterface {
+class TeamPermissionAccessCheck implements TeamPermissionAccessInterface {
 
   /**
    * The team permission handler.
@@ -50,17 +49,7 @@ class TeamPermissionAccessCheck implements AccessInterface {
   }
 
   /**
-   * Provides a generic access check for team permissions.
-   *
-   * @param \Symfony\Component\Routing\Route $route
-   *   The route.
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The Apigee Edge team.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user account.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
+   * {@inheritdoc}
    */
   public function access(Route $route, TeamInterface $team, AccountInterface $account) {
     // Team administrators have all access.
@@ -83,6 +72,16 @@ class TeamPermissionAccessCheck implements AccessInterface {
       $split = explode('+', $permission);
       return $this->allowedIfHasTeamPermissions($team, $account, $split, 'OR');
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasTeamPermission(TeamInterface $team, AccountInterface $account, string $permission) {
+
+    return !$account->isAnonymous()
+      && ($permissions = $this->teamPermissionHandler->getDeveloperPermissionsByTeam($team, $account))
+      && in_array($permission, $permissions);
   }
 
   /**
@@ -144,26 +143,6 @@ class TeamPermissionAccessCheck implements AccessInterface {
     }
 
     return $access_result;
-  }
-
-  /**
-   * Checks that a developer has a given company permission.
-   *
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The Apigee Edge team.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user account.
-   * @param string $permission
-   *   The permission.
-   *
-   * @return bool
-   *   Whether or not the user has the team permission.
-   */
-  protected function hasTeamPermission(TeamInterface $team, AccountInterface $account, string $permission) {
-
-    return !$account->isAnonymous()
-      && ($permissions = $this->teamPermissionHandler->getDeveloperPermissionsByTeam($team, $account))
-      && in_array($permission, $permissions);
   }
 
 }
