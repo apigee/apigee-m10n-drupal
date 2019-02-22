@@ -2,3 +2,9 @@ services:
 
   apigee_m10n.teams:
     class: Drupal\apigee_m10n_teams\MonetizationTeams
+
+  apigee_m10n_teams.access_check.team_permission:
+    class: Drupal\apigee_m10n_teams\Access\TeamPermissionAccessCheck
+    arguments: ['@apigee_edge_teams.team_permissions']
+    tags:
+      - { name: access_check, applies_to: _team_permission }

@@ -41,6 +41,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
   public static $modules = [
     'key',
     'apigee_edge',
+    'apigee_edge_teams',
     'apigee_m10n',
     'apigee_m10n_teams',
   ];
