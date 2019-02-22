@@ -112,11 +112,11 @@ class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
    *
    * @dataProvider accessData
    */
-  public function testAccess($account_permissions, $route_permission, $expected) {
+  public function testAccess($account_permissions, $team_permission, $expected) {
     $checker = new TeamPermissionAccessCheck($this->getPermissionHandler($account_permissions));
 
     $route_mock = $this->prophesize(Route::class);
-    $route_mock->getRequirement('_permission')->willReturn($route_permission);
+    $route_mock->getRequirement('_team_permission')->willReturn($team_permission);
     $route = $route_mock->reveal();
     $result = $checker->access($route, $this->team, $this->account);
 
@@ -134,49 +134,49 @@ class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
       // Account with no team permissions.
       [
         'account_permissions' => [],
-        'route_permission' => 'access foo',
+        'team_permission' => 'access foo',
         'expected' => AccessResultNeutral::class,
       ],
       // Account with single required permission.
       [
         'account_permissions' => ['access foo'],
-        'route_permission' => 'access foo',
+        'team_permission' => 'access foo',
         'expected' => AccessResultAllowed::class,
       ],
       // Account with one of two required permissions.
       [
         'account_permissions' => ['access foo'],
-        'route_permission' => 'access foo,access bar',
+        'team_permission' => 'access foo,access bar',
         'expected' => AccessResultNeutral::class,
       ],
       // Account with both of the required team permissions.
       [
         'account_permissions' => ['access foo', 'access bar'],
-        'route_permission' => 'access foo,access bar',
+        'team_permission' => 'access foo,access bar',
         'expected' => AccessResultAllowed::class,
       ],
       // Account with no matching permission.
       [
         'account_permissions' => [''],
-        'route_permission' => 'access foo+access bar',
+        'team_permission' => 'access foo+access bar',
         'expected' => AccessResultNeutral::class,
       ],
       // Account with the first matching permission.
       [
         'account_permissions' => ['access foo'],
-        'route_permission' => 'access foo+access bar',
+        'team_permission' => 'access foo+access bar',
         'expected' => AccessResultAllowed::class,
       ],
       // Account with the second matching permission.
       [
         'account_permissions' => ['access bar'],
-        'route_permission' => 'access foo+access bar',
+        'team_permission' => 'access foo+access bar',
         'expected' => AccessResultAllowed::class,
       ],
       // Failure to add a permission.
       [
         'account_permissions' => ['access bar'],
-        'route_permission' => NULL,
+        'team_permission' => NULL,
         'expected' => AccessResultNeutral::class,
       ],
     ];

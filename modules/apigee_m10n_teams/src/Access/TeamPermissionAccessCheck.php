@@ -63,14 +63,15 @@ class TeamPermissionAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, TeamInterface $team, AccountInterface $account) {
-    $permission = $route->getRequirement('_permission');
-
-    if ($permission === NULL) {
-      return AccessResult::neutral();
-    }
     // Team administrators have all access.
     if ($account->hasPermission('administer team')) {
       return AccessResult::allowed();
+    }
+
+    // Make sure the team permission is set in the route.
+    $permission = $route->getRequirement('_team_permission');
+    if ($permission === NULL) {
+      return AccessResult::neutral();
     }
 
     // Allow to conjunct the permissions with OR ('+') or AND (',').
