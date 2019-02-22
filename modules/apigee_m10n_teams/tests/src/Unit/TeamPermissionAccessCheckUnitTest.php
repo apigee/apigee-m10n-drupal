@@ -173,6 +173,12 @@ class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
         'route_permission' => 'access foo+access bar',
         'expected' => AccessResultAllowed::class,
       ],
+      // Failure to add a permission.
+      [
+        'account_permissions' => ['access bar'],
+        'route_permission' => NULL,
+        'expected' => AccessResultNeutral::class,
+      ],
     ];
   }
 
