@@ -4,6 +4,6 @@ apigee_monetization_teams.billing:
     _controller: \Drupal\apigee_m10n_teams\Controller\TeamPrepaidBalanceController::teamBalancePage
     _title: 'Prepaid balance'
   requirements:
-    _permission: 'view mint prepaid reports'
+    _team_permission: 'view prepaid balance'
   options:
     _apigee_monetization_route: TRUE

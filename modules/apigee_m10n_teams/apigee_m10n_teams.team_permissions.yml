@@ -1,0 +1,8 @@
+view prepaid balance:
+  title: 'View prepaid balance'
+
+view prepaid balance report:
+  title: 'View prepaid balance report'
+
+refresh prepaid balance:
+  title: 'Refresh prepaid balance'

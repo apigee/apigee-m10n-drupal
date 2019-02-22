@@ -19,10 +19,16 @@
 
 namespace Drupal\apigee_m10n_teams\Controller;
 
+use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Controller\PrepaidBalanceControllerBase;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Form\TeamPrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n_teams\TeamSdkControllerFactoryAwareTrait;
+use Drupal\Core\Form\FormBuilderInterface;
+use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for team balances.
@@ -30,6 +36,45 @@ use Drupal\apigee_m10n_teams\TeamSdkControllerFactoryAwareTrait;
 class TeamPrepaidBalanceController extends PrepaidBalanceControllerBase {
 
   use TeamSdkControllerFactoryAwareTrait;
+
+  /**
+   * The team access check.
+   *
+   * @var \Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface
+   */
+  protected $team_access_check;
+
+  /**
+   * BillingController constructor.
+   *
+   * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
+   *   The `apigee_edge.sdk_connector` service.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The `apigee_m10n.monetization` service.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The form builder.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   * @param \Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface $team_access_check
+   *   The team permission access checker.
+   */
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user, TeamPermissionAccessInterface $team_access_check) {
+    parent::__construct($sdk_connector, $monetization, $form_builder, $current_user);
+    $this->team_access_check = $team_access_check;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('apigee_edge.sdk_connector'),
+      $container->get('apigee_m10n.monetization'),
+      $container->get('form_builder'),
+      $container->get('current_user'),
+      $container->get('apigee_m10n_teams.access_check.team_permission')
+    );
+  }
 
   /**
    * View prepaid balance and account statements for teams.
@@ -69,8 +114,14 @@ class TeamPrepaidBalanceController extends PrepaidBalanceControllerBase {
    * {@inheritdoc}
    */
   protected function canRefreshBalance() {
-    // TODO: Implement access control for teams.
-    return TRUE;
+    return $this->team_access_check->hasTeamPermission($this->entity, $this->currentUser, 'refresh prepaid balance');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function canAccessDownloadReport() {
+    return $this->team_access_check->hasTeamPermission($this->entity, $this->currentUser, 'view prepaid balance report');
   }
 
 }
