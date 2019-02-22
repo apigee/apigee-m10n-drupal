@@ -149,7 +149,7 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
     }
 
     // Show the prepaid balance reports download form.
-    if ($this->currentUser->hasPermission('download prepaid balance reports')) {
+    if ($this->canAccessDownloadReport()) {
       // Build the form.
       $build['download_form'] = $this->formBuilder->getForm(
         $this->getDownloadFormClass(),
@@ -223,9 +223,17 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
    * Helper to check if user has access to refresh prepaid balance.
    *
    * @return bool
-   *   TRUE is user can refresh balance.
+   *   TRUE if user can refresh balance.
    */
   abstract protected function canRefreshBalance();
+
+  /**
+   * Helper to check if user has access to download reports.
+   *
+   * @return bool
+   *   TRUE if user can download reports.
+   */
+  abstract protected function canAccessDownloadReport();
 
   /**
    * Loads the balances for the listing.

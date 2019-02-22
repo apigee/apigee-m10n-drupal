@@ -72,6 +72,13 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
   /**
    * {@inheritdoc}
    */
+  protected function canAccessDownloadReport() {
+    $this->currentUser->hasPermission('download prepaid balance reports');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function load() {
     return ($list = $this->monetization->getDeveloperPrepaidBalances($this->entity, new \DateTimeImmutable('now'))) ? $list : [];
   }
