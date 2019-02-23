@@ -108,9 +108,11 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    * {@inheritdoc}
    */
   public function subscriptionAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($team = $entity->isTeamSubscription() ? $entity->get('team')->entity : FALSE) {
-      // Deny unless team permission is granted.
-      return AccessResult::forbiddenIf(!$this->teamAccessCheck()->hasTeamPermission($team, $account, "{$operation} subscription"));
+    if ($entity->isTeamSubscription() && ($team = $entity->get('team')->entity)) {
+      // Gat the access result.
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} subscription"]);
+      // Team permission results completely override user permissions.
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
   }
 
@@ -119,8 +121,10 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function subscriptionCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
     if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
-      // Deny unless team permission is granted.
-      return AccessResult::forbiddenIf(!$this->teamAccessCheck()->hasTeamPermission($context['team'], $account, "subscribe rate_plan"));
+      // Gat the access result.
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["subscribe rate_plan"]);
+      // Team permission results completely override user permissions.
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
   }
 
@@ -129,12 +133,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($operation === 'subscribe' && ($team = $this->currentTeam())) {
-      return AccessResult::forbiddenIf(!$this->teamAccessCheck()->hasTeamPermission($team, $account, "subscribe rate_plan"),
-        (string) t("The user %user doesn't have purchase plans for %team", [
-          '%user' => $account->getDisplayName(),
-          '%team' => $team->label(),
-        ])
-      );
+      return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
     }
   }
 
