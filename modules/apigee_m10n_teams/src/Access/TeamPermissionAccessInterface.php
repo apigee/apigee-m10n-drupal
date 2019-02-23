@@ -59,4 +59,25 @@ interface TeamPermissionAccessInterface extends AccessInterface {
    */
   public function hasTeamPermission(TeamInterface $team, AccountInterface $account, string $permission);
 
+  /**
+   * Creates an allowed access result if the team permissions are present.
+   *
+   * See: `\Drupal\Core\Access\AccessResult::allowedIfHasPermissions()`.
+   *
+   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
+   *   The Apigee Edge team.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
+   * @param array $permissions
+   *   An array of permissions.
+   * @param string $conjunction
+   *   (optional) 'AND' if all permissions are required, 'OR' in case just one.
+   *   Defaults to 'AND'.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   If the account has the permissions, isAllowed() will be TRUE, otherwise
+   *   isNeutral() will be TRUE.
+   */
+  public function allowedIfHasTeamPermissions(TeamInterface $team, AccountInterface $account, array $permissions, $conjunction = 'AND');
+
 }
