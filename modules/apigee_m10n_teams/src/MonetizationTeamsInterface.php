@@ -21,6 +21,10 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Interface for the `apigee_m10n.teams` service.
  */
@@ -41,5 +45,58 @@ interface MonetizationTeamsInterface {
    *   An array of field formatter plugin definitions.
    */
   public function fieldFormatterInfoAlter(array &$info);
+
+  /**
+   * Gets the current team from the route object.
+   *
+   * @return \Drupal\apigee_edge_teams\Entity\TeamInterface|null
+   *   The current team from the route.
+   */
+  public function currentTeam(): ?TeamInterface;
+
+  /**
+   * Handles `hook_subscription_access` for the `apigee_m10n_teams` module.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The `subscription` entity.
+   * @param string $operation
+   *   The operation.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account requesting access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface|null
+   *   The access result or null for non-team routes.
+   */
+  public function subscriptionAccess(EntityInterface $entity, $operation, AccountInterface $account);
+
+  /**
+   * Handles `hook_subscription_create_access` for `apigee_m10n_teams`.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account requesting access.
+   * @param array $context
+   *   An array of relevant context.
+   * @param string $entity_bundle
+   *   This is always `subscription`.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface|null
+   *   The access result or null for non-team routes.
+   */
+  public function subscriptionCreateAccess(AccountInterface $account, array $context, $entity_bundle);
+
+  /**
+   * Handles `hook_rate_plan_access` for the `apigee_m10n_teams` module.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The `rate_plan` entity.
+   * @param string $operation
+   *   The operation.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account requesting access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface|null
+   *   The access result or null for non-team routes.
+   */
+  public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account);
 
 }
