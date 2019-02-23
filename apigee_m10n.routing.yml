@@ -84,7 +84,7 @@ apigee_monetization.my_packages:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
@@ -94,7 +94,7 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: "Packages"
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 

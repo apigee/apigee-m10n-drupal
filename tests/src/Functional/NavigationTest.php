@@ -57,7 +57,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   public function testNavigation() {
     $this->developer = $this->createAccount([
       'view mint prepaid reports',
-      'access monetization packages',
+      'view package',
       'view subscription',
     ]);
 
