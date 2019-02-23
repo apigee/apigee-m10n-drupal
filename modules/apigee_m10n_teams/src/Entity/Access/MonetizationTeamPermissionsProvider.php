@@ -35,7 +35,15 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
    * {@inheritdoc}
    */
   public function permissions(): array {
-    return [];
+    $package_group = $this->t('Package');
+    return [
+      // Packages.
+      'view package' => new TeamPermission(
+        'view package',
+        $this->t('View package'),
+        $package_group
+      ),
+    ];
   }
 
 }
