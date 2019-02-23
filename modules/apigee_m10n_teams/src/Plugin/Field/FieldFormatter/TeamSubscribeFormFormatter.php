@@ -41,7 +41,7 @@ class TeamSubscribeFormFormatter extends SubscribeFormFormatter {
    * @throws \Exception
    */
   protected function viewValue(FieldItemInterface $item) {
-    if (($value = $item->getValue()) && ($value['team'] instanceof TeamInterface)) {
+    if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
       $subscription = Subscription::create([
         'ratePlan' => $item->getEntity(),
         'team' => $value['team']->decorated(),
