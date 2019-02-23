@@ -45,7 +45,7 @@ class MonetizationTeamsEntityRouteProvider extends MonetizationEntityRouteProvid
   }
 
   /**
-   * Gets the developer route.
+   * Gets the team route.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type.
