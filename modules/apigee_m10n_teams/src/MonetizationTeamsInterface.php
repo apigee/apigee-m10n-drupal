@@ -21,6 +21,8 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
+
 /**
  * Interface for the `apigee_m10n.teams` service.
  */
@@ -33,5 +35,13 @@ interface MonetizationTeamsInterface {
    *   An array of entity types.
    */
   public function entityTypeAlter(array &$entity_types);
+
+  /**
+   * Gets the current team from the route object.
+   *
+   * @return \Drupal\apigee_edge_teams\Entity\TeamInterface|null
+   *   The current team from the route.
+   */
+  public function currentTeam(): ?TeamInterface;
 
 }
