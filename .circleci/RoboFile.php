@@ -99,9 +99,8 @@ class RoboFile extends \Robo\Tasks
         foreach ($modules as $module) {
             list($module,) = explode(':', $module);
             $config->extra->{"merge-plugin"}->include[] = "modules/$module/composer.json";
-            $base = isset($config->extra->{"patches"}) ?  (array)$config->extra->{"patches"} : [];
-            $config->extra->{"patches"} = (object)array_merge($base,
-              (array)$this->getPatches($module));
+            $base = isset($config->extra->patches) ? (array) $config->extra->patches : [];
+            $config->extra->patches = (object) array_merge($base, (array) $this->getPatches($module));
         }
 
         file_put_contents('composer.json', json_encode($config));
@@ -136,11 +135,10 @@ class RoboFile extends \Robo\Tasks
         $config = json_decode(file_get_contents('composer.json'));
 
         // Rebuild the patches array.
-        $config->extra->{"patches"} = new \stdClass();
+        $config->extra->patches = new \stdClass();
         foreach ($modules as $module) {
             list($module,) = explode(':', $module);
-            $config->extra->{"patches"} = (object)array_merge((array)$config->extra->{"patches"},
-              (array)$this->getPatches($module));
+            $config->extra->patches = (object) array_merge((array) $config->extra->patches, (array) $this->getPatches($module));
         }
 
         file_put_contents('composer.json', json_encode($config));
@@ -164,6 +162,8 @@ class RoboFile extends \Robo\Tasks
      */
     public function updateDependencies()
     {
+        // Disable xdebug.
+        $this->taskExec('sed -i \'s/^zend_extension/;zend_extension/g\' /usr/local/etc/php/conf.d/xdebug.ini')->run();
         // The git checkout includes a composer.lock, and running composer update
         // on it fails for the first time.
         $this->taskFilesystemStack()->remove('composer.lock')->run();
@@ -172,6 +172,8 @@ class RoboFile extends \Robo\Tasks
         $this->taskComposerUpdate()
           ->optimizeAutoloader()
           ->run();
+        // The following patch won't be applied since drupal core is in replace.
+        $this->taskExec('wget -q -O - https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch | patch -p1')->run();
 
         // Preserve composer.lock as an artifact for future debugging.
         $this->taskFilesystemStack()
@@ -197,12 +199,21 @@ class RoboFile extends \Robo\Tasks
      */
     protected function getPatches($module)
     {
-        $path = 'modules/' . $module . '/patches.json';
-        if (file_exists($path)) {
-            return json_decode(file_get_contents($path));
-        } else {
-            return new stdClass();
+        $patches_file_path = 'modules/' . $module . '/patches.json';
+        // Add patch  file patches.
+        $patches = file_exists($patches_file_path) ? json_decode(file_get_contents($patches_file_path)) : [];
+
+        $composer_file_path = 'modules/' . $module . '/composer.json';
+
+        if (file_exists($composer_file_path)
+            && ($composer_contents = json_decode(file_get_contents($composer_file_path)))
+            && !empty($composer_contents->extra->patches)
+        ) {
+            // Ad composer file patches.
+            $patches += (array) $composer_contents->extra->patches;
         }
+
+        return $patches;
     }
 
     /**

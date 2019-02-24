@@ -41,15 +41,17 @@ class TeamSubscribeFormFormatter extends SubscribeFormFormatter {
    * @throws \Exception
    */
   protected function viewValue(FieldItemInterface $item) {
-    if (($value = $item->getValue()) && ($value['team'] instanceof TeamInterface)) {
-      $subscription = Subscription::create([
-        'ratePlan' => $item->getEntity(),
-        'team' => $value['team']->decorated(),
-        'startDate' => new \DateTimeImmutable(),
-      ]);
-      return $this->entityFormBuilder->getForm($subscription, 'default', [
-        'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
-      ]);
+    if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
+      if ($item->getEntity()->access('subscribe')) {
+        $subscription = Subscription::create([
+          'ratePlan' => $item->getEntity(),
+          'team' => $value['team']->decorated(),
+          'startDate' => new \DateTimeImmutable(),
+        ]);
+        return $this->entityFormBuilder->getForm($subscription, 'default', [
+          'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
+        ]);
+      }
     }
     else {
       return parent::viewValue($item);

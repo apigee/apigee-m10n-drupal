@@ -19,6 +19,9 @@
  * MA 02110-1301, USA.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Implements hook_entity_type_alter().
  */
@@ -31,6 +34,27 @@ function apigee_m10n_teams_entity_type_alter(array &$entity_types) {
  */
 function apigee_m10n_teams_field_formatter_info_alter(array &$info) {
   apigee_m10n_teams_service()->fieldFormatterInfoAlter($info);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_teams_subscription_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return apigee_m10n_teams_service()->subscriptionAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_teams_rate_plan_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return apigee_m10n_teams_service()->ratePlanAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_create_access().
+ */
+function apigee_m10n_teams_subscription_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  return apigee_m10n_teams_service()->subscriptionCreateAccess($account, $context, $entity_bundle);
 }
 
 /**

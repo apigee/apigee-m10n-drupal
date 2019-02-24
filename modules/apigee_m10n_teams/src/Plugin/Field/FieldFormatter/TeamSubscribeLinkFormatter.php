@@ -36,6 +36,8 @@ class TeamSubscribeLinkFormatter extends SubscribeLinkFormatter {
    *
    * @return array
    *   Renderable link element.
+   *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
    */
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
