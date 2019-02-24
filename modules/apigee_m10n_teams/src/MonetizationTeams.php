@@ -132,8 +132,13 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    * {@inheritdoc}
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($operation === 'subscribe' && ($team = $this->currentTeam())) {
-      return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+    if ($team = $this->currentTeam()) {
+      if ($operation === 'subscribe') {
+        return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+      }
+      else {
+        return $this->entityAccess($entity, $operation, $account);
+      }
     }
   }
 
