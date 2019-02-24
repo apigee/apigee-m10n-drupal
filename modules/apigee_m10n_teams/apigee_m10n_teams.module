@@ -19,6 +19,9 @@
  * MA 02110-1301, USA.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Implements hook_entity_type_alter().
  */
@@ -44,4 +47,11 @@ function apigee_m10n_teams_service() {
   }
 
   return $service;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_teams_package_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return apigee_m10n_teams_service()->entityAccess($entity, $operation, $account);
 }
