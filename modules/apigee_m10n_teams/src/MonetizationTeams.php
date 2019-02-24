@@ -26,7 +26,10 @@ use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * The `apigee_m10n.teams` service.
@@ -67,6 +70,18 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['package']->setHandlerClass('route_provider', $route_providers);
       // Override the storage class.
       $entity_types['package']->setStorageClass(TeamPackageStorage::class);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    if ($team = $this->currentTeam()) {
+      // Get the access result.
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} {$entity->getEntityTypeId()}"]);
+      // Team permission results completely override user permissions.
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
   }
 
