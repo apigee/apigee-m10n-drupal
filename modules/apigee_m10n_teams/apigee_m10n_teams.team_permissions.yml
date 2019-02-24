@@ -1,3 +1,6 @@
+permission_providers:
+  - Drupal\apigee_m10n_teams\Entity\Access\MonetizationTeamPermissionsProvider
+
 view prepaid balance:
   title: 'View prepaid balance'
 
