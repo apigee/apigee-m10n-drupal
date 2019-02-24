@@ -39,6 +39,6 @@ apigee_monetization.team_packages:
     _controller: \Drupal\apigee_m10n_teams\Controller\TeamPackagesController::teamCatalogPage
     _title: "Packages"
   requirements:
-    _permission: 'access monetization packages'
+    _team_permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
