@@ -140,6 +140,18 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
+  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    if ($team = $this->currentTeam()) {
+      // Get the access result.
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} {$entity->getEntityTypeId()}"]);
+      // Team permission results completely override user permissions.
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function currentTeam(): ?TeamInterface {
     // TODO: This call could be much smarter.
     // All team routes have the team ast the first parameter and we could be
