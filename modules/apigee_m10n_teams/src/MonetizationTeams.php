@@ -107,6 +107,39 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
+  public function subscriptionAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    if ($entity->isTeamSubscription() && ($team = $entity->get('team')->entity)) {
+      // Gat the access result.
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} subscription"]);
+      // Team permission results completely override user permissions.
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function subscriptionCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
+    if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
+      // Gat the access result.
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["subscribe rate_plan"]);
+      // Team permission results completely override user permissions.
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    if ($operation === 'subscribe' && ($team = $this->currentTeam())) {
+      return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($team = $this->currentTeam()) {
       // Get the access result.

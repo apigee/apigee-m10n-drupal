@@ -5,7 +5,7 @@ entity.subscription.team_collection:
     _title_callback: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamSubscriptionListBuilder::getPageTitle'
   requirements:
     user: '\d+'
-    _permission: 'view subscription'
+    _team_permission: 'view subscription'
   options:
     _apigee_monetization_route: TRUE
 
