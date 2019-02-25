@@ -73,7 +73,7 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
    * {@inheritdoc}
    */
   protected function canAccessDownloadReport() {
-    $this->currentUser->hasPermission('download prepaid balance reports');
+    return $this->currentUser->hasPermission('download prepaid balance reports');
   }
 
   /**
