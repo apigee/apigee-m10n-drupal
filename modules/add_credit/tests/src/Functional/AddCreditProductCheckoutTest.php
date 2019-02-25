@@ -76,7 +76,6 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
    * @throws \Exception
    *
    * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::mail
-   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::commerceOrderItemCreate
    * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::__construct
    * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::getSubscribedEvents
    * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::handleOrderStateChange

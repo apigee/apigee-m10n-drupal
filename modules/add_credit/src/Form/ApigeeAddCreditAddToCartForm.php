@@ -111,7 +111,11 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Populate values from request.
-    $values = [];
+    $values = [
+      'target_type' => 'developer',
+      'target_id' => $this->currentUser->getEmail(),
+    ];
+
     foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
       if ($entity = $this->request->getCurrentRequest()->get($entity_type_id)) {
         $values = [
@@ -161,6 +165,9 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
 
     // Go to the review step is skip cart.
     if ($this->shouldSkipCart()) {
+      // Ignore the destination.
+      $this->request->getCurrentRequest()->query->remove('destination');
+
       $form_state->setRedirect('commerce_checkout.form', [
         'commerce_order' => $this->entity->getOrderId(),
         'step' => 'review',
