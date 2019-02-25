@@ -21,6 +21,8 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -113,5 +115,35 @@ interface MonetizationTeamsInterface {
    *   The access result or null for non-team routes.
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account);
+
+  /**
+   * Check if company accepted latest terms and conditions.
+   *
+   * @param string $company_id
+   *   Company ID.
+   *
+   * @return bool|null
+   *   User terms and conditions acceptance flag.
+   */
+  public function isLatestTermsAndConditionAccepted(string $company_id): ?bool;
+
+  /**
+   * Get latest terms and condition.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface
+   *   Latest term and condition.
+   */
+  public function getLatestTermsAndConditions(): ?TermsAndConditionsInterface;
+
+  /**
+   * Accepts a terms and conditions by its id.
+   *
+   * @param string $company_id
+   *   Company ID.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem|null
+   *   Terms and conditions history item.
+   */
+  public function acceptLatestTermsAndConditions(string $company_id): ?LegalEntityTermsAndConditionsHistoryItem;
 
 }
