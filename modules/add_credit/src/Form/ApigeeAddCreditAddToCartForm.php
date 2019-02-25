@@ -75,7 +75,8 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
   public function __construct(
     EntityRepositoryInterface $entity_repository,
     EntityTypeBundleInfoInterface $entity_type_bundle_info,
-    TimeInterface $time, CartManagerInterface $cart_manager,
+    TimeInterface $time,
+    CartManagerInterface $cart_manager,
     CartProviderInterface $cart_provider,
     OrderTypeResolverInterface $order_type_resolver,
     CurrentStoreInterface $current_store,

@@ -25,6 +25,9 @@ use Drupal\Core\Routing\PreloadableRouteProviderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
 
+/**
+ * Route builder for add credit.
+ */
 class AddCreditRoutes implements ContainerInjectionInterface {
 
   /**
@@ -52,7 +55,6 @@ class AddCreditRoutes implements ContainerInjectionInterface {
       $container->get('router.route_provider')
     );
   }
-
 
   /**
    * Returns an array of route objects.

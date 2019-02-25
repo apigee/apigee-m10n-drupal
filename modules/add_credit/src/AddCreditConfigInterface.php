@@ -19,6 +19,9 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+/**
+ * Interface for add credit config.
+ */
 interface AddCreditConfigInterface {
 
   /**
@@ -28,4 +31,5 @@ interface AddCreditConfigInterface {
    *   An array of entity types.
    */
   public static function getEntityTypes(): array;
+
 }

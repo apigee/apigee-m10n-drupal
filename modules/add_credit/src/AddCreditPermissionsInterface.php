@@ -19,6 +19,9 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+/**
+ * Interface for add credit permissions.
+ */
 interface AddCreditPermissionsInterface {
 
   /**
