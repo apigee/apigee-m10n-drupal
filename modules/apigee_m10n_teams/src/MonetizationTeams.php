@@ -21,6 +21,9 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
@@ -31,10 +34,13 @@ use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * The `apigee_m10n.teams` service.
@@ -49,13 +55,64 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   protected $route_match;
 
   /**
+   * The Cache backend.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface
+   */
+  private $cache;
+
+  /**
+   * The Teams SDK controller factory.
+   *
+   * @var \Drupal\apigee_m10n\
+   */
+  private $sdk_controller_factory;
+
+  /**
+   * Static cache of `acceptLatestTermsAndConditions` results.
+   *
+   * @var array
+   */
+  private $companyAcceptedTermsStatus;
+
+  /**
+   * Static cache of the latest TnC.
+   *
+   * @var \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface|false
+   */
+  protected $latestTermsAndConditions;
+
+  /**
+   * Static cache of the TnC list.
+   *
+   * @var \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface[]
+   */
+  protected $termsAndConditionsList;
+
+  /**
+   * The logger.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  private $logger;
+
+  /**
    * MonetizationTeams constructor.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
+   *   The SDK controller factory.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   *   The Cache backend.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger.
    */
-  public function __construct(RouteMatchInterface $route_match) {
+  public function __construct(RouteMatchInterface $route_match, ApigeeSdkControllerFactoryInterface $sdk_controller_factory, CacheBackendInterface $cache, LoggerInterface $logger) {
     $this->route_match = $route_match;
+    $this->sdk_controller_factory = $sdk_controller_factory;
+    $this->cache = $cache;
+    $this->logger = $logger;
   }
 
   /**
@@ -182,6 +239,135 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   protected function teamAccessCheck(): TeamPermissionAccessInterface {
     return \Drupal::service('apigee_m10n_teams.access_check.team_permission');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
+    if (!($latest_tnc = $this->getLatestTermsAndConditions())) {
+      // If there isn't a latest TnC, and there was no error, there shouldn't be
+      // anything to accept.
+      // TODO: Add a test for an org with no TnC defined.
+      return TRUE;
+    }
+    // Check the cache table.
+    if (!isset($this->developerAcceptedTermsStatus[$developer_id])) {
+      // Get the latest TnC ID.
+      $latest_tnc_id = $latest_tnc->id();
+
+      // Creates a controller for getting accepted TnC.
+      $controller = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id);
+
+      try {
+        $history = $controller->getTermsAndConditionsHistory();
+      }
+      catch (\Exception $e) {
+        $message = "Unable to load Terms and Conditions history for developer \n\n" . $e;
+        $this->logger->error($message);
+        throw new SdkEntityLoadException($message);
+      }
+
+      // All we care about is the latest entry for the latest TnC.
+      $latest = array_reduce($history, function ($carry, $item) use ($latest_tnc_id) {
+        /** @var \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem $item */
+        // No need to look at items other than for the current TnC.
+        if ($item->getTnc()->id() !== $latest_tnc_id) {
+          return $carry;
+        }
+        // Gets the time of the carry over item.
+        $carry_time = $carry instanceof LegalEntityTermsAndConditionsHistoryItem ? $carry->getAuditDate()->getTimestamp() : NULL;
+
+        return $item->getAuditDate()->getTimestamp() > $carry_time ? $item : $carry;
+      });
+
+      $this->developerAcceptedTermsStatus[$developer_id] = ($latest instanceof LegalEntityTermsAndConditionsHistoryItem) && $latest->getAction() === 'ACCEPTED';
+    }
+
+    return $this->developerAcceptedTermsStatus[$developer_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLatestTermsAndConditions(): ?TermsAndConditionsInterface {
+    // Check the static cache.
+    if (isset($this->latestTermsAndConditions)) {
+      return $this->latestTermsAndConditions;
+    }
+    // Get the full list.
+    $list = $this->getTermsAndConditionsList();
+
+    // Get the latest TnC that have already started.
+    $latest = empty($list) ? NULL : array_reduce($list, function ($carry, $item) {
+      /** @var \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface $item */
+      // Gets the time of the carry over item.
+      $carry_time = $carry instanceof TermsAndConditionsInterface ? $carry->getStartDate()->getTimestamp() : NULL;
+      // Gets the timestamp of the current item.
+      $item_time = $item->getStartDate()->getTimestamp();
+      $now = time();
+      // Return the current item only if it the latest without starting in the
+      // future.
+      return ($item_time > $carry_time && $item_time < $now) ? $item : $carry;
+    });
+
+    // Cache the result for this request.
+    $this->latestTermsAndConditions = $latest;
+
+    return $this->latestTermsAndConditions;
+  }
+
+  /**
+   * Gets the full list of terms and conditions.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface[]
+   *   Returns the full list of terms and conditions or false on error.
+   */
+  protected function getTermsAndConditionsList(): array {
+    // The cache ID.
+    $cid = 'apigee_m10n:terms_and_conditions_list';
+
+    // Check the static cache.
+    if (isset($this->termsAndConditionsList)) {
+      return $this->termsAndConditionsList;
+    }
+    // Check the cache.
+    elseif (($cache = $this->cache->get($cid)) && ($list = $cache->data)) {
+      // `$list` is set so there is nothing to do here.
+    }
+    else {
+      try {
+        $list = $this->sdk_controller_factory->termsAndConditionsController()->getEntities();
+      }
+      catch (\Exception $ex) {
+        $this->logger->error("Unable to load Terms and Conditions: \n {$ex}");
+        $this->cache->delete($cid);
+        throw new SdkEntityLoadException("Error loading Terms and conditions. \n\n" . $ex);
+      }
+
+      // Cache the list for 5 minutes.
+      $this->cache->set($cid, $list, time() + 299);
+
+    }
+    $this->termsAndConditionsList = $list;
+
+    return $this->termsAndConditionsList;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function acceptLatestTermsAndConditions(string $company_id): ?LegalEntityTermsAndConditionsHistoryItem {
+    try {
+      // Reset the static cache for this developer.
+      unset($this->companyAcceptedTermsStatus[$company_id]);
+      return $this->sdk_controller_factory->developerTermsAndConditionsController($company_id)
+        ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
+    }
+    catch (\Throwable $t) {
+      $this->logger->error('Unable to accept latest TnC: ' . $t->getMessage());
+    }
+    return NULL;
   }
 
 }

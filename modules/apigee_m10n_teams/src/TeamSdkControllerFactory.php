@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_teams;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 
 /**
@@ -44,6 +45,17 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
       );
     }
     return $this->controllers[__FUNCTION__][$company_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function companyTermsAndConditionsController(string $company_id): CompanyTermsAndConditionsController {
+    return new CompanyTermsAndConditionsController(
+      $company_id,
+      $this->getOrganization(),
+      $this->getClient()
+    );
   }
 
   /**
