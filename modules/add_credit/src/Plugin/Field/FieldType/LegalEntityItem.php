@@ -19,8 +19,7 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
-use Apigee\Edge\Api\Monetization\Entity\LegalEntity;
-use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldItemBase;
@@ -202,7 +201,11 @@ class LegalEntityItem extends FieldItemBase implements OptionsProviderInterface 
    *   An array of developer and/or teams entities keyed by entity type.
    */
   protected function getPossibleTargets(AccountInterface $account) {
-    return \Drupal::service('apigee_m10n_add_credit.monetization')->getLegalEntities($account);
+    $entities = [];
+    foreach (AddCreditConfig::getEntityTypes() as $config) {
+      $entities[$config['edge_entity_type']] = isset($config['entities_callback']) ? $config['entities_callback']($account) : [];
+    }
+    return $entities;
   }
 
 }

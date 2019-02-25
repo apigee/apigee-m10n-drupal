@@ -1,5 +1,2 @@
-add credit to own developer prepaid balance:
-  title: 'Add credit to own developer prepaid balance'
-
-add credit to any developer prepaid balance:
-  title: 'Add credit to any developer prepaid balance'
+permission_callbacks:
+  - Drupal\apigee_m10n_add_credit\AddCreditPermissions::permissions

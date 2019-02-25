@@ -24,6 +24,7 @@ use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityViewBuilderInterface;
 use Drupal\user\UserInterface;
@@ -86,15 +87,15 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
   /**
    * Returns a renderable array for the add credit page.
    *
-   * @param \Drupal\user\UserInterface $user
-   *   The user entity.
+   * @param null $entity_id
+   *   The entity id.
    * @param string $currency_id
    *   The currency id.
    *
    * @return array
    *   A renderable array.
    */
-  public function view(UserInterface $user, string $currency_id) {
+  public function view(EntityInterface $entity = NULL, string $currency_id) {
     // Throw an exception if a product has not been configured for the currency.
     if (!($product = $this->getProductForCurrency($currency_id))) {
       $this->messenger()->addError($this->t('Cannot add credit to currency @currency_id.', [

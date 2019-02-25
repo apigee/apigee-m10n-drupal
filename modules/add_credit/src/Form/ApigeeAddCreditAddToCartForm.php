@@ -19,8 +19,20 @@
 
 namespace Drupal\apigee_m10n_add_credit\Form;
 
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\commerce_cart\CartManagerInterface;
+use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\Form\AddToCartForm;
+use Drupal\commerce_order\Resolver\OrderTypeResolverInterface;
+use Drupal\commerce_price\Resolver\ChainPriceResolverInterface;
+use Drupal\commerce_store\CurrentStoreInterface;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class ApigeeAddCreditAddToCartForm.
@@ -30,25 +42,96 @@ use Drupal\Core\Form\FormStateInterface;
 class ApigeeAddCreditAddToCartForm extends AddToCartForm {
 
   /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $request;
+
+  /**
+   * Constructs an AddToCartForm object.
+   *
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+   *   The entity repository.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entity_type_bundle_info
+   *   The entity type bundle info.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time.
+   * @param \Drupal\commerce_cart\CartManagerInterface $cart_manager
+   *   The cart manager.
+   * @param \Drupal\commerce_cart\CartProviderInterface $cart_provider
+   *   The cart provider.
+   * @param \Drupal\commerce_order\Resolver\OrderTypeResolverInterface $order_type_resolver
+   *   The order type resolver.
+   * @param \Drupal\commerce_store\CurrentStoreInterface $current_store
+   *   The current store.
+   * @param \Drupal\commerce_price\Resolver\ChainPriceResolverInterface $chain_price_resolver
+   *   The chain base price resolver.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request
+   *   The request stack.
+   */
+  public function __construct(
+    EntityRepositoryInterface $entity_repository,
+    EntityTypeBundleInfoInterface $entity_type_bundle_info,
+    TimeInterface $time, CartManagerInterface $cart_manager,
+    CartProviderInterface $cart_provider,
+    OrderTypeResolverInterface $order_type_resolver,
+    CurrentStoreInterface $current_store,
+    ChainPriceResolverInterface $chain_price_resolver,
+    AccountInterface $current_user,
+    RequestStack $request
+  ) {
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time, $cart_manager, $cart_provider, $order_type_resolver, $current_store, $chain_price_resolver, $current_user);
+    $this->request = $request;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
+      $container->get('commerce_cart.cart_manager'),
+      $container->get('commerce_cart.cart_provider'),
+      $container->get('commerce_order.chain_order_type_resolver'),
+      $container->get('commerce_store.current_store'),
+      $container->get('commerce_price.chain_price_resolver'),
+      $container->get('current_user'),
+      $container->get('request_stack')
+    );
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Populate values from request.
-    /** @var \Drupal\user\UserInterface $user */
-    if ($user = \Drupal::request()->get('user')) {
-      $this->entity->set('field_target', [
-        'target_type' => 'developer',
-        'target_id' => $user->getEmail(),
-      ]);
+    $values = [];
+    foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
+      if ($entity = $this->request->getCurrentRequest()->get($entity_type_id)) {
+        $values = [
+          'target_type' => $entity_type_id,
+          'target_id' => $entity->get($config['id_field_name'])->value,
+        ];
+      }
+    }
+
+    // Set the entity target default value.
+    if ($values) {
+      $this->entity->set(AddCreditConfig::TARGET_FIELD_NAME, $values);
     }
 
     // Build the form.
     $form = parent::buildForm($form, $form_state);
 
     // If the target field is visible, set a default value.
-    if ($user && isset($form['field_target'])) {
-      $form['field_target']['widget']['#default_value'] = [
-        'developer:' . $user->getEmail(),
+    if ($values && (isset($form[AddCreditConfig::TARGET_FIELD_NAME]))) {
+      $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
+        "{$values['target_type']}:{$values['target_id']}",
       ];
     }
 

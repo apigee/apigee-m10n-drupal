@@ -63,23 +63,10 @@ class MonetizationAddCredit implements MonetizationAddCreditInterface {
     // This is using the entity storage to get developer entities.
     // In case this can be pulled from the monetization API, switch to
     // return $this->sdkControllerFactory->legalEntityController()->getEntities().
-    $entities = $developers = [];
-
-    if ($account->hasPermission('add credit to own developer prepaid balance')) {
-      $developers = $this->entityTypeManager->getStorage('developer')->loadMultiple([$account->getEmail()]);
+    $entities = [];
+    foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
+      $entities[$entity_type_id] = $config['entities_callback']($account);
     }
-
-    if ($account->hasPermission('add credit to any developer prepaid balance')) {
-      $developers = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple();
-    }
-
-    /** @var \Drupal\apigee_edge\Entity\DeveloperInterface $developer */
-    foreach ($developers as $developer) {
-      if ($developer->getOwner()) {
-        $entities['developer'][$developer->id()] = $developer;
-      }
-    }
-
     return $entities;
   }
 

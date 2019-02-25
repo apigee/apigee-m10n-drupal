@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_add_credit\EventSubscriber;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_edge\JobExecutor;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\OrderInterface;
@@ -128,8 +129,8 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
         && !empty($product->apigee_add_credit_enabled->value)) {
 
         /** @var \Apigee\Edge\Entity\EntityInterface[] $targets */
-        if (($order_item->hasField('field_target'))
-          && ($targets = $order_item->get('field_target')->referencedEntities())
+        if (($order_item->hasField(AddCreditConfig::TARGET_FIELD_NAME))
+          && ($targets = $order_item->get(AddCreditConfig::TARGET_FIELD_NAME)->referencedEntities())
         ) {
           foreach ($targets as $target) {
             // Add the target entity for the amount.

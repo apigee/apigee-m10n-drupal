@@ -25,6 +25,7 @@ use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -329,6 +330,13 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
       static::CACHE_PREFIX,
       static::getCacheId($entity),
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getCacheId(EntityInterface $entity, $suffix = NULL) {
+    return static::CACHE_PREFIX . ":{$entity->getEntityTypeId()}:{$entity->id()}" . ($suffix ? ":{$suffix}" : '');
   }
 
 }

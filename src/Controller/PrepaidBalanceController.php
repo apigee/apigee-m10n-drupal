@@ -84,12 +84,4 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
     return ($list = $this->monetization->getDeveloperPrepaidBalances($this->entity, new \DateTimeImmutable('now'))) ? $list : [];
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function getCacheId(EntityInterface $entity, $suffix = NULL) {
-    /** @var \Drupal\apigee_edge\Entity\DeveloperInterface $entity */
-    return static::CACHE_PREFIX . ":developer:{$entity->getEmail()}" . ($suffix ? ":{$suffix}" : '');
-  }
-
 }

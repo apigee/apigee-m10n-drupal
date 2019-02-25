@@ -23,12 +23,12 @@ use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge\Entity\DeveloperInterface;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Cache\Cache;
@@ -36,7 +36,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -127,7 +126,8 @@ class BalanceAdjustmentJob extends EdgeJob {
         $new_balance = new Price((string) ($balance_after->getTopUps()), $currency_code);
 
         // Invalidate cache.
-        Cache::invalidateTags([PrepaidBalanceController::getCacheId($this->target)]);
+        $cache_entity = $this->target instanceof DeveloperInterface ? $this->target->getOwner() : $this->target;
+        Cache::invalidateTags([PrepaidBalanceController::getCacheId($cache_entity)]);
       }
       catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.

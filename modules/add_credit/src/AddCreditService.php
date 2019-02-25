@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
 use Drupal\commerce_order\Entity\OrderItemInterface;
-use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -246,49 +245,61 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity) {
-    if ((count($build['table']['#rows'])) && ($entity instanceof UserInterface) && ($this->current_user->hasPermission('add credit to any developer prepaid balance') ||
-        ($this->current_user->hasPermission('add credit to own developer prepaid balance') && $this->current_user->id() === $entity->id()))) {
-      $build['table']['#header']['operations'] = t('Operations');
+    if ((count($build['table']['#rows']))) {
+      $has_operations = FALSE;
       $destination = \Drupal::destination()->getAsArray();
       $config = \Drupal::configFactory()->get('apigee_m10n_add_credit.config');
+      $attributes = [
+        'class' => [
+          'use-ajax',
+          'button',
+        ],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => json_encode([
+          'width' => 500,
+          'height' => 500,
+          'draggable' => FALSE,
+          'autoResize' => FALSE,
+        ]),
+      ];
 
-      foreach ($build['table']['#rows'] as $currency_id => $row) {
-        $url = Url::fromRoute('apigee_m10n_add_credit.add_credit', [
-          'user' => $entity->id(),
+      foreach ($build['table']['#rows'] as $currency_id => &$row) {
+        $entity_type_id = $entity->getEntityTypeId();
+        $url = Url::fromRoute("apigee_m10n_add_credit.add_credit.$entity_type_id", [
+          $entity_type_id => $entity->id(),
           'currency_id' => $currency_id,
         ], [
           'query' => $destination
         ]);
 
         // If the currency has a configured product, add a link to add credit to this balance.
-        $build['table']['#rows'][$currency_id]['data']['operations']['data'] = $config->get("products.$currency_id.product_id") ? [
-          '#type' => 'operations',
-          '#links' => [
-            'add_credit' => [
-              'title' => t('Add credit'),
-              'url' => $url,
-              'attributes' => [
-                'class' => [
-                  'use-ajax',
-                  'button',
-                ],
-                'data-dialog-type' => 'modal',
-                'data-dialog-options' => json_encode([
-                  'width' => 500,
-                  'height' => 500,
-                  'draggable' => FALSE,
-                  'autoResize' => FALSE,
-                ]),
+        if ($url->access($this->current_user) && $config->get("products.$currency_id.product_id")) {
+          $has_operations = TRUE;
+          $data = [
+            '#type' => 'operations',
+            '#links' => [
+              'add_credit' => [
+                'title' => t('Add credit'),
+                'url' => $url,
+                'attributes' => $attributes,
               ],
             ],
+          ];
+        }
+
+        if ($has_operations) {
+          $row['data']['operations']['data'] = $data ?? ['#markup' => ''];
+        }
+      }
+
+      if ($has_operations) {
+        $build['table']['#header']['operations'] = t('Operations');
+        $build['table']['#attached'] = [
+          'library' => [
+            'core/drupal.dialog.ajax',
+            'core/jquery.ui.dialog',
           ],
-          '#attached' => [
-            'library' => [
-              'core/drupal.dialog.ajax',
-              'core/jquery.ui.dialog',
-            ],
-          ],
-        ] : ['#markup' => ''];
+        ];
       }
     }
 

@@ -18,13 +18,5 @@ apigee_m10n_add_credit.settings.add_credit.settings:
   options:
     _apigee_monetization_route: TRUE
 
-apigee_m10n_add_credit.add_credit:
-  path: /user/{user}/monetization/billing/add-credit/{currency_id}
-  defaults:
-    _controller: \Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view
-    _title: 'Add credit'
-  requirements:
-    user: '\d+'
-    _permission: 'add credit to any developer prepaid balance+add credit to own developer prepaid balance'
-  options:
-    _apigee_monetization_route: TRUE
+route_callbacks:
+  - \Drupal\apigee_m10n_add_credit\Routing\AddCreditRoutes::routes
