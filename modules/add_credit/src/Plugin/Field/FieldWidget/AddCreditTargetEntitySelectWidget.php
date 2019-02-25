@@ -26,18 +26,18 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\OptGroup;
 
 /**
- * Plugin implementation of the 'options_select' widget.
+ * Plugin implementation of the 'add_credit_target_entity' widget.
  *
  * @FieldWidget(
- *   id = "apigee_legal_entity",
+ *   id = "add_credit_target_entity",
  *   label = @Translation("Select list"),
  *   field_types = {
- *     "apigee_legal_entity",
+ *     "add_credit_target_entity",
  *   },
  *   multiple_values = TRUE
  * )
  */
-class LegalEntitySelectWidget extends OptionsSelectWidget {
+class AddCreditTargetEntitySelectWidget extends OptionsSelectWidget {
 
   /**
    * {@inheritdoc}

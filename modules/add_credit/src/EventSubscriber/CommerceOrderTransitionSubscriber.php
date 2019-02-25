@@ -97,7 +97,9 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
     }
 
     // Create a new job update the account balance.
-    foreach ($this->getCreditTotalsForOrder($order) as ['target' => $target, 'amount' => $amount]) {
+    $totals = $this->getCreditTotalsForOrder($order);
+
+    foreach ($totals as ['target' => $target, 'amount' => $amount]) {
       if (!empty((double) $amount->getNumber())) {
         // Use a custom adjustment type because it can support a credit or a debit.
         $job = new BalanceAdjustmentJob($target, new Adjustment([

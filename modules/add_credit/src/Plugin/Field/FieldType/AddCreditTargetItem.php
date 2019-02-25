@@ -32,18 +32,19 @@ use Drupal\Core\TypedData\DataReferenceTargetDefinition;
 use Drupal\Core\TypedData\OptionsProviderInterface;
 
 /**
- * Defines the 'apigee_legal_entity' entity field type.
+ * Defines the 'add_credit_target_entity' entity field type.
  *
  * @FieldType(
- *   id = "apigee_legal_entity",
- *   label = @Translation("Apigee legal entity"),
- *   description = @Translation("Apigee legal entity"),
- *   default_formatter = "apigee_legal_entity",
- *   default_widget = "apigee_legal_entity",
- *   list_class = "\Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\LegalEntityFieldItemList",
+ *   id = "add_credit_target_entity",
+ *   label = @Translation("Apigee add credit target entity"),
+ *   no_ui = TRUE,
+ *   description = @Translation("Apigee add credit target entity"),
+ *   default_formatter = "add_credit_target_entity",
+ *   default_widget = "add_credit_target_entity",
+ *   list_class = "\Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\AddCreditTargetEntityFieldItemList",
  * )
  */
-class LegalEntityItem extends FieldItemBase implements OptionsProviderInterface {
+class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterface {
 
   /**
    * {@inheritdoc}

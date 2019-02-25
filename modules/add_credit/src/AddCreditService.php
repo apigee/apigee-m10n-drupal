@@ -116,6 +116,16 @@ class AddCreditService implements AddCreditServiceInterface {
           ->setDisplayConfigurable('form', TRUE)
           ->setDisplayConfigurable('view', TRUE);
         break;
+
+      case 'commerce_order_item':
+        // Add a field to set the add credit target entity.
+        $fields[AddCreditConfig::TARGET_FIELD_NAME] = BaseFieldDefinition::create('add_credit_target_entity')
+          ->setLabel(t('Add credit target'))
+          ->setRevisionable(TRUE)
+          ->setTranslatable(TRUE)
+          ->setDisplayConfigurable('form', TRUE)
+          ->setDisplayConfigurable('view', TRUE);
+        break;
     }
 
     return $fields;
@@ -271,6 +281,7 @@ class AddCreditService implements AddCreditServiceInterface {
         ], [
           'query' => $destination
         ]);
+        $data = ['#markup' => ''];
 
         // If the currency has a configured product, add a link to add credit to this balance.
         if ($url->access($this->current_user) && $config->get("products.$currency_id.product_id")) {
@@ -288,7 +299,7 @@ class AddCreditService implements AddCreditServiceInterface {
         }
 
         if ($has_operations) {
-          $row['data']['operations']['data'] = $data ?? ['#markup' => ''];
+          $row['data']['operations']['data'] = $data;
         }
       }
 

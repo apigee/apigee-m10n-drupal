@@ -23,6 +23,7 @@ use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Routing\PreloadableRouteProviderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -67,25 +68,30 @@ class AddCreditRoutes implements ContainerInjectionInterface {
 
     foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
       // Build the path using the base path and suffix with 'add-credit/{currency_id}'.
-      if (($route = $this->routeProvider->getRouteByName($config['base_route_name'])) && ($path = $route->getPath())) {
-        $edge_entity_type = $config['edge_entity_type'];
-        $routes["apigee_m10n_add_credit.add_credit.$entity_type_id"] = new Route($path . '/add-credit/{currency_id}',
-          [
-            '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
-            '_title' => 'Add credit',
-          ],
-          [
-            '_permission' => "add credit to any $edge_entity_type prepaid balance+add credit to own $edge_entity_type prepaid balance",
-          ],
-          [
-            '_apigee_monetization_route' => TRUE,
-            'parameters' => [
-              $entity_type_id => [
-                'type' => "entity:{$entity_type_id}",
-              ],
+      try {
+        if (($route = $this->routeProvider->getRouteByName($config['base_route_name'])) && ($path = $route->getPath())) {
+          $edge_entity_type = $config['edge_entity_type'];
+          $routes["apigee_m10n_add_credit.add_credit.$entity_type_id"] = new Route($path . '/add-credit/{currency_id}',
+            [
+              '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
+              '_title' => 'Add credit',
             ],
-          ]
-        );
+            [
+              '_permission' => "add credit to any $edge_entity_type prepaid balance+add credit to own $edge_entity_type prepaid balance",
+            ],
+            [
+              '_apigee_monetization_route' => TRUE,
+              'parameters' => [
+                $entity_type_id => [
+                  'type' => "entity:{$entity_type_id}",
+                ],
+              ],
+            ]
+          );
+        }
+      }
+      catch (RouteNotFoundException $exception) {
+        // TODO: Log this.
       }
     }
 

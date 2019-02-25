@@ -115,7 +115,7 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
     foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
       if ($entity = $this->request->getCurrentRequest()->get($entity_type_id)) {
         $values = [
-          'target_type' => $entity_type_id,
+          'target_type' => $config['edge_entity_type'],
           'target_id' => $entity->get($config['id_field_name'])->value,
         ];
       }

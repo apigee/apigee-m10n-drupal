@@ -23,17 +23,17 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 
 /**
- * Plugin implementation of the 'apigee_legal_entity' formatter.
+ * Plugin implementation of the 'add_credit_target_entity' formatter.
  *
  * @FieldFormatter(
- *   id = "apigee_legal_entity",
+ *   id = "add_credit_target_entity",
  *   label = @Translation("Legal entity name"),
  *   field_types = {
- *     "apigee_legal_entity"
+ *     "add_credit_target_entity"
  *   }
  * )
  */
-class LegalEntityDefaultFormatter extends FormatterBase {
+class AddCreditTargetEntityDefaultFormatter extends FormatterBase {
 
   /**
    * {@inheritdoc}

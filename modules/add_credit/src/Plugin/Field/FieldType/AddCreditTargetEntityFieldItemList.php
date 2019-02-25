@@ -23,11 +23,9 @@ use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\FieldItemList;
 
 /**
- * Class LegalEntityFieldItemList.
- *
- * @package Drupal\apigee_m10n_add_credit.
+ * Class AddCreditTargetEntityFieldItemList.
  */
-class LegalEntityFieldItemList extends FieldItemList implements EntityReferenceFieldItemListInterface {
+class AddCreditTargetEntityFieldItemList extends FieldItemList implements EntityReferenceFieldItemListInterface {
 
   /**
    * {@inheritdoc}
@@ -37,7 +35,7 @@ class LegalEntityFieldItemList extends FieldItemList implements EntityReferenceF
       return [];
     }
 
-    /** @var \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\LegalEntityItem $item */
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\AddCreditTargetItem $item */
     $target_entities = $ids = [];
     foreach ($this->list as $delta => $item) {
       $ids[$item->target_type][$delta] = $item->target_id;

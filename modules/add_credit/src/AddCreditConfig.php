@@ -50,7 +50,7 @@ class AddCreditConfig implements AddCreditConfigInterface {
   /**
    * The name of the field that holds the add credit target value.
    */
-  public const TARGET_FIELD_NAME = 'field_target';
+  public const TARGET_FIELD_NAME = 'add_credit_target';
 
   /**
    * {@inheritdoc}

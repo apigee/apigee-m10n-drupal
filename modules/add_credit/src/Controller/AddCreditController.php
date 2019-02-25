@@ -95,7 +95,7 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
    * @return array
    *   A renderable array.
    */
-  public function view(EntityInterface $entity, string $currency_id) {
+  public function view(EntityInterface $entity = NULL, string $currency_id = NULL) {
     // Throw an exception if a product has not been configured for the currency.
     if (!($product = $this->getProductForCurrency($currency_id))) {
       $this->messenger()->addError($this->t('Cannot add credit to currency @currency_id.', [
