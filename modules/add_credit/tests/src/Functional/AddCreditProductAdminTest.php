@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
 use Drupal\commerce_product\Entity\Product;
 
@@ -120,9 +121,9 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
    * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::submitForm
    */
   public function testNotificationAdminUi() {
-    $this->drupalGet('admin/config/apigee-edge/monetization/add-credit-settings');
+    $this->drupalGet('admin/config/apigee-edge/monetization/add-credit/settings');
     // Check the title.
-    $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
+    $this->assertCssElementContains('h1.page-title', 'Settings');
     // Check the default values.
     $this->assertSession()->checkboxNotChecked('Always');
     $this->assertSession()->checkboxChecked('Only on error');
@@ -134,12 +135,12 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
     $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation.');
 
     // Change to always notify.
-    $this->submitForm(['notify_on' => ApigeeAddCreditConfigForm::NOTIFY_ALWAYS], 'Save configuration');
-    $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
+    $this->submitForm(['notify_on' => AddCreditConfig::NOTIFY_ALWAYS], 'Save configuration');
+    $this->assertCssElementContains('h1.page-title', 'Settings');
     $this->assertCssElementContains('div.messages--status', ' The configuration options have been saved.');
     // Load the saved config and test the changes.
-    $settings = $this->config(ApigeeAddCreditConfigForm::CONFIG_NAME);
-    static::assertSame(ApigeeAddCreditConfigForm::NOTIFY_ALWAYS, $settings->get('notify_on'));
+    $settings = $this->config(AddCreditConfig::CONFIG_NAME);
+    static::assertSame(AddCreditConfig::NOTIFY_ALWAYS, $settings->get('notify_on'));
     static::assertSame($site_mail, $settings->get('notification_recipient'));
   }
 
