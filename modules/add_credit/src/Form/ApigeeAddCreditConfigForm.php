@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n_add_credit\Form;
 
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -30,31 +31,10 @@ use Drupal\Core\Url;
 class ApigeeAddCreditConfigForm extends ConfigFormBase {
 
   /**
-   * The default name for the `apigee_m10n_add_credit` module.
-   *
-   * @var string
-   */
-  public const CONFIG_NAME = 'apigee_m10n_add_credit.config';
-
-  /**
-   * The "Always" value for `apigee_m10n_add_credit.config.notify_on`.
-   *
-   * @var string
-   */
-  public const NOTIFY_ALWAYS = 'always';
-
-  /**
-   * The "Only on error" value for `apigee_m10n_add_credit.config.notify_on`.
-   *
-   * @var string
-   */
-  public const NOTIFY_ON_ERROR = 'error_only';
-
-  /**
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return [static::CONFIG_NAME];
+    return [AddCreditConfig::CONFIG_NAME];
   }
 
   /**
@@ -68,7 +48,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config(static::CONFIG_NAME);
+    $config = $this->config(AddCreditConfig::CONFIG_NAME);
 
     // Use the site default if an email hasn't been saved.
     $default_email = $config->get('notification_recipient');
@@ -89,8 +69,8 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => $this->t('Notify administrator'),
       '#options' => [
-        static::NOTIFY_ALWAYS => $this->t('Always'),
-        static::NOTIFY_ON_ERROR => $this->t('Only on error'),
+        AddCreditConfig::NOTIFY_ALWAYS => $this->t('Always'),
+        AddCreditConfig::NOTIFY_ON_ERROR => $this->t('Only on error'),
       ],
       '#description' => $this->t($description, [
         '%add_credit' => 'Add credit',
@@ -127,7 +107,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
 
-    $this->config(static::CONFIG_NAME)
+    $this->config(AddCreditConfig::CONFIG_NAME)
       ->set('notify_on', $form_state->getValue('notify_on'))
       ->set('notification_recipient', $form_state->getValue('notification_recipient'))
       ->save();

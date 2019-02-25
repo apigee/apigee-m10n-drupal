@@ -1,9 +1,30 @@
-apigee_m10n_add_credit.apigee_add_credit_config_form:
-  path: '/admin/config/apigee-edge/monetization/add-credit-settings'
+apigee_m10n_add_credit.settings.add_credit:
+  path: '/admin/config/apigee-edge/monetization/add-credit'
   defaults:
-    _form: '\Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm'
-    _title: 'Apigee Add Credit Configuration'
+    _form: '\Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditProductsConfigForm'
+    _title: 'Products'
   requirements:
     _permission: 'access administration pages'
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n_add_credit.settings.add_credit.settings:
+  path: '/admin/config/apigee-edge/monetization/add-credit/settings'
+  defaults:
+    _form: '\Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm'
+    _title: 'Settings'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n_add_credit.add_credit:
+  path: /user/{user}/monetization/billing/add-credit/{currency_id}
+  defaults:
+    _controller: \Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view
+    _title: 'Add credit'
+  requirements:
+    user: '\d+'
+    _permission: 'add credit to any developer prepaid balance+add credit to own developer prepaid balance'
   options:
     _apigee_monetization_route: TRUE

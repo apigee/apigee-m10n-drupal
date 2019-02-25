@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -30,6 +31,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\user\UserInterface;
 
 /**
  * Helper service to handle basic module tasks.
@@ -85,24 +88,6 @@ class AddCreditService implements AddCreditServiceInterface {
         $message['body'][0] = t($body, $params, $options);
         break;
 
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function commerceOrderItemCreate(EntityInterface $entity) {
-    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $entity */
-    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variant */
-    // Check to see if an "Add credit" product is what's being added.
-    if ($entity instanceof OrderItemInterface
-      && ($variant = $entity->getPurchasedEntity())
-      && ($product = $variant->getProduct())
-      && !empty($product->apigee_add_credit_enabled->value)
-    ) {
-      // Save the current user as the top up recipient. We might need to change
-      // how this works when topping up a company or a non-current user.
-      $entity->setData('add_credit_account', $this->current_user->getEmail());
     }
   }
 
@@ -255,6 +240,61 @@ class AddCreditService implements AddCreditServiceInterface {
         ];
       }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity) {
+    if ((count($build['table']['#rows'])) && ($entity instanceof UserInterface) && ($this->current_user->hasPermission('add credit to any developer prepaid balance') ||
+        ($this->current_user->hasPermission('add credit to own developer prepaid balance') && $this->current_user->id() === $entity->id()))) {
+      $build['table']['#header']['operations'] = t('Operations');
+      $destination = \Drupal::destination()->getAsArray();
+      $config = \Drupal::configFactory()->get('apigee_m10n_add_credit.config');
+
+      foreach ($build['table']['#rows'] as $currency_id => $row) {
+        $url = Url::fromRoute('apigee_m10n_add_credit.add_credit', [
+          'user' => $entity->id(),
+          'currency_id' => $currency_id,
+        ], [
+          'query' => $destination
+        ]);
+
+        // If the currency has a configured product, add a link to add credit to this balance.
+        $build['table']['#rows'][$currency_id]['data']['operations']['data'] = $config->get("products.$currency_id.product_id") ? [
+          '#type' => 'operations',
+          '#links' => [
+            'add_credit' => [
+              'title' => t('Add credit'),
+              'url' => $url,
+              'attributes' => [
+                'class' => [
+                  'use-ajax',
+                  'button',
+                ],
+                'data-dialog-type' => 'modal',
+                'data-dialog-options' => json_encode([
+                  'width' => 500,
+                  'height' => 500,
+                  'draggable' => FALSE,
+                  'autoResize' => FALSE,
+                ]),
+              ],
+            ],
+          ],
+          '#attached' => [
+            'library' => [
+              'core/drupal.dialog.ajax',
+              'core/jquery.ui.dialog',
+            ],
+          ],
+        ] : ['#markup' => ''];
+      }
+    }
+
+    // Add cache contexts.
+    $build['table']['#cache']['contexts'][] = 'user.permissions';
+    $build['table']['#cache']['tags'][] = 'config:' . AddCreditConfig::CONFIG_NAME;
   }
 
   /**

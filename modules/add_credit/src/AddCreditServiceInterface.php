@@ -42,20 +42,6 @@ interface AddCreditServiceInterface {
   public function mail($key, &$message, $params);
 
   /**
-   * Implementation for `apigee_m10n_add_credit_commerce_order_item_create()`.
-   *
-   * When an order item is created, we need to check to see if the product is an
-   * add credit item. If it is, we should store a reference to the developer
-   * that we are topping up so it can be used to credit the appropriate account.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The commerce order item.
-   *
-   * @todo: Add support for team context.
-   */
-  public function commerceOrderItemCreate(EntityInterface $entity);
-
-  /**
    * Implementation for `apigee_m10n_add_credit_entity_base_field_info()`.
    *
    * This will add the `apigee_add_credit_enabled` base field to all
@@ -158,5 +144,15 @@ interface AddCreditServiceInterface {
    *     form to set default values.
    */
   public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context);
+
+  /**
+   * Handles `hook_apigee_m10n_prepaid_balance_page_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $build
+   *   A renderable array representing the page.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The prepaid balance owner entity.
+   */
+  public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity);
 
 }

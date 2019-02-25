@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -73,7 +74,7 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
    * {@inheritdoc}
    */
   protected function canAccessDownloadReport() {
-    $this->currentUser->hasPermission('download prepaid balance reports');
+    return $this->currentUser->hasPermission('download prepaid balance reports');
   }
 
   /**
@@ -81,6 +82,14 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
    */
   public function load() {
     return ($list = $this->monetization->getDeveloperPrepaidBalances($this->entity, new \DateTimeImmutable('now'))) ? $list : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getCacheId(EntityInterface $entity, $suffix = NULL) {
+    /** @var \Drupal\apigee_edge\Entity\DeveloperInterface $entity */
+    return static::CACHE_PREFIX . ":developer:{$entity->getEmail()}" . ($suffix ? ":{$suffix}" : '');
   }
 
 }

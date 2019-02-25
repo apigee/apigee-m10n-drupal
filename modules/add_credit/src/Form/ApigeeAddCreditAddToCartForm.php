@@ -32,6 +32,32 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
   /**
    * {@inheritdoc}
    */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    // Populate values from request.
+    /** @var \Drupal\user\UserInterface $user */
+    if ($user = \Drupal::request()->get('user')) {
+      $this->entity->set('field_target', [
+        'target_type' => 'developer',
+        'target_id' => $user->getEmail(),
+      ]);
+    }
+
+    // Build the form.
+    $form = parent::buildForm($form, $form_state);
+
+    // If the target field is visible, set a default value.
+    if ($user && isset($form['field_target'])) {
+      $form['field_target']['widget']['#default_value'] = [
+        'developer:' . $user->getEmail(),
+      ];
+    }
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function actions(array $form, FormStateInterface $form_state) {
     $action = parent::actions($form, $form_state);
 
