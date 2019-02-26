@@ -11,12 +11,16 @@ services:
     class: Drupal\apigee_m10n_add_credit\AddCreditMonetization
     arguments: ['@apigee_m10n_add_credit.sdk_controller_factory', '@entity_type.manager']
 
-  logger.channel.apigee_m10n_add_credit:
-    parent: logger.channel_base
-    arguments: ['apigee_monetization_add_credit']
-
   apigee_m10n_add_credit.payment_transition_subscriber:
     class: Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber
     arguments: ['@apigee_edge.sdk_connector', '@apigee_edge.job_executor']
     tags:
       - { name: event_subscriber }
+
+  logger.channel.apigee_m10n_add_credit:
+    parent: logger.channel_base
+    arguments: ['apigee_monetization_add_credit']
+
+  plugin.manager.apigee_add_credit_entity_type:
+    class: Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManager
+    parent: default_plugin_manager

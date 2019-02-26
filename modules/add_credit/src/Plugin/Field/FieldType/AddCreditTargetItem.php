@@ -19,8 +19,6 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
-use Drupal\apigee_edge\Exception\DeveloperDoesNotExistException;
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldItemBase;

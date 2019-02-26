@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Controller;
 
 use Drupal\apigee_edge_teams\TeamMembershipManagerInterface;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -68,11 +69,11 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
   protected $routeMatch;
 
   /**
-   * The team membership manager.
+   * The add credit plugin manager.
    *
-   * @var \Drupal\apigee_edge_teams\TeamMembershipManagerInterface
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface
    */
-  protected $teamMembershipManager;
+  protected $addCreditPluginManager;
 
   /**
    * AddCreditController constructor.
@@ -85,15 +86,14 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
    *   The config factory.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
-   * @param \Drupal\apigee_edge_teams\TeamMembershipManagerInterface $team_membership_manager
-   *   The team membership manager.
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
    */
-  public function __construct(EntityStorageInterface $storage, EntityViewBuilderInterface $view_builder, ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match, TeamMembershipManagerInterface $team_membership_manager) {
+  public function __construct(EntityStorageInterface $storage, EntityViewBuilderInterface $view_builder, ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
     $this->viewBuilder = $view_builder;
     $this->configFactory = $config_factory;
     $this->storage = $storage;
     $this->routeMatch = $route_match;
-    $this->teamMembershipManager = $team_membership_manager;
+    $this->addCreditPluginManager = $add_credit_plugin_manager;
   }
 
   /**
@@ -105,26 +105,24 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
       $container->get('entity.manager')->getViewBuilder('commerce_product'),
       $container->get('config.factory'),
       $container->get('current_route_match'),
-      $container->get('apigee_edge_teams.team_membership_manager')
+      $container->get('plugin.manager.apigee_add_credit_entity_type')
     );
   }
 
   /**
    * Returns a renderable array for the add credit page.
    *
-   * @param \Drupal\Core\Entity\EntityInterface|null $entity
-   *   The add credit entity.
-   * @param string $currency_id
+   * @param string $currency
    *   The currency id.
    *
    * @return array
    *   A renderable array.
    */
-  public function view(EntityInterface $entity = NULL, string $currency_id = NULL) {
+  public function view(string $currency = NULL) {
     // Throw an exception if a product has not been configured for the currency.
-    if (!($product = $this->getProductForCurrency($currency_id))) {
+    if (!($product = $this->getProductForCurrency($currency))) {
       $this->messenger()->addError($this->t('Cannot add credit to currency @currency_id.', [
-        '@currency_id' => $currency_id,
+        '@currency_id' => $currency,
       ]));
       throw new NotFoundHttpException();
     }
@@ -142,44 +140,22 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
    *   The access result.
    */
   public function access(AccountInterface $account) {
-    // Developer.
-    if ($user = $this->routeMatch->getParameter('user')) {
-      return AccessResult::allowedIf(
-        $account->hasPermission('add credit to any developer prepaid balance')
-        || ($account->hasPermission('add credit to own developer prepaid balance') && $account->id() === $user->id())
-      );
-    }
-
-    // Team.
-    if ($team = $this->routeMatch->getParameter('team')) {
-      if ($account->hasPermission('add credit to any team prepaid balance')) {
-        return AccessResult::allowed();
-      }
-
-      if ($account->hasPermission('add credit to own team prepaid balance')) {
-        // Check if the user belongs to this team.
-        if ($team_ids = \Drupal::service('apigee_edge_teams.team_membership_manager')
-          ->getTeams($account->getEmail())) {
-          return AccessResult::allowedIf(in_array($team->id(), $team_ids));
-        }
-      }
-    }
-
-    return AccessResult::forbidden();
+    // Let the plugins determine access.
+    return $this->addCreditPluginManager->checkAccessFromRouteMatch($this->routeMatch, $account);
   }
 
   /**
    * Helper to get the configured product from the currency id.
    *
-   * @param string $currency_id
+   * @param string $currency
    *   The currency id.
    *
    * @return \Drupal\commerce_product\Entity\ProductInterface|null
    *   A product entity if found. Otherwise null.
    */
-  protected function getProductForCurrency(string $currency_id): ?ProductInterface {
+  protected function getProductForCurrency(string $currency): ?ProductInterface {
     /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    if (($product_id = $this->configFactory->get(AddCreditConfig::CONFIG_NAME)->get("products.$currency_id.product_id"))
+    if (($product_id = $this->configFactory->get(AddCreditConfig::CONFIG_NAME)->get("products.$currency.product_id"))
       && ($product = $this->storage->load($product_id))) {
       return $product;
     }

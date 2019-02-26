@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit\Form;
 
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_cart\CartManagerInterface;
 use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\Form\AddToCartForm;
@@ -30,9 +31,9 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class ApigeeAddCreditAddToCartForm.
@@ -42,11 +43,16 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class ApigeeAddCreditAddToCartForm extends AddToCartForm {
 
   /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
+   * @var \Drupal\Core\Routing\RouteMatchInterface
    */
-  protected $request;
+  protected $routeMatch;
+
+  /**
+   * The add credit plugin manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface
+   */
+  protected $addCreditPluginManager;
 
   /**
    * Constructs an AddToCartForm object.
@@ -69,8 +75,10 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    *   The chain base price resolver.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request
-   *   The request stack.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
+   *   The add credit plugin manager.
    */
   public function __construct(
     EntityRepositoryInterface $entity_repository,
@@ -82,10 +90,12 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
     CurrentStoreInterface $current_store,
     ChainPriceResolverInterface $chain_price_resolver,
     AccountInterface $current_user,
-    RequestStack $request
+    RouteMatchInterface $route_match,
+    AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
   ) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time, $cart_manager, $cart_provider, $order_type_resolver, $current_store, $chain_price_resolver, $current_user);
-    $this->request = $request;
+    $this->routeMatch = $route_match;
+    $this->addCreditPluginManager = $add_credit_plugin_manager;
   }
 
   /**
@@ -102,7 +112,8 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
       $container->get('commerce_store.current_store'),
       $container->get('commerce_price.chain_price_resolver'),
       $container->get('current_user'),
-      $container->get('request_stack')
+      $container->get('current_route_match'),
+      $container->get('plugin.manager.apigee_add_credit_entity_type')
     );
   }
 
@@ -110,22 +121,17 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $add_credit_entity_types = AddCreditConfig::getEntityTypes();
-    // Populate values from request.
-    // Set default to current user.
-    $values = [
-      'target_type' => $add_credit_entity_types['user']['alias'],
-      'target_id' => $this->currentUser->getEmail(),
-    ];
-
-    foreach ($add_credit_entity_types as $entity_type_id => $entity_type) {
-      if ($entity = $this->request->getCurrentRequest()->get($entity_type_id)) {
-        $values = [
-          'target_type' => $entity_type['alias'],
-          'target_id' => $entity->get($entity_type['id_property'])->value,
-        ];
-      }
+    // Do nothing if we are not on an add credit route.
+    if (! ($plugin = $this->addCreditPluginManager->getPluginFromRouteMatch($this->routeMatch))) {
+      return parent::buildForm($form, $form_state);
     }
+
+    // Set default values from the route.
+    $entity = $this->addCreditPluginManager->getEntityFromRouteMatch($this->routeMatch);
+    $values = [
+      'target_type' => $plugin->getPluginId(),
+      'target_id' => $plugin->getEntityId($entity),
+    ];
 
     // Set the entity target default value.
     if ($values) {

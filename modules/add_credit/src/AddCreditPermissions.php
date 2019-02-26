@@ -19,10 +19,40 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * Permissions provider for add credit.
  */
-class AddCreditPermissions implements AddCreditPermissionsInterface {
+class AddCreditPermissions implements AddCreditPermissionsInterface, ContainerInjectionInterface {
+
+  /**
+   * The add credit plugin manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface
+   */
+  protected $addCreditPluginManager;
+
+  /**
+   * AddCreditPermissions constructor.
+   *
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
+   *   The add credit plugin manager.
+   */
+  public function __construct(AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
+    $this->addCreditPluginManager = $add_credit_plugin_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.manager.apigee_add_credit_entity_type')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -30,16 +60,9 @@ class AddCreditPermissions implements AddCreditPermissionsInterface {
   public function permissions(): array {
     $permissions = [];
 
-    // Build permissions for add credit entity types.
-    foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
-      $entity_type_id = $config['alias'] ?? $entity_type_id;
-      $permissions["add credit to own $entity_type_id prepaid balance"] = [
-        'title' => "Add credit to own $entity_type_id prepaid balance",
-      ];
-
-      $permissions["add credit to any $entity_type_id prepaid balance"] = [
-        'title' => "Add credit to any $entity_type_id prepaid balance",
-      ];
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $entity_type */
+    foreach ($this->addCreditPluginManager->getEntityTypes() as $entity_type) {
+      $permissions = array_merge($permissions, $entity_type->getPermissions());
     }
 
     return $permissions;

@@ -19,9 +19,10 @@
 
 namespace Drupal\apigee_m10n_add_credit\Routing;
 
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Routing\PreloadableRouteProviderInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Route;
@@ -31,6 +32,8 @@ use Symfony\Component\Routing\Route;
  */
 class AddCreditRoutes implements ContainerInjectionInterface {
 
+  use StringTranslationTrait;
+
   /**
    * The route provider.
    *
@@ -39,13 +42,23 @@ class AddCreditRoutes implements ContainerInjectionInterface {
   protected $routeProvider;
 
   /**
+   * The add credit plugin manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface
+   */
+  protected $addCreditPluginManager;
+
+  /**
    * AddCreditRoutes constructor.
    *
    * @param \Drupal\Core\Routing\PreloadableRouteProviderInterface $route_provider
    *   The route provider.
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
+   *   The add credit plugin manager.
    */
-  public function __construct(PreloadableRouteProviderInterface $route_provider) {
+  public function __construct(PreloadableRouteProviderInterface $route_provider, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
     $this->routeProvider = $route_provider;
+    $this->addCreditPluginManager = $add_credit_plugin_manager;
   }
 
   /**
@@ -53,7 +66,8 @@ class AddCreditRoutes implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('router.route_provider')
+      $container->get('router.route_provider'),
+      $container->get('plugin.manager.apigee_add_credit_entity_type')
     );
   }
 
@@ -66,33 +80,30 @@ class AddCreditRoutes implements ContainerInjectionInterface {
   public function routes() {
     $routes = [];
 
-    foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
-      // Build the path using the base path and suffix with 'add-credit/{currency_id}'.
-      try {
-        if (($route = $this->routeProvider->getRouteByName($config['base_route_name'])) && ($path = $route->getPath())) {
-          $routes["apigee_m10n_add_credit.add_credit.$entity_type_id"] = new Route($path . '/add-credit/{currency_id}',
-            [
-              '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
-              '_title' => 'Add credit',
+    foreach ($this->addCreditPluginManager->getEntityTypes() as $entity_type) {
+      $entity_type_id = $entity_type->getPluginId();
+      $path_entity_type_id = $entity_type->getRouteEntityTypeId();
+      $routes["apigee_m10n_add_credit.add_credit.{$entity_type_id}"] = new Route(
+        $entity_type->getPath(),
+        [
+          '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
+          '_title' => (string) $this->t('Add credit to @label', [
+            '@label' => strtolower($entity_type->getLabel()),
+          ]),
+        ],
+        [
+          '_custom_access' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::access',
+        ],
+        [
+          '_apigee_monetization_route' => TRUE,
+          '_add_credit_entity_type' => $entity_type_id,
+          'parameters' => [
+            $path_entity_type_id => [
+              'type' => "entity:{$path_entity_type_id}",
             ],
-            [
-              '_custom_access' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::access',
-            ],
-            [
-              '_apigee_monetization_route' => TRUE,
-              '_add_credit_entity_type' => $entity_type_id,
-              'parameters' => [
-                $entity_type_id => [
-                  'type' => "entity:{$entity_type_id}",
-                ],
-              ],
-            ]
-          );
-        }
-      }
-      catch (RouteNotFoundException $exception) {
-        // TODO: Log this.
-      }
+          ],
+        ]
+      );
     }
 
     return $routes;
