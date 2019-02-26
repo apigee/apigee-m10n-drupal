@@ -110,17 +110,19 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $add_credit_entity_types = AddCreditConfig::getEntityTypes();
     // Populate values from request.
+    // Set default to current user.
     $values = [
-      'target_type' => 'developer',
+      'target_type' => $add_credit_entity_types['user']['alias'],
       'target_id' => $this->currentUser->getEmail(),
     ];
 
-    foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
+    foreach ($add_credit_entity_types as $entity_type_id => $entity_type) {
       if ($entity = $this->request->getCurrentRequest()->get($entity_type_id)) {
         $values = [
-          'target_type' => $config['edge_entity_type'],
-          'target_id' => $entity->get($config['id_field_name'])->value,
+          'target_type' => $entity_type['alias'],
+          'target_id' => $entity->get($entity_type['id_property'])->value,
         ];
       }
     }

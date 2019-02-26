@@ -32,7 +32,7 @@ class AddCreditPermissions implements AddCreditPermissionsInterface {
 
     // Build permissions for add credit entity types.
     foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
-      $entity_type_id = $config['edge_entity_type'] ?? $entity_type_id;
+      $entity_type_id = $config['alias'] ?? $entity_type_id;
       $permissions["add credit to own $entity_type_id prepaid balance"] = [
         'title' => "Add credit to own $entity_type_id prepaid balance",
       ];

@@ -123,6 +123,7 @@ class AddCreditService implements AddCreditServiceInterface {
           ->setLabel(t('Add credit target'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
+          ->setRequired(TRUE)
           ->setDisplayConfigurable('form', TRUE)
           ->setDisplayConfigurable('view', TRUE);
         break;

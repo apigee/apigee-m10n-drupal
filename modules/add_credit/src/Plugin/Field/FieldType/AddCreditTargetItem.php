@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
+use Drupal\apigee_edge\Exception\DeveloperDoesNotExistException;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -200,13 +201,29 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
    *
    * @return array
    *   An array of developer and/or teams entities keyed by entity type.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getPossibleTargets(AccountInterface $account) {
-    $entities = [];
-    foreach (AddCreditConfig::getEntityTypes() as $config) {
-      $entities[$config['edge_entity_type']] = isset($config['entities_callback']) ? $config['entities_callback']($account) : [];
+    $targets = [];
+    if ($account->hasPermission('add credit to any developer prepaid balance')) {
+      $targets['developer'] = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple();
     }
-    return $entities;
+    elseif ($account->hasPermission('add credit to own developer prepaid balance')) {
+      $targets['developer'] = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple([$account->getEmail()]);
+    }
+
+    if ($account->hasPermission('add credit to any team prepaid balance')) {
+      $targets['team'] = \Drupal::entityTypeManager()->getStorage('team')->loadMultiple();
+    }
+    elseif ($account->hasPermission('add credit to own team prepaid balance')) {
+      if ($team_ids = \Drupal::service('apigee_edge_teams.team_membership_manager')
+        ->getTeams($account->getEmail())) {
+        $targets['team'] = \Drupal::entityTypeManager()->getStorage('team')->loadMultiple($team_ids);
+      }
+    }
+    return $targets;
   }
 
 }

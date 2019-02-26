@@ -19,6 +19,8 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -27,7 +29,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @package Drupal\apigee_m10n_add_credit
  */
-class MonetizationAddCredit implements MonetizationAddCreditInterface {
+class AddCreditMonetization implements AddCreditMonetizationInterface {
 
   /**
    * The Add Credit SDK controller.
@@ -60,14 +62,38 @@ class MonetizationAddCredit implements MonetizationAddCreditInterface {
    * {@inheritdoc}
    */
   public function getLegalEntities(AccountInterface $account): array {
-    // This is using the entity storage to get developer entities.
-    // In case this can be pulled from the monetization API, switch to
-    // return $this->sdkControllerFactory->legalEntityController()->getEntities().
-    $entities = [];
-    foreach (AddCreditConfig::getEntityTypes() as $entity_type_id => $config) {
-      $entities[$entity_type_id] = $config['entities_callback']($account);
+    $entities = $this->sdkControllerFactory->legalEntityController()->getEntities();
+
+    $return = [];
+    /** @var \Apigee\Edge\Entity\EntityInterface $entity */
+    foreach ($entities as $entity) {
+      $return[$this->getEntityTypeId($entity)][] = $entity;
     }
-    return $entities;
+
+    return $return;
+  }
+
+  /**
+   * Helper to get an entity type from entity.
+   *
+   * @param \Apigee\Edge\Api\Monetization\Entity\EntityInterface $entity
+   *   The entity object.
+   *
+   * @return string
+   *   The entity type id.
+   *
+   * @throws \ReflectionException
+   */
+  protected function getEntityTypeId($entity) {
+    if ($entity instanceof DeveloperInterface) {
+      return 'developer';
+    }
+
+    if ($entity instanceof CompanyInterface) {
+      return 'team';
+    }
+
+    return (new \ReflectionClass($entity))->getShortName();
   }
 
 }

@@ -22,11 +22,11 @@ namespace Drupal\apigee_m10n_add_credit;
 use Drupal\Core\Session\AccountInterface;
 
 /**
- * Interface MonetizationAddCreditInterface.
+ * Interface AddCreditMonetizationInterface.
  *
  * @package Drupal\apigee_m10n_add_credit
  */
-interface MonetizationAddCreditInterface {
+interface AddCreditMonetizationInterface {
 
   /**
    * Returns an array of legal entities.

@@ -70,17 +70,17 @@ class AddCreditRoutes implements ContainerInjectionInterface {
       // Build the path using the base path and suffix with 'add-credit/{currency_id}'.
       try {
         if (($route = $this->routeProvider->getRouteByName($config['base_route_name'])) && ($path = $route->getPath())) {
-          $edge_entity_type = $config['edge_entity_type'];
           $routes["apigee_m10n_add_credit.add_credit.$entity_type_id"] = new Route($path . '/add-credit/{currency_id}',
             [
               '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
               '_title' => 'Add credit',
             ],
             [
-              '_permission' => "add credit to any $edge_entity_type prepaid balance+add credit to own $edge_entity_type prepaid balance",
+              '_custom_access' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::access',
             ],
             [
               '_apigee_monetization_route' => TRUE,
+              '_add_credit_entity_type' => $entity_type_id,
               'parameters' => [
                 $entity_type_id => [
                   'type' => "entity:{$entity_type_id}",

@@ -59,13 +59,8 @@ class AddCreditConfig implements AddCreditConfigInterface {
     $types = [
       'user' => [
         'base_route_name' => 'apigee_monetization.billing',
-        'edge_entity_type' => 'developer',
-        'id_field_name' => 'mail',
-        'entities_callback' => function (AccountInterface $account) {
-          return \Drupal::entityTypeManager()
-            ->getStorage('developer')
-            ->loadMultiple([$account->getEmail()]);
-        },
+        'alias' => 'developer',
+        'id_property' => 'mail',
       ],
     ];
 
@@ -74,15 +69,8 @@ class AddCreditConfig implements AddCreditConfigInterface {
     if (\Drupal::moduleHandler()->moduleExists('apigee_m10n_teams')) {
       $types['team'] = [
         'base_route_name' => 'apigee_monetization_teams.billing',
-        'edge_entity_type' => 'team',
-        'id_field_name' => 'name',
-        'entities_callback' => function (AccountInterface $account) {
-          if ($ids = \Drupal::service('apigee_edge_teams.team_membership_manager')->getTeams($account->getEmail())) {
-            return \Drupal::entityTypeManager()->getStorage('team')->loadMultiple($ids);
-          }
-
-          return [];
-        },
+        'alias' => 'team',
+        'id_property' => 'name',
       ];
     }
 
