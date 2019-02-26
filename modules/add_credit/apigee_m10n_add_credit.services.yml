@@ -3,14 +3,6 @@ services:
     class: Drupal\apigee_m10n_add_credit\AddCreditService
     arguments: ['@config.factory', '@current_user', '@plugin.manager.apigee_add_credit_entity_type']
 
-  apigee_m10n_add_credit.sdk_controller_factory:
-    class: Drupal\apigee_m10n_add_credit\AddCreditSdkControllerFactory
-    arguments: ['@apigee_edge.sdk_connector']
-
-  apigee_m10n_add_credit.monetization:
-    class: Drupal\apigee_m10n_add_credit\AddCreditMonetization
-    arguments: ['@apigee_m10n_add_credit.sdk_controller_factory', '@entity_type.manager']
-
   apigee_m10n_add_credit.payment_transition_subscriber:
     class: Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber
     arguments: ['@apigee_edge.sdk_connector', '@apigee_edge.job_executor']

@@ -19,12 +19,10 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
-use Drupal\Core\Session\AccountInterface;
-
 /**
- * Class AddCreditConfig.
+ * Defines config for add credit.
  */
-class AddCreditConfig implements AddCreditConfigInterface {
+class AddCreditConfig {
 
   /**
    * The default name for the `apigee_m10n_add_credit` module.
@@ -51,30 +49,5 @@ class AddCreditConfig implements AddCreditConfigInterface {
    * The name of the field that holds the add credit target value.
    */
   public const TARGET_FIELD_NAME = 'add_credit_target';
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getEntityTypes(): array {
-    $types = [
-      'user' => [
-        'base_route_name' => 'apigee_monetization.billing',
-        'alias' => 'developer',
-        'id_property' => 'mail',
-      ],
-    ];
-
-    // Enable add credit for teams if the apigee_m10n_teams is enabled.
-    // TODO: This could be handle in a submodule or config in the future.
-    if (\Drupal::moduleHandler()->moduleExists('apigee_m10n_teams')) {
-      $types['team'] = [
-        'base_route_name' => 'apigee_monetization_teams.billing',
-        'alias' => 'team',
-        'id_property' => 'name',
-      ];
-    }
-
-    return $types;
-  }
 
 }
