@@ -57,17 +57,17 @@ class Developer extends AddCreditEntityTypeBase {
    * {@inheritdoc}
    */
   public function getEntities(AccountInterface $account): array {
-    $entities = [];
-
+    $ids = [];
     if ($account->hasPermission('add credit to any developer prepaid balance')) {
-      $entities = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple();
+      // Use NULL such that the storage loads all entities.
+      $ids = NULL;
     }
     elseif ($account->hasPermission('add credit to own developer prepaid balance')) {
-      $entities = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple([$account->getEmail()]);
+      $ids = [$account->getEmail()];
     }
 
     // Filter out developers with no user accounts.
-    return array_filter($entities, function (DeveloperInterface $developer) {
+    return array_filter($this->entityTypeManager->getStorage('developer')->loadMultiple($ids), function (DeveloperInterface $developer) {
       return $developer->getOwnerId();
     });
   }

@@ -25,6 +25,7 @@ use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -56,11 +57,13 @@ class Team extends AddCreditEntityTypeBase implements ContainerFactoryPluginInte
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    * @param \Drupal\apigee_edge_teams\TeamMembershipManagerInterface $team_membership_manager
    *   The team membership manager.
    */
-  public function __construct(array $configuration, string $plugin_id, $plugin_definition, TeamMembershipManagerInterface $team_membership_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(array $configuration, string $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, TeamMembershipManagerInterface $team_membership_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager);
     $this->teamMembershipManager = $team_membership_manager;
   }
 
@@ -72,6 +75,7 @@ class Team extends AddCreditEntityTypeBase implements ContainerFactoryPluginInte
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('entity_type.manager'),
       $container->get('apigee_edge_teams.team_membership_manager')
     );
   }
@@ -100,19 +104,17 @@ class Team extends AddCreditEntityTypeBase implements ContainerFactoryPluginInte
    * {@inheritdoc}
    */
   public function getEntities(AccountInterface $account): array {
+    $ids = [];
     if ($account->hasPermission('add credit to any team prepaid balance')) {
-      return \Drupal::entityTypeManager()->getStorage('team')->loadMultiple();
+      // Use NULL such that the storage loads all entities.
+      $ids = NULL;
+    }
+    elseif ($account->hasPermission('add credit to own team prepaid balance')) {
+      // If a user can add credit to own team only, get user team from memberships.
+      $ids = $this->teamMembershipManager->getTeams($account->getEmail());
     }
 
-    // If a user can add credit to own team only, get user team from memberships.
-    if (($account->hasPermission('add credit to own team prepaid balance'))
-      && ($team_ids = $this->teamMembershipManager->getTeams($account->getEmail()))) {
-      return \Drupal::entityTypeManager()
-        ->getStorage('team')
-        ->loadMultiple($team_ids);
-    }
-
-    return [];
+    return $this->entityTypeManager->getStorage('team')->loadMultiple($ids);
   }
 
 }
