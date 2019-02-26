@@ -19,15 +19,12 @@
 
 namespace Drupal\apigee_m10n_add_credit\Controller;
 
-use Drupal\apigee_edge_teams\TeamMembershipManagerInterface;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_product\Entity\ProductInterface;
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityViewBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -87,6 +84,7 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
    * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
+   *   The add credit plugin manager.
    */
   public function __construct(EntityStorageInterface $storage, EntityViewBuilderInterface $view_builder, ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
     $this->viewBuilder = $view_builder;

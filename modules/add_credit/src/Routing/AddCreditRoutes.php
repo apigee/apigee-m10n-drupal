@@ -80,15 +80,15 @@ class AddCreditRoutes implements ContainerInjectionInterface {
   public function routes() {
     $routes = [];
 
-    foreach ($this->addCreditPluginManager->getEntityTypes() as $entity_type) {
-      $entity_type_id = $entity_type->getPluginId();
-      $path_entity_type_id = $entity_type->getRouteEntityTypeId();
+    foreach ($this->addCreditPluginManager->getPlugins() as $plugin) {
+      $entity_type_id = $plugin->getPluginId();
+      $path_entity_type_id = $plugin->getRouteEntityTypeId();
       $routes["apigee_m10n_add_credit.add_credit.{$entity_type_id}"] = new Route(
-        $entity_type->getPath(),
+        $plugin->getPath(),
         [
           '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
           '_title' => (string) $this->t('Add credit to @label', [
-            '@label' => strtolower($entity_type->getLabel()),
+            '@label' => strtolower($plugin->getLabel()),
           ]),
         ],
         [

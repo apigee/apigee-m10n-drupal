@@ -34,6 +34,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class ApigeeAddCreditAddToCartForm.
@@ -43,6 +44,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ApigeeAddCreditAddToCartForm extends AddToCartForm {
 
   /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $request;
+
+  /**
+   * The current route match.
+   *
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
@@ -75,6 +85,8 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    *   The chain base price resolver.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request
+   *   The request stack.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
    * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
@@ -90,10 +102,12 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
     CurrentStoreInterface $current_store,
     ChainPriceResolverInterface $chain_price_resolver,
     AccountInterface $current_user,
+    RequestStack $request,
     RouteMatchInterface $route_match,
     AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
   ) {
     parent::__construct($entity_repository, $entity_type_bundle_info, $time, $cart_manager, $cart_provider, $order_type_resolver, $current_store, $chain_price_resolver, $current_user);
+    $this->request = $request;
     $this->routeMatch = $route_match;
     $this->addCreditPluginManager = $add_credit_plugin_manager;
   }
@@ -112,6 +126,7 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
       $container->get('commerce_store.current_store'),
       $container->get('commerce_price.chain_price_resolver'),
       $container->get('current_user'),
+      $container->get('request_stack'),
       $container->get('current_route_match'),
       $container->get('plugin.manager.apigee_add_credit_entity_type')
     );
@@ -122,7 +137,7 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Do nothing if we are not on an add credit route.
-    if (! ($plugin = $this->addCreditPluginManager->getPluginFromRouteMatch($this->routeMatch))) {
+    if (!($plugin = $this->addCreditPluginManager->getPluginFromRouteMatch($this->routeMatch))) {
       return parent::buildForm($form, $form_state);
     }
 

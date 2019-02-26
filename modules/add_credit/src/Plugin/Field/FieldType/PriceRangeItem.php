@@ -27,7 +27,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'price_range' field type.
+ * Plugin implementation of the 'apigee_price_range' field type.
  *
  * @FieldType(
  *   id = "apigee_price_range",

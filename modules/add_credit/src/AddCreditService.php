@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -31,7 +32,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\user\UserInterface;
 
 /**
  * Helper service to handle basic module tasks.
@@ -55,16 +55,26 @@ class AddCreditService implements AddCreditServiceInterface {
   protected $config;
 
   /**
+   * The add credit plugin manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface
+   */
+  protected $addCreditPluginManager;
+
+  /**
    * Constructor for the `apigee_m10n.add_credit` service.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
+   *   The add credit plugin manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $user) {
+  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $user, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
     $this->config = $config_factory;
     $this->current_user = $user;
+    $this->addCreditPluginManager = $add_credit_plugin_manager;
   }
 
   /**
@@ -260,6 +270,8 @@ class AddCreditService implements AddCreditServiceInterface {
       $has_operations = FALSE;
       $destination = \Drupal::destination()->getAsArray();
       $config = \Drupal::configFactory()->get('apigee_m10n_add_credit.config');
+      $plugin_id = $entity->getEntityTypeId() === 'user' ? 'developer' : $entity->getEntityTypeId();
+      $plugin = $this->addCreditPluginManager->getPluginById($plugin_id);
       $attributes = [
         'class' => [
           'use-ajax',
@@ -275,17 +287,16 @@ class AddCreditService implements AddCreditServiceInterface {
       ];
 
       foreach ($build['table']['#rows'] as $currency_id => &$row) {
-        $entity_type_id = $entity->getEntityTypeId();
-        $url = Url::fromRoute("apigee_m10n_add_credit.add_credit.$entity_type_id", [
-          $entity_type_id => $entity->id(),
-          'currency_id' => $currency_id,
+        $url = Url::fromRoute("apigee_m10n_add_credit.add_credit.$plugin_id", [
+          $entity->getEntityTypeId() => $entity->id(),
+          'currency' => $currency_id,
         ], [
-          'query' => $destination
+          'query' => $destination,
         ]);
         $data = ['#markup' => ''];
 
         // If the currency has a configured product, add a link to add credit to this balance.
-        if ($url->access($this->current_user) && $config->get("products.$currency_id.product_id")) {
+        if ($plugin->access($entity, $this->current_user) && $config->get("products.$currency_id.product_id")) {
           $has_operations = TRUE;
           $data = [
             '#type' => 'operations',

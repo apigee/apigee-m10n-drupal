@@ -33,10 +33,21 @@ interface AddCreditEntityTypeManagerInterface extends PluginManagerInterface {
   /**
    * Returns an array of add credit plugin entity type instances.
    *
-   * @return \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface[] array
+   * @return \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface[]
    *   An array of add credit plugin instances.
    */
-  public function getEntityTypes(): array;
+  public function getPlugins(): array;
+
+  /**
+   * Returns an instance of a plugin based on the give plugin id.
+   *
+   * @param string $plugin_id
+   *   The plugin id.
+   *
+   * @return \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface|null
+   *   An instance of add credit entity type plugin.
+   */
+  public function getPluginById(string $plugin_id): ?AddCreditEntityTypeInterface;
 
   /**
    * Finds an instance of a plugin from the route match.

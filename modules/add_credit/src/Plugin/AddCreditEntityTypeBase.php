@@ -90,5 +90,4 @@ abstract class AddCreditEntityTypeBase extends PluginBase implements AddCreditEn
     );
   }
 
-
 }

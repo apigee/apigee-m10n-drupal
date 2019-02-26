@@ -29,17 +29,26 @@ use Drupal\Component\Annotation\Plugin;
 class AddCreditEntityType extends Plugin {
 
   /**
-   * The ID of the entity type.
+   * The ID of the plugin.
    *
    * @var string
    */
   public $id;
 
   /**
-   * An array of permissions.
+   * The label for the plugin.
    *
-   * @var array
+   * @var string
    */
-  public $permissions = [];
+  public $label;
+
+  /**
+   * The path for the plugin route.
+   *
+   * The path is used to construct route to add credit for the plugin.
+   *
+   * @var string
+   */
+  public $path;
 
 }

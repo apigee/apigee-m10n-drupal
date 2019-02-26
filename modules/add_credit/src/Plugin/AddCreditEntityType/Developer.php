@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityType;
 
+use Drupal\apigee_edge\Entity\DeveloperInterface;
 use Drupal\apigee_m10n_add_credit\Annotation\AddCreditEntityType;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeBase;
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -49,7 +49,27 @@ class Developer extends AddCreditEntityTypeBase {
    * {@inheritdoc}
    */
   public function getEntityId(EntityInterface $entity): string {
+    /** @var \Drupal\user\UserInterface $entity */
     return $entity->getEmail();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntities(AccountInterface $account): array {
+    $entities = [];
+
+    if ($account->hasPermission('add credit to any developer prepaid balance')) {
+      $entities = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple();
+    }
+    elseif ($account->hasPermission('add credit to own developer prepaid balance')) {
+      $entities = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple([$account->getEmail()]);
+    }
+
+    // Filter out developers with no user accounts.
+    return array_filter($entities, function (DeveloperInterface $developer) {
+      return $developer->getOwnerId();
+    });
   }
 
 }

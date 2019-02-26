@@ -19,14 +19,12 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\OptGroup;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Core\TypedData\DataReferenceDefinition;
 use Drupal\Core\TypedData\DataReferenceTargetDefinition;
 use Drupal\Core\TypedData\OptionsProviderInterface;
 
@@ -57,12 +55,6 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
     $properties['target_type'] = DataReferenceTargetDefinition::create('string')
       ->setLabel(new TranslatableMarkup('Target Entity Type'))
       ->setRequired(TRUE);
-
-    $properties['entity'] = DataReferenceDefinition::create('entity')
-      ->setLabel(t('Entity'))
-      ->setDescription(new TranslatableMarkup('The referenced entity'))
-      ->setComputed(TRUE)
-      ->setReadOnly(FALSE);
 
     return $properties;
   }
@@ -155,40 +147,7 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
     if ($this->target_id !== NULL && $this->target_type !== NULL) {
       return FALSE;
     }
-    if ($this->entity && $this->entity instanceof EntityInterface) {
-      return FALSE;
-    }
     return TRUE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function preSave() {
-    if (!$this->isEmpty() && $this->target_id === NULL) {
-      $this->target_id = $this->entity->id();
-      $this->target_type = $this->entity->getEntityTypeId();
-    }
-  }
-
-  /**
-   * Helper to get the target from the field.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface
-   *   The target entity.
-   *
-   * @throws \Exception
-   */
-  public function getTarget() {
-    if ($this->isEmpty()) {
-      return NULL;
-    }
-
-    if ($targets = \Drupal::entityTypeManager()->getStorage($this->target_type)->load($this->target_id)) {
-      return reset($targets);
-    }
-
-    return NULL;
   }
 
   /**
@@ -199,27 +158,12 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
    *
    * @return array
    *   An array of developer and/or teams entities keyed by entity type.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getPossibleTargets(AccountInterface $account) {
     $targets = [];
-    if ($account->hasPermission('add credit to any developer prepaid balance')) {
-      $targets['developer'] = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple();
-    }
-    elseif ($account->hasPermission('add credit to own developer prepaid balance')) {
-      $targets['developer'] = \Drupal::entityTypeManager()->getStorage('developer')->loadMultiple([$account->getEmail()]);
-    }
-
-    if ($account->hasPermission('add credit to any team prepaid balance')) {
-      $targets['team'] = \Drupal::entityTypeManager()->getStorage('team')->loadMultiple();
-    }
-    elseif ($account->hasPermission('add credit to own team prepaid balance')) {
-      if ($team_ids = \Drupal::service('apigee_edge_teams.team_membership_manager')
-        ->getTeams($account->getEmail())) {
-        $targets['team'] = \Drupal::entityTypeManager()->getStorage('team')->loadMultiple($team_ids);
-      }
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $plugin */
+    foreach (\Drupal::service('plugin.manager.apigee_add_credit_entity_type')->getPlugins() as $plugin) {
+      $targets[$plugin->getPluginId()] = $plugin->getEntities($account);
     }
     return $targets;
   }

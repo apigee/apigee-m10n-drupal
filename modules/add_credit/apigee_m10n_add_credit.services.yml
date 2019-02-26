@@ -1,7 +1,7 @@
 services:
   apigee_m10n.add_credit:
     class: Drupal\apigee_m10n_add_credit\AddCreditService
-    arguments: ['@config.factory', '@current_user']
+    arguments: ['@config.factory', '@current_user', '@plugin.manager.apigee_add_credit_entity_type']
 
   apigee_m10n_add_credit.sdk_controller_factory:
     class: Drupal\apigee_m10n_add_credit\AddCreditSdkControllerFactory

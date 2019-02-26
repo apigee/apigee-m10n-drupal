@@ -52,7 +52,7 @@ class AddCreditEntityTypeManager extends DefaultPluginManager implements AddCred
   /**
    * {@inheritdoc}
    */
-  public function getEntityTypes(): array {
+  public function getPlugins(): array {
     $instances = [];
     foreach ($this->getDefinitions() as $plugin_id => $definition) {
       $instances[$plugin_id] = $this->createInstance($plugin_id);
@@ -63,10 +63,17 @@ class AddCreditEntityTypeManager extends DefaultPluginManager implements AddCred
   /**
    * {@inheritdoc}
    */
+  public function getPluginById(string $plugin_id): ?AddCreditEntityTypeInterface {
+    return $this->getPlugins()[$plugin_id] ?? NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPluginFromRouteMatch(RouteMatchInterface $route_match): ?AddCreditEntityTypeInterface {
     // Find the plugin id from the route.
     if ($add_credit_entity_type = $route_match->getRouteObject()->getOption('_add_credit_entity_type')) {
-      return $this->getEntityTypes()[$add_credit_entity_type] ?? NULL;
+      return $this->getPlugins()[$add_credit_entity_type] ?? NULL;
     }
 
     return NULL;
@@ -92,7 +99,7 @@ class AddCreditEntityTypeManager extends DefaultPluginManager implements AddCred
       return $plugin->access($entity, $account);
     }
 
-    return AccessResult::forbidden();
+    return AccessResult::neutral();
   }
 
 }

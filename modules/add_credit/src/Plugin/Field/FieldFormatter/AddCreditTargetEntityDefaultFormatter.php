@@ -41,12 +41,9 @@ class AddCreditTargetEntityDefaultFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
     foreach ($items as $delta => $item) {
-      /** @var \Drupal\Core\Entity\EntityInterface $target */
-      if ($target = $item->getTarget()) {
-        $elements[$delta] = [
-          '#markup' => $target->label(),
-        ];
-      }
+      $elements[$delta] = [
+        '#markup' => $item->target_id,
+      ];
     }
     return $elements;
   }

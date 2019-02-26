@@ -24,7 +24,6 @@ use Drupal\apigee_m10n_add_credit\Annotation\AddCreditEntityType;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -95,6 +94,25 @@ class Team extends AddCreditEntityTypeBase implements ContainerFactoryPluginInte
     }
 
     return AccessResult::forbidden();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntities(AccountInterface $account): array {
+    if ($account->hasPermission('add credit to any team prepaid balance')) {
+      return \Drupal::entityTypeManager()->getStorage('team')->loadMultiple();
+    }
+
+    // If a user can add credit to own team only, get user team from memberships.
+    if (($account->hasPermission('add credit to own team prepaid balance'))
+      && ($team_ids = $this->teamMembershipManager->getTeams($account->getEmail()))) {
+      return \Drupal::entityTypeManager()
+        ->getStorage('team')
+        ->loadMultiple($team_ids);
+    }
+
+    return [];
   }
 
 }

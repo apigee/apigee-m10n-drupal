@@ -51,6 +51,7 @@ interface AddCreditEntityTypeInterface extends PluginInspectionInterface {
    * We need this because developer uses /user/{user} in the route.
    *
    * @return string
+   *   The entity type id for the route.
    */
   public function getRouteEntityTypeId(): string;
 
@@ -61,6 +62,17 @@ interface AddCreditEntityTypeInterface extends PluginInspectionInterface {
    *   An array of permissions.
    */
   public function getPermissions(): array;
+
+  /**
+   * Returns an array of entities available to the current user.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The current user account.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface[]
+   *   An array of entities.
+   */
+  public function getEntities(AccountInterface $account): array;
 
   /**
    * Returns the entity id for the given entity.
