@@ -324,7 +324,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   protected function getTermsAndConditionsList(): array {
     // The cache ID.
-    $cid = 'apigee_m10n:terms_and_conditions_list';
+    $cid = 'apigee_m10n:company_terms_and_conditions_list';
 
     // Check the static cache.
     if (isset($this->termsAndConditionsList)) {
@@ -339,9 +339,9 @@ class MonetizationTeams implements MonetizationTeamsInterface {
         $list = $this->sdk_controller_factory->termsAndConditionsController()->getEntities();
       }
       catch (\Exception $ex) {
-        $this->logger->error("Unable to load Terms and Conditions: \n {$ex}");
+        $this->logger->error("Unable to load Company Terms and Conditions: \n {$ex}");
         $this->cache->delete($cid);
-        throw new SdkEntityLoadException("Error loading Terms and conditions. \n\n" . $ex);
+        throw new SdkEntityLoadException("Error loading Company Terms and conditions. \n\n" . $ex);
       }
 
       // Cache the list for 5 minutes.
