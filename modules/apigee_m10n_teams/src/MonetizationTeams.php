@@ -23,7 +23,6 @@ namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
@@ -100,14 +99,14 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
-   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
+   * @param \Drupal\apigee_m10n_teams\TeamSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache
    *   The Cache backend.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger.
    */
-  public function __construct(RouteMatchInterface $route_match, ApigeeSdkControllerFactoryInterface $sdk_controller_factory, CacheBackendInterface $cache, LoggerInterface $logger) {
+  public function __construct(RouteMatchInterface $route_match, TeamSdkControllerFactoryInterface $sdk_controller_factory, CacheBackendInterface $cache, LoggerInterface $logger) {
     $this->route_match = $route_match;
     $this->sdk_controller_factory = $sdk_controller_factory;
     $this->cache = $cache;
@@ -236,7 +235,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function isLatestTermsAndConditionAccepted(string $developer_id): ?bool {
+  public function isLatestTermsAndConditionAccepted(string $company_id): ?bool {
     if (!($latest_tnc = $this->getLatestTermsAndConditions())) {
       // If there isn't a latest TnC, and there was no error, there shouldn't be
       // anything to accept.
@@ -244,12 +243,12 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       return TRUE;
     }
     // Check the cache table.
-    if (!isset($this->developerAcceptedTermsStatus[$developer_id])) {
+    if (!isset($this->companyAcceptedTermsStatus[$company_id])) {
       // Get the latest TnC ID.
       $latest_tnc_id = $latest_tnc->id();
 
       // Creates a controller for getting accepted TnC.
-      $controller = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id);
+      $controller = $this->sdk_controller_factory->companyTermsAndConditionsController($company_id);
 
       try {
         $history = $controller->getTermsAndConditionsHistory();
@@ -273,10 +272,10 @@ class MonetizationTeams implements MonetizationTeamsInterface {
         return $item->getAuditDate()->getTimestamp() > $carry_time ? $item : $carry;
       });
 
-      $this->developerAcceptedTermsStatus[$developer_id] = ($latest instanceof LegalEntityTermsAndConditionsHistoryItem) && $latest->getAction() === 'ACCEPTED';
+      $this->companyAcceptedTermsStatus[$company_id] = ($latest instanceof LegalEntityTermsAndConditionsHistoryItem) && $latest->getAction() === 'ACCEPTED';
     }
 
-    return $this->developerAcceptedTermsStatus[$developer_id];
+    return $this->companyAcceptedTermsStatus[$company_id];
   }
 
   /**
@@ -353,7 +352,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     try {
       // Reset the static cache for this developer.
       unset($this->companyAcceptedTermsStatus[$company_id]);
-      return $this->sdk_controller_factory->developerTermsAndConditionsController($company_id)
+      return $this->sdk_controller_factory->companyTermsAndConditionsController($company_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
     catch (\Throwable $t) {

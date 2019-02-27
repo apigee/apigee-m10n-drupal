@@ -102,10 +102,8 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
    */
   public function getTermsAndConditions(): bool {
     if ($this->isTeamSubscription()) {
-      // TODO: Implement TnC for team subscriptions.
       $decorated = $this->decorated();
-      $decorated->getCompany()->id();
-      return TRUE;
+      return apigee_m10n_teams_service()->isLatestTermsAndConditionAccepted($decorated->getCompany()->id());
     }
     else {
       return parent::getTermsAndConditions();
