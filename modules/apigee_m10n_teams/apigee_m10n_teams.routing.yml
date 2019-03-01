@@ -39,8 +39,6 @@ apigee_m10n_teams.team_billing_details:
     _form: '\Drupal\apigee_m10n_teams\Form\BillingDetailsForm'
     _title: 'Billing Details'
   requirements:
-    #user: '\d+'
-    #_team_permission: 'view subscription'
-    _permission: 'view subscription'
+    _team_permission: 'edit billing details'
   options:
     _apigee_monetization_route: TRUE
