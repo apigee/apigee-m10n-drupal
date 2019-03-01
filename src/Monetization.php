@@ -438,13 +438,14 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function userRolePresave(RoleInterface $user_role) {
+    // This prevents monetization permission grants on config import.
     if ($user_role->id() === 'anonymous') {
       // Get any permissions anon shouldn't have.
       $unauthorized_perms = array_intersect($user_role->getPermissions(), array_keys($this->getMonetizationPermissions()));
       // Remove all unauthorized perms.
       foreach ($unauthorized_perms as $permission_name) {
         $user_role->revokePermission($permission_name);
-        $this->logger->info('Removing %permission from anonymous users.', ['%permission' => $permission_name]);
+        $this->logger->info('Removing the `%permission` permission from the anonymous role.', ['%permission' => $permission_name]);
       }
     }
 
