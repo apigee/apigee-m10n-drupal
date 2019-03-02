@@ -29,6 +29,7 @@ use Drupal\Core\Render\Element;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Generates the packages page.
@@ -102,6 +103,10 @@ class PackagesController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function catalogPage(UserInterface $user) {
+    // A developer email is required.
+    if (empty($user->getEmail())) {
+      throw new NotFoundHttpException((string) $this->t("The user (@uid) doesn't have an email address.", ['@uid' => $user->id()]));
+    }
     // Load purchased packages for comparison.
     $packages = Package::getAvailableApiPackagesByDeveloper($user->getEmail());
     // Get the view mode from package config.
