@@ -80,13 +80,14 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
 
     // Submit payment information.
     $this->submitForm([
+      'payment_information[add_payment_method][payment_details][expiration][year]' => (string) (date("Y") + 1),
       'payment_information[add_payment_method][payment_details][security_code]' => '123',
       'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => $developer->first_name->value,
       'payment_information[add_payment_method][billing_information][address][0][address][family_name]' => $developer->last_name->value,
-      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '300 Beale Street',
-      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'San Francisco',
+      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '1600 Amphitheatre Parkway',
+      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'Mountain View',
       'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'CA',
-      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94105',
+      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94043',
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
     $this->assertCssElementContains('.view-commerce-checkout-order-summary', $product->label());
