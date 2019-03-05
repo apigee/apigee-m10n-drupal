@@ -426,10 +426,10 @@ class Monetization implements MonetizationInterface {
   public function formUserAdminPermissionsAlter(&$form, FormStateInterface $form_state, $form_id) {
     // Disable All incompatible permissions in the UI.
     foreach (array_keys($this->getMonetizationPermissions()) as $permission_name) {
-      if (isset($form['permissions'][$permission_name]['anonymous'])) {
+      if (isset($form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE])) {
         // Disable the permission.
-        $form['permissions'][$permission_name]['anonymous']['#disabled'] = TRUE;
-        $form['permissions'][$permission_name]['anonymous']['#value'] = 0;
+        $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#disabled'] = TRUE;
+        $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#value'] = 0;
       }
     }
   }
@@ -439,7 +439,7 @@ class Monetization implements MonetizationInterface {
    */
   public function userRolePresave(RoleInterface $user_role) {
     // This prevents monetization permission grants on config import.
-    if ($user_role->id() === 'anonymous') {
+    if ($user_role->id() === AccountInterface::ANONYMOUS_ROLE) {
       // Get any permissions anon shouldn't have.
       $unauthorized_perms = array_intersect($user_role->getPermissions(), array_keys($this->getMonetizationPermissions()));
       // Remove all unauthorized perms.

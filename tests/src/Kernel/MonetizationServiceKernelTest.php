@@ -186,10 +186,10 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     });
     // Make sure all permissions are disabled.
     foreach (array_keys($protected_permisisons) as $permission_name) {
-      static::assertTrue($form['permissions'][$permission_name]['anonymous']['#disabled']);
+      static::assertTrue($form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#disabled']);
     }
 
-    $anonymous_role = Role::load('anonymous');
+    $anonymous_role = Role::load(AccountInterface::ANONYMOUS_ROLE);
     $anonymous_role->grantPermission('administer apigee monetization');
     $anonymous_role->save();
 
