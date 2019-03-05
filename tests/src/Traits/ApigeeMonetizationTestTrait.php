@@ -541,6 +541,9 @@ trait ApigeeMonetizationTestTrait {
    *
    *   If this permissions array is empty we assume the current user should be
    *   a root user.
+   *
+   * @return \Drupal\Core\Session\AccountProxyInterface
+   *   The current user.
    */
   protected function mockCurrentUser($permissions = []) {
     // Set the current user to a mock.
@@ -553,11 +556,13 @@ trait ApigeeMonetizationTestTrait {
     $account->getAccountName()->willReturn($this->getRandomGenerator()->word(8));
     $account->getDisplayName()->willReturn($this->getRandomGenerator()->word(8) . ' ' . $this->getRandomGenerator()->word(12));
     // Handle permissions array.
-    $account->hasPermission(Argument::any())->will(function ($permission) use ($permissions) {
+    $account->hasPermission(Argument::any())->will(function ($args) use ($permissions) {
       // Assume an empty permissions array means the root user.
-      return empty($permissions) ? TRUE : in_array($permission, $permissions);
+      return empty($permissions) ? TRUE : in_array($args[0], $permissions);
     });
     $this->container->set('current_user', $account->reveal());
+
+    return \Drupal::currentUser();
   }
 
 }

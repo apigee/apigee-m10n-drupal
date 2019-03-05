@@ -104,4 +104,28 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
     putenv('APIGEE_INTEGRATION_ENABLE=' . $this->integration_enabled ? 1 : 0);
   }
 
+  /**
+   * Tests the current user prophesier.
+   */
+  public function testMockCurrentUser() {
+    // Test as a root user.
+    $root = $this->mockCurrentUser();
+    static::assertSame(1, $root->id());
+    static::assertTrue($root->hasPermission($this->getRandomGenerator()->sentences(2)));
+    static::assertTrue($root->hasPermission($this->getRandomGenerator()->sentences(2)));
+    static::assertTrue($root->hasPermission($this->getRandomGenerator()->sentences(2)));
+
+    // Test as a user with limited permissions.
+    $user = $this->mockCurrentUser(['foo']);
+    static::assertTrue($user->hasPermission('foo'));
+    static::assertFalse($user->hasPermission('bar'));
+
+    // Tests getters.
+    static::assertSame(2, $user->id());
+    static::assertNotEmpty($user->getEmail());
+    static::assertNotEmpty($user->getDisplayName());
+    static::assertNotEmpty($user->getAccountName());
+    static::assertNotEmpty($user->getUsername());
+  }
+
 }
