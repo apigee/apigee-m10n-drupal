@@ -1,3 +1,5 @@
+<?php
+
 /*
  * Copyright 2018 Google Inc.
  *
@@ -14,20 +16,26 @@
  * with this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-.apigee-m10n-prepaid-balance-wrapper {
-  position: relative;
-}
 
-.apigee-m10n-prepaid-balance-wrapper > table > caption {
-  padding-top: 20px;
-}
+namespace Drupal\apigee_m10n_teams;
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+/**
+ * Trait for getting the team SDK controller factory.
+ */
+trait TeamSdkControllerFactoryAwareTrait {
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form .form-submit {
-  margin-right: 0;
+  /**
+   * Get the controller factory.
+   *
+   * Since some classes are used during install, this is used instead of
+   * dependency injection to avoid an issue with the sdk controller credentials
+   * not yet being available when the service is instantiated.
+   *
+   * @return \Drupal\apigee_m10n_teams\TeamSdkControllerFactoryInterface
+   *   The controller factory.
+   */
+  public function teamControllerFactory(): TeamSdkControllerFactoryInterface {
+    return \Drupal::service('apigee_m10n_teams.sdk_controller_factory');
+  }
+
 }

@@ -63,7 +63,7 @@ entity.package.collection:
 apigee_monetization.my_billing:
   path: /monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myPrepaidBalance
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myRedirect
   requirements:
     _permission: 'view mint prepaid reports'
   options:
