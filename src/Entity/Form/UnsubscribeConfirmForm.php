@@ -35,13 +35,6 @@ use Drupal\Core\Cache\Cache;
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
   /**
-   * Drupal user.
-   *
-   * @var \Drupal\user\Entity\User|null
-   */
-  protected $developer;
-
-  /**
    * Subscription entity.
    *
    * @var \Drupal\apigee_m10n\Entity\Subscription|null
@@ -73,7 +66,6 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    *   SDK Controller factory.
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
-    $this->developer = $route_match->getParameter('user');
     $this->subscription = $route_match->getParameter('subscription');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;

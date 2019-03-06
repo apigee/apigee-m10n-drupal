@@ -61,9 +61,9 @@ entity.package.collection:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.my_billing:
-  path: /user/monetization/billing
+  path: /monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myPrepaidBalance
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myRedirect
   requirements:
     _permission: 'view mint prepaid reports'
   options:
@@ -80,11 +80,11 @@ apigee_monetization.billing:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.my_packages:
-  path: /user/monetization/packages
+  path: /monetization/packages
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
@@ -94,12 +94,12 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: "Packages"
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.my_subscriptions:
-  path: /user/monetization/subscriptions
+  path: /monetization/subscriptions
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:
@@ -118,7 +118,7 @@ apigee_monetization.profile:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.collection_by_developer:
+entity.subscription.developer_collection:
   path: '/user/{user}/monetization/subscriptions'
   defaults:
     _controller: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render'
@@ -130,7 +130,7 @@ entity.subscription.collection_by_developer:
     _apigee_monetization_route: TRUE
 
 entity.rate_plan.canonical:
-  path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}'
+  path: '/user/{user}/monetization/package/{package}/plan/{rate_plan}'
   defaults:
     _entity_view: 'rate_plan.full'
     _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
@@ -146,7 +146,7 @@ entity.rate_plan.canonical:
         converter: paramconverter.entity.rate_plan
 
 entity.rate_plan.subscribe:
-  path: '/user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe'
+  path: '/user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe'
   defaults:
     _controller: '\Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm'
     _title_callback: '\Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title'
@@ -155,7 +155,7 @@ entity.rate_plan.subscribe:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.unsubscribe_form:
+entity.subscription.developer_unsubscribe_form:
   path: '/user/{user}/monetization/subscription/{subscription}/unsubscribe'
   defaults:
     _entity_form: 'subscription.unsubscribe'

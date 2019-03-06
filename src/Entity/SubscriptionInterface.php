@@ -19,13 +19,13 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
-use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface;
-use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 
 /**
  * Defines the interface for subscription entity objects.
  */
-interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
+interface SubscriptionInterface extends AcceptedRatePlanInterface {
 
   /**
    * Status text for ended subscriptions.
@@ -45,14 +45,14 @@ interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
   /**
    * Loads subscriptions by developer email.
    *
-   * @param string $developer_email
+   * @param string $developer_id
    *   The email of a developer registered with apigee edge.
    *
    * @return \Drupal\apigee_m10n\Entity\Subscription[]
    *   An array of subscription entities for a given developer (identified by
    *   email).
    */
-  public static function loadRatePlansByDeveloperEmail(string $developer_email): array;
+  public static function loadByDeveloperId(string $developer_id): array;
 
   /**
    * Getter for the `isSubscriptionActive` call.
@@ -77,5 +77,17 @@ interface SubscriptionInterface extends DeveloperAcceptedRatePlanInterface {
    *   The rate plan.
    */
   public function getTermsAndConditions(): bool;
+
+  /**
+   * Get's the developer of a developer accepted rate plan.
+   *
+   * Assuming this subscription decorates a developer accepted rate plan, the
+   * developer will be returned, The developer can be null for a new developer
+   * accepted rate plan.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperInterface|null
+   *   The developer accepted rate plan developer.
+   */
+  public function getDeveloper(): ?DeveloperInterface;
 
 }

@@ -78,9 +78,9 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $this->assertText($this->package_rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
     $this->assertText($this->package_rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
-    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/packages/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
+    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/package/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
     // Make sure the subscribe link is displayed.
-    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/packages/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}/subscribe", 0, 'The link to the subscribe form exists.');
+    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/package/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}/subscribe", 0, 'The link to the subscribe form exists.');
   }
 
 }

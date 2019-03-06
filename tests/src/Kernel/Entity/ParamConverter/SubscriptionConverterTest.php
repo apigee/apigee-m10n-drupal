@@ -48,7 +48,7 @@ class SubscriptionConverterTest extends MonetizationKernelTestBase {
 
     /** @var \Drupal\Core\Routing\RouteProviderInterface $route_provider */
     $route_provider = \Drupal::service('router.route_provider');
-    $route = $route_provider->getRouteByName('entity.subscription.unsubscribe_form');
+    $route = $route_provider->getRouteByName('entity.subscription.developer_unsubscribe_form');
 
     static::assertTrue($converter->applies(['type' => 'entity:subscription'], 'subscription', $route));
   }

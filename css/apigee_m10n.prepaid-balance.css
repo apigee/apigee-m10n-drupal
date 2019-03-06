@@ -18,6 +18,10 @@
   position: relative;
 }
 
+.apigee-m10n-prepaid-balance-wrapper > table > caption {
+  padding-top: 20px;
+}
+
 .apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form {
   position: absolute;
   top: 0;

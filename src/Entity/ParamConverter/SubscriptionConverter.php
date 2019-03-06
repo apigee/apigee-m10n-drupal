@@ -26,6 +26,7 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\ParamConverter\EntityConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -37,38 +38,25 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Core\ParamConverter\ParamNotConvertedException
    */
   public function convert($value, $definition, $name, array $defaults) {
     $entity_type_id = $this->getEntityTypeFromDefaults($definition, $name, $defaults);
+    /** @var \Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage $storage */
     $storage = $this->entityManager->getStorage($entity_type_id);
-    $entity_definition = $this->entityManager->getDefinition($entity_type_id);
 
-    // Load  the user.
+    // Get the user from defaults.
     $user = $defaults['user'] ?? FALSE;
     // Load the user if it is still a string.
-    $user = is_string($user) ? User::load($user) : $user;
+    $user = (!$user || $user instanceof UserInterface) ? $user : User::load($user);
+    // Get the developer ID.
+    $develoepr_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
 
-    // @todo: Add support for teams.
-    // Load the subscription.
-    if (!$user || !($entity = $storage->loadById($user->getEmail(), $value))) {
-      throw new \InvalidArgumentException('Unable to load subscription.');
-    }
-
-    // If the entity type is revisionable and the parameter has the
-    // "load_latest_revision" flag, load the latest revision.
-    if ($entity instanceof RevisionableInterface && !empty($definition['load_latest_revision']) && $entity_definition->isRevisionable()) {
-      // Retrieve the latest revision ID taking translations into account.
-      $langcode = $this->languageManager()
-        ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
-        ->getId();
-      $entity = $this->getLatestTranslationAffectedRevision($entity, $langcode);
-    }
-
-    // If the entity type is translatable, ensure we return the proper
-    // translation object for the current context.
-    if ($entity instanceof EntityInterface && $entity instanceof TranslatableInterface) {
-      $entity = $this->entityManager->getTranslationFromContext($entity, NULL, ['operation' => 'entity_upcast']);
-    }
+    $entity = !empty($develoepr_id) ? $storage->loadById($develoepr_id, $value) : NULL;
 
     return $entity;
   }
