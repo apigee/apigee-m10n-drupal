@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright 2018 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,12 +20,11 @@
 namespace Drupal\apigee_m10n\Form;
 
 use Apigee\Edge\Exception\ClientErrorException;
-use Drupal;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -81,7 +80,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL, array $supported_currencies = [], array $billing_documents = []) {
+  public function buildForm(array $form, FormStateInterface $form_state, EntityInterface $entity = NULL, array $supported_currencies = [], array $billing_documents = []) {
     $form['heading'] = [
       '#type' => 'html_tag',
       '#tag' => 'h3',
@@ -128,7 +127,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
     }, $billing_documents);
 
     // Save this to form state to be available in submit callback.
-    $form_state->set('user', $user);
+    $form_state->set('entity', $entity);
     $form_state->set('currency_options', $currency_options);
     $form_state->set('date_options', $date_options);
 
@@ -154,7 +153,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
           ],
           'visible' => [
             'select[name="year"]' => ['value' => $year],
-          ]
+          ],
         ],
       ];
     }
@@ -180,7 +179,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       try {
         $billing_date = new \DateTimeImmutable($date);
 
-        if ($report = $this->monetization->getPrepaidBalanceReports($form_state->get('user')->getEmail(), $billing_date, $currency)) {
+        if ($report = $this->getReport($form_state->get('entity'), $billing_date, $currency)) {
           $filename = "prepaid-balance-report-$date.csv";
           $response = new Response($report);
           $response->headers->set('Content-Type', 'text/csv');
@@ -198,6 +197,23 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
         ]));
       }
     }
+  }
+
+  /**
+   * Generate a balance report.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The route entity for the report.
+   * @param \DateTimeImmutable $billing_date
+   *   The billing date.
+   * @param string $currency
+   *   The currency for the report.
+   *
+   * @return null|string
+   *   A CSV string of prepaid balances.
+   */
+  public function getReport(EntityInterface $entity, \DateTimeImmutable $billing_date, $currency) {
+    return $this->monetization->getPrepaidBalanceReports($entity->getEmail(), $billing_date, $currency);
   }
 
 }

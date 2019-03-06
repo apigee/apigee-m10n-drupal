@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
+use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxyInterface;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -105,7 +106,7 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadById(string $developer_id, string $id): SubscriptionInterface {
+  public function loadById(string $developer_id, string $id): ?SubscriptionInterface {
     // Load from cache.
     $ids = [$id];
     $subscriptions = $this->getFromPersistentCache($ids);
