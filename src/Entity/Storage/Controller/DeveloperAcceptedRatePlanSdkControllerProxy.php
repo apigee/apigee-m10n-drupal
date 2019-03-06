@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Entity\Storage;
+namespace Drupal\apigee_m10n\Entity\Storage\Controller;
 
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_edge\Exception\RuntimeException;
@@ -53,8 +53,8 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    */
   public function load(string $id): EntityInterface {
     // A little secret is that the real package ID is not required for loading
-    // a rate plan.
-    return $this->getSubscriptionControllerByDeveloperId('default')->load($id);
+    // a rate plan but may be required for saving it.
+    return $this->loadById('default', $id);
   }
 
   /**
@@ -101,7 +101,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function loadByDeveloperId(string $developer_id): array {
-    // Get all plans for this package.
+    // Get all subscriptions for this developer.
     return $this->getSubscriptionControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }
@@ -109,7 +109,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
   /**
    * {@inheritdoc}
    */
-  public function loadById(string $developer_id, string $id): EntityInterface {
+  public function loadById(string $developer_id, string $id): ?EntityInterface {
     return $this->getSubscriptionControllerByDeveloperId($developer_id)->load($id);
   }
 

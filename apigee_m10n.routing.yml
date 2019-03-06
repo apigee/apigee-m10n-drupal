@@ -84,7 +84,7 @@ apigee_monetization.my_packages:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
@@ -94,7 +94,7 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: "Packages"
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
@@ -118,7 +118,7 @@ apigee_monetization.profile:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.collection_by_developer:
+entity.subscription.developer_collection:
   path: '/user/{user}/monetization/subscriptions'
   defaults:
     _controller: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render'
@@ -155,7 +155,7 @@ entity.rate_plan.subscribe:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.unsubscribe_form:
+entity.subscription.developer_unsubscribe_form:
   path: '/user/{user}/monetization/subscription/{subscription}/unsubscribe'
   defaults:
     _entity_form: 'subscription.unsubscribe'

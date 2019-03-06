@@ -17,55 +17,53 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Entity\ListBuilder;
+namespace Drupal\apigee_m10n_teams\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\Core\Url;
-use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Defines implementation of a subscriptions listing page.
- *
- * @ingroup entity_api
+ * Entity list builder for team subscriptions.
  */
-class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
+class TeamSubscriptionListBuilder extends SubscriptionListBuilder {
 
   /**
-   * The developer's user that is used to load subscriptions.
+   * The team that is used to load subscriptions.
    *
-   * @var \Drupal\user\UserInterface
+   * @var \Drupal\apigee_edge_teams\Entity\TeamInterface
    */
-  protected $user;
+  protected $team;
 
   /**
    * {@inheritdoc}
    */
-  public function render(UserInterface $user = NULL) {
-    // Return 404 if the user is not set and keep a compatible method signature.
-    if (!($user instanceof UserInterface)) {
-      return new RedirectResponse(Url::fromRoute('system.404'));
-    }
+  public function render(TeamInterface $team = NULL) {
     // From this point forward `$this->user` is a safe assumption.
-    $this->user = $user;
+    $this->team = $team;
 
     return parent::render();
   }
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function load() {
-    return Subscription::loadByDeveloperId($this->user->getEmail());
+    return TeamRouteAwareSubscription::loadByTeamId($this->team->id());
   }
 
   /**
    * {@inheritdoc}
    */
   protected function unsubscribeUrl(SubscriptionInterface $subscription) {
-    return $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
-      'user' => $this->user->id(),
+    return $this->ensureDestination(Url::fromRoute('entity.subscription.team_unsubscribe_form', [
+      'team' => $this->team->id(),
       'subscription' => $subscription->id(),
     ]));
   }
@@ -74,8 +72,8 @@ class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
    * {@inheritdoc}
    */
   protected function ratePlanUrl(SubscriptionInterface $subscription) {
-    return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
-      'user' => $this->user->id(),
+    return $this->ensureDestination(Url::fromRoute('entity.rate_plan.team', [
+      'team' => $this->team->id(),
       'package' => $subscription->getRatePlan()->getPackage()->id(),
       'rate_plan' => $subscription->getRatePlan()->id(),
     ]));

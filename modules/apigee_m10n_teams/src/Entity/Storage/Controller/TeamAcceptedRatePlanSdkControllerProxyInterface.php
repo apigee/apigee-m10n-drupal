@@ -17,38 +17,37 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Entity\Storage;
+namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 
 use Apigee\Edge\Entity\EntityInterface;
-use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 
 /**
  * Some additional loaders for the subscription SDK storage controller proxy.
  */
-interface DeveloperAcceptedRatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterface {
+interface TeamAcceptedRatePlanSdkControllerProxyInterface {
 
   /**
-   * Loads all subscriptions for a given developer.
+   * Loads all subscriptions for a given team.
    *
-   * @param string $developer_id
-   *   The developer ID.
+   * @param string $team_id
+   *   The team ID.
    *
-   * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[]
+   * @return \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface[]
    *   A list of subscriptions keyed by ID.
    */
-  public function loadByDeveloperId(string $developer_id): array;
+  public function loadByTeamId(string $team_id): array;
 
   /**
    * Loads a subscription by ID.
    *
-   * @param string $developer_id
-   *   The developer email or ID.
+   * @param string $team_id
+   *   The team ID.
    * @param string $id
    *   The subscription ID.
    *
-   * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface
+   * @return \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface
    *   The subscription.
    */
-  public function loadById(string $developer_id, string $id): EntityInterface;
+  public function loadTeamSubscriptionById(string $team_id, string $id): ?EntityInterface;
 
 }

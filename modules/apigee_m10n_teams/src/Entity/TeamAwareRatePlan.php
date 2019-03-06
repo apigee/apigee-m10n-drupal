@@ -19,15 +19,14 @@
 
 namespace Drupal\apigee_m10n_teams\Entity;
 
-use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
 
 /**
- * Overrides the `package` entity class.
- *
- * This is a class for packages that is aware of teams.
+ * Overridden team aware class for the `rate_plan` entity.
  */
-class TeamRouteAwarePackage extends Package implements TeamRouteAwarePackageInterface {
+class TeamAwareRatePlan extends RatePlan {
 
   use TeamRouteAwarePropertyTrait;
 
@@ -54,10 +53,11 @@ class TeamRouteAwarePackage extends Package implements TeamRouteAwarePackageInte
   /**
    * {@inheritdoc}
    */
-  public static function getAvailableApiPackagesByTeam($team_id) {
-    return \Drupal::entityTypeManager()
-      ->getStorage(static::ENTITY_TYPE_ID)
-      ->getAvailableApiPackagesByTeam($team_id);
+  public function getSubscribe():? array {
+    // Return a team array if this is a team route.
+    return (($team = $this->getTeam()) && $team instanceof TeamInterface)
+      ? ['team' => $team]
+      : parent::getSubscribe();
   }
 
 }
