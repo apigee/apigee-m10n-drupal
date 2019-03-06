@@ -29,6 +29,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 
 /**
  * Interface MonetizationInterface.
@@ -168,6 +169,19 @@ interface MonetizationInterface {
    *   Terms and conditions history item.
    */
   public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem;
+
+  /**
+   * Check if developer accepted latest terms and conditions.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
+   *   Rate plan entity.
+   *
+   * @return bool|null
+   *   Check if developer is subscribed to a plan.
+   */
+  public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): ?bool;
 
   /**
    * Handles `hook_form_FORM_ID_alter` (user_admin_permissions) for this module.
