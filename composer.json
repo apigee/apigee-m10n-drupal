@@ -7,7 +7,7 @@
         "php": ">=7.1",
         "cweagans/composer-patches": "^1.6",
         "commerceguys/intl": "^1.0",
-        "drupal/apigee_edge": "^1.0-beta2"
+        "drupal/apigee_edge": "dev-1.x#^c64b20c"
     },
     "require-dev": {
         "behat/mink-extension": "v2.2",
@@ -29,9 +29,6 @@
         "patches": {
             "apigee/apigee-client-php": {
                 "Fix company ID issue for subscriptions": "https://github.com/apigee/apigee-client-php/files/2847006/company-accepted-company-id-fix.patch.txt"
-            },
-            "drupal/apigee_edge": {
-                "Adds team roles": "https://patch-diff.githubusercontent.com/raw/apigee/apigee-edge-drupal/pull/138.patch"
             },
             "drupal/core": {
                 "`EntityViewBuilder::getBuildDefaults()` doesn't check for `RevisionableInterface`.": "https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch"
