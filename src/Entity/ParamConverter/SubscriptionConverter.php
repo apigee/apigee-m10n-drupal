@@ -48,10 +48,9 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
     // Load the user if it is still a string.
     $user = is_string($user) ? User::load($user) : $user;
 
-    // @todo: Add support for teams.
-    // Load the subscription.
-    if (!$user || !($entity = $storage->loadById($user->getEmail(), $value))) {
-      throw new \InvalidArgumentException('Unable to load subscription.');
+    // Try to Load the subscription if we have a valid logged in user.
+    if (!$user || $user->isAnonymous() || !($entity = $storage->loadById($user->getEmail(), $value))) {
+      return;
     }
 
     // If the entity type is revisionable and the parameter has the

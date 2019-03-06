@@ -36,10 +36,12 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeTestTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
+use Prophecy\Argument;
 
 /**
  * Setup helpers for monetization tests.
@@ -529,6 +531,38 @@ trait ApigeeMonetizationTestTrait {
     catch (UnsupportedDriverActionException $exception) {
       $this->markTestSkipped($exception->getMessage());
     }
+  }
+
+  /**
+   * Set the current user to a mock.
+   *
+   * @param array $permissions
+   *   An array of permissions the current user should have.
+   *
+   *   If this permissions array is empty we assume the current user should be
+   *   a root user.
+   *
+   * @return \Drupal\Core\Session\AccountProxyInterface
+   *   The current user.
+   */
+  protected function mockCurrentUser($permissions = []) {
+    // Set the current user to a mock.
+    $account = $this->prophesize(AccountProxyInterface::class);
+    $account->id()->willReturn(empty($permissions) ? 1 : 2);
+    $account->getEmail()->willReturn("{$this->randomMachineName()}@example.com");
+    $account->isAnonymous()->willReturn(FALSE);
+    $account->isAuthenticated()->willReturn(TRUE);
+    $account->getUsername()->willReturn($this->getRandomGenerator()->word(8));
+    $account->getAccountName()->willReturn($this->getRandomGenerator()->word(8));
+    $account->getDisplayName()->willReturn($this->getRandomGenerator()->word(8) . ' ' . $this->getRandomGenerator()->word(12));
+    // Handle permissions array.
+    $account->hasPermission(Argument::any())->will(function ($args) use ($permissions) {
+      // Assume an empty permissions array means the root user.
+      return empty($permissions) ? TRUE : in_array($args[0], $permissions);
+    });
+    $this->container->set('current_user', $account->reveal());
+
+    return \Drupal::currentUser();
   }
 
 }

@@ -25,7 +25,9 @@ use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -166,5 +168,25 @@ interface MonetizationInterface {
    *   Terms and conditions history item.
    */
   public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem;
+
+  /**
+   * Handles `hook_form_FORM_ID_alter` (user_admin_permissions) for this module.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $form_id
+   *   The form ID (should always be `user_admin_permissions`).
+   */
+  public function formUserAdminPermissionsAlter(&$form, FormStateInterface $form_state, $form_id);
+
+  /**
+   * Handles `hook_ENTITY_TYPE_presave` (user_role) for this module.
+   *
+   * @param \Drupal\user\RoleInterface $user_role
+   *   The user role.
+   */
+  public function userRolePresave(RoleInterface $user_role);
 
 }
