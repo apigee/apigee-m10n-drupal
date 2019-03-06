@@ -5,7 +5,7 @@ services:
 
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
-    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n']
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n', '@user.permissions']
 
   apigee_m10n.sdk_controller_factory:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
