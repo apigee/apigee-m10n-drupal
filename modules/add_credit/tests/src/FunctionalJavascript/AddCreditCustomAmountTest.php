@@ -26,6 +26,9 @@ use Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript\AddCreditFunctional
 /**
  * Tests custom amount for an apigee add credit product.
  *
+ * TODO: These tests take a lof of time to run with the dataProviders. Figure out
+ * a way to make this more efficient.
+ *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  * @group apigee_m10n_add_credit

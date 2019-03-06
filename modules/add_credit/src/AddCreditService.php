@@ -303,7 +303,7 @@ class AddCreditService implements AddCreditServiceInterface {
         $supported_currencies = Drupal::service('apigee_m10n.monetization')
           ->getSupportedCurrencies();
 
-        // Validate the total for each currency agains the minimum top up amount.
+        // Validate the total for each currency against the minimum top up amount.
         foreach ($add_credit_totals as $currency_code => $add_credit_total) {
           if (isset($supported_currencies[$currency_code])) {
             if (($supported_currency = $supported_currencies[$currency_code])
