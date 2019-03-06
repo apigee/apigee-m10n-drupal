@@ -304,17 +304,18 @@ class AddCreditService implements AddCreditServiceInterface {
         foreach ($add_credit_items as $add_credit_item) {
           $price = $add_credit_item->getTotalPrice();
           $currency_code = strtolower($price->getCurrencyCode());
-          if (isset($supported_currencies[$currency_code])) {
-            if (($supported_currency = $supported_currencies[$currency_code])
-              && ($minimum_top_up_amount = $supported_currency->getMinimumTopUpAmount())
-              && ((float) $price->getNumber() < $minimum_top_up_amount)) {
-              $form_state->setErrorByName('review', t('The minimum top up amount for @currency_code is @amount.', [
-                '@currency_code' => $supported_currency->getName(),
-                '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
-                  'currency_display' => 'code',
-                ]),
-              ]));
-            }
+          // TODO: Fail validation if the currency does not exist.
+          if (isset($supported_currencies[$currency_code])
+            && ($supported_currency = $supported_currencies[$currency_code])
+            && ($minimum_top_up_amount = $supported_currency->getMinimumTopUpAmount())
+            && ((float) $price->getNumber() < $minimum_top_up_amount)
+          ) {
+            $form_state->setErrorByName('review', t('The minimum top up amount for @currency_code is @amount.', [
+              '@currency_code' => $supported_currency->getName(),
+              '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
+                'currency_display' => 'code',
+              ]),
+            ]));
           }
         }
       }
