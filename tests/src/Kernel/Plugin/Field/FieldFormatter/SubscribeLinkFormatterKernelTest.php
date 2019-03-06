@@ -82,6 +82,9 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
+    // Anon is no longer allowed to see monetization pages so mock the current
+    // user.
+    $this->mockCurrentUser();
     $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
