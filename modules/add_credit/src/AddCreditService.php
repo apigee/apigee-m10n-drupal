@@ -310,10 +310,10 @@ class AddCreditService implements AddCreditServiceInterface {
             && ($minimum_top_up_amount = $supported_currency->getMinimumTopUpAmount())
             && ((float) $price->getNumber() < $minimum_top_up_amount)
           ) {
-            $form_state->setErrorByName('review', t('The minimum top up amount for @currency_code is @amount.', [
+            $form_state->setErrorByName('review', t('The minimum top up amount is @amount @currency_code.', [
               '@currency_code' => $supported_currency->getName(),
               '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
-                'currency_display' => 'code',
+                'currency_display' => 'symbol',
               ]),
             ]));
           }
