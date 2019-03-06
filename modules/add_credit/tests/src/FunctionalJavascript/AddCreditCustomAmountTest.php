@@ -200,10 +200,14 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Tests the minimum validation amount on checkout.
    *
-   * @param float $amount
-   *   The amount for the checkout.
-   * @param int $quantity
-   *   The order quantity.
+   * @param float $amount_1
+   *   The amount for the first order item.
+   * @param float $amount_2
+   *   The amount for the second order item.
+   * @param int $quantity_1
+   *   The quantity for the first order item.
+   * @param int $quantity_2
+   *   The quantity for the second order item.
    * @param bool $valid
    *   If the amount is valid.
    *
@@ -211,7 +215,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerMinimumAmountValidationOnCheckout
    */
-  public function testMinimumAmountValidationOnCheckout(float $amount, int $quantity, bool $valid) {
+  public function testMinimumAmountValidationOnCheckout(float $amount_1, float $amount_2, int $quantity_1, int $quantity_2, bool $valid) {
     $this->createCommercePaymentGateway();
     $this->setupApigeeAddCreditProduct('default', FALSE);
 
@@ -221,18 +225,24 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'title[0][value]' => $title,
       'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][price][0][number]' => $amount,
+      'variations[form][inline_entity_form][price][0][number]' => 1,
     ], 'Save');
 
     $this->drupalGet('product/1');
     $this->submitForm([
-      'unit_price[0][amount][number]' => $amount,
+      'unit_price[0][amount][number]' => $amount_1,
+    ], 'Add to cart');
+
+    $this->drupalGet('product/1');
+    $this->submitForm([
+      'unit_price[0][amount][number]' => $amount_2,
     ], 'Add to cart');
 
     // Go to the cart page.
     $this->drupalGet('cart');
     $this->submitForm([
-      'edit_quantity[0]' => $quantity,
+      'edit_quantity[0]' => $quantity_1,
+      'edit_quantity[1]' => $quantity_2,
     ], 'Checkout');
     $this->assertCssElementContains('h1.page-title', 'Order information');
 
@@ -248,7 +258,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
     $this->assertCssElementContains('.view-commerce-checkout-order-summary', $title);
-    $total = $amount * $quantity;
+    $total = ($amount_1 * $quantity_1) + ($amount_2 * $quantity_2);
     $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $$total");
 
     // Finalize the payment.
@@ -372,17 +382,30 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     return [
       [
         5.00,
+        2.00,
+        1,
         1,
         FALSE,
       ],
       [
         5.00,
-        3,
-        TRUE,
+        10.00,
+        1,
+        1,
+        FALSE,
       ],
       [
         10.00,
+        11.00,
         1,
+        1,
+        TRUE,
+      ],
+      [
+        5.00,
+        4.00,
+        2,
+        3,
         TRUE,
       ],
     ];

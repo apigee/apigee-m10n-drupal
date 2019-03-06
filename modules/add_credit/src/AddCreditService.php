@@ -282,33 +282,32 @@ class AddCreditService implements AddCreditServiceInterface {
    */
   public static function checkoutFormReviewValidate(array $form, FormStateInterface $form_state) {
     if ($flow = $form_state->getFormObject()) {
-      // Loop through all order items.
-      // Find the add_credit products and the total amount per currency.
+      // Loop through all order items and see if we have any add_credit items.
+      /** @var \Drupal\commerce_order\Entity\OrderItemInterface[] $add_credit_items */
+      $add_credit_items = [];
       /** @var \Drupal\commerce_order\Entity\OrderItemInterface $item */
-      $add_credit_totals = [];
       foreach ($flow->getOrder()->getItems() as $item) {
         /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
         if (($product = $item->getPurchasedEntity()->getProduct())
           && ($product->hasField('apigee_add_credit_enabled'))
           && ($product->get('apigee_add_credit_enabled')->value)) {
-          // Use the total price since this factors in the quantity.
-          $price = $item->getTotalPrice();
-          $currency_code = strtolower($price->getCurrencyCode());
-          $add_credit_totals[$currency_code] = !empty($add_credit_totals[$currency_code]) ? $add_credit_totals[$currency_code]->add($price) : $price;
+          $add_credit_items[] = $item;
         }
       }
 
-      if (count($add_credit_totals)) {
+      if (count($add_credit_items)) {
         /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface[] $supported_currencies */
         $supported_currencies = Drupal::service('apigee_m10n.monetization')
           ->getSupportedCurrencies();
 
-        // Validate the total for each currency against the minimum top up amount.
-        foreach ($add_credit_totals as $currency_code => $add_credit_total) {
+        // Validate the total for order item against the minimum top up amount.
+        foreach ($add_credit_items as $add_credit_item) {
+          $price = $add_credit_item->getTotalPrice();
+          $currency_code = strtolower($price->getCurrencyCode());
           if (isset($supported_currencies[$currency_code])) {
             if (($supported_currency = $supported_currencies[$currency_code])
               && ($minimum_top_up_amount = $supported_currency->getMinimumTopUpAmount())
-              && ((float) $add_credit_total->getNumber() < $minimum_top_up_amount)) {
+              && ((float) $price->getNumber() < $minimum_top_up_amount)) {
               $form_state->setErrorByName('review', t('The minimum top up amount for @currency_code is @amount.', [
                 '@currency_code' => $supported_currency->getName(),
                 '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
