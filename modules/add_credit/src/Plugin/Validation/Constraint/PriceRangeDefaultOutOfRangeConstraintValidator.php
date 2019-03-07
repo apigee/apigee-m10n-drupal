@@ -69,7 +69,7 @@ class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator
     $range = $this->getRange($value);
 
     // Do nothing if we do not have a price or a range.
-    if (empty($price['number']) || empty($price['currency_code']) || empty($range)) {
+    if (empty($price['number']) || empty($price['currency_code']) || empty($range) || empty($range['currency_code'])) {
       return;
     }
 
