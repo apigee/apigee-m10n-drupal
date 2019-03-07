@@ -136,24 +136,14 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    // Use logged in user as default.
-    $values = [
-      'target_type' => 'developer',
-      'target_id' => $this->currentUser->getEmail(),
-    ];
-
-    // Do nothing if we are not on an add credit route.
-    if ($plugin = $this->addCreditPluginManager->getPluginFromRouteMatch($this->routeMatch)) {
-      // Set default values from the route.
-      $entity = $this->addCreditPluginManager->getEntityFromRouteMatch($this->routeMatch);
-      $values = [
-        'target_type' => $plugin->getPluginId(),
-        'target_id' => $plugin->getEntityId($entity),
-      ];
+    // Get the default value from query.
+    if ($default_value = $this->request->getCurrentRequest()
+      ->get(AddCreditConfig::TARGET_FIELD_NAME)) {
+      // Set the entity target default value.
+      // This ensures a target is set even if the target field is not visible
+      // in the form display.
+      $this->entity->set(AddCreditConfig::TARGET_FIELD_NAME, $default_value);
     }
-
-    // Set the entity target default value.
-    $this->entity->set(AddCreditConfig::TARGET_FIELD_NAME, $values);
 
     // Build the form.
     $form = parent::buildForm($form, $form_state);
@@ -161,7 +151,7 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
     // If the target field is visible, set a default value.
     if (isset($form[AddCreditConfig::TARGET_FIELD_NAME])) {
       $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
-        "{$values['target_type']}:{$values['target_id']}",
+        "{$default_value['target_type']}:{$default_value['target_id']}",
       ];
     }
 

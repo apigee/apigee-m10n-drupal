@@ -283,7 +283,6 @@ class AddCreditService implements AddCreditServiceInterface {
     // made into entities.
     if ((count($build['table']['#rows']))) {
       $has_operations = FALSE;
-      $destination = \Drupal::destination()->getAsArray();
       $config = $this->config->get(AddCreditConfig::CONFIG_NAME);
       $plugin_id = $entity->getEntityTypeId() === 'user' ? 'developer' : $entity->getEntityTypeId();
       $plugin = $this->addCreditPluginManager->getPluginById($plugin_id);
@@ -312,19 +311,19 @@ class AddCreditService implements AddCreditServiceInterface {
           // add credit to this balance.
           if ($this->addCreditProductManager->isProductAddCreditEnabled($product)) {
             $has_operations = TRUE;
-            $url = Url::fromRoute("apigee_m10n_add_credit.add_credit.$plugin_id", [
-              $entity->getEntityTypeId() => $entity->id(),
-              'currency' => $currency_id,
-            ], [
-              'query' => $destination,
-            ]);
-
             $row['data']['operations']['data'] = [
               '#type' => 'operations',
               '#links' => [
                 'add_credit' => [
                   'title' => t('Add credit'),
-                  'url' => $url,
+                  'url' => $product->toUrl('canonical', [
+                    'query' => [
+                      AddCreditConfig::TARGET_FIELD_NAME => [
+                        'target_type' => $plugin_id,
+                        'target_id' => $plugin->getEntityId($entity),
+                      ],
+                    ],
+                  ]),
                   'attributes' => $attributes,
                 ],
               ],
