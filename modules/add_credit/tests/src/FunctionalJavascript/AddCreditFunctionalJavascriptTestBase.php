@@ -48,6 +48,7 @@ class AddCreditFunctionalJavascriptTestBase extends MonetizationFunctionalJavasc
     'commerce_checkout',
     'commerce_product',
     'commerce_payment',
+    'commerce_payment_test',
     'commerce_store',
     'commerce',
     'user',

@@ -22,7 +22,10 @@ namespace Drupal\Tests\apigee_m10n\Kernel;
 use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultForbidden;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\Role;
+use Drupal\user\Form\UserPermissionsForm;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -45,6 +48,8 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
+    // Install the anonymous user role.
+    $this->installConfig('user');
 
     $this->monetization = $this->container->get('apigee_m10n.monetization');
   }
@@ -162,6 +167,33 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     static::assertContains($data['developerTnc'][0]['action'], ['ACCEPTED', 'DECLINED']);
     static::assertEquals($data['developerTnc'][0]['auditDate'], '2018-12-10 21:00:00');
     static::assertEquals($data['developerTnc'][0]['tnc']['organization']['name'], $this->sdk_connector->getOrganization());
+  }
+
+  /**
+   * Tests the user permissions form alter.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Core\Form\EnforcedResponseException
+   * @throws \Drupal\Core\Form\FormAjaxException
+   */
+  public function testUserPermissionAlterations() {
+    $form_state = new FormState();
+    $form = \Drupal::formBuilder()->buildForm(UserPermissionsForm::class, $form_state);
+    static::assertInstanceOf(UserPermissionsForm::class, $form_state->getFormObject());
+
+    $protected_permisisons = array_filter(\Drupal::service('user.permissions')->getPermissions(), function ($permission) {
+      return ($permission['provider'] === 'apigee_m10n');
+    });
+    // Make sure all permissions are disabled.
+    foreach (array_keys($protected_permisisons) as $permission_name) {
+      static::assertTrue($form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#disabled']);
+    }
+
+    $anonymous_role = Role::load(AccountInterface::ANONYMOUS_ROLE);
+    $anonymous_role->grantPermission('administer apigee monetization');
+    $anonymous_role->save();
+
+    static::assertFalse($anonymous_role->hasPermission('administer apigee monetization'));
   }
 
 }

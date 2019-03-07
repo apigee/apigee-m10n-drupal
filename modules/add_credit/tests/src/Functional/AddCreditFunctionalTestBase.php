@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
@@ -95,6 +96,21 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     // Before finalizing the payment, we have to add a couple of responses to
     // the queue.
     $this->stack
+      ->queueMockResponse([
+        'get-supported-currencies' => [
+          'currencies' => [
+            new SupportedCurrency([
+              "description" => "United States Dollars",
+              "displayName" => "United States Dollars",
+              "id" => "usd",
+              "minimumTopupAmount" => 11.0000,
+              "name" => "USD",
+              "status" => "ACTIVE",
+              "virtualCurrency" => FALSE,
+            ]),
+          ],
+        ],
+      ])
       // We should now have no existing balance .
       ->queueMockResponse(['get_prepaid_balances_empty'])
       // Queue a developer balance response for the top up (POST).
