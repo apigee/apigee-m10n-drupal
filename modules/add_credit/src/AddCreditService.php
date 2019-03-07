@@ -378,9 +378,9 @@ class AddCreditService implements AddCreditServiceInterface {
   public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     // For add_credit_enabled products.
     if ($operation === 'view' && $this->addCreditProductManager->isProductAddCreditEnabled($entity)) {
-      // Allow access only if the current user can add credit to at least
-      // one entity.
-      return AccessResult::forbiddenIf(!count($this->addCreditPluginManager->getEntities($account)));
+      /** @var \Drupal\Core\Access\AccessResultReasonInterface $access */
+      $access = AccessResult::allowedIfHasPermissions($account, array_keys($this->addCreditPluginManager->getPermissions()), 'OR');
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
 
     return AccessResult::neutral();

@@ -58,14 +58,7 @@ class AddCreditPermissions implements AddCreditPermissionsInterface, ContainerIn
    * {@inheritdoc}
    */
   public function permissions(): array {
-    $permissions = [];
-
-    /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $entity_type */
-    foreach ($this->addCreditPluginManager->getPlugins() as $entity_type) {
-      $permissions = array_merge($permissions, $entity_type->getPermissions());
-    }
-
-    return $permissions;
+    return $this->addCreditPluginManager->getPermissions();
   }
 
 }

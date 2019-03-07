@@ -66,12 +66,26 @@ class AddCreditEntityTypeManager extends DefaultPluginManager implements AddCred
   /**
    * {@inheritdoc}
    */
+  public function getPermissions(): array {
+    $permissions = [];
+
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $entity_type */
+    foreach ($this->getPlugins() as $entity_type) {
+      $permissions = array_merge($permissions, $entity_type->getPermissions());
+    }
+
+    return $permissions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEntities(AccountInterface $account): array {
     $entities = [];
     /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $plugin */
     foreach ($this->getPlugins() as $plugin) {
-      if ($plugin_entitiies = $plugin->getEntities($account)) {
-        $entities[$plugin->getPluginId()] = $plugin_entitiies;
+      if ($plugin_entities = $plugin->getEntities($account)) {
+        $entities[$plugin->getPluginId()] = $plugin_entities;
       }
     }
     return $entities;

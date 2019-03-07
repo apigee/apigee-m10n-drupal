@@ -47,6 +47,14 @@ interface AddCreditEntityTypeManagerInterface extends PluginManagerInterface {
   public function getPluginById(string $plugin_id): ?AddCreditEntityTypeInterface;
 
   /**
+   * Helper to retrieve an array of permissions defined by all plugins.
+   *
+   * @return array
+   *   An array of permissions.
+   */
+  public function getPermissions(): array;
+
+  /**
    * Returns an array of entities the given account has access to.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
