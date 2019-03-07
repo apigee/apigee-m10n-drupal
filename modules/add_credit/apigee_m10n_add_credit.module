@@ -21,6 +21,7 @@
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_mail().
@@ -97,6 +98,13 @@ function apigee_m10n_add_credit_field_widget_form_alter(&$element, FormStateInte
  */
 function apigee_m10n_add_credit_apigee_m10n_prepaid_balance_page_alter(array &$build, EntityInterface $entity) {
   apigee_m10n_add_credit_service()->apigeeM10nPrepaidBalancePageAlter($build, $entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return apigee_m10n_add_credit_service()->commerceProductAccess($entity, $operation, $account);
 }
 
 /**

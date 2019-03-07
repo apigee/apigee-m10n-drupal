@@ -108,10 +108,13 @@ abstract class AddCreditEntityTypeBase extends PluginBase implements AddCreditEn
   public function access(EntityInterface $entity, AccountInterface $account): AccessResultInterface {
     $plugin_id = $this->getPluginId();
 
-    return AccessResult::allowedIf(
+    /** @var \Drupal\Core\Access\AccessResultReasonInterface $result */
+    $result = AccessResult::allowedIf(
       $account->hasPermission("add credit to any $plugin_id prepaid balance")
       || ($account->hasPermission("add credit to own $plugin_id prepaid balance") && $account->id() === $entity->id())
     );
+
+    return $result->isAllowed() ? $result : AccessResult::forbidden($result->getReason());
   }
 
 }

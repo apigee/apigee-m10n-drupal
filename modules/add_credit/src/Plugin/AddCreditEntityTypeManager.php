@@ -20,13 +20,9 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin;
 
 use Drupal\apigee_m10n_add_credit\Annotation\AddCreditEntityType;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -70,36 +66,15 @@ class AddCreditEntityTypeManager extends DefaultPluginManager implements AddCred
   /**
    * {@inheritdoc}
    */
-  public function getPluginFromRouteMatch(RouteMatchInterface $route_match): ?AddCreditEntityTypeInterface {
-    // Find the plugin id from the route.
-    if ($add_credit_entity_type = $route_match->getRouteObject()->getOption('_add_credit_entity_type')) {
-      return $this->getPlugins()[$add_credit_entity_type] ?? NULL;
+  public function getEntities(AccountInterface $account): array {
+    $entities = [];
+    /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $plugin */
+    foreach ($this->getPlugins() as $plugin) {
+      if ($plugin_entitiies = $plugin->getEntities($account)) {
+        $entities[$plugin->getPluginId()] = $plugin_entitiies;
+      }
     }
-
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEntityFromRouteMatch(RouteMatchInterface $route_match): ?EntityInterface {
-    if ($plugin = $this->getPluginFromRouteMatch($route_match)) {
-      return $route_match->getParameter($plugin->getRouteEntityTypeId());
-    }
-
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function checkAccessFromRouteMatch(RouteMatchInterface $route_match, AccountInterface $account): ?AccessResultInterface {
-    if (($plugin = $this->getPluginFromRouteMatch($route_match))
-      && ($entity = $this->getEntityFromRouteMatch($route_match))) {
-      return $plugin->access($entity, $account);
-    }
-
-    return AccessResult::neutral();
+    return $entities;
   }
 
 }

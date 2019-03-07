@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_add_credit;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * The interface for the add credit service..
@@ -166,5 +167,20 @@ interface AddCreditServiceInterface {
    *   The prepaid balance owner entity.
    */
   public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity);
+
+  /**
+   * Handles `hook_commerce_product_access` for the `apigee_m10n_add_credit` module.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The `commerce_product` entity.
+   * @param string $operation
+   *   The operation.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface|null
+   *   The access result.
+   */
+  public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account);
 
 }

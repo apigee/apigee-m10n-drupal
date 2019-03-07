@@ -26,6 +26,7 @@ use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -34,7 +35,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
 
 /**
  * Helper service to handle basic module tasks.
@@ -278,6 +278,19 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
+  public function formAlter(&$form, FormStateInterface $form_state, $form_id) {
+    if (($flow = $form_state->getFormObject())
+      && ($flow instanceof CheckoutFlowBase)
+      && ($form['#step_id'] == 'review')
+    ) {
+      // Add a custom validation handler to check for add credit products.
+      array_unshift($form['#validate'], [static::class, 'checkoutFormReviewValidate']);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity) {
     // TODO: This can be move to entity operations when/if prepaid balance are
     // made into entities.
@@ -300,7 +313,7 @@ class AddCreditService implements AddCreditServiceInterface {
       }
 
       foreach ($build['table']['#rows'] as $currency_id => &$row) {
-        if ($plugin->access($entity, $this->current_user)
+        if ($plugin->access($entity, $this->current_user)->isAllowed()
           && ($product = $this->addCreditProductManager->getProductForCurrency($currency_id))) {
           // Add cache tags even if product is not add credit enabled.
           // This allows cache invalidation when product is add credit enabled
@@ -362,14 +375,15 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function formAlter(&$form, FormStateInterface $form_state, $form_id) {
-    if (($flow = $form_state->getFormObject())
-      && ($flow instanceof CheckoutFlowBase)
-      && ($form['#step_id'] == 'review')
-    ) {
-      // Add a custom validation handler to check for add credit products.
-      array_unshift($form['#validate'], [static::class, 'checkoutFormReviewValidate']);
+  public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // For add_credit_enabled products.
+    if ($operation === 'view' && $this->addCreditProductManager->isProductAddCreditEnabled($entity)) {
+      // Allow access only if the current user can add credit to at least
+      // one entity.
+      return AccessResult::forbiddenIf(!count($this->addCreditPluginManager->getEntities($account)));
     }
+
+    return AccessResult::neutral();
   }
 
   /**

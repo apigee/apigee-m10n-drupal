@@ -128,7 +128,7 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
   public function getSettableOptions(AccountInterface $account = NULL) {
     $entity_bundle_info = \Drupal::service('entity_type.bundle.info');
     $options = [];
-    foreach ($this->getPossibleTargets($account) as $entity_type => $entities) {
+    foreach (\Drupal::service('plugin.manager.apigee_add_credit_entity_type')->getEntities($account) as $entity_type => $entities) {
       $bundles = $entity_bundle_info->getBundleInfo($entity_type);
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       foreach ($entities as $entity) {
@@ -148,24 +148,6 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
       return FALSE;
     }
     return TRUE;
-  }
-
-  /**
-   * Returns an array of possible targets.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user account.
-   *
-   * @return array
-   *   An array of developer and/or teams entities keyed by entity type.
-   */
-  protected function getPossibleTargets(AccountInterface $account) {
-    $targets = [];
-    /** @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface $plugin */
-    foreach (\Drupal::service('plugin.manager.apigee_add_credit_entity_type')->getPlugins() as $plugin) {
-      $targets[$plugin->getPluginId()] = $plugin->getEntities($account);
-    }
-    return $targets;
   }
 
 }

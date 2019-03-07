@@ -20,9 +20,6 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Core\Access\AccessResultInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -50,38 +47,14 @@ interface AddCreditEntityTypeManagerInterface extends PluginManagerInterface {
   public function getPluginById(string $plugin_id): ?AddCreditEntityTypeInterface;
 
   /**
-   * Finds an instance of a plugin from the route match.
+   * Returns an array of entities the given account has access to.
    *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The current route match.
-   *
-   * @return \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface|null
-   *   An instance of add credit entity type plugin.
-   */
-  public function getPluginFromRouteMatch(RouteMatchInterface $route_match): ?AddCreditEntityTypeInterface;
-
-  /**
-   * Finds the entity from the route.
-   *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The current route match.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface|null
-   *   The entity from the route.
-   */
-  public function getEntityFromRouteMatch(RouteMatchInterface $route_match): ?EntityInterface;
-
-  /**
-   * Determines access to the current route based on plugin access callbacks.
-   *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The current route match.
    * @param \Drupal\Core\Session\AccountInterface $account
-   *   The current user account.
+   *   The user account.
    *
-   * @return \Drupal\Core\Access\AccessResultInterface|null
-   *   Whether or not the user has access to the entity.
+   * @return array
+   *   An array of entities.
    */
-  public function checkAccessFromRouteMatch(RouteMatchInterface $route_match, AccountInterface $account): ?AccessResultInterface;
+  public function getEntities(AccountInterface $account): array;
 
 }
