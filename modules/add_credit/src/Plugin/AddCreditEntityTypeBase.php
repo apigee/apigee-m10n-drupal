@@ -82,21 +82,6 @@ abstract class AddCreditEntityTypeBase extends PluginBase implements AddCreditEn
   /**
    * {@inheritdoc}
    */
-  public function getPath(): string {
-    return $this->pluginDefinition['path'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRouteEntityTypeId(): string {
-    // This defaults to the plugin id in most cases.
-    return $this->pluginId;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getPermissions(): array {
     $plugin_id = $this->getPluginId();
 

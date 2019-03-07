@@ -36,7 +36,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @AddCreditEntityType(
  *   id = "team",
  *   label = "Team",
- *   path = "/teams/{team}/monetization/billing/add-credit/{currency}",
  * )
  */
 class Team extends AddCreditEntityTypeBase implements ContainerFactoryPluginInterface {

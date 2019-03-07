@@ -31,7 +31,6 @@ use Drupal\Core\Session\AccountInterface;
  * @AddCreditEntityType(
  *   id = "developer",
  *   label = "Developer",
- *   path = "/user/{user}/monetization/billing/add-credit/{currency}",
  * )
  */
 class Developer extends AddCreditEntityTypeBase {

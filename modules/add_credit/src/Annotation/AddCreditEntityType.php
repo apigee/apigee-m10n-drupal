@@ -42,13 +42,4 @@ class AddCreditEntityType extends Plugin {
    */
   public $label;
 
-  /**
-   * The path for the plugin route.
-   *
-   * The path is used to construct route to add credit for the plugin.
-   *
-   * @var string
-   */
-  public $path;
-
 }

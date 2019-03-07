@@ -38,24 +38,6 @@ interface AddCreditEntityTypeInterface extends PluginInspectionInterface {
   public function getLabel(): string;
 
   /**
-   * Returns the path for the add credit route.
-   *
-   * @return string
-   *   The path for the add credit route.
-   */
-  public function getPath(): string;
-
-  /**
-   * Returns the entity type id for the route.
-   *
-   * We need this because developer uses /user/{user} in the route.
-   *
-   * @return string
-   *   The entity type id for the route.
-   */
-  public function getRouteEntityTypeId(): string;
-
-  /**
    * Returns an array of permissions for this plugin.
    *
    * @return array

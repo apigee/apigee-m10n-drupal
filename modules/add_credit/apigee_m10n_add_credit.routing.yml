@@ -17,6 +17,3 @@ apigee_m10n_add_credit.settings.add_credit.settings:
     _permission: 'access administration pages'
   options:
     _apigee_monetization_route: TRUE
-
-route_callbacks:
-  - \Drupal\apigee_m10n_add_credit\Routing\AddCreditRoutes::routes
