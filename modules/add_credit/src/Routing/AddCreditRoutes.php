@@ -86,9 +86,7 @@ class AddCreditRoutes implements ContainerInjectionInterface {
         $plugin->getPath(),
         [
           '_controller' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::view',
-          '_title' => (string) $this->t('Add credit to @label', [
-            '@label' => strtolower($plugin->getLabel()),
-          ]),
+          '_title_callback' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::title'
         ],
         [
           '_custom_access' => '\Drupal\apigee_m10n_add_credit\Controller\AddCreditController::access',

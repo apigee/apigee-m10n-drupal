@@ -20,6 +20,7 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection;
 
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\node\Plugin\EntityReferenceSelection\NodeSelection;
 
 /**
@@ -42,7 +43,7 @@ class AddCreditProductsSelection extends NodeSelection {
     $query = parent::buildEntityQuery($match, $match_operator);
 
     // Filter add credit enabled products only.
-    $query->condition('apigee_add_credit_enabled', TRUE);
+    $query->condition(AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME, TRUE);
 
     return $query;
   }

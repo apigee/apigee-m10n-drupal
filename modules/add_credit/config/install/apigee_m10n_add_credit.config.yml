@@ -1,1 +1,2 @@
 notify_on: "error_only"
+use_modal: TRUE

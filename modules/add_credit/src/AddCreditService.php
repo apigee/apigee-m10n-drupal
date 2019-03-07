@@ -26,6 +26,7 @@ use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -64,6 +65,13 @@ class AddCreditService implements AddCreditServiceInterface {
   protected $addCreditPluginManager;
 
   /**
+   * The add credit product manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface
+   */
+  protected $addCreditProductManager;
+
+  /**
    * Constructor for the `apigee_m10n.add_credit` service.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -72,11 +80,14 @@ class AddCreditService implements AddCreditServiceInterface {
    *   The current user.
    * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
    *   The add credit plugin manager.
+   * @param \Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface $add_credit_product_manager
+   *   The add credit product manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $user, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $user, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager, AddCreditProductManagerInterface $add_credit_product_manager) {
     $this->config = $config_factory;
     $this->current_user = $user;
     $this->addCreditPluginManager = $add_credit_plugin_manager;
+    $this->addCreditProductManager = $add_credit_product_manager;
   }
 
   /**
@@ -113,7 +124,7 @@ class AddCreditService implements AddCreditServiceInterface {
         // The base field needs to be added to all product types for the storage
         // to be allocated but the option to enable will be hidden and unused
         // unless enabled for that bundle.
-        $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
+        $fields[AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME] = BaseFieldDefinition::create('boolean')
           ->setLabel(t('This is an Apigee add credit product'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
@@ -158,13 +169,13 @@ class AddCreditService implements AddCreditServiceInterface {
       // developer's balance upon payment completion. This adds a base field to
       // the bundle to allow add credit to be enabled for products of the bundle
       // individually.
-      $add_credit_base_def = clone $base_field_definitions['apigee_add_credit_enabled'];
+      $add_credit_base_def = clone $base_field_definitions[AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME];
       $add_credit_base_def
         ->setDefaultValue(TRUE)
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);
-      return ['apigee_add_credit_enabled' => $add_credit_base_def];
+      return [AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME => $add_credit_base_def];
     }
   }
 
@@ -268,69 +279,85 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity) {
+    // TODO: This can be move to entity operations when/if prepaid balance are
+    // made into entities.
     if ((count($build['table']['#rows']))) {
       $has_operations = FALSE;
       $destination = \Drupal::destination()->getAsArray();
-      $config = \Drupal::configFactory()->get('apigee_m10n_add_credit.config');
+      $config = $this->config->get(AddCreditConfig::CONFIG_NAME);
       $plugin_id = $entity->getEntityTypeId() === 'user' ? 'developer' : $entity->getEntityTypeId();
       $plugin = $this->addCreditPluginManager->getPluginById($plugin_id);
-      $attributes = [
-        'class' => [
-          'use-ajax',
-          'button',
-        ],
-        'data-dialog-type' => 'modal',
-        'data-dialog-options' => json_encode([
+
+      $attributes['class'][] = 'button';
+      if ($use_modal = $config->get('use_modal')) {
+        $attributes['class'][] = 'use-ajax';
+        $attributes['data-dialog-type'] = 'modal';
+        $attributes['data-dialog-options'] = json_encode([
           'width' => 500,
           'height' => 500,
           'draggable' => FALSE,
           'autoResize' => FALSE,
-        ]),
-      ];
+        ]);
+      }
 
       foreach ($build['table']['#rows'] as $currency_id => &$row) {
-        $url = Url::fromRoute("apigee_m10n_add_credit.add_credit.$plugin_id", [
-          $entity->getEntityTypeId() => $entity->id(),
-          'currency' => $currency_id,
-        ], [
-          'query' => $destination,
-        ]);
-        $data = ['#markup' => ''];
+        if ($plugin->access($entity, $this->current_user)
+          && ($product = $this->addCreditProductManager->getProductForCurrency($currency_id))) {
+          // Add cache tags even if product is not add credit enabled.
+          // This allows cache invalidation when product is add credit enabled
+          // at a later stage.
+          $build['table']['#cache']['tags'] = Cache::mergeTags($build['table']['#cache']['tags'], $product->getCacheTags());
 
-        // If the currency has a configured product, add a link to add credit to this balance.
-        if ($plugin->access($entity, $this->current_user) && $config->get("products.$currency_id.product_id")) {
-          $has_operations = TRUE;
-          $data = [
-            '#type' => 'operations',
-            '#links' => [
-              'add_credit' => [
-                'title' => t('Add credit'),
-                'url' => $url,
-                'attributes' => $attributes,
+          // If the currency has a configured add credit product, add a link to
+          // add credit to this balance.
+          if ($this->addCreditProductManager->isProductAddCreditEnabled($product)) {
+            $has_operations = TRUE;
+            $url = Url::fromRoute("apigee_m10n_add_credit.add_credit.$plugin_id", [
+              $entity->getEntityTypeId() => $entity->id(),
+              'currency' => $currency_id,
+            ], [
+              'query' => $destination,
+            ]);
+
+            $row['data']['operations']['data'] = [
+              '#type' => 'operations',
+              '#links' => [
+                'add_credit' => [
+                  'title' => t('Add credit'),
+                  'url' => $url,
+                  'attributes' => $attributes,
+                ],
               ],
-            ],
-          ];
-        }
-
-        if ($has_operations) {
-          $row['data']['operations']['data'] = $data;
+            ];
+          }
         }
       }
 
       if ($has_operations) {
         $build['table']['#header']['operations'] = t('Operations');
-        $build['table']['#attached'] = [
-          'library' => [
-            'core/drupal.dialog.ajax',
-            'core/jquery.ui.dialog',
-          ],
-        ];
-      }
-    }
 
-    // Add cache contexts.
-    $build['table']['#cache']['contexts'][] = 'user.permissions';
-    $build['table']['#cache']['tags'][] = 'config:' . AddCreditConfig::CONFIG_NAME;
+        // Fill in empty operation column.
+        foreach ($build['table']['#rows'] as $currency_id => &$row) {
+          if (empty($row['data']['operations'])) {
+            $row['data']['operations']['data'] = ['#markup' => ''];
+          }
+        }
+
+        // Add modal libraries if there is at least one operation link.
+        if ($use_modal) {
+          $build['table']['#attached'] = [
+            'library' => [
+              'core/drupal.dialog.ajax',
+              'core/jquery.ui.dialog',
+            ],
+          ];
+        }
+      }
+
+      // Add cache contexts.
+      $build['table']['#cache']['contexts'][] = 'user.permissions';
+      $build['table']['#cache']['tags'] = Cache::mergeTags($build['table']['#cache']['tags'], ['config:' . AddCreditConfig::CONFIG_NAME]);
+    }
   }
 
   /**
@@ -361,10 +388,7 @@ class AddCreditService implements AddCreditServiceInterface {
       $add_credit_items = [];
       /** @var \Drupal\commerce_order\Entity\OrderItemInterface $item */
       foreach ($flow->getOrder()->getItems() as $item) {
-        /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-        if (($product = $item->getPurchasedEntity()->getProduct())
-          && ($product->hasField('apigee_add_credit_enabled'))
-          && ($product->get('apigee_add_credit_enabled')->value)) {
+        if (Drupal::service('apigee_m10n_add_credit.product_manager')->isProductAddCreditEnabled($item->getPurchasedEntity()->getProduct())) {
           $add_credit_items[] = $item;
         }
       }

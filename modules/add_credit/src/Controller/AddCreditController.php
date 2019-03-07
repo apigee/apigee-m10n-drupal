@@ -19,10 +19,8 @@
 
 namespace Drupal\apigee_m10n_add_credit\Controller;
 
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
-use Drupal\commerce_product\Entity\ProductInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -52,13 +50,6 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
   protected $viewBuilder;
 
   /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
    * The current route match.
    *
    * @var \Drupal\Core\Routing\RouteMatchInterface
@@ -73,25 +64,32 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
   protected $addCreditPluginManager;
 
   /**
+   * The add credit product manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface
+   */
+  protected $addCreditProductManager;
+
+  /**
    * AddCreditController constructor.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The entity storage.
    * @param \Drupal\Core\Entity\EntityViewBuilderInterface $view_builder
    *   The commerce_product entity view builder.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
    * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
    *   The add credit plugin manager.
+   * @param \Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface $add_credit_product_manager
+   *   The add credit product manager.
    */
-  public function __construct(EntityStorageInterface $storage, EntityViewBuilderInterface $view_builder, ConfigFactoryInterface $config_factory, RouteMatchInterface $route_match, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager) {
+  public function __construct(EntityStorageInterface $storage, EntityViewBuilderInterface $view_builder, RouteMatchInterface $route_match, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager, AddCreditProductManagerInterface $add_credit_product_manager) {
     $this->viewBuilder = $view_builder;
-    $this->configFactory = $config_factory;
     $this->storage = $storage;
     $this->routeMatch = $route_match;
     $this->addCreditPluginManager = $add_credit_plugin_manager;
+    $this->addCreditProductManager = $add_credit_product_manager;
   }
 
   /**
@@ -101,10 +99,26 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
     return new static(
       $container->get('entity.manager')->getStorage('commerce_product'),
       $container->get('entity.manager')->getViewBuilder('commerce_product'),
-      $container->get('config.factory'),
       $container->get('current_route_match'),
-      $container->get('plugin.manager.apigee_add_credit_entity_type')
+      $container->get('plugin.manager.apigee_add_credit_entity_type'),
+      $container->get('apigee_m10n_add_credit.product_manager')
     );
+  }
+
+  /**
+   * Returns the title for the route.
+   *
+   * @return string
+   *   The title for the page.
+   */
+  public function title() {
+    if ($entity = $this->addCreditPluginManager->getEntityFromRouteMatch($this->routeMatch)) {
+      return $this->t('Add credit to prepaid balance: @label ', [
+        '@label' => $entity->label(),
+      ]);
+    }
+
+    return $this->t('Add credit');
   }
 
   /**
@@ -118,7 +132,7 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
    */
   public function view(string $currency = NULL) {
     // Throw an exception if a product has not been configured for the currency.
-    if (!($product = $this->getProductForCurrency($currency))) {
+    if (!($product = $this->addCreditProductManager->getProductForCurrency($currency))) {
       $this->messenger()->addError($this->t('Cannot add credit to currency @currency_id.', [
         '@currency_id' => $currency,
       ]));
@@ -140,25 +154,6 @@ class AddCreditController extends ControllerBase implements ContainerInjectionIn
   public function access(AccountInterface $account) {
     // Let the plugins determine access.
     return $this->addCreditPluginManager->checkAccessFromRouteMatch($this->routeMatch, $account);
-  }
-
-  /**
-   * Helper to get the configured product from the currency id.
-   *
-   * @param string $currency
-   *   The currency id.
-   *
-   * @return \Drupal\commerce_product\Entity\ProductInterface|null
-   *   A product entity if found. Otherwise null.
-   */
-  protected function getProductForCurrency(string $currency): ?ProductInterface {
-    /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    if (($product_id = $this->configFactory->get(AddCreditConfig::CONFIG_NAME)->get("products.$currency.product_id"))
-      && ($product = $this->storage->load($product_id))) {
-      return $product;
-    }
-
-    return NULL;
   }
 
 }

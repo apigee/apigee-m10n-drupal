@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 

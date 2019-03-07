@@ -50,6 +50,18 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(AddCreditConfig::CONFIG_NAME);
 
+    $form['general'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('General'),
+    ];
+
+    $form['general']['use_modal'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use modal'),
+      '#description' => $this->t('Display the add credit form in a modal.'),
+      '#default_value' => $config->get('use_modal'),
+    ];
+
     // Use the site default if an email hasn't been saved.
     $default_email = $config->get('notification_recipient');
     $default_email = $default_email ?: $this->configFactory()->get('system.site')->get('mail');
@@ -108,6 +120,7 @@ class ApigeeAddCreditConfigForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
 
     $this->config(AddCreditConfig::CONFIG_NAME)
+      ->set('use_modal', $form_state->getValue('use_modal'))
       ->set('notify_on', $form_state->getValue('notify_on'))
       ->set('notification_recipient', $form_state->getValue('notification_recipient'))
       ->save();

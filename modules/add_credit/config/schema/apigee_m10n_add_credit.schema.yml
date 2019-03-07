@@ -8,6 +8,9 @@ apigee_m10n_add_credit.config:
     notification_recipient:
       type: string
       label: 'The email address to send notifications to.'
+    use_modal:
+      type: boolean
+      label: 'Whether to use a modal for adding credit'
     products:
       type: sequence
       sequence:

@@ -19,40 +19,33 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+use Drupal\commerce_product\Entity\ProductInterface;
+
 /**
- * Defines config for add credit.
+ * Defines an interface for a 'add credit product manager'.
  */
-class AddCreditConfig {
+interface AddCreditProductManagerInterface {
 
   /**
-   * The default name for the `apigee_m10n_add_credit` module.
+   * Helper to get the configured product for the given currency id.
    *
-   * @var string
-   */
-  public const CONFIG_NAME = 'apigee_m10n_add_credit.config';
-
-  /**
-   * The "Always" value for `apigee_m10n_add_credit.config.notify_on`.
+   * @param string $currency_id
+   *   The currency id.
    *
-   * @var string
+   * @return \Drupal\commerce_product\Entity\ProductInterface|null
+   *   A product entity if found. Otherwise null.
    */
-  public const NOTIFY_ALWAYS = 'always';
+  public function getProductForCurrency(string $currency_id): ?ProductInterface;
 
   /**
-   * The "Only on error" value for `apigee_m10n_add_credit.config.notify_on`.
+   * Determines if a product is add_credit enabled.
    *
-   * @var string
+   * @param \Drupal\commerce_product\Entity\ProductInterface $product
+   *   The product entity.
+   *
+   * @return bool
+   *   TRUE if the product is add credit enabled.
    */
-  public const NOTIFY_ON_ERROR = 'error_only';
-
-  /**
-   * The name of the field for add credit enabled.
-   */
-  public const ADD_CREDIT_ENABLED_FIELD_NAME = 'apigee_add_credit_enabled';
-
-  /**
-   * The name of the field that holds the add credit target value.
-   */
-  public const TARGET_FIELD_NAME = 'add_credit_target';
+  public function isProductAddCreditEnabled(ProductInterface $product): bool;
 
 }

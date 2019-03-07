@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Traits;
 
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_payment\Entity\PaymentGateway;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
 use Drupal\commerce_price\Price;
@@ -106,7 +107,7 @@ trait AddCreditFunctionalTestTrait {
       'type' => 'default',
       'stores' => [$store->id()],
       'variations' => [$variation],
-      'apigee_add_credit_enabled' => 1,
+      AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME => 1,
     ]);
 
     $product->save();
