@@ -54,8 +54,7 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
     parent::setUp();
 
     // Create the developer account.
-    // @todo: Restrict this to a what a developers permissions would be.
-    $this->developer = $this->signIn();
+    $this->developer = $this->signIn(['add credit to own developer prepaid balance']);
     $this->assertNoClientError();
 
     // Enable add credit for the product type.

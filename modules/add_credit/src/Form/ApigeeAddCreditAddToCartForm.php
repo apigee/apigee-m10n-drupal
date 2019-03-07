@@ -136,14 +136,16 @@ class ApigeeAddCreditAddToCartForm extends AddToCartForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    // Get the default value from query.
-    if ($default_value = $this->request->getCurrentRequest()
-      ->get(AddCreditConfig::TARGET_FIELD_NAME)) {
-      // Set the entity target default value.
-      // This ensures a target is set even if the target field is not visible
-      // in the form display.
-      $this->entity->set(AddCreditConfig::TARGET_FIELD_NAME, $default_value);
-    }
+    // Get the default value from query otherwise use the current user.
+    $default_value = $this->request->getCurrentRequest()->get(AddCreditConfig::TARGET_FIELD_NAME) ?? [
+      'target_type' => 'developer',
+      'target_id' => $this->currentUser->getEmail(),
+    ];
+
+    // Set the entity target default value.
+    // This ensures a target is set even if the target field is not visible
+    // in the form display.
+    $this->entity->set(AddCreditConfig::TARGET_FIELD_NAME, $default_value);
 
     // Build the form.
     $form = parent::buildForm($form, $form_state);
