@@ -152,7 +152,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
     $rate_plan = $item->getEntity();
     if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
       $developer_id = $value['user']->getEmail();
-      if ($this->monetization->isDeveloperSubscriptionPurchased($developer_id, $rate_plan)) {
+      if ($this->monetization->isDeveloperAlreadySubscribed($developer_id, $rate_plan)) {
         $label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
         return [
           '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
