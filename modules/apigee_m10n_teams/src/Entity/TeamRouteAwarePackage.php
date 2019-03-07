@@ -19,15 +19,17 @@
 
 namespace Drupal\apigee_m10n_teams\Entity;
 
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
 
 /**
  * Overrides the `package` entity class.
  *
  * This is a class for packages that is aware of teams.
  */
-class TeamRouteAwarePackage extends Package {
+class TeamRouteAwarePackage extends Package implements TeamRouteAwarePackageInterface {
+
+  use TeamRouteAwarePropertyTrait;
 
   /**
    * {@inheritdoc}
@@ -50,16 +52,12 @@ class TeamRouteAwarePackage extends Package {
   }
 
   /**
-   * Get the team from the current route match.
-   *
-   * @return string
-   *   Returns the team ID.
+   * {@inheritdoc}
    */
-  private function getTeamId(): ?string {
-    // The route parameters still need to be set.
-    $team = \Drupal::routeMatch()->getParameter('team');
-    // Sometimes the param converter has converted the team to an entity.
-    return $team instanceof TeamInterface ? $team->id() : $team;
+  public static function getAvailableApiPackagesByTeam($team_id) {
+    return \Drupal::entityTypeManager()
+      ->getStorage(static::ENTITY_TYPE_ID)
+      ->getAvailableApiPackagesByTeam($team_id);
   }
 
 }

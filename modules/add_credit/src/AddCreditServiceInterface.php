@@ -146,6 +146,18 @@ interface AddCreditServiceInterface {
   public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context);
 
   /**
+   * Handles `hook_form_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $form
+   *   The form to alter.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $form_id
+   *   The form id.
+   */
+  public function formAlter(&$form, FormStateInterface $form_state, $form_id);
+
+  /**
    * Handles `hook_apigee_m10n_prepaid_balance_page_alter` for the `apigee_m10n_add_credit` module.
    *
    * @param array $build

@@ -19,14 +19,32 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 
 /**
- * The `apigee_m10n_teams.sdk_controller_factory` service class.
+ * An `apigee_m10n.sdk_controller_factory` overridden service class.
  */
 class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements TeamSdkControllerFactoryInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function companyAcceptedRatePlanController(string $company_id): CompanyAcceptedRatePlanController {
+    if (empty($this->controllers[__FUNCTION__][$company_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$company_id] = new CompanyAcceptedRatePlanController(
+        $company_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$company_id];
+  }
 
   /**
    * {@inheritdoc}

@@ -15,10 +15,10 @@ services:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\ApiPackageEntityControllerProxy
 
   apigee_m10n.sdk_controller_proxy.rate_plan:
-    class: Drupal\apigee_m10n\Entity\Storage\RatePlanSdkControllerProxy
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxy
 
   apigee_m10n.sdk_controller_proxy.subscription:
-    class: Drupal\apigee_m10n\Entity\Storage\DeveloperAcceptedRatePlanSdkControllerProxy
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy
 
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber

@@ -34,7 +34,7 @@ apigee_m10n.settings.prepaid_balance:
 
 apigee_m10n.subscriptions:
   title: 'Purchased plans'
-  route_name: entity.subscription.collection_by_developer
+  route_name: entity.subscription.developer_collection
   base_route: entity.user.canonical
   weight: -1
 

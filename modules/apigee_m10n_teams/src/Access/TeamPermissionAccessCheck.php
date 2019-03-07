@@ -36,7 +36,7 @@ class TeamPermissionAccessCheck implements TeamPermissionAccessInterface {
    *
    * @var \Drupal\apigee_edge_teams\TeamPermissionHandlerInterface
    */
-  private $teamPermissionHandler;
+  protected $teamPermissionHandler;
 
   /**
    * ManageTeamMembersAccess constructor.
@@ -66,7 +66,7 @@ class TeamPermissionAccessCheck implements TeamPermissionAccessInterface {
     // Allow to conjunct the permissions with OR ('+') or AND (',').
     $split = explode(',', $permission);
     if (count($split) > 1) {
-      return $this->allowedIfHasTeamPermissions($team, $account, $split, 'AND');
+      return $this->allowedIfHasTeamPermissions($team, $account, $split);
     }
     else {
       $split = explode('+', $permission);
@@ -85,25 +85,9 @@ class TeamPermissionAccessCheck implements TeamPermissionAccessInterface {
   }
 
   /**
-   * Creates an allowed access result if the team permissions are present.
-   *
-   * See: `\Drupal\Core\Access\AccessResult::allowedIfHasPermissions()`.
-   *
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The Apigee Edge team.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user account.
-   * @param array $permissions
-   *   An array of permissions.
-   * @param string $conjunction
-   *   (optional) 'AND' if all permissions are required, 'OR' in case just one.
-   *   Defaults to 'AND'.
-   *
-   * @return \Drupal\Core\Access\AccessResult
-   *   If the account has the permissions, isAllowed() will be TRUE, otherwise
-   *   isNeutral() will be TRUE.
+   * {@inheritdoc}
    */
-  protected function allowedIfHasTeamPermissions(TeamInterface $team, AccountInterface $account, array $permissions, $conjunction = 'AND') {
+  public function allowedIfHasTeamPermissions(TeamInterface $team, AccountInterface $account, array $permissions, $conjunction = 'AND') {
     $access = FALSE;
 
     if ($conjunction == 'AND' && !empty($permissions)) {

@@ -19,8 +19,10 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+use Drupal;
 use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
+use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -329,6 +331,69 @@ class AddCreditService implements AddCreditServiceInterface {
     // Add cache contexts.
     $build['table']['#cache']['contexts'][] = 'user.permissions';
     $build['table']['#cache']['tags'][] = 'config:' . AddCreditConfig::CONFIG_NAME;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function formAlter(&$form, FormStateInterface $form_state, $form_id) {
+    if (($flow = $form_state->getFormObject())
+      && ($flow instanceof CheckoutFlowBase)
+      && ($form['#step_id'] == 'review')
+    ) {
+      // Add a custom validation handler to check for add credit products.
+      array_unshift($form['#validate'], [static::class, 'checkoutFormReviewValidate']);
+    }
+  }
+
+  /**
+   * Custom validation handler for the checkout review step.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public static function checkoutFormReviewValidate(array $form, FormStateInterface $form_state) {
+    if ($flow = $form_state->getFormObject()) {
+      // Loop through all order items and see if we have any add_credit items.
+      /** @var \Drupal\commerce_order\Entity\OrderItemInterface[] $add_credit_items */
+      $add_credit_items = [];
+      /** @var \Drupal\commerce_order\Entity\OrderItemInterface $item */
+      foreach ($flow->getOrder()->getItems() as $item) {
+        /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
+        if (($product = $item->getPurchasedEntity()->getProduct())
+          && ($product->hasField('apigee_add_credit_enabled'))
+          && ($product->get('apigee_add_credit_enabled')->value)) {
+          $add_credit_items[] = $item;
+        }
+      }
+
+      if (count($add_credit_items)) {
+        /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface[] $supported_currencies */
+        $supported_currencies = Drupal::service('apigee_m10n.monetization')
+          ->getSupportedCurrencies();
+
+        // Validate the total for order item against the minimum top up amount.
+        foreach ($add_credit_items as $add_credit_item) {
+          $price = $add_credit_item->getTotalPrice();
+          $currency_code = strtolower($price->getCurrencyCode());
+          // TODO: Fail validation if the currency does not exist.
+          if (isset($supported_currencies[$currency_code])
+            && ($supported_currency = $supported_currencies[$currency_code])
+            && ($minimum_top_up_amount = $supported_currency->getMinimumTopUpAmount())
+            && ((float) $price->getNumber() < $minimum_top_up_amount)
+          ) {
+            $form_state->setErrorByName('review', t('The minimum top up amount is @amount @currency_code.', [
+              '@currency_code' => $supported_currency->getName(),
+              '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
+                'currency_display' => 'symbol',
+              ]),
+            ]));
+          }
+        }
+      }
+    }
   }
 
   /**

@@ -50,7 +50,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
     parent::setUp();
 
     $this->develoepr = $this->createAccount([
-      'access monetization packages',
+      'view package',
       'view rate_plan',
       'view subscription',
     ]);
