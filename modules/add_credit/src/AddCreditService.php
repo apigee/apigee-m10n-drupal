@@ -291,7 +291,7 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity) {
+  public function apigeeM10nPrepaidBalanceListAlter(array &$build, EntityInterface $entity) {
     // TODO: This can be move to entity operations when/if prepaid balance are
     // made into entities.
     if ((count($build['table']['#rows']))) {

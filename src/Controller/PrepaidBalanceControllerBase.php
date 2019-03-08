@@ -174,7 +174,7 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
     }
 
     // Allow other modules to alter this build.
-    $this->moduleHandler->alter('apigee_m10n_prepaid_balance_page', $build, $this->entity);
+    $this->moduleHandler->alter('apigee_m10n_prepaid_balance_list', $build, $this->entity);
 
     return $build;
   }

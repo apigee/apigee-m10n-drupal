@@ -159,14 +159,14 @@ interface AddCreditServiceInterface {
   public function formAlter(&$form, FormStateInterface $form_state, $form_id);
 
   /**
-   * Handles `hook_apigee_m10n_prepaid_balance_page_alter` for the `apigee_m10n_add_credit` module.
+   * Handles `hook_apigee_m10n_prepaid_balance_list_alter` for the `apigee_m10n_add_credit` module.
    *
    * @param array $build
-   *   A renderable array representing the page.
+   *   A renderable array representing the list.
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The prepaid balance owner entity.
    */
-  public function apigeeM10nPrepaidBalancePageAlter(array &$build, EntityInterface $entity);
+  public function apigeeM10nPrepaidBalanceListAlter(array &$build, EntityInterface $entity);
 
   /**
    * Handles `hook_commerce_product_access` for the `apigee_m10n_add_credit` module.

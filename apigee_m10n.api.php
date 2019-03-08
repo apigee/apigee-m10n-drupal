@@ -41,7 +41,7 @@ use Drupal\Core\Entity\EntityInterface;
  *
  * @see \Drupal\apigee_m10n\Controller\PrepaidBalanceControllerBase::render()
  */
-function hook_apigee_m10n_prepaid_balance_page_alter(array &$build, EntityInterface $entity) {
+function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterface $entity) {
 }
 
 /**

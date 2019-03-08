@@ -94,10 +94,10 @@ function apigee_m10n_add_credit_field_widget_form_alter(&$element, FormStateInte
 }
 
 /**
- * Implements hook_apigee_m10n_prepaid_balance_page_alter().
+ * Implements hook_apigee_m10n_prepaid_balance_list_alter().
  */
-function apigee_m10n_add_credit_apigee_m10n_prepaid_balance_page_alter(array &$build, EntityInterface $entity) {
-  apigee_m10n_add_credit_service()->apigeeM10nPrepaidBalancePageAlter($build, $entity);
+function apigee_m10n_add_credit_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterface $entity) {
+  apigee_m10n_add_credit_service()->apigeeM10nPrepaidBalanceListAlter($build, $entity);
 }
 
 /**
