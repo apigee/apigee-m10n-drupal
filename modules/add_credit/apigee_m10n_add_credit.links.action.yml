@@ -1,5 +1,0 @@
-apigee_m10n_add_credit.commerce_product.add_page:
-  route_name: entity.commerce_product.add_page
-  title: 'Add product'
-  appears_on:
-    - apigee_m10n_add_credit.settings.add_credit

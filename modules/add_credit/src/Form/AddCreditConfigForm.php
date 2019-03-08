@@ -25,12 +25,14 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class ApigeeAddCreditProductsConfigForm.
+ * Class AddCreditConfigForm.
  */
-class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
+class AddCreditConfigForm extends ConfigFormBase {
 
   /**
    * The monetization service.
@@ -84,23 +86,62 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'apigee_add_credit_products_config_form';
+    return 'apigee_add_credit_config_form';
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->getProductsConfig();
+    $config = $this->config(AddCreditConfig::CONFIG_NAME);
+    $products_config = $this->getProductsConfig();
     $destination = $this->getDestinationArray();
 
-    $form['info'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'p',
-      '#value' => $this->t('For each currency, create an Apigee add credit product and set it here. This product will be used to top up prepaid balances.'),
+    $form['general'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('General'),
     ];
 
-    $form['products'] = [
+    $form['general']['use_modal'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use modal'),
+      '#description' => $this->t('Display the add credit form in a modal.'),
+      '#default_value' => $config->get('use_modal'),
+    ];
+
+    $form['products_container'] = [
+      '#type' => 'fieldset',
+      '#tree' => FALSE,
+      '#title' => $this->t('Products'),
+    ];
+
+    $form['products_container']['help'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [
+          'container-inline'
+        ]
+      ],
+      'text' => [
+        '#type' => 'html_tag',
+        '#tag' => 'p',
+        '#value' => $this->t('Configure products for adding credit to prepaid balances. Set a product for each currency below. When a user add credits to a prepaid balance, the configured product will be used for checkout.'),
+      ],
+      'action' => [
+        '#type' => 'link',
+        '#title' => $this->t('Add product'),
+        '#url' => Url::fromRoute('entity.commerce_product.add_page'),
+        '#attributes' => [
+          'class' => [
+            'button',
+            'button-action',
+            'button--small',
+          ],
+        ],
+      ],
+    ];
+
+    $form['products_container']['products'] = [
       '#type' => 'table',
       '#title' => $this->t('Products'),
       '#header' => [
@@ -117,7 +158,7 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
 
     // Display an error message if no currencies.
     if (!count($supported_currencies)) {
-      $form['products']['#empty'] = [
+      $form['products_container']['products']['#empty'] = [
         '#theme' => 'status_messages',
         '#message_list' => [
           'warning' => [
@@ -125,16 +166,15 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
           ],
         ],
       ];
-      return parent::buildForm($form, $form_state);
     }
 
     // Build row for each currency.
     foreach ($supported_currencies as $currency) {
       $currency_code = strtoupper($currency->getId());
       /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-      $product = $config[$currency->id()] ?? NULL;
+      $product = $products_config[$currency->id()] ?? NULL;
 
-      $form['products'][$currency->id()] = [
+      $form['products_container']['products'][$currency->id()] = [
         'name' => ['#markup' => $currency->getDisplayName()],
         'currency' => ['#markup' => $currency_code],
         'product_id' => [
@@ -150,7 +190,7 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
       ];
 
       // Add operations to edit the product if set.
-      $form['products'][$currency->id()]['operations'] = $product ? [
+      $form['products_container']['products'][$currency->id()]['operations'] = $product ? [
         '#type' => 'operations',
         '#links' => [
           'edit' => [
@@ -163,6 +203,59 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
       ];
     }
 
+    // Use the site default if an email hasn't been saved.
+    $default_email = $config->get('notification_recipient');
+    $default_email = $default_email ?: $this->configFactory()
+      ->get('system.site')
+      ->get('mail');
+
+    $form['notifications'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Notifications'),
+    ];
+    // Whether or not to sent an email if there is an error adding credit.
+    $description = 'Notification sent when an %add_credit product is processed 
+                    to add credit to a developer or team account. If an error 
+                    occurs while applying the credit, a notification is sent to
+                    the specified email address. Select %add_credit to send a
+                    notification even if the credit is applied successfully.';
+
+    $form['notifications']['notify_on'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Notify administrator'),
+      '#options' => [
+        AddCreditConfig::NOTIFY_ALWAYS => $this->t('Always'),
+        AddCreditConfig::NOTIFY_ON_ERROR => $this->t('Only on error'),
+      ],
+      '#description' => $this->t($description, [
+        '%add_credit' => 'Add credit',
+        '%always_option' => 'Always',
+      ]),
+      '#default_value' => $config->get('notify_on'),
+    ];
+    // Allow an email address to be set for the error report.
+    $form['notifications']['notification_recipient'] = [
+      '#type' => 'email',
+      '#title' => $this->t('Email address'),
+      '#description' => $this->t('The email recipient of %add_credit notifications.', ['%add_credit' => 'Add credit']),
+      '#maxlength' => 64,
+      '#size' => 64,
+      '#default_value' => $default_email,
+      '#required' => TRUE,
+    ];
+    // Add a note about configuring notifications in drupal commerce.
+    $form['notifications']['note'] = [
+      '#markup' => $this->t('<div class="apigee-add-credit-notification-note"><div class="label">@note</div><div>@description<br />@see @commerce_notification_link.</div></div>', [
+        '@note' => 'Note:',
+        '@description' => 'You can configure Drupal Commerce to send an email to the consumer to confirm completion of the order.',
+        '@see' => 'See',
+        '@commerce_notification_link' => Link::fromTextAndUrl('Drupal commerce documentation', Url::fromUri('https://docs.drupalcommerce.org/commerce2/user-guide/orders/customer-emails', ['external' => TRUE]))
+          ->toString(),
+      ]),
+    ];
+
+    $form['#attached']['library'][] = 'apigee_m10n_add_credit/settings';
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -174,6 +267,9 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
 
     $this->config(AddCreditConfig::CONFIG_NAME)
       ->set('products', $form_state->getValue('products'))
+      ->set('use_modal', $form_state->getValue('use_modal'))
+      ->set('notify_on', $form_state->getValue('notify_on'))
+      ->set('notification_recipient', $form_state->getValue('notification_recipient'))
       ->save();
   }
 
@@ -184,7 +280,8 @@ class ApigeeAddCreditProductsConfigForm extends ConfigFormBase {
    *   An array of product key
    */
   protected function getProductsConfig() {
-    if (!($config = $this->config(AddCreditConfig::CONFIG_NAME)->get('products'))) {
+    if (!($config = $this->config(AddCreditConfig::CONFIG_NAME)
+      ->get('products'))) {
       return [];
     }
 

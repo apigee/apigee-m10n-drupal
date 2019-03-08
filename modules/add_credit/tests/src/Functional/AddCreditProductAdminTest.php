@@ -20,7 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
+use Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm;
 use Drupal\commerce_product\Entity\Product;
 
 /**
@@ -114,11 +114,11 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
    *
    * @throws \Exception
    *
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::buildForm
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::getEditableConfigNames
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::getFormId
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::validateForm
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::submitForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::buildForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::getEditableConfigNames
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::getFormId
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::validateForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::submitForm
    */
   public function testNotificationAdminUi() {
     $this->drupalGet('admin/config/apigee-edge/monetization/add-credit/settings');

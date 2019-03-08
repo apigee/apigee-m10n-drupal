@@ -37,11 +37,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class ApigeeAddCreditAddToCartForm.
+ * Class AddCreditAddToCartForm.
  *
  * @package Drupal\apigee_m10n_add_credit
  */
-class ApigeeAddCreditAddToCartForm extends AddToCartForm {
+class AddCreditAddToCartForm extends AddToCartForm {
 
   /**
    * The request stack.

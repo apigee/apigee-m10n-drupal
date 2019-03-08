@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
+use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
@@ -209,7 +209,7 @@ class AddCreditService implements AddCreditServiceInterface {
    */
   public function entityTypeAlter(array &$entity_types) {
     // Update the form class for the add to cart form.
-    $entity_types['commerce_order_item']->setFormClass('add_to_cart', ApigeeAddCreditAddToCartForm::class);
+    $entity_types['commerce_order_item']->setFormClass('add_to_cart', AddCreditAddToCartForm::class);
   }
 
   /**
