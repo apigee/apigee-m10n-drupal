@@ -181,7 +181,7 @@ interface MonetizationInterface {
    * @return bool|null
    *   Check if developer is subscribed to a plan.
    */
-  public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): ?bool;
+  public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool;
 
   /**
    * Handles `hook_form_FORM_ID_alter` (user_admin_permissions) for this module.
