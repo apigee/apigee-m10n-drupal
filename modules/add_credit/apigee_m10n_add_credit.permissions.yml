@@ -1,0 +1,2 @@
+permission_callbacks:
+  - Drupal\apigee_m10n_add_credit\AddCreditPermissions::permissions

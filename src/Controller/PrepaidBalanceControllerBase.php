@@ -27,6 +27,7 @@ use Drupal\apigee_m10n\Form\PrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -75,6 +76,13 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
   protected $sdk_connector;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * BillingController constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -85,12 +93,15 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
    *   The form builder.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user) {
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user, ModuleHandlerInterface $module_handler) {
     $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
     $this->currentUser = $current_user;
     $this->formBuilder = $form_builder;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -101,7 +112,8 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
       $container->get('apigee_edge.sdk_connector'),
       $container->get('apigee_m10n.monetization'),
       $container->get('form_builder'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('module_handler')
     );
   }
 
@@ -142,9 +154,10 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
         'keys' => [static::getCacheId($this->entity, 'prepaid_balances')],
       ],
     ];
-    foreach ($this->getDataFromCache($this->entity, 'prepaid_balances', [$this, 'load']) as $currency) {
-      if ($row = $this->buildRow($currency)) {
-        $build['table']['#rows'][$currency->id()] = $row;
+    foreach ($this->getDataFromCache($this->entity, 'prepaid_balances', [$this, 'load']) as $balance) {
+      /** @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface $balance */
+      if ($row = $this->buildRow($balance)) {
+        $build['table']['#rows'][$balance->getCurrency()->id()] = $row;
       }
     }
 
@@ -159,6 +172,9 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
       );
       $build['download_form']['#cache']['keys'] = [static::getCacheId($this->entity, 'download_form')];
     }
+
+    // Allow other modules to alter this build.
+    $this->moduleHandler->alter('apigee_m10n_prepaid_balance_list', $build, $this->entity);
 
     return $build;
   }

@@ -7,6 +7,7 @@ core: 8.x
 
 dependencies:
   - apigee_m10n:apigee_m10n
+  - commerce:commerce (>=8.x-2.12)
   - commerce:commerce_product
   - commerce:commerce_payment
   - commerce:commerce_price

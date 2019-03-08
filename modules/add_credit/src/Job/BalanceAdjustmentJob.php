@@ -21,10 +21,10 @@ namespace Drupal\apigee_m10n_add_credit\Job;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
-use Apigee\Edge\Exception\ApiResponseException;
+use Drupal\apigee_edge\Entity\DeveloperInterface;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Cache\Cache;
@@ -97,8 +97,12 @@ class BalanceAdjustmentJob extends EdgeJob {
 
     // Either a developer or a company can be passed.
     if ($company_or_user instanceof UserInterface) {
-      // A developer was passed.
+      // A user was passed.
       $this->developer = $company_or_user;
+    }
+    elseif ($company_or_user instanceof DeveloperInterface) {
+      // A developer was passed. Get the owner.
+      $this->developer = $company_or_user->getOwner();
     }
     elseif ($company_or_user instanceof CompanyInterface) {
       // A company was passed.
@@ -107,7 +111,7 @@ class BalanceAdjustmentJob extends EdgeJob {
 
     $this->adjustment = $adjustment;
 
-    $this->module_config = \Drupal::config(ApigeeAddCreditConfigForm::CONFIG_NAME);
+    $this->module_config = \Drupal::config(AddCreditConfig::CONFIG_NAME);
 
     $this->setTag('prepaid_balance_update_wait');
   }
@@ -137,7 +141,8 @@ class BalanceAdjustmentJob extends EdgeJob {
         // total so we have to grab that from the balance controller again.
         $balance_after = $this->getPrepaidBalance($controller, $currency_code);
         $new_balance = new Price((string) ($balance_after->getTopUps()), $currency_code);
-        Cache::invalidateTags([PrepaidBalanceController::getCacheId($this->developer)]);
+        $cache_entity = $this->isDeveloperAdjustment() ? $this->developer : $this->company;
+        Cache::invalidateTags([PrepaidBalanceController::getCacheId($cache_entity)]);
       }
       catch (\Throwable $t) {
         // Nothing gets logged/reported if we let errors end the job here.
@@ -205,7 +210,7 @@ class BalanceAdjustmentJob extends EdgeJob {
 
         throw $thrown;
       }
-      elseif ($this->module_config->get('notify_on') == ApigeeAddCreditConfigForm::NOTIFY_ALWAYS) {
+      elseif ($this->module_config->get('notify_on') == AddCreditConfig::NOTIFY_ALWAYS) {
         $this->sendNotification('balance_adjustment_report', $message_context);
       }
     }
