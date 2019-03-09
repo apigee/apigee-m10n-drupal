@@ -58,8 +58,8 @@ use Drupal\user\Entity\User;
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
- *     "canonical" = "/user/{user}/monetization/packages/{package}/plan/{rate_plan}",
- *     "subscribe" = "/user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe",
+ *     "canonical" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}",
+ *     "subscribe" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe",
  *   },
  *   entity_keys = {
  *     "id" = "id",

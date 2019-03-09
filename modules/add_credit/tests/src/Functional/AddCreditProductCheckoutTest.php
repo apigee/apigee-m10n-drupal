@@ -54,8 +54,7 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
     parent::setUp();
 
     // Create the developer account.
-    // @todo: Restrict this to a what a developers permissions would be.
-    $this->developer = $this->signIn();
+    $this->developer = $this->signIn(['add credit to own developer prepaid balance']);
     $this->assertNoClientError();
 
     // Enable add credit for the product type.
@@ -76,7 +75,6 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
    * @throws \Exception
    *
    * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::mail
-   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::commerceOrderItemCreate
    * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::__construct
    * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::getSubscribedEvents
    * @covers \Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber::handleOrderStateChange

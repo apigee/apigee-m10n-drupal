@@ -8,6 +8,17 @@ apigee_m10n_add_credit.config:
     notification_recipient:
       type: string
       label: 'The email address to send notifications to.'
+    use_modal:
+      type: boolean
+      label: 'Whether to use a modal for adding credit'
+    products:
+      type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          product_id:
+            label: 'Product ID'
+            type: string
 
 commerce_product.commerce_product_type.*.third_party.apigee_m10n_add_credit:
   type: mapping
@@ -20,7 +31,7 @@ commerce_product.commerce_product_type.*.third_party.apigee_m10n_add_credit:
       type: boolean
       label: 'Where to skip cart for this product'
 
-field.value.price_range:
+field.value.apigee_price_range:
   type: mapping
   label: 'Price range'
   mapping:
@@ -37,7 +48,7 @@ field.value.price_range:
       type: string
       label: 'Currency code'
 
-field.field_settings.price_range:
+field.field_settings.apigee_price_range:
   type: mapping
   label: 'Price field settings'
   mapping:
@@ -47,3 +58,14 @@ field.field_settings.price_range:
       orderby: value
       sequence:
         type: string
+
+field.value.add_credit_target_entity:
+  type: mapping
+  label: 'Add credit target'
+  mapping:
+    target_id:
+      type: string
+      label: 'Entity ID'
+    target_type:
+      type: string
+      label: 'Entity type'

@@ -20,50 +20,49 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage\Controller;
 
+use Apigee\Edge\Controller\EntityControllerInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
 
 /**
  * Monetization API specific default entity controller implementation.
  */
-class MonetizationEntityControllerProxy implements EdgeEntityControllerInterface {
+abstract class MonetizationEntityControllerProxy implements EdgeEntityControllerInterface {
+
+  use ApigeeSdkControllerFactoryAwareTrait;
 
   /**
-   * The decorated controller from the SDK.
+   * Get's the controller for this entity type.
    *
-   * @var \Apigee\Edge\Controller\EntityCrudOperationsControllerInterface|\Apigee\Edge\Controller\NonPaginatedEntityListingControllerInterface|\Apigee\Edge\Controller\PaginatedEntityListingControllerInterface
-   */
-  private $controller;
-
-  /**
-   * ManagementApiEntityControllerBase constructor.
+   * SDK Entity storage controllers have to be lazy loaded because they take the
+   * API client as part of their constructor. Loading the API client without
+   * properly configured credentials causes an error.
    *
-   * @param \Apigee\Edge\Controller\EntityControllerInterface $controller
-   *   A controller from the SDK.
+   * @return \Apigee\Edge\Controller\EntityControllerInterface
+   *   The entity controller.
    */
-  public function __construct($controller) {
-    $this->controller = $controller;
-  }
+  abstract protected function controller(): EntityControllerInterface;
 
   /**
    * {@inheritdoc}
    */
   public function create(EntityInterface $entity): void {
-    $this->controller->create($entity);
+    $this->controller()->create($entity);
   }
 
   /**
    * {@inheritdoc}
    */
   public function load(string $id): EntityInterface {
-    return $this->controller->load($id);
+    return $this->controller()->load($id);
   }
 
   /**
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    $this->controller->update($entity);
+    $this->controller()->update($entity);
   }
 
   /**
@@ -71,7 +70,7 @@ class MonetizationEntityControllerProxy implements EdgeEntityControllerInterface
    */
   public function delete(string $id): void {
     // Ignore returned entity object by Apigee Edge.
-    $this->controller->delete($id);
+    $this->controller()->delete($id);
   }
 
   /**
@@ -80,7 +79,7 @@ class MonetizationEntityControllerProxy implements EdgeEntityControllerInterface
   public function loadAll(): array {
     // Luckily we solved in the PHP API client that even on paginated endpoints
     // all entities can be retrieved with one single method call.
-    return $this->controller->getEntities();
+    return $this->controller()->getEntities();
   }
 
 }

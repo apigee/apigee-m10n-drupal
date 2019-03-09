@@ -131,11 +131,13 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    *
    * @return array
    *   Renderable form elements.
+   *
+   * @throws \Exception
    */
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
-    if ($value = $item->getValue()) {
+    if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
       $subscription = Subscription::create([
         'ratePlan' => $rate_plan,
         // TODO: User a controller proxy that caches the developer entity.

@@ -23,7 +23,7 @@ use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
-use Apigee\Edge\Api\Monetization\Entity\Company;
+use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\user\UserInterface;
 
@@ -84,11 +84,11 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
     $company_name = $this->randomMachineName();
 
     $company = $this
-      ->getMockBuilder(Company::class)
+      ->getMockBuilder(CompanyInterface::class)
       ->disableOriginalConstructor()
       ->getMock();
     $company->expects($this->any())
-      ->method('getLegalName')
+      ->method('getName')
       ->will($this->returnValue($company_name));
 
     /** @var \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface $controller */

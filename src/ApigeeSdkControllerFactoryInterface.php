@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
+use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
@@ -30,7 +31,6 @@ use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
-use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
 use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
@@ -83,7 +83,7 @@ interface ApigeeSdkControllerFactoryInterface {
   /**
    * Creates a company prepaid balance controller.
    *
-   * @param \Apigee\Edge\Api\Monetization\Entity\CompanyInterface $company
+   * @param \Apigee\Edge\Api\Management\Entity\CompanyInterface $company
    *   The company.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface
