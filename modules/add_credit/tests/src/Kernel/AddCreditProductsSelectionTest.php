@@ -53,7 +53,7 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
   /**
    * The test selection handler.
    *
-   * @var \Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection\AddCreditProductsSelection.
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection\AddCreditProductsSelection
    */
   protected $selectionHandler;
 
