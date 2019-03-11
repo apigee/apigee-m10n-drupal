@@ -55,6 +55,7 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     'commerce_payment_test',
     'commerce_store',
     'commerce',
+    'node',
     'user',
   ];
 
@@ -197,6 +198,28 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
         "current_total_usd" => 120.0200,
         "current_usage_usd" => 47.8200,
         "topups_usd" => 30.0200,
+      ],
+      'get-supported-currencies' => [
+        'currencies' => [
+          new SupportedCurrency([
+            "description" => "United States Dollars",
+            "displayName" => "United States Dollars",
+            "id" => "usd",
+            "minimumTopupAmount" => 11.0000,
+            "name" => "USD",
+            "status" => "ACTIVE",
+            "virtualCurrency" => FALSE,
+          ]),
+          new SupportedCurrency([
+            "description" => "Australia Dollars",
+            "displayName" => "Australia Dollars",
+            "id" => "aud",
+            "minimumTopupAmount" => 10.0000,
+            "name" => "AUD",
+            "status" => "ACTIVE",
+            "virtualCurrency" => FALSE,
+          ]),
+        ],
       ],
     ];
   }
