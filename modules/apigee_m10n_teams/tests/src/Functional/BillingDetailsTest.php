@@ -68,6 +68,7 @@ class BillingDetailsTest extends MonetizationTeamsFunctionalTestBase {
    * @throws \Exception
    */
   public function testBillingDetailsPageView() {
+    // @TODO: Add billing details page test.
   }
 
 }
