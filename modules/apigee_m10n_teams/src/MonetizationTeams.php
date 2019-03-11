@@ -24,6 +24,7 @@ namespace Drupal\apigee_m10n_teams;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamAwareRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
@@ -72,6 +73,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Override the `html` route provider.
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
       $entity_types['package']->setHandlerClass('route_provider', $route_providers);
+      // Override the storage class.
+      $entity_types['package']->setStorageClass(TeamPackageStorage::class);
     }
 
     // Overrides for the `rate_plan` entity.
@@ -132,8 +135,13 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    * {@inheritdoc}
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($operation === 'subscribe' && ($team = $this->currentTeam())) {
-      return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+    if ($team = $this->currentTeam()) {
+      if ($operation === 'subscribe') {
+        return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+      }
+      else {
+        return $this->entityAccess($entity, $operation, $account);
+      }
     }
   }
 

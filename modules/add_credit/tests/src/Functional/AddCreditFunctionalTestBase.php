@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
@@ -79,13 +80,14 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
 
     // Submit payment information.
     $this->submitForm([
+      'payment_information[add_payment_method][payment_details][expiration][year]' => (string) (date("Y") + 1),
       'payment_information[add_payment_method][payment_details][security_code]' => '123',
       'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => $developer->first_name->value,
       'payment_information[add_payment_method][billing_information][address][0][address][family_name]' => $developer->last_name->value,
-      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '300 Beale Street',
-      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'San Francisco',
+      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '1600 Amphitheatre Parkway',
+      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'Mountain View',
       'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'CA',
-      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94105',
+      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94043',
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
     $this->assertCssElementContains('.view-commerce-checkout-order-summary', $product->label());
@@ -94,6 +96,21 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     // Before finalizing the payment, we have to add a couple of responses to
     // the queue.
     $this->stack
+      ->queueMockResponse([
+        'get-supported-currencies' => [
+          'currencies' => [
+            new SupportedCurrency([
+              "description" => "United States Dollars",
+              "displayName" => "United States Dollars",
+              "id" => "usd",
+              "minimumTopupAmount" => 11.0000,
+              "name" => "USD",
+              "status" => "ACTIVE",
+              "virtualCurrency" => FALSE,
+            ]),
+          ],
+        ],
+      ])
       // We should now have no existing balance .
       ->queueMockResponse(['get_prepaid_balances_empty'])
       // Queue a developer balance response for the top up (POST).

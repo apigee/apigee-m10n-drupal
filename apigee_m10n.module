@@ -20,6 +20,7 @@
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -45,8 +46,6 @@ function apigee_m10n_theme_suggestions_rate_plan(array $variables) {
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 
   $suggestions[] = 'apigee_rate_plan__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->bundle();
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->bundle() . '__' . $sanitized_view_mode;
   $suggestions[] = 'apigee_rate_plan__' . $rate_plan->id();
   $suggestions[] = 'apigee_rate_plan__' . $rate_plan->id() . '__' . $sanitized_view_mode;
 
@@ -86,8 +85,6 @@ function apigee_m10n_theme_suggestions_package(array $variables) {
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 
   $suggestions[] = 'apigee_package__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_package__' . $package->bundle();
-  $suggestions[] = 'apigee_package__' . $package->bundle() . '__' . $sanitized_view_mode;
   $suggestions[] = 'apigee_package__' . $package->id();
   $suggestions[] = 'apigee_package__' . $package->id() . '__' . $sanitized_view_mode;
 
@@ -122,10 +119,6 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'rate_plan' => [
       'render element' => 'elements',
     ],
-    'prepaid_balances' => [
-      'variables' => ['balances' => NULL],
-      'template' => 'prepaid-balances',
-    ],
     'package' => [
       'render element' => 'elements',
     ],
@@ -137,4 +130,18 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'template' => 'rate-plan-detail',
     ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function apigee_m10n_form_user_admin_permissions_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::service('apigee_m10n.monetization')->formUserAdminPermissionsAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function apigee_m10n_user_role_presave(EntityInterface $entity) {
+  \Drupal::service('apigee_m10n.monetization')->userRolePresave($entity);
 }
