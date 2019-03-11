@@ -132,26 +132,24 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    if ($this->subscription->getSubscriptionStatus() !== SubscriptionInterface::STATUS_FUTURE) {
-      $form['end_type'] = [
-        '#type' => 'radios',
-        '#title' => $this->t('Plan End Date'),
-        '#options' => [
-          'now' => $this->t('Now'),
-          'on_date' => $this->t('Future Date'),
+    $form['end_type'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Plan End Date'),
+      '#options' => [
+        'now' => $this->t('Now'),
+        'on_date' => $this->t('Future Date'),
+      ],
+      '#default_value' => 'now',
+    ];
+    $form['endDate'] = [
+      '#type' => 'date',
+      '#title' => $this->t('Select End Date'),
+      '#states' => [
+        'visible' => [
+          ':input[name="end_type"]' => ['value' => 'on_date'],
         ],
-        '#default_value' => 'now',
-      ];
-      $form['endDate'] = [
-        '#type' => 'date',
-        '#title' => $this->t('Select End Date'),
-        '#states' => [
-          'visible' => [
-            ':input[name="end_type"]' => ['value' => 'on_date'],
-          ],
-        ],
-      ];
-    }
+      ],
+    ];
     return $form;
   }
 
@@ -163,7 +161,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
     $end_type = $values['end_type'] ?? 'now';
 
     // Cancel future date.
-    if ($this->subscription->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE) {
+    if ($end_type ==='now' && $this->subscription->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE) {
       $this->subscription->setEndDate($this->subscription->getStartDate());
     }
     else {
