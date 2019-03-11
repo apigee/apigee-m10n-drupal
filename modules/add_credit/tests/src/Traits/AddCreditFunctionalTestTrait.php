@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Traits;
 
+use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_payment\Entity\PaymentGateway;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
