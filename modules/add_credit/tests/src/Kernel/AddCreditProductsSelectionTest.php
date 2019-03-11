@@ -32,7 +32,7 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_kernel
  *
- * @covers
+ * @covers \Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection\AddCreditProductsSelection
  */
 class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
 
@@ -114,8 +114,6 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
 
   /**
    * Test referenceable entities for the EntityReferenceSelection plugin.
-   *
-   * @covers \Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection\AddCreditProductsSelection
    */
   public function testReferenceableEntities() {
     // Zero since no add credit enabled products.
