@@ -21,7 +21,6 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm;
 use Drupal\commerce_product\Entity\Product;
 
 /**

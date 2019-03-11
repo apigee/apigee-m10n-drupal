@@ -340,6 +340,12 @@ class AddCreditService implements AddCreditServiceInterface {
                   'attributes' => $attributes,
                 ],
               ],
+              '#attributes' => [
+                'class' => [
+                  'add-credit',
+                  'add-credit--' . $currency_id,
+                ],
+              ],
             ];
           }
         }
