@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
-use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
