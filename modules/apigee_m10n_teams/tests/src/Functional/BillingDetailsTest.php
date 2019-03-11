@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Functional;
 
+use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\Core\Url;
 
 /**
@@ -48,6 +49,17 @@ class BillingDetailsTest extends MonetizationTeamsFunctionalTestBase {
     parent::setUp();
     $this->developer = $this->createAccount([]);
     $this->drupalLogin($this->developer);
+  }
+
+  /**
+   * Tests permissions for `Billing Details` page.
+   */
+  public function testBillingDetailsAccessDenied() {
+    $this->drupalGet(Url::fromRoute('apigee_m10n_teams.team_billing_details', [
+      'team' => $this->developer->id(),
+    ]));
+
+    $this->assertSession()->responseContains('Page not found');
   }
 
   /**
