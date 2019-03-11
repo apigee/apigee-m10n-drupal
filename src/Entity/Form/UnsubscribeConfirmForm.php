@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity\Form;
 
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -131,24 +132,26 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['end_type'] = [
-      '#type' => 'radios',
-      '#title' => $this->t('Plan End Date'),
-      '#options' => [
-        'now'     => $this->t('Now'),
-        'on_date' => $this->t('Future Date'),
-      ],
-      '#default_value' => 'now',
-    ];
-    $form['endDate'] = [
-      '#type'  => 'date',
-      '#title' => $this->t('Select End Date'),
-      '#states' => [
-        'visible' => [
-          ':input[name="end_type"]' => ['value' => 'on_date'],
+    if ($this->subscription->getSubscriptionStatus() !== SubscriptionInterface::STATUS_FUTURE) {
+      $form['end_type'] = [
+        '#type' => 'radios',
+        '#title' => $this->t('Plan End Date'),
+        '#options' => [
+          'now' => $this->t('Now'),
+          'on_date' => $this->t('Future Date'),
         ],
-      ],
-    ];
+        '#default_value' => 'now',
+      ];
+      $form['endDate'] = [
+        '#type' => 'date',
+        '#title' => $this->t('Select End Date'),
+        '#states' => [
+          'visible' => [
+            ':input[name="end_type"]' => ['value' => 'on_date'],
+          ],
+        ],
+      ];
+    }
     return $form;
   }
 
@@ -159,10 +162,15 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
     $values = $form_state->getValues();
     $end_type = $values['end_type'] ?? 'now';
 
-    $this->subscription->setEndDate($end_type == 'on_date'
-      ? new \DateTimeImmutable($values['endDate'])
-      : new \DateTimeImmutable('-1 day'));
-
+    // Cancel future date.
+    if ($this->subscription->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE) {
+      $this->subscription->setEndDate($this->subscription->getStartDate());
+    }
+    else {
+      $this->subscription->setEndDate($end_type == 'on_date'
+        ? new \DateTimeImmutable($values['endDate'])
+        : new \DateTimeImmutable('-1 day'));
+    }
     return $this->subscription;
   }
 

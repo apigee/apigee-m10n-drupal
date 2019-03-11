@@ -310,13 +310,14 @@ class SubscriptionListBuilderForDeveloper extends EntityListBuilder implements C
     $operations = parent::getDefaultOperations($entity);
     // TODO: Is a custom unsubscribe access check is really necessary?
     if ($entity->access('update') && $entity->hasLinkTemplate('unsubscribe-form')) {
-      // TODO: Allow cancelation of future plans.
       if ($entity->isSubscriptionActive()) {
-        $operations['unsubscribe'] = [
-          'title' => $this->t('Cancel'),
-          'weight' => 10,
-          'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
-        ];
+        if ($entity->getStartDate() > $entity->getEndDate()) {
+          $operations['unsubscribe'] = [
+            'title' => $this->t('Cancel'),
+            'weight' => 10,
+            'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
+          ];
+        }
       }
     }
 
