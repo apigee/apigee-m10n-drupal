@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
+namespace Drupal\Tests\apigee_m10n_add_credit\Kernel\Plugin\EntityReferenceSelection;
 
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection\AddCreditProductsSelection;

@@ -190,4 +190,71 @@ trait AddCreditFunctionalTestTrait {
       ->save();
   }
 
+  /**
+   * Helper to mock responses.
+   *
+   * TODO: Move this to \Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase.
+   *
+   * @param array $response_ids
+   *   An array of response ids.
+   *
+   * @throws \Exception
+   */
+  protected function queueMockResponses(array $response_ids) {
+    $mock_responses = $this->getMockResponses();
+    foreach ($response_ids as $response_id) {
+      if (isset($mock_responses[$response_id])) {
+        $this->stack->queueMockResponse([
+          $response_id => $mock_responses[$response_id],
+        ]);
+      }
+    }
+  }
+
+  /**
+   * Returns an array of mock responses.
+   *
+   * TODO: Move this to \Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase.
+   *
+   * @return array
+   *   An array of mock responses.
+   */
+  public function getMockResponses() {
+    return [
+      'get-prepaid-balances' => [
+        "current_aud" => 100.0000,
+        "current_total_aud" => 200.0000,
+        "current_usage_aud" => 50.0000,
+        "topups_aud" => 50.0000,
+
+        "current_usd" => 72.2000,
+        "current_total_usd" => 120.0200,
+        "current_usage_usd" => 47.8200,
+        "topups_usd" => 30.0200,
+      ],
+      'get-supported-currencies' => [
+        'currencies' => [
+          new SupportedCurrency([
+            "description" => "United States Dollars",
+            "displayName" => "United States Dollars",
+            "id" => "usd",
+            "minimumTopupAmount" => 11.0000,
+            "name" => "USD",
+            "status" => "ACTIVE",
+            "virtualCurrency" => FALSE,
+          ]),
+          new SupportedCurrency([
+            "description" => "Australia Dollars",
+            "displayName" => "Australia Dollars",
+            "id" => "aud",
+            "minimumTopupAmount" => 10.0000,
+            "name" => "AUD",
+            "status" => "ACTIVE",
+            "virtualCurrency" => FALSE,
+          ]),
+        ],
+      ],
+    ];
+  }
+
 }
