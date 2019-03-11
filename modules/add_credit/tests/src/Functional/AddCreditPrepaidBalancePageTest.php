@@ -19,18 +19,19 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Url;
 
 /**
- * Tests permissions for add credit products.
+ * Tests the add credit button on prepaid balance page.
  *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  * @group apigee_m10n_add_credit
  * @group apigee_m10n_add_credit_functional
  */
-class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
+class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
 
   /**
    * A developer user.
@@ -52,6 +53,8 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
   protected function setUp() {
     parent::setUp();
 
+    $this->developer = $this->signIn(['view mint prepaid reports', 'add credit to own developer prepaid balance']);
+
     // Enable add credit for the product type.
     $product_type = ProductType::load('default');
     $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
@@ -65,51 +68,54 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
   }
 
   /**
-   * Tests permissions for add credit products.
+   * Tests the add credit button per currency config.
    *
-   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::commerceProductAccess
-   */
-  public function testPermissionsForAddCreditProducts() {
-    $path = $this->product->toUrl()->toString();
-
-    // Create and sign in a user with no add credit permissions.
-    $this->developer = $this->signIn();
-
-    // User should see access denied on an add credit product.
-    $this->drupalGet($path);
-    $this->assertSession()->responseContains('Access denied');
-
-    $this->developer = $this->signIn(['add credit to own developer prepaid balance']);
-    $this->drupalGet($path);
-    $this->assertSession()->responseNotContains('Access denied');
-  }
-
-  /**
-   * Tests permissions and add credit button on prepaid balance page.
-   *
-   * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::commerceProductAccess
    * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::apigeeM10nPrepaidBalanceListAlter
    */
-  public function testAddCreditButtonPermissionsOnPrepaidBalancePage() {
-    // Configure an add credit product for USD.
-    $this->setAddCreditProductForCurrencyId($this->product, 'usd');
-
-    // Create and sign in a user with no add credit permissions.
-    $this->developer = $this->signIn(['view mint prepaid reports']);
+  public function testAddCreditButtonForCurrency() {
     $this->queueOrg();
-    $this->queueMockResponses(['get-prepaid-balances']);
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->developer->id(),
-    ]));
-    $this->assertSession()->elementNotExists('css', '.add-credit.dropbutton');
 
-    // Create and sign in a user with add credit permissions.
-    $this->developer = $this->signIn(['view mint prepaid reports', 'add credit to own developer prepaid balance']);
+    // Configure an add credit product for USD.
+    // There should be an add credit button for usd but NOT for aud.
+    $this->setAddCreditProductForCurrencyId($this->product, 'usd');
     $this->queueMockResponses(['get-prepaid-balances']);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
-    $this->assertSession()->elementExists('css', '.add-credit.dropbutton');
+    $this->assertSession()->elementExists('css', '.add-credit--usd.dropbutton');
+    $this->assertSession()->elementNotExists('css', '.add-credit--aud.dropbutton');
+
+    // Configure an add credit product for AUD.
+    // There should be an add credit button for BOTH usd and aud.
+    $this->setAddCreditProductForCurrencyId($this->product, 'aud');
+    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]));
+    $this->assertSession()->elementExists('css', '.add-credit--usd.dropbutton');
+    $this->assertSession()->elementExists('css', '.add-credit--aud.dropbutton');
+
+    // Unpublish the add credit product.
+    // There should NOT be any add credit button.
+    $this->product->setUnpublished()->save();
+    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]));
+    $this->assertSession()->elementNotExists('css', '.add-credit--usd.dropbutton');
+    $this->assertSession()->elementNotExists('css', '.add-credit--aud.dropbutton');
+
+    // Disable add credit for this product.
+    // There should NOT be any add credit button.
+    $this->product->setPublished();
+    $this->product->set(AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME, FALSE);
+    $this->product->save();
+    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]));
+    $this->assertSession()->elementNotExists('css', '.add-credit--usd.dropbutton');
+    $this->assertSession()->elementNotExists('css', '.add-credit--aud.dropbutton');
   }
 
 }
