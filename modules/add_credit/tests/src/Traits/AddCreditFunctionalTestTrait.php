@@ -175,4 +175,19 @@ trait AddCreditFunctionalTestTrait {
     return $gateway;
   }
 
+  /**
+   * Helper to set an add credit product for a currency.
+   *
+   * @param \Drupal\commerce_product\Entity\ProductInterface $product
+   *   The add credit enabled product.
+   * @param string $currency_id
+   *   The currency id.
+   */
+  protected function setAddCreditProductForCurrencyId(ProductInterface $product, string $currency_id) {
+    \Drupal::configFactory()
+      ->getEditable(AddCreditConfig::CONFIG_NAME)
+      ->set("products.$currency_id", ['product_id' => $product->id()])
+      ->save();
+  }
+
 }
