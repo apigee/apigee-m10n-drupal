@@ -1,3 +1,13 @@
+apigee_monetization_teams.billing:
+  path: /teams/{team}/monetization/billing
+  defaults:
+    _controller: \Drupal\apigee_m10n_teams\Controller\TeamPrepaidBalanceController::teamBalancePage
+    _title: 'Prepaid balance'
+  requirements:
+    _team_permission: 'view prepaid balance'
+  options:
+    _apigee_monetization_route: TRUE
+
 entity.subscription.team_collection:
   path: '/teams/{team}/monetization/subscriptions'
   defaults:
@@ -32,3 +42,13 @@ entity.subscription.team_unsubscribe_form:
       subscription:
         type: 'entity:subscription'
         converter: paramconverter.entity.subscription
+
+apigee_monetization.team_packages:
+  path: '/teams/{team}/monetization/packages'
+  defaults:
+    _controller: \Drupal\apigee_m10n_teams\Controller\TeamPackagesController::teamCatalogPage
+    _title: "Packages"
+  requirements:
+    _team_permission: 'view package'
+  options:
+    _apigee_monetization_route: TRUE

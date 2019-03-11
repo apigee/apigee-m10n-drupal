@@ -8,3 +8,7 @@ services:
     arguments: ['@apigee_edge_teams.team_permissions']
     tags:
       - { name: access_check, applies_to: _team_permission }
+
+  apigee_m10n_teams.sdk_controller_factory:
+    class: Drupal\apigee_m10n_teams\TeamSdkControllerFactory
+    arguments: ['@apigee_edge.sdk_connector']

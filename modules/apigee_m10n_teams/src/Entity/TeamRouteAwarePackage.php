@@ -27,7 +27,7 @@ use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
  *
  * This is a class for packages that is aware of teams.
  */
-class TeamRouteAwarePackage extends Package {
+class TeamRouteAwarePackage extends Package implements TeamRouteAwarePackageInterface {
 
   use TeamRouteAwarePropertyTrait;
 
@@ -49,6 +49,15 @@ class TeamRouteAwarePackage extends Package {
     }
 
     return $url;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getAvailableApiPackagesByTeam($team_id) {
+    return \Drupal::entityTypeManager()
+      ->getStorage(static::ENTITY_TYPE_ID)
+      ->getAvailableApiPackagesByTeam($team_id);
   }
 
 }

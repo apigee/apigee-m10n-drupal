@@ -1,3 +1,5 @@
+<?php
+
 /*
  * Copyright 2018 Google Inc.
  *
@@ -14,20 +16,25 @@
  * with this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-.apigee-m10n-prepaid-balance-wrapper {
-  position: relative;
-}
 
-.apigee-m10n-prepaid-balance-wrapper > table > caption {
-  padding-top: 20px;
-}
+namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+/**
+ * An overridden storage controller interface for the `package` entity.
+ */
+interface TeamPackageStorageInterface {
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form .form-submit {
-  margin-right: 0;
+  /**
+   * Gets a list of package entities for a team.
+   *
+   * @param string $team_id
+   *   The SDK company ID.
+   *
+   * @return array
+   *   A list of package entities that would have be available to a team.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function getAvailableApiPackagesByTeam($team_id);
+
 }

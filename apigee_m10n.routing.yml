@@ -61,9 +61,9 @@ entity.package.collection:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.my_billing:
-  path: /user/monetization/billing
+  path: /monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myPrepaidBalance
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myRedirect
   requirements:
     _permission: 'view mint prepaid reports'
   options:
@@ -80,11 +80,11 @@ apigee_monetization.billing:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.my_packages:
-  path: /user/monetization/packages
+  path: /monetization/packages
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
@@ -94,12 +94,12 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: "Packages"
   requirements:
-    _permission: 'access monetization packages'
+    _permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.my_subscriptions:
-  path: /user/monetization/subscriptions
+  path: /monetization/subscriptions
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:

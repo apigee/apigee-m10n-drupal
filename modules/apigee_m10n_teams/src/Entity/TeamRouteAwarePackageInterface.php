@@ -1,3 +1,5 @@
+<?php
+
 /*
  * Copyright 2018 Google Inc.
  *
@@ -14,20 +16,23 @@
  * with this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-.apigee-m10n-prepaid-balance-wrapper {
-  position: relative;
-}
 
-.apigee-m10n-prepaid-balance-wrapper > table > caption {
-  padding-top: 20px;
-}
+namespace Drupal\apigee_m10n_teams\Entity;
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+/**
+ * Interface for the `package` entity override class.
+ */
+interface TeamRouteAwarePackageInterface {
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form .form-submit {
-  margin-right: 0;
+  /**
+   * Get's a list of API packages that are available to a team.
+   *
+   * @param string $team_id
+   *   The team ID.
+   *
+   * @return array
+   *   A list of packages available to the team.
+   */
+  public static function getAvailableApiPackagesByTeam($team_id);
+
 }
