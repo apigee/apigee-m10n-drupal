@@ -19,17 +19,12 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Functional;
 
-use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
-use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
 
 /**
  * A base class for functional tests.
  */
-class MonetizationTeamsFunctionalTestBase extends BrowserTestBase {
-
-  use ApigeeMonetizationTestTrait {
-    setUp as baseSetUp;
-  }
+class MonetizationTeamsFunctionalTestBase extends MonetizationFunctionalTestBase {
 
   protected static $modules = [
     'apigee_m10n_test',
@@ -40,29 +35,5 @@ class MonetizationTeamsFunctionalTestBase extends BrowserTestBase {
     'apigee_m10n',
     'apigee_m10n_teams',
   ];
-
-  /**
-   * The mock handler stack is responsible for serving queued api responses.
-   *
-   * @var \Drupal\apigee_mock_client\MockHandlerStack
-   */
-  protected $stack;
-
-  /**
-   * Whether actual integration tests are enabled.
-   *
-   * @var bool
-   */
-  protected $integration_enabled;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-
-    // Create new Apigee Edge basic auth key.
-    $this->baseSetUp();
-  }
 
 }
