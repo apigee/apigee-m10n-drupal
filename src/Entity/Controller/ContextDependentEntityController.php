@@ -46,7 +46,7 @@ class ContextDependentEntityController extends ControllerBase {
     // The developer routes should always follow this pattern.
     $developer_route_name = "entity.{$entity_type_id}.developer";
     // Add the current user as the develoepr (`user`).
-    $parameters = ['user' => \Drupal::currentUser()->id()];
+    $parameters = ['user' => $this->currentUser()->id()];
     // Re-add the rest of the parameters for this route.
     foreach ($route_match->getParameters()->keys() as $key) {
       $parameters[$key] = $route_match->getRawParameter($key);
