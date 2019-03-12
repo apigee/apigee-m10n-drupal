@@ -40,6 +40,7 @@ class MonetizationTeamsTest extends KernelTestBase {
 
   public static $modules = [
     'key',
+    'user',
     'apigee_edge',
     'apigee_edge_teams',
     'apigee_m10n',

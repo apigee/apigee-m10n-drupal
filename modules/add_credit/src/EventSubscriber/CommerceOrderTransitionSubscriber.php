@@ -22,9 +22,10 @@ namespace Drupal\apigee_m10n_add_credit\EventSubscriber;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_edge\JobExecutor;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
-use Drupal\commerce_product\Entity\ProductVariationInterface;
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\state_machine\Event\WorkflowTransitionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -34,6 +35,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * @see: <https://docs.drupalcommerce.org/commerce2/developer-guide/orders/react-to-workflow-transitions>
  */
 class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
+
   use JobCreatorTrait;
 
   /**
@@ -88,45 +90,66 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
   public function handleOrderStateChange(WorkflowTransitionEvent $event) {
     /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
     $order = $event->getEntity();
-    // Make sure this transition is to the `completed` state.
-    if ($order->getState()->value === 'completed') {
-      // Create a new price for the tally.
-      /** @var \Drupal\commerce_price\Price[] $add_credit_totals */
-      $add_credit_totals = [];
-      // We need to loop through all of the products.
-      foreach ($order->getItems() as $order_item) {
-        /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variant */
-        $variant = $order_item->getPurchasedEntity();
-        // Get the product from the line item variant.
-        $product = $variant instanceof ProductVariationInterface ? $variant->getProduct() : FALSE;
-        // Check to see if this is an add credit product.
-        if ($product && !empty($product->apigee_add_credit_enabled->value)) {
-          // Since this is an add credit product, we add the line item total to
-          // the tally.
-          $recipient_id = $order_item->getData('add_credit_account');
-          $add_credit_totals[$recipient_id] = !empty($add_credit_totals[$recipient_id])
-            ? $add_credit_totals[$recipient_id]->add($order_item->getTotalPrice())
-            : $order_item->getTotalPrice();
-        }
+
+    // Do nothing if order is not completed.
+    if ($order->getState()->value !== 'completed') {
+      return;
+    }
+
+    // Create a new job update the account balance.
+    $totals = $this->getCreditTotalsForOrder($order);
+
+    foreach ($totals as ['target' => $target, 'amount' => $amount]) {
+      if (!empty((double) $amount->getNumber())) {
+        // Use a custom adjustment type because it can support a credit or a debit.
+        $job = new BalanceAdjustmentJob($target, new Adjustment([
+          'type' => 'apigee_balance',
+          'label' => 'Apigee balance adjustment',
+          'amount' => $amount,
+        ]));
+
+        // Save and execute the job.
+        $this->getExecutor()->call($job);
       }
-      // Checks to see if there are any add credit totals that need to be
-      // applied to a developer's account balance.
-      foreach ($add_credit_totals as $account_id => $add_credit_total) {
-        if (!empty((double) $add_credit_total->getNumber())) {
-          // Load the user this add credit item is for. TODO: Handle teams here.
-          $user = user_load_by_mail($account_id);
-          // Create a new job update the account balance. Use a custom
-          // adjustment type because it can support a credit or a debit.
-          $job = new BalanceAdjustmentJob($user, new Adjustment([
-            'type' => 'apigee_balance',
-            'label' => 'Apigee balance adjustment',
-            'amount' => $add_credit_total,
-          ]));
-          // Save and execute the job.
-          $this->getExecutor()->call($job);
+    }
+  }
+
+  /**
+   * Builds an array of targets and their total amount for each orde item.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order entity.
+   *
+   * @return array
+   *   An array of targets and their total amount.
+   */
+  protected function getCreditTotalsForOrder(OrderInterface $order) {
+    $total = [];
+    foreach ($order->getItems() as $order_item) {
+      if (($variant = $order_item->getPurchasedEntity())
+        && ($product = $variant->getProduct())
+        && !empty($product->apigee_add_credit_enabled->value)) {
+
+        /** @var \Apigee\Edge\Entity\EntityInterface[] $targets */
+        if (($order_item->hasField(AddCreditConfig::TARGET_FIELD_NAME))
+          && ($targets = $order_item->get(AddCreditConfig::TARGET_FIELD_NAME)->referencedEntities())
+        ) {
+          foreach ($targets as $target) {
+            // Add the target entity for the amount.
+            if (empty($total[$target->id()])) {
+              $total[$target->id()] = ['target' => $target];
+            }
+
+            // Add the line item total to the tally.
+            $total[$target->id()]['amount'] = !empty($total[$target->id()]['amount'])
+              ? $total[$target->id()]['amount']->add($order_item->getTotalPrice())
+              : $order_item->getTotalPrice();
+          }
         }
       }
     }
+
+    return $total;
   }
 
 }

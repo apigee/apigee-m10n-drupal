@@ -26,6 +26,8 @@ use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Form\TeamPrepaidBalanceReportsDownloadForm;
 use Drupal\apigee_m10n_teams\TeamSdkControllerFactoryAwareTrait;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -55,11 +57,13 @@ class TeamPrepaidBalanceController extends PrepaidBalanceControllerBase {
    *   The form builder.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    * @param \Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface $team_access_check
    *   The team permission access checker.
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user, TeamPermissionAccessInterface $team_access_check) {
-    parent::__construct($sdk_connector, $monetization, $form_builder, $current_user);
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user, ModuleHandlerInterface $module_handler, TeamPermissionAccessInterface $team_access_check) {
+    parent::__construct($sdk_connector, $monetization, $form_builder, $current_user, $module_handler);
     $this->team_access_check = $team_access_check;
   }
 
@@ -72,6 +76,7 @@ class TeamPrepaidBalanceController extends PrepaidBalanceControllerBase {
       $container->get('apigee_m10n.monetization'),
       $container->get('form_builder'),
       $container->get('current_user'),
+      $container->get('module_handler'),
       $container->get('apigee_m10n_teams.access_check.team_permission')
     );
   }

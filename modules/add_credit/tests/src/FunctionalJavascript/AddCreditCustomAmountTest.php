@@ -26,6 +26,9 @@ use Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript\AddCreditFunctional
 /**
  * Tests custom amount for an apigee add credit product.
  *
+ * TODO: These tests take a lof of time to run with the dataProviders. Figure out
+ * a way to make this more efficient.
+ *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  * @group apigee_m10n_add_credit
@@ -59,7 +62,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * Tests the price range field on a variation.
    */
   public function testPriceRangeField() {
-    $this->configureVariationsField();
+    $this->setupApigeeAddCreditProduct();
 
     // Enable apigee add credit for default product.
     $this->drupalGet('admin/commerce/config/product-types/default/edit');
@@ -98,16 +101,12 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @param string|null $message
    *   The expected message.
    *
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Exception
    *
    * @dataProvider providerPriceRange
    */
   public function testPriceRangeFieldValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, string $message = NULL) {
-    $this->configurePriceRangeField();
+    $this->setupApigeeAddCreditProduct();
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -140,17 +139,12 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    * @param string|null $message
    *   The expected message.
    *
-   * @throws \Behat\Mink\Exception\ElementHtmlException
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Exception
    *
    * @dataProvider providerUnitPrice
    */
   public function testUnitPriceValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, float $amount = NULL, string $message = NULL) {
-    $this->configurePriceRangeField();
+    $this->setupApigeeAddCreditProduct();
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -177,39 +171,10 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Make sure that the price field does not break if price range is not used.
-   *
-   * @param mixed $value
-   *   The value for the price field.
-   * @param string $message
-   *   The expected message.
-   *
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   *
-   * @dataProvider providerPriceField
-   */
-  public function testPriceFieldOnDefaultProduct($value, string $message) {
-    $this->configureVariationsField();
-
-    $this->drupalGet('product/add/default');
-
-    $title = 'Name of product';
-    $this->submitForm([
-      'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-PRODUCT',
-      'variations[form][inline_entity_form][price][0][number]' => $value,
-    ], 'Save');
-
-    $this->assertSession()->pageTextContains(t($message, [
-      '@title' => $title,
-    ]));
-  }
-
-  /**
    * Tests adding a custom amount and checking out.
    */
   public function testCustomAmountPriceCheckout() {
-    $this->configurePriceRangeField();
+    $this->setupApigeeAddCreditProduct();
 
     // Add a product.
     $this->drupalGet('product/add/default');
@@ -230,6 +195,107 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
 
     $this->drupalGet('checkout/1');
     $this->assertCssElementContains('.field--name-total-price .order-total-line-value', '$50.00');
+  }
+
+  /**
+   * Tests the minimum validation amount on checkout.
+   *
+   * @param float $amount_1
+   *   The amount for the first order item.
+   * @param float $amount_2
+   *   The amount for the second order item.
+   * @param int $quantity_1
+   *   The quantity for the first order item.
+   * @param int $quantity_2
+   *   The quantity for the second order item.
+   * @param bool $valid
+   *   If the amount is valid.
+   *
+   * @throws \Exception
+   *
+   * @dataProvider providerMinimumAmountValidationOnCheckout
+   */
+  public function testMinimumAmountValidationOnCheckout(float $amount_1, float $amount_2, int $quantity_1, int $quantity_2, bool $valid) {
+    $this->createCommercePaymentGateway();
+    $this->setupApigeeAddCreditProduct('default', FALSE);
+
+    // Add a product.
+    $this->drupalGet('product/add/default');
+    $title = $this->randomString(16);
+    $this->submitForm([
+      'title[0][value]' => $title,
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][inline_entity_form][price][0][number]' => 1,
+    ], 'Save');
+
+    $this->drupalGet('product/1');
+    $this->submitForm([
+      'unit_price[0][amount][number]' => $amount_1,
+    ], 'Add to cart');
+
+    $this->drupalGet('product/1');
+    $this->submitForm([
+      'unit_price[0][amount][number]' => $amount_2,
+    ], 'Add to cart');
+
+    // Go to the cart page.
+    $this->drupalGet('cart');
+    $this->submitForm([
+      'edit_quantity[0]' => $quantity_1,
+      'edit_quantity[1]' => $quantity_2,
+    ], 'Checkout');
+    $this->assertCssElementContains('h1.page-title', 'Order information');
+
+    // Submit payment information.
+    $this->submitForm([
+      'payment_information[add_payment_method][payment_details][security_code]' => '123',
+      'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => $this->developer->first_name->value,
+      'payment_information[add_payment_method][billing_information][address][0][address][family_name]' => $this->developer->last_name->value,
+      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '300 Beale Street',
+      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'San Francisco',
+      'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'CA',
+      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94105',
+    ], 'Continue to review');
+    $this->assertCssElementContains('h1.page-title', 'Review');
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', $title);
+    $total = ($amount_1 * $quantity_1) + ($amount_2 * $quantity_2);
+    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $$total");
+
+    // Finalize the payment.
+    $this->queueSupportedCurrencyResponse();
+    $this->submitForm([], 'Pay and complete purchase');
+
+    $text = $valid ? 'Complete' : 'The minimum top up amount is $10.00 USD.';
+    $this->assertSession()->pageTextContains($text);
+  }
+
+  /**
+   * Make sure that the price field does not break if price range is not used.
+   *
+   * @param mixed $value
+   *   The value for the price field.
+   * @param string $message
+   *   The expected message.
+   *
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   *
+   * @dataProvider providerPriceField
+   */
+  public function testPriceFieldOnDefaultProduct($value, string $message) {
+    $this->enableProductVariationsField();
+
+    $this->drupalGet('product/add/default');
+
+    $title = 'Name of product';
+    $this->submitForm([
+      'title[0][value]' => $title,
+      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-PRODUCT',
+      'variations[form][inline_entity_form][price][0][number]' => $value,
+    ], 'Save');
+
+    $this->assertSession()->pageTextContains(t($message, [
+      '@title' => $title,
+    ]));
   }
 
   /**
@@ -294,7 +360,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Providers data for self::testPriceFieldOnDefaultProduct().
+   * Provides data to self::testPriceFieldOnDefaultProduct().
    */
   public function providerPriceField() {
     return [
@@ -310,9 +376,79 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
+   * Provides data to self::testMinimumAmountValidationOnCheckout().
+   */
+  public function providerMinimumAmountValidationOnCheckout() {
+    return [
+      [
+        5.00,
+        2.00,
+        1,
+        1,
+        FALSE,
+      ],
+      [
+        5.00,
+        10.00,
+        1,
+        1,
+        FALSE,
+      ],
+      [
+        10.00,
+        11.00,
+        1,
+        1,
+        TRUE,
+      ],
+      [
+        5.00,
+        4.00,
+        2,
+        3,
+        TRUE,
+      ],
+    ];
+  }
+
+  /**
+   * Setup helper for tests.
+   *
+   * @param string $type
+   *   The product type.
+   * @param bool $with_range_field
+   *   Set to TRUE to enable the price range field on the default variation.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function setupApigeeAddCreditProduct($type = 'default', $with_range_field = TRUE) {
+    $this->configureApigeeAddCreditProduct($type);
+    $this->enableProductVariationsField();
+    $this->enableOrderItemUnitPriceField();
+
+    if ($with_range_field) {
+      $this->enableProductVariationPriceRangeField();
+    }
+  }
+
+  /**
+   * Enable add credit for the a product type.
+   *
+   * @param string $type
+   *   The product type.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function configureApigeeAddCreditProduct($type = 'default') {
+    $product_type = ProductType::load($type);
+    $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
+    $product_type->save();
+  }
+
+  /**
    * Helper to enable the variation field on the form display.
    */
-  protected function configureVariationsField() {
+  protected function enableProductVariationsField() {
     $this->container->get('entity.manager')
       ->getStorage('entity_form_display')
       ->load('commerce_product.default.default')
@@ -324,28 +460,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Helper to configure price range field for default product type.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * Helper to configure the unit price field on the default order item.
    */
-  protected function configurePriceRangeField() {
-    // Enable add credit for the default product type.
-    $product_type = ProductType::load('default');
-    $product_type->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', 1);
-    $product_type->save();
-
-    $this->configureVariationsField();
-
-    // Disable the price field and enable the price range field.
-    $this->container->get('entity.manager')
-      ->getStorage('entity_form_display')
-      ->load('commerce_product_variation.default.default')
-      ->removeComponent('price')
-      ->setComponent('apigee_price_range', [
-        'region' => 'content',
-      ])
-      ->save();
-
+  protected function enableOrderItemUnitPriceField() {
     // Enable the unit price field.
     $this->container->get('entity.manager')
       ->getStorage('entity_form_display')
@@ -356,6 +473,21 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       ->setComponent('unit_price', [
         'region' => 'content',
         'type' => 'commerce_unit_price',
+      ])
+      ->save();
+  }
+
+  /**
+   * Helper to configure price range field for default product type.
+   */
+  protected function enableProductVariationPriceRangeField() {
+    // Disable the price field and enable the price range field.
+    $this->container->get('entity.manager')
+      ->getStorage('entity_form_display')
+      ->load('commerce_product_variation.default.default')
+      ->removeComponent('price')
+      ->setComponent('apigee_price_range', [
+        'region' => 'content',
       ])
       ->save();
   }

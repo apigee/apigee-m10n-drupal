@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
+use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
@@ -38,7 +39,6 @@ use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
-use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
@@ -146,18 +146,18 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    * {@inheritdoc}
    */
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface {
-    $legal_name = $company->getLegalName();
-    if (empty($this->controllers[__FUNCTION__][$legal_name])) {
+    $name = $company->getName();
+    if (empty($this->controllers[__FUNCTION__][$name])) {
       // Don't assume the bucket has been initialized.
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
       // Create a new balance controller.
-      $this->controllers[__FUNCTION__][$legal_name] = new CompanyPrepaidBalanceController(
-        $legal_name,
+      $this->controllers[__FUNCTION__][$name] = new CompanyPrepaidBalanceController(
+        $name,
         $this->getOrganization(),
         $this->getClient()
       );
     }
-    return $this->controllers[__FUNCTION__][$legal_name];
+    return $this->controllers[__FUNCTION__][$name];
   }
 
   /**

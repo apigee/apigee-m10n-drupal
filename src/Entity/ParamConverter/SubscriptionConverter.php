@@ -19,10 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity\ParamConverter;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\RevisionableInterface;
-use Drupal\Core\Entity\TranslatableInterface;
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\ParamConverter\EntityConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Drupal\user\Entity\User;
@@ -45,20 +41,17 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
    * @throws \Drupal\Core\ParamConverter\ParamNotConvertedException
    */
   public function convert($value, $definition, $name, array $defaults) {
-    $entity_type_id = $this->getEntityTypeFromDefaults($definition, $name, $defaults);
-    /** @var \Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage $storage */
-    $storage = $this->entityManager->getStorage($entity_type_id);
-
     // Get the user from defaults.
     $user = $defaults['user'] ?? FALSE;
     // Load the user if it is still a string.
     $user = (!$user || $user instanceof UserInterface) ? $user : User::load($user);
     // Get the developer ID.
     $develoepr_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
-
-    $entity = !empty($develoepr_id) ? $storage->loadById($develoepr_id, $value) : NULL;
-
-    return $entity;
+    // `$develoepr_id` will be empty for the anonymous. Returning NULL = 404.
+    return empty($develoepr_id) ? NULL :
+      $this->entityManager
+        ->getStorage('subscription')
+        ->loadById($develoepr_id, $value);
   }
 
   /**

@@ -2,61 +2,61 @@ apigee_m10n.settings:
   path: /admin/config/apigee-edge/monetization
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
-    _title: "Monetization"
+    _title: Monetization
   requirements:
-    _permission: 'administer apigee monetization'
+    _permission: administer apigee monetization
   options:
     # This enables monetization check for this route.
     _apigee_monetization_route: TRUE
 
 # This route is required for field UI routes to be attached to.
 apigee_m10n.settings.rate_plan:
-  path: 'admin/config/apigee-edge/monetization/rate-plan'
+  path: admin/config/apigee-edge/monetization/rate-plan
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
-    _title: "Rate Plans"
+    _title: Rate Plans
   requirements:
-    _permission: 'administer apigee monetization'
+    _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.package:
-  path: 'admin/config/apigee-edge/monetization/package'
+  path: admin/config/apigee-edge/monetization/package
   defaults:
-    _form: '\Drupal\apigee_m10n\Form\PackageConfigForm'
-    _title: 'Package settings'
+    _form: \Drupal\apigee_m10n\Form\PackageConfigForm
+    _title: Package settings
   requirements:
-    _permission: 'administer apigee monetization'
+    _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.prepaid_balance:
-  path: 'admin/config/apigee-edge/monetization/prepaid-balance'
+  path: admin/config/apigee-edge/monetization/prepaid-balance
   defaults:
-    _form: '\Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm'
-    _title: 'Prepaid balance'
+    _form: \Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm
+    _title: Prepaid balance
   requirements:
-    _permission: 'administer apigee monetization'
+    _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.subscription:
-  path: 'admin/config/apigee-edge/monetization/subscription-settings'
+  path: admin/config/apigee-edge/monetization/subscription-settings
   defaults:
-    _form: '\Drupal\apigee_m10n\Form\SubscriptionConfigForm'
-    _title: 'Rate plan purchase settings'
+    _form: \Drupal\apigee_m10n\Form\SubscriptionConfigForm
+    _title: Rate plan purchase settings
   requirements:
-    _permission: 'administer apigee monetization'
+    _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
 entity.package.collection:
-  path: 'admin/config/apigee-edge/monetization/package/list'
+  path: admin/config/apigee-edge/monetization/package/list
   defaults:
-    _entity_list: 'package'
-    _title: 'Packages'
+    _entity_list: package
+    _title: Packages
   requirements:
-    _permission: 'administer package'
+    _permission: administer package
   options:
     _apigee_monetization_route: TRUE
 
@@ -65,7 +65,7 @@ apigee_monetization.my_billing:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myRedirect
   requirements:
-    _permission: 'view mint prepaid reports'
+    _permission: view mint prepaid reports
   options:
     _apigee_monetization_route: TRUE
 
@@ -73,9 +73,10 @@ apigee_monetization.billing:
   path: /user/{user}/monetization/billing
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::prepaidBalancePage
-    _title: 'Prepaid balance'
+    _title: Prepaid balance
   requirements:
-    _permission: 'view mint prepaid reports'
+    user: '^[1-9]+[0-9]*$'
+    _permission: view mint prepaid reports
   options:
     _apigee_monetization_route: TRUE
 
@@ -84,7 +85,7 @@ apigee_monetization.my_packages:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: 'view package'
+    _permission: view package
   options:
     _apigee_monetization_route: TRUE
 
@@ -92,9 +93,9 @@ apigee_monetization.packages:
   path: /user/{user}/monetization/packages
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
-    _title: "Packages"
+    _title: Packages
   requirements:
-    _permission: 'view package'
+    _permission: view package
   options:
     _apigee_monetization_route: TRUE
 
@@ -103,70 +104,73 @@ apigee_monetization.my_subscriptions:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:
-    _permission: 'view subscription'
+    _permission: view subscription
   options:
     _apigee_monetization_route: TRUE
 
 apigee_monetization.profile:
   path: /user/{user}/monetization/billing-details
   defaults:
-    _form: '\Drupal\apigee_m10n\Form\BillingDetailsForm'
-    _title: 'Billing Details'
+    _form: \Drupal\apigee_m10n\Form\BillingDetailsForm
+    _title: Billing Details
   requirements:
-    user: '\d+'
-    _custom_access: '\Drupal\apigee_m10n\Form\BillingDetailsForm::access'
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Form\BillingDetailsForm::access
   options:
     _apigee_monetization_route: TRUE
 
 entity.subscription.developer_collection:
-  path: '/user/{user}/monetization/subscriptions'
+  path: /user/{user}/monetization/subscriptions
   defaults:
-    _controller: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render'
-    _title_callback: '\Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle'
+    _controller: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render
+    _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle
   requirements:
-    user: '\d+'
-    _permission: 'view subscription'
+    user: '^[1-9]+[0-9]*$'
+    _permission: view subscription
   options:
     _apigee_monetization_route: TRUE
 
 entity.rate_plan.canonical:
-  path: '/user/{user}/monetization/package/{package}/plan/{rate_plan}'
+  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}
   defaults:
-    _entity_view: 'rate_plan.full'
-    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+    _entity_view: rate_plan.full
+    _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
   requirements:
-    _entity_access: 'rate_plan.view'
+    user: '^[1-9]+[0-9]*$'
+    _entity_access: rate_plan.view
   options:
     _apigee_monetization_route: TRUE
     parameters:
       user:
-        type: 'entity:user'
+        type: entity:user
       rate_plan:
-        type: 'entity:rate_plan'
+        type: entity:rate_plan
         converter: paramconverter.entity.rate_plan
 
 entity.rate_plan.subscribe:
-  path: '/user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe'
+  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe
   defaults:
-    _controller: '\Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm'
-    _title_callback: '\Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title'
+    _controller: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm
+    _title_callback: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title
   requirements:
-    _entity_access: 'rate_plan.subscribe'
+    user: '^[1-9]+[0-9]*$'
+    _entity_access: rate_plan.subscribe
   options:
     _apigee_monetization_route: TRUE
 
 entity.subscription.developer_unsubscribe_form:
-  path: '/user/{user}/monetization/subscription/{subscription}/unsubscribe'
+  path: /user/{user}/monetization/subscription/{subscription}/unsubscribe
   defaults:
-    _entity_form: 'subscription.unsubscribe'
-    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+    _entity_form: subscription.unsubscribe
+    _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
   requirements:
-    _entity_access: 'subscription.update'
+    user: '^[1-9]+[0-9]*$'
+    _entity_access: subscription.update
   options:
     _apigee_monetization_route: TRUE
     parameters:
       user:
-        type: 'entity:user'
+        type: entity:user
       subscription:
-        type: 'entity:subscription'
+        type: entity:subscription
         converter: paramconverter.entity.subscription

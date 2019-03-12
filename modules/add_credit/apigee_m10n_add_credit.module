@@ -18,23 +18,16 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_mail().
  */
 function apigee_m10n_add_credit_mail($key, &$message, $params) {
   apigee_m10n_add_credit_service()->mail($key, $message, $params);
-}
-
-/**
- * Implements hook_ENTITY_TYPE_create().
- */
-function apigee_m10n_add_credit_commerce_order_item_create(EntityInterface $entity) {
-  apigee_m10n_add_credit_service()->commerceOrderItemCreate($entity);
 }
 
 /**
@@ -49,6 +42,13 @@ function apigee_m10n_add_credit_entity_base_field_info(EntityTypeInterface $enti
  */
 function apigee_m10n_add_credit_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
   return apigee_m10n_add_credit_service()->entityBundleFieldInfo($entity_type, $bundle, $base_field_definitions);
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function apigee_m10n_add_credit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  apigee_m10n_add_credit_service()->formAlter($form, $form_state, $form_id);
 }
 
 /**
@@ -91,6 +91,20 @@ function apigee_m10n_add_credit_field_info_alter(&$info) {
  */
 function apigee_m10n_add_credit_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
   apigee_m10n_add_credit_service()->fieldWidgetFormAlter($element, $form_state, $context);
+}
+
+/**
+ * Implements hook_apigee_m10n_prepaid_balance_list_alter().
+ */
+function apigee_m10n_add_credit_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterface $entity) {
+  apigee_m10n_add_credit_service()->apigeeM10nPrepaidBalanceListAlter($build, $entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return apigee_m10n_add_credit_service()->commerceProductAccess($entity, $operation, $account);
 }
 
 /**

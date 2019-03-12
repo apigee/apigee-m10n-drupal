@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_add_credit;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * The interface for the add credit service..
@@ -40,20 +41,6 @@ interface AddCreditServiceInterface {
    *   (optional) Parameters to be used int he email message.
    */
   public function mail($key, &$message, $params);
-
-  /**
-   * Implementation for `apigee_m10n_add_credit_commerce_order_item_create()`.
-   *
-   * When an order item is created, we need to check to see if the product is an
-   * add credit item. If it is, we should store a reference to the developer
-   * that we are topping up so it can be used to credit the appropriate account.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The commerce order item.
-   *
-   * @todo: Add support for team context.
-   */
-  public function commerceOrderItemCreate(EntityInterface $entity);
 
   /**
    * Implementation for `apigee_m10n_add_credit_entity_base_field_info()`.
@@ -158,5 +145,42 @@ interface AddCreditServiceInterface {
    *     form to set default values.
    */
   public function fieldWidgetFormAlter(&$element, FormStateInterface $form_state, $context);
+
+  /**
+   * Handles `hook_form_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $form
+   *   The form to alter.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $form_id
+   *   The form id.
+   */
+  public function formAlter(&$form, FormStateInterface $form_state, $form_id);
+
+  /**
+   * Handles `hook_apigee_m10n_prepaid_balance_list_alter` for the `apigee_m10n_add_credit` module.
+   *
+   * @param array $build
+   *   A renderable array representing the list.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The prepaid balance owner entity.
+   */
+  public function apigeeM10nPrepaidBalanceListAlter(array &$build, EntityInterface $entity);
+
+  /**
+   * Handles `hook_commerce_product_access` for the `apigee_m10n_add_credit` module.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The `commerce_product` entity.
+   * @param string $operation
+   *   The operation.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface|null
+   *   The access result.
+   */
+  public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account);
 
 }

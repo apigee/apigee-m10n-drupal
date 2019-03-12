@@ -19,10 +19,15 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditAddToCartForm;
+use Drupal;
+use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
+use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -53,16 +58,36 @@ class AddCreditService implements AddCreditServiceInterface {
   protected $config;
 
   /**
+   * The add credit plugin manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface
+   */
+  protected $addCreditPluginManager;
+
+  /**
+   * The add credit product manager.
+   *
+   * @var \Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface
+   */
+  protected $addCreditProductManager;
+
+  /**
    * Constructor for the `apigee_m10n.add_credit` service.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
+   * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
+   *   The add credit plugin manager.
+   * @param \Drupal\apigee_m10n_add_credit\AddCreditProductManagerInterface $add_credit_product_manager
+   *   The add credit product manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $user) {
+  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $user, AddCreditEntityTypeManagerInterface $add_credit_plugin_manager, AddCreditProductManagerInterface $add_credit_product_manager) {
     $this->config = $config_factory;
     $this->current_user = $user;
+    $this->addCreditPluginManager = $add_credit_plugin_manager;
+    $this->addCreditProductManager = $add_credit_product_manager;
   }
 
   /**
@@ -91,24 +116,6 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function commerceOrderItemCreate(EntityInterface $entity) {
-    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $entity */
-    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variant */
-    // Check to see if an "Add credit" product is what's being added.
-    if ($entity instanceof OrderItemInterface
-      && ($variant = $entity->getPurchasedEntity())
-      && ($product = $variant->getProduct())
-      && !empty($product->apigee_add_credit_enabled->value)
-    ) {
-      // Save the current user as the top up recipient. We might need to change
-      // how this works when topping up a company or a non-current user.
-      $entity->setData('add_credit_account', $this->current_user->getEmail());
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function entityBaseFieldInfo(EntityTypeInterface $entity_type) {
     $fields = [];
 
@@ -117,7 +124,7 @@ class AddCreditService implements AddCreditServiceInterface {
         // The base field needs to be added to all product types for the storage
         // to be allocated but the option to enable will be hidden and unused
         // unless enabled for that bundle.
-        $fields['apigee_add_credit_enabled'] = BaseFieldDefinition::create('boolean')
+        $fields[AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME] = BaseFieldDefinition::create('boolean')
           ->setLabel(t('This is an Apigee add credit product'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
@@ -129,6 +136,17 @@ class AddCreditService implements AddCreditServiceInterface {
           ->setLabel(t('Price range'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
+          ->setDisplayConfigurable('form', TRUE)
+          ->setDisplayConfigurable('view', TRUE);
+        break;
+
+      case 'commerce_order_item':
+        // Add a field to set the add credit target entity.
+        $fields[AddCreditConfig::TARGET_FIELD_NAME] = BaseFieldDefinition::create('add_credit_target_entity')
+          ->setLabel(t('Add credit target'))
+          ->setRevisionable(TRUE)
+          ->setTranslatable(TRUE)
+          ->setRequired(TRUE)
           ->setDisplayConfigurable('form', TRUE)
           ->setDisplayConfigurable('view', TRUE);
         break;
@@ -151,13 +169,13 @@ class AddCreditService implements AddCreditServiceInterface {
       // developer's balance upon payment completion. This adds a base field to
       // the bundle to allow add credit to be enabled for products of the bundle
       // individually.
-      $add_credit_base_def = clone $base_field_definitions['apigee_add_credit_enabled'];
+      $add_credit_base_def = clone $base_field_definitions[AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME];
       $add_credit_base_def
         ->setDefaultValue(TRUE)
         ->setDisplayConfigurable('form', TRUE)
         ->setDisplayOptions('form', ['weight' => 25])
         ->setDisplayConfigurable('view', TRUE);
-      return ['apigee_add_credit_enabled' => $add_credit_base_def];
+      return [AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME => $add_credit_base_def];
     }
   }
 
@@ -191,7 +209,7 @@ class AddCreditService implements AddCreditServiceInterface {
    */
   public function entityTypeAlter(array &$entity_types) {
     // Update the form class for the add to cart form.
-    $entity_types['commerce_order_item']->setFormClass('add_to_cart', ApigeeAddCreditAddToCartForm::class);
+    $entity_types['commerce_order_item']->setFormClass('add_to_cart', AddCreditAddToCartForm::class);
   }
 
   /**
@@ -253,6 +271,164 @@ class AddCreditService implements AddCreditServiceInterface {
           'number' => $value['default'],
           'currency_code' => $value['currency_code'],
         ];
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function formAlter(&$form, FormStateInterface $form_state, $form_id) {
+    if (($flow = $form_state->getFormObject())
+      && ($flow instanceof CheckoutFlowBase)
+      && ($form['#step_id'] == 'review')
+    ) {
+      // Add a custom validation handler to check for add credit products.
+      array_unshift($form['#validate'], [static::class, 'checkoutFormReviewValidate']);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function apigeeM10nPrepaidBalanceListAlter(array &$build, EntityInterface $entity) {
+    // TODO: This can be move to entity operations when/if prepaid balance are
+    // made into entities.
+    if ((count($build['table']['#rows']))) {
+      $has_operations = FALSE;
+      $config = $this->config->get(AddCreditConfig::CONFIG_NAME);
+      $plugin_id = $entity->getEntityTypeId() === 'user' ? 'developer' : $entity->getEntityTypeId();
+      $plugin = $this->addCreditPluginManager->getPluginById($plugin_id);
+
+      $attributes['class'][] = 'button';
+      if ($use_modal = $config->get('use_modal')) {
+        $attributes['class'][] = 'use-ajax';
+        $attributes['data-dialog-type'] = 'modal';
+        $attributes['data-dialog-options'] = json_encode([
+          'width' => 500,
+          'height' => 500,
+          'draggable' => FALSE,
+          'autoResize' => FALSE,
+        ]);
+      }
+
+      foreach ($build['table']['#rows'] as $currency_id => &$row) {
+        if ($plugin->access($entity, $this->current_user)->isAllowed()
+          && ($product = $this->addCreditProductManager->getProductForCurrency($currency_id))) {
+          // Add cache tags even if product is not add credit enabled.
+          // This allows cache invalidation when product is add credit enabled
+          // at a later stage.
+          $build['table']['#cache']['tags'] = Cache::mergeTags($build['table']['#cache']['tags'], $product->getCacheTags());
+
+          // If the currency has a configured add credit product, add a link to
+          // add credit to this balance.
+          if ($this->addCreditProductManager->isProductAddCreditEnabled($product)) {
+            $has_operations = TRUE;
+            $row['data']['operations']['data'] = [
+              '#type' => 'operations',
+              '#links' => [
+                'add_credit' => [
+                  'title' => t('Add credit'),
+                  'url' => $product->toUrl('canonical', [
+                    'query' => [
+                      AddCreditConfig::TARGET_FIELD_NAME => [
+                        'target_type' => $plugin_id,
+                        'target_id' => $plugin->getEntityId($entity),
+                      ],
+                    ],
+                  ]),
+                  'attributes' => $attributes,
+                ],
+              ],
+            ];
+          }
+        }
+      }
+
+      if ($has_operations) {
+        $build['table']['#header']['operations'] = t('Operations');
+
+        // Fill in empty operation column.
+        foreach ($build['table']['#rows'] as $currency_id => &$row) {
+          if (empty($row['data']['operations'])) {
+            $row['data']['operations']['data'] = ['#markup' => ''];
+          }
+        }
+
+        // Add modal libraries if there is at least one operation link.
+        if ($use_modal) {
+          $build['table']['#attached'] = [
+            'library' => [
+              'core/drupal.dialog.ajax',
+              'core/jquery.ui.dialog',
+            ],
+          ];
+        }
+      }
+
+      // Add cache contexts.
+      $build['table']['#cache']['contexts'][] = 'user.permissions';
+      $build['table']['#cache']['tags'] = Cache::mergeTags($build['table']['#cache']['tags'], ['config:' . AddCreditConfig::CONFIG_NAME]);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    // For add_credit_enabled products.
+    if ($operation === 'view' && $this->addCreditProductManager->isProductAddCreditEnabled($entity)) {
+      /** @var \Drupal\Core\Access\AccessResultReasonInterface $access */
+      $access = AccessResult::allowedIfHasPermissions($account, array_keys($this->addCreditPluginManager->getPermissions()), 'OR');
+      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
+    }
+
+    return AccessResult::neutral();
+  }
+
+  /**
+   * Custom validation handler for the checkout review step.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   */
+  public static function checkoutFormReviewValidate(array $form, FormStateInterface $form_state) {
+    if ($flow = $form_state->getFormObject()) {
+      // Loop through all order items and see if we have any add_credit items.
+      /** @var \Drupal\commerce_order\Entity\OrderItemInterface[] $add_credit_items */
+      $add_credit_items = [];
+      /** @var \Drupal\commerce_order\Entity\OrderItemInterface $item */
+      foreach ($flow->getOrder()->getItems() as $item) {
+        if (Drupal::service('apigee_m10n_add_credit.product_manager')->isProductAddCreditEnabled($item->getPurchasedEntity()->getProduct())) {
+          $add_credit_items[] = $item;
+        }
+      }
+
+      if (count($add_credit_items)) {
+        /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface[] $supported_currencies */
+        $supported_currencies = Drupal::service('apigee_m10n.monetization')
+          ->getSupportedCurrencies();
+
+        // Validate the total for order item against the minimum top up amount.
+        foreach ($add_credit_items as $add_credit_item) {
+          $price = $add_credit_item->getTotalPrice();
+          $currency_code = strtolower($price->getCurrencyCode());
+          // TODO: Fail validation if the currency does not exist.
+          if (isset($supported_currencies[$currency_code])
+            && ($supported_currency = $supported_currencies[$currency_code])
+            && ($minimum_top_up_amount = $supported_currency->getMinimumTopUpAmount())
+            && ((float) $price->getNumber() < $minimum_top_up_amount)
+          ) {
+            $form_state->setErrorByName('review', t('The minimum top up amount is @amount @currency_code.', [
+              '@currency_code' => $supported_currency->getName(),
+              '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
+                'currency_display' => 'symbol',
+              ]),
+            ]));
+          }
+        }
       }
     }
   }

@@ -34,8 +34,11 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\PermissionHandlerInterface;
+use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 
@@ -112,6 +115,13 @@ class Monetization implements MonetizationInterface {
   protected $termsAndConditionsList;
 
   /**
+   * The permission handler.
+   *
+   * @var \Drupal\user\PermissionHandlerInterface
+   */
+  protected $permission_handler;
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -124,19 +134,23 @@ class Monetization implements MonetizationInterface {
    *   The Cache backend.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger.
+   * @param \Drupal\user\PermissionHandlerInterface $permission_handler
+   *   The permission handler.
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
     ApigeeSdkControllerFactoryInterface $sdk_controller_factory,
     MessengerInterface $messenger,
     CacheBackendInterface $cache,
-    LoggerInterface $logger
+    LoggerInterface $logger,
+    PermissionHandlerInterface $permission_handler
   ) {
     $this->sdk_connector          = $sdk_connector;
     $this->sdk_controller_factory = $sdk_controller_factory;
     $this->messenger              = $messenger;
     $this->cache                  = $cache;
     $this->logger                 = $logger;
+    $this->permission_handler     = $permission_handler;
 
     $numberFormatRepository = new NumberFormatRepository();
     $currencyRepository = new CurrencyRepository();
@@ -404,6 +418,51 @@ class Monetization implements MonetizationInterface {
   public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string {
     return $this->sdk_controller_factory->prepaidBalanceReportsController($developer_id)
       ->getReport($month, $currency);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function formUserAdminPermissionsAlter(&$form, FormStateInterface $form_state, $form_id) {
+    // Disable All incompatible permissions in the UI.
+    foreach (array_keys($this->getMonetizationPermissions()) as $permission_name) {
+      if (isset($form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE])) {
+        // Disable the permission.
+        $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#disabled'] = TRUE;
+        $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#value'] = 0;
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function userRolePresave(RoleInterface $user_role) {
+    // This prevents monetization permission grants on config import.
+    if ($user_role->id() === AccountInterface::ANONYMOUS_ROLE) {
+      // Get any permissions anon shouldn't have.
+      $unauthorized_perms = array_intersect($user_role->getPermissions(), array_keys($this->getMonetizationPermissions()));
+      // Remove all unauthorized perms.
+      foreach ($unauthorized_perms as $permission_name) {
+        $user_role->revokePermission($permission_name);
+        $this->logger->info('Removing the `%permission` permission from the anonymous role.', ['%permission' => $permission_name]);
+      }
+    }
+
+  }
+
+  /**
+   * Gets a list of Apigee monetization permissions.
+   *
+   * These permissions should only be applied to authenticated roles.
+   *
+   * @return array
+   *   Permissions for the monetization module.
+   */
+  protected function getMonetizationPermissions() {
+    return array_filter($this->permission_handler->getPermissions(), function ($permission) {
+      return ($permission['provider'] === 'apigee_m10n');
+    });
   }
 
 }
