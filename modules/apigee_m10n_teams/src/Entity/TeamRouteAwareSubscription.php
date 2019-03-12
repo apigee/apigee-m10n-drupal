@@ -58,7 +58,7 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
     }
     else {
       // We override this constructor so we can determine the decorated class.
-      $decorated_class = isset($values['team']) ? CompanyAcceptedRatePlan::class : static::decoratedClass();
+      $decorated_class = isset($values['company']) ? CompanyAcceptedRatePlan::class : static::decoratedClass();
       $rc = new \ReflectionClass($decorated_class);
       // Get rid of useless but also problematic null values.
       $values = array_filter($values, function ($value) {
