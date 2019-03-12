@@ -51,11 +51,17 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
    * {@inheritdoc}
    */
   public function companyTermsAndConditionsController(string $company_id): CompanyTermsAndConditionsController {
-    return new CompanyTermsAndConditionsController(
-      $company_id,
-      $this->getOrganization(),
-      $this->getClient()
-    );
+    if (empty($this->controllers[__FUNCTION__][$company_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$company_id] = new CompanyTermsAndConditionsController(
+        $company_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$company_id];
   }
 
   /**
