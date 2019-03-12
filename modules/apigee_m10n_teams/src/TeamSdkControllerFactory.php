@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\CompanyController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
@@ -29,6 +30,17 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
  * An `apigee_m10n.sdk_controller_factory` overridden service class.
  */
 class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements TeamSdkControllerFactoryInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function companyController(): CompanyController {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new company controller.
+      $this->controllers[__FUNCTION__] = new CompanyController($this->getOrganization(), $this->getClient());
+    }
+    return $this->controllers[__FUNCTION__];
+  }
 
   /**
    * {@inheritdoc}

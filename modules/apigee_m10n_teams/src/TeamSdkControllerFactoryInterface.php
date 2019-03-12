@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\CompanyController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 
@@ -27,6 +28,14 @@ use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
  * Interface for the `apigee_m10n_teams.sdk_controller_factory` service.
  */
 interface TeamSdkControllerFactoryInterface {
+
+  /**
+   * Gets a company SDK controller.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\CompanyController
+   *   The Company SDK controller.
+   */
+  public function companyController(): CompanyController;
 
   /**
    * Creates a company accepted rate plan controller.
