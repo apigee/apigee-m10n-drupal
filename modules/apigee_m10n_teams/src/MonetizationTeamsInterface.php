@@ -128,14 +128,6 @@ interface MonetizationTeamsInterface {
   public function isLatestTermsAndConditionAccepted(string $company_id): ?bool;
 
   /**
-   * Get latest terms and condition.
-   *
-   * @return \Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface
-   *   Latest term and condition.
-   */
-  public function getLatestTermsAndConditions(): ?TermsAndConditionsInterface;
-
-  /**
    * Accepts a terms and conditions by its id.
    *
    * @param string $company_id
