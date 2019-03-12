@@ -39,11 +39,14 @@ class TeamAwareRatePlan extends RatePlan {
 
     // Check for team context.
     $rel = (($team_id = $this->getTeamId()) && $rel === 'canonical') ? 'team' : $rel;
+    $rel = (($team_id = $this->getTeamId()) && $rel === 'subscribe') ? 'team-subscribe' : $rel;
 
     $url = parent::toUrl($rel, $options);
 
     // Add the team if this is a team URL.
-    if ($rel == 'team' &&  !empty($team_id)) {
+    if (in_array($rel, ['team', 'team-subscribe']) && !empty($team_id)) {
+      // Removes the user route parameter.
+      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['user' => NULL]));
       $url->setRouteParameter('team', $team_id);
     }
 
