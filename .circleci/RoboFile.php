@@ -409,6 +409,9 @@ class RoboFile extends \Robo\Tasks
         "*" => "dist"
       ];
 
+      // Require drupal-core-strict to mitigate twig issue.
+      $config->require->{"webflo/drupal-core-strict"} = "^8.7.0";
+
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
