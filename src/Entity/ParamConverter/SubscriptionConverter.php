@@ -46,12 +46,12 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
     // Load the user if it is still a string.
     $user = (!$user || $user instanceof UserInterface) ? $user : User::load($user);
     // Get the developer ID.
-    $develoepr_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
-    // `$develoepr_id` will be empty for the anonymous. Returning NULL = 404.
-    return empty($develoepr_id) ? NULL :
+    $developer_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
+    // `$developer_id` will be empty for the anonymous. Returning NULL = 404.
+    return empty($developer_id) ? NULL :
       $this->entityManager
         ->getStorage('subscription')
-        ->loadById($develoepr_id, $value);
+        ->loadById($developer_id, $value);
   }
 
   /**
