@@ -55,7 +55,6 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     'commerce_payment_test',
     'commerce_store',
     'commerce',
-    'node',
     'user',
   ];
 
