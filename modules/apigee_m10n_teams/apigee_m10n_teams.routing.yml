@@ -52,3 +52,13 @@ apigee_monetization.team_packages:
     _team_permission: 'view package'
   options:
     _apigee_monetization_route: TRUE
+
+apigee_m10n_teams.team_billing_details:
+  path: '/teams/{team}/monetization/billing-details'
+  defaults:
+    _form: '\Drupal\apigee_m10n_teams\Form\BillingDetailsForm'
+    _title: 'Billing Details'
+  requirements:
+    _team_permission: 'edit billing details'
+  options:
+    _apigee_monetization_route: TRUE

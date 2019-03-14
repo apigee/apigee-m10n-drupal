@@ -69,6 +69,12 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
         $this->t('View package'),
         $package_group
       ),
+      'edit billing details' => new TeamPermission(
+        'edit billing details',
+        $this->t('Edit billing details'),
+        $this->t('Billing details'),
+        $this->t('This allows a team member to edit billing details')
+      ),
     ];
   }
 
