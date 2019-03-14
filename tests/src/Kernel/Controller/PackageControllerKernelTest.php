@@ -78,7 +78,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     \user_install();
 
     $this->developer = $this->createAccount([
-      'access monetization packages',
+      'view package',
       'view subscription',
       'view rate_plan',
     ]);

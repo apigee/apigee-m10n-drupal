@@ -31,6 +31,7 @@ use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StatusPropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
 
 /**
  * Defines the `package` entity class.
@@ -49,9 +50,13 @@ use Drupal\user\Entity\User;
  *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\PackageListBuilder",
+ *     "route_provider" = {
+ *       "html" = "Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider",
+ *     }
  *   },
  *   links = {
- *     "canonical" = "/user/{user}/monetization/package/{package}",
+ *     "canonical" = "/monetization/package/{package}",
+ *     "developer" = "/user/{user}/monetization/package/{package}",
  *   },
  *   entity_keys = {
  *     "id" = "id",
@@ -259,27 +264,32 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   public function toUrl($rel = 'canonical', array $options = []) {
     // The string formatter assumes entities are revisionable.
     $rel = ($rel === 'revision') ? 'canonical' : $rel;
+
+    // Check for developer context.
+    $rel = (($user_id = $this->getUserId()) && $rel === 'canonical') ? 'developer' : $rel;
+
     // Build the URL.
     $url = parent::toUrl($rel, $options);
-    $url->setRouteParameter('user', $this->getUser()->id());
+
+    // Add the user if this is a developer URL.
+    if ($rel == 'developer' &&  !empty($user_id)) {
+      $url->setRouteParameter('user', $user_id);
+    }
 
     return $url;
   }
 
   /**
-   * Get user from route parameter and fall back to current user if empty.
+   * Get the user ID from the current route match.
    *
-   * @return \Drupal\Core\Session\AccountProxyInterface
-   *   Returns user entity.
+   * @return string
+   *   Returns the user ID.
    */
-  private function getUser() {
+  private function getUserId(): ?string {
     // The route parameters still need to be set.
-    $route_user = \Drupal::routeMatch()->getParameter('user');
-    // Sometimes the param converter hasn't converted the user.
-    if (is_string($route_user)) {
-      $route_user = User::load($route_user);
-    }
-    return $route_user ?: \Drupal::currentUser();
+    $user = \Drupal::routeMatch()->getParameter('user');
+    // Sometimes the param converter has converted the user to an entity.
+    return $user instanceof UserInterface ? $user->id() : $user;
   }
 
 }

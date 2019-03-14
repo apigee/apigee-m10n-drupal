@@ -19,7 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
+use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm;
 use Drupal\commerce_product\Entity\Product;
 
 /**
@@ -113,16 +115,18 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
    *
    * @throws \Exception
    *
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::buildForm
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::getEditableConfigNames
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::getFormId
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::validateForm
-   * @covers \Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm::submitForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::buildForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::getEditableConfigNames
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::getFormId
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::validateForm
+   * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::submitForm
    */
   public function testNotificationAdminUi() {
-    $this->drupalGet('admin/config/apigee-edge/monetization/add-credit-settings');
+    $this->queueOrg();
+    $this->queueSupportedCurrencyResponse();
+    $this->drupalGet('admin/config/apigee-edge/monetization/add-credit');
     // Check the title.
-    $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
+    $this->assertCssElementContains('h1.page-title', 'Add credit');
     // Check the default values.
     $this->assertSession()->checkboxNotChecked('Always');
     $this->assertSession()->checkboxChecked('Only on error');
@@ -134,13 +138,40 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
     $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation.');
 
     // Change to always notify.
-    $this->submitForm(['notify_on' => ApigeeAddCreditConfigForm::NOTIFY_ALWAYS], 'Save configuration');
-    $this->assertCssElementContains('h1.page-title', 'Apigee Add Credit Configuration');
+    $this->queueSupportedCurrencyResponse();
+    $this->submitForm(['notify_on' => AddCreditConfig::NOTIFY_ALWAYS], 'Save configuration');
     $this->assertCssElementContains('div.messages--status', ' The configuration options have been saved.');
     // Load the saved config and test the changes.
-    $settings = $this->config(ApigeeAddCreditConfigForm::CONFIG_NAME);
-    static::assertSame(ApigeeAddCreditConfigForm::NOTIFY_ALWAYS, $settings->get('notify_on'));
+    $settings = $this->config(AddCreditConfig::CONFIG_NAME);
+    static::assertSame(AddCreditConfig::NOTIFY_ALWAYS, $settings->get('notify_on'));
     static::assertSame($site_mail, $settings->get('notification_recipient'));
+  }
+
+  /**
+   * Helper to queue mock response for supported currency.
+   *
+   * TODO: Move this to a trait.
+   *
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function queueSupportedCurrencyResponse(): void {
+    $this->stack->queueMockResponse([
+      'get-supported-currencies' => [
+        'currencies' => [
+          new SupportedCurrency([
+            "description" => "United States Dollars",
+            "displayName" => "United States Dollars",
+            "id" => "usd",
+            "minimumTopupAmount" => 11.0000,
+            "name" => "USD",
+            "status" => "ACTIVE",
+            "virtualCurrency" => FALSE,
+          ]),
+        ],
+      ],
+    ]);
   }
 
 }

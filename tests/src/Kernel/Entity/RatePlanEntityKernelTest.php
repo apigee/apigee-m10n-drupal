@@ -103,7 +103,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getRecurringStartUnit(), $this->rate_plan->getRecurringStartUnit());
     static::assertSame($rate_plan->getRecurringType(), $this->rate_plan->getRecurringType());
     static::assertSame($rate_plan->getSetUpFee(), $this->rate_plan->getSetUpFee());
-    static::assertSame("/user/1/monetization/packages/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
+    static::assertSame("/user/1/monetization/package/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
 
     // @todo: make sure timestamps are using the same timezone.
     // static::assertSame($rate_plan->getStartDate()->format('d-m-y h:m:s'), $this->rate_plan->getStartDate()->format('d-m-y h:m:s'));

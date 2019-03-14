@@ -37,7 +37,7 @@ interface SubscriptionStorageInterface {
    * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
    *   The subscription.
    */
-  public function loadById(string $developer_id, string $id): SubscriptionInterface;
+  public function loadById(string $developer_id, string $id): ?SubscriptionInterface;
 
   /**
    * Load Subscriptions by developer ID.

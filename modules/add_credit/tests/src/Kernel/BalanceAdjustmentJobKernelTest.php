@@ -22,7 +22,8 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
-use Drupal\apigee_m10n_add_credit\Form\ApigeeAddCreditConfigForm;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
@@ -240,8 +241,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testSuccessfulNotification() {
-    $this->config(ApigeeAddCreditConfigForm::CONFIG_NAME)
-      ->set('notify_on', ApigeeAddCreditConfigForm::NOTIFY_ALWAYS)
+    $this->config(AddCreditConfig::CONFIG_NAME)
+      ->set('notify_on', AddCreditConfig::NOTIFY_ALWAYS)
       ->save();
 
     $this->testExecuteRequestWithExistingBalance();

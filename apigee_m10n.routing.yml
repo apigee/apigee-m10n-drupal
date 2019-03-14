@@ -11,7 +11,7 @@ apigee_m10n.settings:
 
 # This route is required for field UI routes to be attached to.
 apigee_m10n.settings.rate_plan:
-  path: admin/config/apigee-edge/monetization/rate-plan
+  path: /admin/config/apigee-edge/monetization/rate-plan
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Rate Plans
@@ -21,7 +21,7 @@ apigee_m10n.settings.rate_plan:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.package:
-  path: admin/config/apigee-edge/monetization/package
+  path: /admin/config/apigee-edge/monetization/package
   defaults:
     _form: \Drupal\apigee_m10n\Form\PackageConfigForm
     _title: Package settings
@@ -31,7 +31,7 @@ apigee_m10n.settings.package:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.prepaid_balance:
-  path: admin/config/apigee-edge/monetization/prepaid-balance
+  path: /admin/config/apigee-edge/monetization/prepaid-balance
   defaults:
     _form: \Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm
     _title: Prepaid balance
@@ -41,7 +41,7 @@ apigee_m10n.settings.prepaid_balance:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.subscription:
-  path: admin/config/apigee-edge/monetization/subscription-settings
+  path: /admin/config/apigee-edge/monetization/subscription-settings
   defaults:
     _form: \Drupal\apigee_m10n\Form\SubscriptionConfigForm
     _title: Rate plan purchase settings
@@ -51,7 +51,7 @@ apigee_m10n.settings.subscription:
     _apigee_monetization_route: TRUE
 
 entity.package.collection:
-  path: admin/config/apigee-edge/monetization/package/list
+  path: /admin/config/apigee-edge/monetization/package/list
   defaults:
     _entity_list: package
     _title: Packages
@@ -63,7 +63,7 @@ entity.package.collection:
 apigee_monetization.my_billing:
   path: /monetization/billing
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myPrepaidBalance
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myRedirect
   requirements:
     _permission: view mint prepaid reports
   options:
@@ -85,7 +85,7 @@ apigee_monetization.my_packages:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
   requirements:
-    _permission: access monetization packages
+    _permission: view package
   options:
     _apigee_monetization_route: TRUE
 
@@ -95,8 +95,7 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: Packages
   requirements:
-    user: '^[1-9]+[0-9]*$'
-    _permission: access monetization packages
+    _permission: view package
   options:
     _apigee_monetization_route: TRUE
 
@@ -120,7 +119,7 @@ apigee_monetization.profile:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.collection_by_developer:
+entity.subscription.developer_collection:
   path: /user/{user}/monetization/subscriptions
   defaults:
     _controller: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render
@@ -132,7 +131,7 @@ entity.subscription.collection_by_developer:
     _apigee_monetization_route: TRUE
 
 entity.rate_plan.canonical:
-  path: /user/{user}/monetization/packages/{package}/plan/{rate_plan}
+  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}
   defaults:
     _entity_view: rate_plan.full
     _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
@@ -149,7 +148,7 @@ entity.rate_plan.canonical:
         converter: paramconverter.entity.rate_plan
 
 entity.rate_plan.subscribe:
-  path: /user/{user}/monetization/packages/{package}/plan/{rate_plan}/subscribe
+  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe
   defaults:
     _controller: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm
     _title_callback: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title
@@ -159,7 +158,7 @@ entity.rate_plan.subscribe:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.unsubscribe_form:
+entity.subscription.developer_unsubscribe_form:
   path: /user/{user}/monetization/subscription/{subscription}/unsubscribe
   defaults:
     _entity_form: subscription.unsubscribe

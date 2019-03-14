@@ -1,0 +1,4 @@
+apigee_m10n_add_credit.settings.add_credit:
+  route_name: apigee_m10n_add_credit.settings.add_credit
+  title: 'Add credit'
+  base_route: apigee_m10n.settings.prepaid_balance
