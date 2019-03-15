@@ -68,6 +68,14 @@ class MonetizationTeamsEntityRouteProvider extends MonetizationEntityRouteProvid
           $entity_type_id => ['type' => 'entity:' . $entity_type_id],
         ]);
 
+      // Set the corresponding route.
+      if ($entity_type->hasLinkTemplate('developer')) {
+        $route->setOption('_apigee_developer_route', "entity.{$entity_type_id}.developer");
+      }
+      elseif ($entity_type->hasLinkTemplate('canonical')) {
+        $route->setOption('_apigee_developer_route', "entity.{$entity_type_id}.canonical");
+      }
+
       // Entity types with serial IDs can specify this in their route
       // requirements, improving the matching process.
       if ($this->getEntityTypeIdKeyType($entity_type) === 'integer') {
