@@ -17,11 +17,10 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
+namespace Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\commerce_product\Entity\ProductType;
-use Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript\AddCreditFunctionalJavascriptTestBase;
 
 /**
  * Tests custom amount for an apigee add credit product.

@@ -198,6 +198,12 @@ class AddCreditConfigForm extends ConfigFormBase {
             'url' => $product->toUrl('edit-form', ['query' => $destination]),
           ],
         ],
+        '#attributes' => [
+          'class' => [
+            'edit',
+            'edit--' . $currency->id(),
+          ],
+        ],
       ] : [
         '#markup' => '',
       ];
