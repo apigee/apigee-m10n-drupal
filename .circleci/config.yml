@@ -64,10 +64,7 @@ update_dependencies: &update_dependencies
 
     - run:
         working_directory: /var/www/html
-        command: |
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          ./update-dependencies.sh apigee_m10n
+        command: modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
 
     - save_cache: *save_cache
 
@@ -92,8 +89,7 @@ unit_kernel_tests: &unit_kernel_tests
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test.sh apigee_m10n
 
     - store_test_results:
@@ -114,8 +110,7 @@ functional_tests: &functional_tests
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional.sh apigee_m10n
 
     - store_test_results:
@@ -136,8 +131,7 @@ functional_js_tests: &functional_js_tests
     - run:
         working_directory: /var/www/html
         command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional-js.sh apigee_m10n
 
     - store_test_results:
@@ -157,6 +151,7 @@ code_sniffer: &code_sniffer
     - run:
         working_directory: /var/www/html
         command: |
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
           vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile artifacts/phpmd/index.html
           vendor/bin/phpmetrics --extensions=php,inc,module --report-html=artifacts/phpmetrics --git modules/apigee_m10n
@@ -180,8 +175,7 @@ code_coverage: &code_coverage
         working_directory: /var/www/html
         command: |
           sudo sed -i 's/^;zend_extension/zend_extension/g' /usr/local/etc/php/conf.d/xdebug.ini
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./code-coverage-stats.sh apigee_m10n
     - store_artifacts:
         path: /var/www/html/artifacts
