@@ -11,7 +11,7 @@ apigee_m10n.settings:
 
 # This route is required for field UI routes to be attached to.
 apigee_m10n.settings.rate_plan:
-  path: admin/config/apigee-edge/monetization/rate-plan
+  path: /admin/config/apigee-edge/monetization/rate-plan
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Rate Plans
@@ -21,7 +21,7 @@ apigee_m10n.settings.rate_plan:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.package:
-  path: admin/config/apigee-edge/monetization/package
+  path: /admin/config/apigee-edge/monetization/package
   defaults:
     _form: \Drupal\apigee_m10n\Form\PackageConfigForm
     _title: Package settings
@@ -31,7 +31,7 @@ apigee_m10n.settings.package:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.prepaid_balance:
-  path: admin/config/apigee-edge/monetization/prepaid-balance
+  path: /admin/config/apigee-edge/monetization/prepaid-balance
   defaults:
     _form: \Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm
     _title: Prepaid balance
@@ -41,7 +41,7 @@ apigee_m10n.settings.prepaid_balance:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.subscription:
-  path: admin/config/apigee-edge/monetization/subscription-settings
+  path: /admin/config/apigee-edge/monetization/subscription-settings
   defaults:
     _form: \Drupal\apigee_m10n\Form\SubscriptionConfigForm
     _title: Rate plan purchase settings
@@ -51,7 +51,7 @@ apigee_m10n.settings.subscription:
     _apigee_monetization_route: TRUE
 
 entity.package.collection:
-  path: admin/config/apigee-edge/monetization/package/list
+  path: /admin/config/apigee-edge/monetization/package/list
   defaults:
     _entity_list: package
     _title: Packages

@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org}/developers
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - developers: An array of developers.
+ */
+#}
+{
+    "developer": [
+      {% for developer in developers %}
+        {% include 'developer.json.twig' %}{{ loop.last ? '' : ',' }}
+      {% endfor %}
+    ],
+    "totalRecords" : {{ developers|length }}
+}
