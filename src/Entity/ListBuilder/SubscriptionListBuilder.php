@@ -30,6 +30,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Url;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -252,16 +253,16 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    */
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
-    // TODO: Is a custom unsubscribe access check is really necessary?
-    if ($entity->access('update')) {
-      // TODO: Allow cancelation of future plans.
-      if ($entity->isSubscriptionActive()) {
-        $operations['unsubscribe'] = [
-          'title' => $this->t('Cancel'),
-          'weight' => 10,
-          'url' => $this->unsubscribeUrl($entity),
-        ];
-      }
+
+    if ($entity->access('update')
+      && $entity->isSubscriptionActive()
+      && $entity->getStartDate() > $entity->getEndDate()
+    ) {
+      $operations['unsubscribe'] = [
+        'title' => $this->t('Cancel'),
+        'weight' => 10,
+        'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
+      ];
     }
 
     return $operations;

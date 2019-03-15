@@ -24,6 +24,7 @@ use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Defines implementation of a subscriptions listing page.
@@ -45,7 +46,10 @@ class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
   public function render(UserInterface $user = NULL) {
     // Return 404 if the user is not set and keep a compatible method signature.
     if (!($user instanceof UserInterface)) {
-      return new RedirectResponse(Url::fromRoute('system.404'));
+      // There is a `user: '^[1-9]+[0-9]*$'` requirement on the route that uses
+      // this controller so we should never end up here unless a custom module
+      // misuses this controller.
+      throw new NotFoundHttpException('The user with the given ID was not found.');
     }
     // From this point forward `$this->user` is a safe assumption.
     $this->user = $user;
