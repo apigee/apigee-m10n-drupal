@@ -36,6 +36,7 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
+use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeTestTrait;
@@ -120,7 +121,7 @@ trait ApigeeMonetizationTestTrait {
 
     $key->save();
     // Make sure the credentials persists for functional tests.
-    $key->getKeyProvider()->setKeyValue($key, $key->getKeyValue());
+    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $key->getKeyValue());
 
     $this->config('apigee_edge.auth')
       ->set('active_key', 'apigee_m10n_test_auth')
