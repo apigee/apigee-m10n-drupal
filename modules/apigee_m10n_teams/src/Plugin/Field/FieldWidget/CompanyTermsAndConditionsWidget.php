@@ -17,37 +17,36 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Plugin\Field\FieldWidget;
+namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\apigee_m10n\Plugin\Field\FieldWidget\TermsAndConditionsWidget;
+use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 
 /**
- * Plugin implementation of the 'apigee_tnc_widget' widget.
- *
- * @FieldWidget(
- *   id = "apigee_tnc_widget",
- *   label = @Translation("Apigee Terms and Conditions"),
- *   field_types = {
- *     "apigee_tnc"
- *   }
- * )
+ * Override class for the `apigee_tnc_widget` field widget.
  */
-class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPluginInterface {
+class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget {
 
   /**
-   * Developer email.
+   * Company ID.
    *
    * @var string
    */
-  protected $developer_id;
+  protected $company_id;
+
+  /**
+   * Teams Monetization factory.
+   *
+   * @var \Drupal\apigee_m10n_teams\MonetizationTeamsInterface
+   */
+  protected $team_monetization;
 
   /**
    * Monetization factory.
@@ -69,11 +68,14 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    *   The widget settings.
    * @param array $third_party_settings
    *   Any third party settings.
+   * @param \Drupal\apigee_m10n_teams\MonetizationTeamsInterface $team_monetization
+   *   Teams monetization factory.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   Monetization factory.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationInterface $monetization = NULL) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationTeamsInterface $team_monetization = NULL, MonetizationInterface $monetization = NULL) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
+    $this->team_monetization = $team_monetization;
     $this->monetization = $monetization;
   }
 
@@ -87,30 +89,9 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
-      $container->get('apigee_m10n.monetization'),
-      $container->get('messenger')
+      $container->get('apigee_m10n.teams'),
+      $container->get('apigee_m10n.monetization')
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function defaultSettings() {
-    return [
-      'default_description' => 'Accept Terms and Conditions',
-    ] + parent::defaultSettings();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function settingsForm(array $form, FormStateInterface $form_state) {
-    $element['default_description'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Use this label when Terms and Conditions returns an empty description.'),
-      '#default_value' => $this->getSetting('default_description'),
-    ];
-    return $element;
   }
 
   /**
@@ -118,7 +99,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
-    $this->developer_id = $items->getEntity()->getDeveloper()->getEmail();
+    $this->company_id = $items->getEntity()->decorated()->getCompany()->id();
     if (!$items[$delta]->value) {
       $tnc = $this->monetization->getLatestTermsAndConditions();
       $element += [
@@ -148,7 +129,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
     }
     else {
       // Accept terms and conditions.
-      $this->monetization->acceptLatestTermsAndConditions($this->developer_id);
+      $this->team_monetization->acceptLatestTermsAndConditions($this->company_id);
     }
   }
 

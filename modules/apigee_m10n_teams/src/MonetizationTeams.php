@@ -33,6 +33,8 @@ use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
+use Drupal\apigee_m10n_teams\Entity\Form\TeamSubscriptionForm;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
@@ -137,6 +139,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['subscription']->setClass(TeamRouteAwareSubscription::class);
       // Override the storage class.
       $entity_types['subscription']->setStorageClass(TeamSubscriptionStorage::class);
+      // Override subscribe form.
+      $entity_types['subscription']->setFormClass('default', TeamSubscriptionForm::class);
     }
   }
 
@@ -147,6 +151,14 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     // Override the subscribe link and form formatters.
     $info['apigee_subscribe_form']['class'] = TeamSubscribeFormFormatter::class;
     $info['apigee_subscribe_link']['class'] = TeamSubscribeLinkFormatter::class;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldWidgetInfoAlter(array &$info) {
+    // Override the terms and condition widget.
+    $info['apigee_tnc_widget']['class'] = CompanyTermsAndConditionsWidget::class;
   }
 
   /**

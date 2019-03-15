@@ -37,6 +37,13 @@ function apigee_m10n_teams_field_formatter_info_alter(array &$info) {
 }
 
 /**
+ * Implements hook_field_widget_info_alter().
+ */
+function apigee_m10n_teams_field_widget_info_alter(array &$info) {
+  apigee_m10n_teams_service()->fieldWidgetInfoAlter($info);
+}
+
+/**
  * Implements hook_ENTITY_TYPE_access().
  */
 function apigee_m10n_teams_subscription_access(EntityInterface $entity, $operation, AccountInterface $account) {

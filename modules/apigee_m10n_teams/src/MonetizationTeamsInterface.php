@@ -49,6 +49,14 @@ interface MonetizationTeamsInterface {
   public function fieldFormatterInfoAlter(array &$info);
 
   /**
+   * Handles `hook_field_widget_info_alter` for `apigee_m10n_teams`.
+   *
+   * @param array $info
+   *   An array of field widget plugin definitions.
+   */
+  public function fieldWidgetInfoAlter(array &$info);
+
+  /**
    * Handles `hook_ENTITY_TYPE_access` for the `apigee_m10n_teams` module.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
