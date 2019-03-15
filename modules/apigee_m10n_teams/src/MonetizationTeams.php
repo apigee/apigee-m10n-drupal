@@ -260,7 +260,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
         $history = $controller->getTermsAndConditionsHistory();
       }
       catch (\Exception $e) {
-        $message = "Unable to load Terms and Conditions history for developer \n\n" . $e;
+        $message = "Unable to load Terms and Conditions history for a team \n\n" . $e;
         $this->logger->error($message);
         throw new SdkEntityLoadException($message);
       }
@@ -289,7 +289,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function acceptLatestTermsAndConditions(string $company_id): ?LegalEntityTermsAndConditionsHistoryItem {
     try {
-      // Reset the static cache for this developer.
+      // Reset the static cache for this team.
       unset($this->companyAcceptedTermsStatus[$company_id]);
       return $this->sdk_controller_factory->companyTermsAndConditionsController($company_id)
         ->acceptTermsAndConditionsById($this->monetization->getLatestTermsAndConditions()->id());
