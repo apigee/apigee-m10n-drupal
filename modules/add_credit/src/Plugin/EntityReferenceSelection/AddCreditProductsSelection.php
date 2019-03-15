@@ -21,7 +21,7 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection;
 
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Drupal\node\Plugin\EntityReferenceSelection\NodeSelection;
+use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
 
 /**
  * Provides a entity selection plugin for add credit products.
@@ -29,12 +29,12 @@ use Drupal\node\Plugin\EntityReferenceSelection\NodeSelection;
  * @EntityReferenceSelection(
  *   id = "apigee_m10n_add_credit:products",
  *   label = @Translation("Add credit products selection"),
- *   entity_types = {"node"},
+ *   entity_types = {"commerce_product"},
  *   group = "apigee_m10n_add_credit",
  *   weight = 1
  * )
  */
-class AddCreditProductsSelection extends NodeSelection {
+class AddCreditProductsSelection extends DefaultSelection {
 
   /**
    * {@inheritdoc}
