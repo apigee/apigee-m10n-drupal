@@ -172,8 +172,6 @@ class RoboFile extends \Robo\Tasks
         $this->taskComposerUpdate()
           ->optimizeAutoloader()
           ->run();
-        // The following patch won't be applied since drupal core is in replace.
-        $this->taskExec('wget -q -O - https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch | patch -p1')->run();
 
         // Preserve composer.lock as an artifact for future debugging.
         $this->taskFilesystemStack()
@@ -409,8 +407,26 @@ class RoboFile extends \Robo\Tasks
         "*" => "dist"
       ];
 
-      // Require drupal-core-strict to mitigate twig issue.
-      $config->require->{"webflo/drupal-core-strict"} = "^8.6.7";
+      // The drupal image contains ^8.6.7 but could be updated at any time.
+      // We need 8.6.12 to get past the twig issue so we require core instead of
+      // using the pre-installed (replaced) version. There are some caveats as
+      // we aren't using drupal scaffold at this point. This can be removed when
+      // the `andrewberry/drupal_tests` image is updated to 8.6.12.
+      // See: <https://github.com/deviantintegral/drupal_tests/issues/51>
+      // Require drupal core greater than 8.6.12 with strict dependencies.
+      $config->require->{"drupal/core"} = "^8.6.12";
+      $config->require->{"webflo/drupal-core-strict"} = "^8.6.12";
+      $config->{"require-dev"} = (object) ["webflo/drupal-core-require-dev" => "^8.6.12"];
+      // If you require core, you must not replace it.
+      unset($config->replace);
+      // You can't merge from a package that is required.
+      foreach ($config->extra->{"merge-plugin"}->include as $index => $merge_entry) {
+        if ($merge_entry === 'core/composer.json') {
+          unset($config->extra->{"merge-plugin"}->include[$index]);
+        }
+      }
+      $config->extra->{"merge-plugin"}->include = array_values($config->extra->{"merge-plugin"}->include);
+      // TODO Revert this when `andrewberry/drupal_tests` is updated to ^8.6.12.
 
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
       $config->require->{"drupal/commerce"} = "~2.0";
