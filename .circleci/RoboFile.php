@@ -172,8 +172,6 @@ class RoboFile extends \Robo\Tasks
         $this->taskComposerUpdate()
           ->optimizeAutoloader()
           ->run();
-        // The following patch won't be applied since drupal core is in replace.
-        $this->taskExec('wget -q -O - https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch | patch -p1')->run();
 
         // Preserve composer.lock as an artifact for future debugging.
         $this->taskFilesystemStack()
