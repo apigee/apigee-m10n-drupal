@@ -261,7 +261,7 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
       $operations['unsubscribe'] = [
         'title' => $this->t('Cancel'),
         'weight' => 10,
-        'url' => $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', ['user' => $this->user->id(), 'subscription' => $entity->id()])),
+        'url' => $this->unsubscribeUrl($entity),
       ];
     }
 
