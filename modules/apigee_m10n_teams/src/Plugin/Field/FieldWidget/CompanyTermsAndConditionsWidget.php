@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget;
 
 use Drupal\apigee_m10n\Plugin\Field\FieldWidget\TermsAndConditionsWidget;
+use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
 use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -98,22 +99,28 @@ class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    // We won't ask a user to accept terms and conditions again if it has been already accepted.
-    $this->company_id = $items->getEntity()->decorated()->getCompany()->id();
-    if (!$items[$delta]->value) {
-      $tnc = $this->monetization->getLatestTermsAndConditions();
-      $element += [
-        '#type'             => 'checkbox',
-        '#default_value'    => !empty($items[0]->value),
-        '#element_validate' => [[$this, 'validate']],
-      ];
-      // Accept TnC description.
-      $element['#description'] = $this->t('%description @link', [
-        '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
-        '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
-      ]);
-      $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
-      return ['value' => $element];
+    $entity = $items->getEntity();
+    if ($entity instanceof TeamRouteAwareSubscriptionInterface && $entity->isTeamSubscription())  {
+      // We won't ask a user to accept terms and conditions again if it has been already accepted.
+      $this->company_id = $entity->decorated()->getCompany()->id();
+      if (!$items[$delta]->value) {
+        $tnc = $this->monetization->getLatestTermsAndConditions();
+        $element += [
+          '#type'             => 'checkbox',
+          '#default_value'    => !empty($items[0]->value),
+          '#element_validate' => [[$this, 'validate']],
+        ];
+        // Accept TnC description.
+        $element['#description'] = $this->t('%description @link', [
+          '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
+          '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
+        ]);
+        $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
+        return ['value' => $element];
+      }
+    }
+    else {
+      return parent::formElement($items, $delta, $element, $form, $form_state);
     }
 
   }

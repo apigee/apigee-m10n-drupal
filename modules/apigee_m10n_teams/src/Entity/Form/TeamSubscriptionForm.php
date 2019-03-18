@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge_teams\Entity\Team;
+use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
 
 /**
  * Team Subscription entity form.
@@ -34,28 +35,33 @@ class TeamSubscriptionForm extends SubscriptionForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      // Auto assign legal name.
-      $company_id = $this->entity->decorated()->getCompany()->id();
-      $company = Team::load($company_id);
-      // Autopopulate legal name when company has no legal name attribute set.
-      if (empty($company->getAttributeValue(static::LEGAL_NAME_ATTR))) {
-        $company->setAttribute(static::LEGAL_NAME_ATTR, $company_id);
-        $company->save();
-      }
+      if ($this->entity instanceof TeamRouteAwareSubscriptionInterface && $this->entity->isTeamSubscription()) {
+        // Auto assign legal name.
+        $company_id = $this->entity->decorated()->getCompany()->id();
+        $company = Team::load($company_id);
+        // Autopopulate legal name when company has no legal name attribute set.
+        if (empty($company->getAttributeValue(static::LEGAL_NAME_ATTR))) {
+          $company->setAttribute(static::LEGAL_NAME_ATTR, $company_id);
+          $company->save();
+        }
 
-      $display_name = $this->entity->getRatePlan()->getDisplayName();
-      Cache::invalidateTags(['apigee_my_subscriptions']);
+        $display_name = $this->entity->getRatePlan()->getDisplayName();
+        Cache::invalidateTags(['apigee_my_subscriptions']);
 
-      if ($this->entity->save()) {
-        $this->messenger->addStatus($this->t('You have purchased %label plan', [
-          '%label' => $display_name,
-        ]));
-        $form_state->setRedirect('apigee_monetization.my_subscriptions');
+        if ($this->entity->save()) {
+          $this->messenger->addStatus($this->t('You have purchased %label plan', [
+            '%label' => $display_name,
+          ]));
+          $form_state->setRedirect('apigee_monetization.my_subscriptions');
+        }
+        else {
+          $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
+            '%label' => $display_name,
+          ]));
+        }
       }
       else {
-        $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
-          '%label' => $display_name,
-        ]));
+        parent::save($form, $form_state);
       }
     }
     catch (\Exception $e) {

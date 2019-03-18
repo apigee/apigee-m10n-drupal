@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy;
+use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
 
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
@@ -83,14 +84,19 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    * {@inheritdoc}
    */
   protected function getSubscriptionController(EntityInterface $entity) {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
-    if (!($company = $entity->getCompany())) {
-      // If the developer ID is not set, we have no way to get the controller
-      // since it depends on the developer id or email.
-      throw new RuntimeException('The Developer must be set to create a subscription controller.');
+    if ($entity instanceof CompanyAcceptedRatePlanInterface) {
+      if (!($company = $entity->getCompany())) {
+        // If the developer ID is not set, we have no way to get the controller
+        // since it depends on the developer id or email.
+        throw new RuntimeException('The Team must be set to create a subscription controller.');
+      }
+      // Get the controller.
+      return $this->getSubscriptionControllerByTeamId($company->id());
     }
-    // Get the controller.
-    return $this->getSubscriptionControllerByTeamId($company->id());
+    else {
+      /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
+      return parent::getSubscriptionController($entity);
+    }
   }
 
 }
