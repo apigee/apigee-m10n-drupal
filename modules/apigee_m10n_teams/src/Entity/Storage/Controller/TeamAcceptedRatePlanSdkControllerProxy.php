@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy;
-use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
 
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
