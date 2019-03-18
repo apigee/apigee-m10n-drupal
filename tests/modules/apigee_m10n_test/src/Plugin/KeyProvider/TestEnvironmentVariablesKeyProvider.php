@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_test\Plugin\KeyProvider;
 
 use Drupal\apigee_edge\Plugin\KeyProvider\EnvironmentVariablesKeyProvider;
+use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\key\KeyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -41,8 +42,8 @@ class TestEnvironmentVariablesKeyProvider extends EnvironmentVariablesKeyProvide
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, StateInterface $state) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannelInterface $logger, StateInterface $state) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger);
 
     $this->state = $state;
   }
@@ -55,18 +56,9 @@ class TestEnvironmentVariablesKeyProvider extends EnvironmentVariablesKeyProvide
       $configuration,
       $plugin_id,
       $plugin_definition,
+      $container->get('logger.channel.apigee_edge'),
       $container->get('state')
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setKeyValue(KeyInterface $key, $key_value) {
-    // Store the value in state for functional callbacks.
-    $this->state->set(static::KEY_VALUE_STATE_ID, $key_value);
-
-    return parent::setKeyValue($key, $key_value);
   }
 
   /**

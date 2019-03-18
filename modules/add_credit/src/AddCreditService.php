@@ -322,7 +322,7 @@ class AddCreditService implements AddCreditServiceInterface {
 
           // If the currency has a configured add credit product, add a link to
           // add credit to this balance.
-          if ($this->addCreditProductManager->isProductAddCreditEnabled($product)) {
+          if ($product->isPublished() && $this->addCreditProductManager->isProductAddCreditEnabled($product)) {
             $has_operations = TRUE;
             $row['data']['operations']['data'] = [
               '#type' => 'operations',
@@ -338,6 +338,12 @@ class AddCreditService implements AddCreditServiceInterface {
                     ],
                   ]),
                   'attributes' => $attributes,
+                ],
+              ],
+              '#attributes' => [
+                'class' => [
+                  'add-credit',
+                  'add-credit--' . $currency_id,
                 ],
               ],
             ];
@@ -377,7 +383,8 @@ class AddCreditService implements AddCreditServiceInterface {
    */
   public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     // For add_credit_enabled products.
-    if ($operation === 'view' && $this->addCreditProductManager->isProductAddCreditEnabled($entity)) {
+    /** @var \Drupal\commerce_product\Entity\ProductInterface $entity */
+    if ($operation === 'view' && $entity->isPublished() && $this->addCreditProductManager->isProductAddCreditEnabled($entity)) {
       /** @var \Drupal\Core\Access\AccessResultReasonInterface $access */
       $access = AccessResult::allowedIfHasPermissions($account, array_keys($this->addCreditPluginManager->getPermissions()), 'OR');
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
