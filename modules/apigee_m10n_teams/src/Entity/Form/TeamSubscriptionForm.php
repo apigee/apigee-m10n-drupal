@@ -19,9 +19,11 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Form;
 
+use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Url;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
 
@@ -52,7 +54,7 @@ class TeamSubscriptionForm extends SubscriptionForm {
           $this->messenger->addStatus($this->t('You have purchased %label plan', [
             '%label' => $display_name,
           ]));
-          $form_state->setRedirect('apigee_monetization.my_subscriptions');
+          $form_state->setRedirect('entity.subscription.team_collection', ['team' => $company_id]);
         }
         else {
           $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
