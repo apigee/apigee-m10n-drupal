@@ -43,11 +43,11 @@ use Drupal\Core\Link;
 class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Developer email.
+   * The subscription.
    *
-   * @var string
+   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
    */
-  protected $developer_id;
+  protected $entity;
 
   /**
    * Monetization factory.
@@ -117,6 +117,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    $this->entity = $items->getEntity();
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
     if (!$items[$delta]->value) {
       $tnc = $this->monetization->getLatestTermsAndConditions();
@@ -147,7 +148,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
     }
     else {
       // Accept terms and conditions.
-      $this->monetization->acceptLatestTermsAndConditions($this->developer_id);
+      $this->monetization->acceptLatestTermsAndConditions($this->entity->getDeveloper()->getEmail());
     }
   }
 
