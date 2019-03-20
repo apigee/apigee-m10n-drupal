@@ -87,8 +87,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
-      $container->get('apigee_m10n.monetization'),
-      $container->get('messenger')
+      $container->get('apigee_m10n.monetization')
     );
   }
 
@@ -120,19 +119,20 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
     $this->entity = $items->getEntity();
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
     if (!$items[$delta]->value) {
-      $tnc = $this->monetization->getLatestTermsAndConditions();
-      $element += [
-        '#type'             => 'checkbox',
-        '#default_value'    => !empty($items[0]->value),
-        '#element_validate' => [[$this, 'validate']],
-      ];
-      // Accept TnC description.
-      $element['#description'] = $this->t('%description @link', [
-        '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
-        '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
-      ]);
-      $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
-      return ['value' => $element];
+      if ($tnc = $this->monetization->getLatestTermsAndConditions()) {
+        $element += [
+          '#type' => 'checkbox',
+          '#default_value' => !empty($items[0]->value),
+          '#element_validate' => [[$this, 'validate']],
+        ];
+        // Accept TnC description.
+        $element['#description'] = $this->t('%description @link', [
+          '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
+          '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
+        ]);
+        $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
+        return ['value' => $element];
+      }
     }
 
   }

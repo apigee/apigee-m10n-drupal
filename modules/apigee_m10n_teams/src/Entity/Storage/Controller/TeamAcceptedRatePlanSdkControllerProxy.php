@@ -84,9 +84,10 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    */
   protected function getSubscriptionController(EntityInterface $entity) {
     if ($entity instanceof CompanyAcceptedRatePlanInterface) {
+      /** @var \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface $entity */
       if (!($company = $entity->getCompany())) {
-        // If the developer ID is not set, we have no way to get the controller
-        // since it depends on the developer id or email.
+        // If the team ID is not set, we have no way to get the controller
+        // since it depends on the team ID.
         throw new RuntimeException('The Team must be set to create a subscription controller.');
       }
       // Get the controller.
