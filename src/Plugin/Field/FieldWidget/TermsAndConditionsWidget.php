@@ -118,21 +118,19 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $this->entity = $items->getEntity();
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
-    if (!$items[$delta]->value) {
-      if ($tnc = $this->monetization->getLatestTermsAndConditions()) {
-        $element += [
-          '#type' => 'checkbox',
-          '#default_value' => !empty($items[0]->value),
-          '#element_validate' => [[$this, 'validate']],
-        ];
-        // Accept TnC description.
-        $element['#description'] = $this->t('%description @link', [
-          '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
-          '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
-        ]);
-        $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
-        return ['value' => $element];
-      }
+    if (!$items[$delta]->value && ($tnc = $this->monetization->getLatestTermsAndConditions())) {
+      $element += [
+        '#type' => 'checkbox',
+        '#default_value' => !empty($items[0]->value),
+        '#element_validate' => [[$this, 'validate']],
+      ];
+      // Accept TnC description.
+      $element['#description'] = $this->t('%description @link', [
+        '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
+        '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
+      ]);
+      $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
+      return ['value' => $element];
     }
 
   }

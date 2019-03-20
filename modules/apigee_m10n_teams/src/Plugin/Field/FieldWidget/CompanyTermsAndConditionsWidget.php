@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\apigee_m10n\Plugin\Field\FieldWidget\TermsAndConditionsWidget;
 use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
@@ -33,13 +32,6 @@ use Drupal\Core\Form\FormStateInterface;
  * Override class for the `apigee_tnc_widget` field widget.
  */
 class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget implements ContainerFactoryPluginInterface {
-
-  /**
-   * Monetization factory.
-   *
-   * @var \Drupal\apigee_m10n\MonetizationInterface
-   */
-  protected $monetization;
 
   /**
    * Teams Monetization factory.
@@ -67,8 +59,7 @@ class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget implement
    *   Teams monetization factory.
    */
   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationInterface $monetization, MonetizationTeamsInterface $team_monetization) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
-    $this->monetization = $monetization;
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $monetization);
     $this->team_monetization = $team_monetization;
   }
 
