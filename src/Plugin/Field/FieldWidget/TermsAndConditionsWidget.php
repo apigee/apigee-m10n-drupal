@@ -87,8 +87,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
-      $container->get('apigee_m10n.monetization'),
-      $container->get('messenger')
+      $container->get('apigee_m10n.monetization')
     );
   }
 
@@ -119,11 +118,10 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $this->entity = $items->getEntity();
     // We won't ask a user to accept terms and conditions again if it has been already accepted.
-    if (!$items[$delta]->value) {
-      $tnc = $this->monetization->getLatestTermsAndConditions();
+    if (!$items[$delta]->value && ($tnc = $this->monetization->getLatestTermsAndConditions())) {
       $element += [
-        '#type'             => 'checkbox',
-        '#default_value'    => !empty($items[0]->value),
+        '#type' => 'checkbox',
+        '#default_value' => !empty($items[0]->value),
         '#element_validate' => [[$this, 'validate']],
       ];
       // Accept TnC description.
