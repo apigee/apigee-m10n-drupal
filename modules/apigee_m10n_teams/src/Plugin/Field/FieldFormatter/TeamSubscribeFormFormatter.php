@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 
+use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter;
@@ -45,7 +46,7 @@ class TeamSubscribeFormFormatter extends SubscribeFormFormatter {
       if ($item->getEntity()->access('subscribe')) {
         $subscription = Subscription::create([
           'ratePlan' => $item->getEntity(),
-          'team' => $value['team']->decorated(),
+          'company' => new Company(['id' => $value['team']->id()]),
           'startDate' => new \DateTimeImmutable(),
         ]);
         return $this->entityFormBuilder->getForm($subscription, 'default', [

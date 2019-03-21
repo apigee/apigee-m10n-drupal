@@ -1,7 +1,7 @@
 services:
   apigee_m10n.teams:
     class: Drupal\apigee_m10n_teams\MonetizationTeams
-    arguments: ['@current_route_match']
+    arguments: ['@current_route_match', '@apigee_m10n_teams.sdk_controller_factory', '@apigee_m10n.monetization', '@logger.channel.apigee_m10n']
 
   apigee_m10n_teams.access_check.team_permission:
     class: Drupal\apigee_m10n_teams\Access\TeamPermissionAccessCheck

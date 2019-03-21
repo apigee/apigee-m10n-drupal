@@ -21,7 +21,9 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
@@ -31,10 +33,14 @@ use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
+use Drupal\apigee_m10n_teams\Entity\Form\TeamSubscriptionForm;
+use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * The `apigee_m10n.teams` service.
@@ -49,13 +55,50 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   protected $route_match;
 
   /**
+   * The `apigee_m10n.monetization` service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
+   * The Teams SDK controller factory.
+   *
+   * @var \Drupal\apigee_m10n\
+   */
+  protected $sdk_controller_factory;
+
+  /**
+   * Static cache of `acceptLatestTermsAndConditions` results.
+   *
+   * @var array
+   */
+  protected $companyAcceptedTermsStatus;
+
+  /**
+   * The logger.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * MonetizationTeams constructor.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
+   * @param \Drupal\apigee_m10n_teams\TeamSdkControllerFactoryInterface $sdk_controller_factory
+   *   The SDK controller factory.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The monetization service.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger.
    */
-  public function __construct(RouteMatchInterface $route_match) {
+  public function __construct(RouteMatchInterface $route_match, TeamSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization, LoggerInterface $logger) {
     $this->route_match = $route_match;
+    $this->sdk_controller_factory = $sdk_controller_factory;
+    $this->monetization = $monetization;
+    $this->logger = $logger;
   }
 
   /**
@@ -82,6 +125,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Use our class to override the original entity class.
       $entity_types['rate_plan']->setClass(TeamAwareRatePlan::class);
       $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
+      $entity_types['rate_plan']->setLinkTemplate('team-subscribe', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/subscribe');
       // Get the entity route providers.
       $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
       // Override the `html` route provider.
@@ -95,6 +139,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['subscription']->setClass(TeamRouteAwareSubscription::class);
       // Override the storage class.
       $entity_types['subscription']->setStorageClass(TeamSubscriptionStorage::class);
+      // Override subscribe form.
+      $entity_types['subscription']->setFormClass('default', TeamSubscriptionForm::class);
     }
   }
 
@@ -105,6 +151,14 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     // Override the subscribe link and form formatters.
     $info['apigee_subscribe_form']['class'] = TeamSubscribeFormFormatter::class;
     $info['apigee_subscribe_link']['class'] = TeamSubscribeLinkFormatter::class;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fieldWidgetInfoAlter(array &$info) {
+    // Override the terms and condition widget.
+    $info['apigee_tnc_widget']['class'] = CompanyTermsAndConditionsWidget::class;
   }
 
   /**
@@ -182,6 +236,68 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   protected function teamAccessCheck(): TeamPermissionAccessInterface {
     return \Drupal::service('apigee_m10n_teams.access_check.team_permission');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isLatestTermsAndConditionAccepted(string $company_id): ?bool {
+    if (!($latest_tnc = $this->monetization->getLatestTermsAndConditions())) {
+      // If there isn't a latest TnC, and there was no error, there shouldn't be
+      // anything to accept.
+      // TODO: Add a test for an org with no TnC defined.
+      return TRUE;
+    }
+    // Check the cache table.
+    if (!isset($this->companyAcceptedTermsStatus[$company_id])) {
+      // Get the latest TnC ID.
+      $latest_tnc_id = $latest_tnc->id();
+
+      // Creates a controller for getting accepted TnC.
+      $controller = $this->sdk_controller_factory->companyTermsAndConditionsController($company_id);
+
+      try {
+        $history = $controller->getTermsAndConditionsHistory();
+      }
+      catch (\Exception $e) {
+        $message = "Unable to load Terms and Conditions history for a team \n\n" . $e;
+        $this->logger->error($message);
+        throw new SdkEntityLoadException($message);
+      }
+
+      // All we care about is the latest entry for the latest TnC.
+      $latest = array_reduce($history, function ($carry, $item) use ($latest_tnc_id) {
+        /** @var \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem $item */
+        // No need to look at items other than for the current TnC.
+        if ($item->getTnc()->id() !== $latest_tnc_id) {
+          return $carry;
+        }
+        // Gets the time of the carry over item.
+        $carry_time = $carry instanceof LegalEntityTermsAndConditionsHistoryItem ? $carry->getAuditDate()->getTimestamp() : NULL;
+
+        return $item->getAuditDate()->getTimestamp() > $carry_time ? $item : $carry;
+      });
+
+      $this->companyAcceptedTermsStatus[$company_id] = ($latest instanceof LegalEntityTermsAndConditionsHistoryItem) && $latest->getAction() === 'ACCEPTED';
+    }
+
+    return $this->companyAcceptedTermsStatus[$company_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function acceptLatestTermsAndConditions(string $company_id): ?LegalEntityTermsAndConditionsHistoryItem {
+    try {
+      // Reset the static cache for this team.
+      unset($this->companyAcceptedTermsStatus[$company_id]);
+      return $this->sdk_controller_factory->companyTermsAndConditionsController($company_id)
+        ->acceptTermsAndConditionsById($this->monetization->getLatestTermsAndConditions()->id());
+    }
+    catch (\Throwable $t) {
+      $this->logger->error('Unable to accept latest TnC: ' . $t->getMessage());
+    }
+    return NULL;
   }
 
 }

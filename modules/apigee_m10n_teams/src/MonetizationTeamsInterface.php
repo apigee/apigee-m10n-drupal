@@ -21,6 +21,8 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
+use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -45,6 +47,14 @@ interface MonetizationTeamsInterface {
    *   An array of field formatter plugin definitions.
    */
   public function fieldFormatterInfoAlter(array &$info);
+
+  /**
+   * Handles `hook_field_widget_info_alter` for `apigee_m10n_teams`.
+   *
+   * @param array $info
+   *   An array of field widget plugin definitions.
+   */
+  public function fieldWidgetInfoAlter(array &$info);
 
   /**
    * Handles `hook_ENTITY_TYPE_access` for the `apigee_m10n_teams` module.
@@ -113,5 +123,27 @@ interface MonetizationTeamsInterface {
    *   The access result or null for non-team routes.
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account);
+
+  /**
+   * Check if company accepted latest terms and conditions.
+   *
+   * @param string $company_id
+   *   Company ID.
+   *
+   * @return bool|null
+   *   User terms and conditions acceptance flag.
+   */
+  public function isLatestTermsAndConditionAccepted(string $company_id): ?bool;
+
+  /**
+   * Accepts a terms and conditions by its id.
+   *
+   * @param string $company_id
+   *   Company ID.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem|null
+   *   Terms and conditions history item.
+   */
+  public function acceptLatestTermsAndConditions(string $company_id): ?LegalEntityTermsAndConditionsHistoryItem;
 
 }

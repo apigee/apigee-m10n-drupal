@@ -58,7 +58,7 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
     }
     else {
       // We override this constructor so we can determine the decorated class.
-      $decorated_class = isset($values['team']) ? CompanyAcceptedRatePlan::class : static::decoratedClass();
+      $decorated_class = isset($values['company']) ? CompanyAcceptedRatePlan::class : static::decoratedClass();
       $rc = new \ReflectionClass($decorated_class);
       // Get rid of useless but also problematic null values.
       $values = array_filter($values, function ($value) {
@@ -102,8 +102,8 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
    */
   public function getTermsAndConditions(): bool {
     if ($this->isTeamSubscription()) {
-      // TODO: Implement TnC for team subscriptions.
-      return TRUE;
+      $decorated = $this->decorated();
+      return apigee_m10n_teams_service()->isLatestTermsAndConditionAccepted($decorated->getCompany()->id());
     }
     else {
       return parent::getTermsAndConditions();

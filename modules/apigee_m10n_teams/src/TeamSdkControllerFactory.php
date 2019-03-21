@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
@@ -38,6 +39,23 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
       // Create a new balance controller.
       $this->controllers[__FUNCTION__][$company_id] = new CompanyAcceptedRatePlanController(
+        $company_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$company_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function companyTermsAndConditionsController(string $company_id): CompanyTermsAndConditionsController {
+    if (empty($this->controllers[__FUNCTION__][$company_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$company_id] = new CompanyTermsAndConditionsController(
         $company_id,
         $this->getOrganization(),
         $this->getClient()
