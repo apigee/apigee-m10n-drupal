@@ -7,7 +7,7 @@
         "php": ">=7.1",
         "cweagans/composer-patches": "^1.6",
         "commerceguys/intl": "^1.0",
-        "drupal/apigee_edge": "dev-1.x#^bdb3647"
+        "drupal/apigee_edge": "^1.0-rc1"
     },
     "require-dev": {
         "behat/mink-extension": "v2.2",
