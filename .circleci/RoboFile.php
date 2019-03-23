@@ -408,15 +408,15 @@ class RoboFile extends \Robo\Tasks
       ];
 
       // The drupal image contains ^8.6.7 but could be updated at any time.
-      // We need 8.6.12 to get past the twig issue so we require core instead of
+      // We need 8.6.13 to get past the twig issue so we require core instead of
       // using the pre-installed (replaced) version. There are some caveats as
       // we aren't using drupal scaffold at this point. This can be removed when
-      // the `andrewberry/drupal_tests` image is updated to 8.6.12.
+      // the `andrewberry/drupal_tests` image is updated to 8.6.13.
       // See: <https://github.com/deviantintegral/drupal_tests/issues/51>
-      // Require drupal core greater than 8.6.12 with strict dependencies.
-      $config->require->{"drupal/core"} = "^8.6.12";
-      $config->require->{"webflo/drupal-core-strict"} = "^8.6.12";
-      $config->{"require-dev"} = (object) ["webflo/drupal-core-require-dev" => "^8.6.12"];
+      // Require drupal core greater than 8.6.13 with strict dependencies.
+      $config->require->{"drupal/core"} = "~8.6.13";
+      $config->require->{"webflo/drupal-core-strict"} = "~8.6.13";
+      $config->{"require-dev"} = (object) ["webflo/drupal-core-require-dev" => "~8.6.13"];
       // If you require core, you must not replace it.
       unset($config->replace);
       // You can't merge from a package that is required.
@@ -426,7 +426,7 @@ class RoboFile extends \Robo\Tasks
         }
       }
       $config->extra->{"merge-plugin"}->include = array_values($config->extra->{"merge-plugin"}->include);
-      // TODO Revert this when `andrewberry/drupal_tests` is updated to ^8.6.12.
+      // TODO Revert this when `andrewberry/drupal_tests` is updated to ~8.6.13.
 
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
       $config->require->{"drupal/commerce"} = "~2.0";
