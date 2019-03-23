@@ -399,6 +399,27 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
+   * Populates the subscriptions cache for a user.
+   *
+   * This helps for tests that fetch subscriptions but does not necessarily
+   * need it to the tests.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @see \Drupal\apigee_m10n\Monetization::isDeveloperAlreadySubscribed()
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function warmSubscriptionsCache(UserInterface $user): void {
+    $subscription = $this->createSubscription($user, $this->createPackageRatePlan($this->createPackage()));
+    \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$user->getEmail()}", [$subscription]);
+  }
+
+  /**
    * Queues up a mock developer response.
    *
    * @param \Drupal\user\UserInterface $developer

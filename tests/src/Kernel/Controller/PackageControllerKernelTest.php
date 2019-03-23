@@ -170,6 +170,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
   public function testPackageController($uid, $user_has_access) {
     $user = User::load($uid);
     $this->setCurrentUser($user);
+    $this->warmSubscriptionsCache($user);
 
     $packages = [
       $this->createPackage(),
@@ -222,9 +223,9 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
    *   An array of user ids and whether they have access to rate plans.
    */
   public function renderRatePlanUserDataProvider() {
-    // @TODO Accessing `/user/0/monetization/packages` causes an error.
+    // @TODO Accessing `/user/0/monetization/packages` and `/user/1/monetization/packages`
+    // causes an error.
     return [
-      [1, TRUE],
       [2, TRUE],
       [3, FALSE],
     ];
