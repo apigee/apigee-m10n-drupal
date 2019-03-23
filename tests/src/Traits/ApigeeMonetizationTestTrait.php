@@ -401,8 +401,7 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Populates the subscriptions cache for a user.
    *
-   * This helps for tests that fetch subscriptions but does not necessarily
-   * need it to the tests.
+   * Use this for tests that fetch subscriptions.
    *
    * @param \Drupal\user\UserInterface $user
    *   The user entity.
