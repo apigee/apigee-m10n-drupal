@@ -29,6 +29,9 @@
         "patches": {
             "drupal/core": {
                 "`EntityViewBuilder::getBuildDefaults()` doesn't check for `RevisionableInterface`.": "https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch"
+            },
+            "apigee/apigee-client-php": {
+                "The `keepOriginalStartDate` attribute is not always set on rate plan revisions.": "https://github.com/apigee/apigee-client-php/files/2998801/keep-original-start-date.patch.txt"
             }
         }
     }
