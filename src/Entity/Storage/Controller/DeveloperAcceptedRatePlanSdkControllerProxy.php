@@ -46,6 +46,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
         $entity->getEndDate(),
         $entity->getQuotaTarget()
       );
+    // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
   }
 
   /**
@@ -61,6 +62,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
+    // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
     $this->getSubscriptionController($entity)->updateSubscription($entity);
   }
 
@@ -102,6 +104,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    */
   public function loadByDeveloperId(string $developer_id): array {
     // Get all subscriptions for this developer.
+    // TODO: Cache subscription lists per developer.
     return $this->getSubscriptionControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }
