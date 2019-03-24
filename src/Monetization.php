@@ -433,8 +433,7 @@ class Monetization implements MonetizationInterface {
 
     if (!($subscriptions_cache = $this->cache->get($cid))) {
       if ($subscriptions = Subscription::loadByDeveloperId($developer_id)) {
-        $expire_time = new \DateTime('now + 5 minutes');
-        $this->cache->set($cid, $subscriptions, $expire_time->getTimestamp());
+        $this->cache->set($cid, $subscriptions, strtotime('now + 5 minutes'));
       }
     }
     else {
