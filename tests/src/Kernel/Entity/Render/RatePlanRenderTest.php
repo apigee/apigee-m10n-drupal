@@ -72,6 +72,8 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->package_rate_plan->getEntityTypeId());
 
+    $this->warmSubscriptionsCache($this->developer);
+
     $build = $view_builder->view($this->package_rate_plan, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));

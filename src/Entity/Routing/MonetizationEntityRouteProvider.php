@@ -81,7 +81,7 @@ class MonetizationEntityRouteProvider extends DefaultHtmlRouteProvider {
    * Overrides the the canonical route.
    *
    * The canonical route will not have developer context so we have to redirect
-   * to the develoepr route. Keeping the canonical route will allow a permalink
+   * to the developer route. Keeping the canonical route will allow a permalink
    * to the entity without developer context.
    *
    * {@inheritdoc}

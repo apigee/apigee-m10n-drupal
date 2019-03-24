@@ -73,7 +73,7 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
   /**
    * Gets data for the `apigee_tnc` field formatter.
    *
-   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
+   * @return bool
    *   The rate plan.
    */
   public function getTermsAndConditions(): bool;

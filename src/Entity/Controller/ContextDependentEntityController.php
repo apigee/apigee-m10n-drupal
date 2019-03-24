@@ -45,7 +45,7 @@ class ContextDependentEntityController extends ControllerBase {
     $entity_type_id = $route_match->getRouteObject()->getOption('entity_type_id');
     // The developer routes should always follow this pattern.
     $developer_route_name = "entity.{$entity_type_id}.developer";
-    // Add the current user as the develoepr (`user`).
+    // Add the current user as the developer (`user`).
     $parameters = ['user' => $this->currentUser()->id()];
     // Re-add the rest of the parameters for this route.
     foreach ($route_match->getParameters()->keys() as $key) {

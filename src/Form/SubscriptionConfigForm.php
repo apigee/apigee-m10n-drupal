@@ -90,6 +90,12 @@ class SubscriptionConfigForm extends ConfigFormBase {
       '#description' => $this->t('Button label for canceling a rate plan.'),
       '#default_value' => $config->get('unsubscribe_button_label'),
     ];
+    $form['already_purchased_label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Already subscribed label'),
+      '#description' => $this->t('Text to display if already subscribed to a rate plan. For example: "Already subscribed to %rate_plan".'),
+      '#default_value' => $config->get('already_purchased_label'),
+    ];
 
     return parent::buildForm($form, $form_state);
   }
@@ -107,6 +113,7 @@ class SubscriptionConfigForm extends ConfigFormBase {
       ->set('unsubscribe_question', $form_state->getValue('unsubscribe_question'))
       ->set('unsubscribe_description', $form_state->getValue('unsubscribe_description'))
       ->set('unsubscribe_button_label', $form_state->getValue('unsubscribe_button_label'))
+      ->set('already_purchased_label', $form_state->getValue('already_purchased_label'))
       ->save();
   }
 

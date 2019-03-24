@@ -25,6 +25,7 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Functional tests for the package controller.
@@ -76,6 +77,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     ]);
     // Install user 0 and user 1.
     \user_install();
+    $this->warmSubscriptionsCache(User::load(1));
 
     $this->developer = $this->createAccount([
       'view package',
@@ -171,32 +173,36 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $user = User::load($uid);
     $this->setCurrentUser($user);
 
-    $packages = [
-      $this->createPackage(),
-      $this->createPackage(),
-    ];
-    $sdk_packages = [];
-    $rate_plans = [];
-    foreach ($packages as $package) {
-      $rate_plans[$package->id()] = $this->createPackageRatePlan($package);
-      $sdk_packages[] = $package->decorated();
+    if (!$user->isAnonymous()) {
+      $packages = [
+        $this->createPackage(),
+        $this->createPackage(),
+      ];
+      $sdk_packages = [];
+      $rate_plans = [];
+      foreach ($packages as $package) {
+        $rate_plans[$package->id()] = $this->createPackageRatePlan($package);
+        $sdk_packages[] = $package->decorated();
+      }
+
+      $this->stack
+        ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packages]]);
+
+      foreach ($sdk_packages as $package) {
+        foreach ($package->getApiProducts() as $api_product) {
+          if (!$this->container->has('apigee_edge.controller.cache.api_product')) {
+            // TODO: Remove this queue when `apigee_edge` beta 2 is released.
+            $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
+          }
+        }
+        $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans[$package->id()]]]]);
+      }
+    }
+    else {
+      $this->expectException(NotFoundHttpException::class);
     }
 
     $page_controller = PackagesController::create($this->container);
-
-    $this->stack
-      ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packages]]);
-
-    foreach ($sdk_packages as $package) {
-      foreach ($package->getApiProducts() as $api_product) {
-        if (!$this->container->has('apigee_edge.controller.cache.api_product')) {
-          // TODO: Remove this queue when `apigee_edge` beta 2 is released.
-          $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
-        }
-      }
-      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans[$package->id()]]]]);
-    }
-
     $renderable = $page_controller->catalogPage($user);
     $this->setRawContent(\Drupal::service('renderer')->renderRoot($renderable));
     self::assertArrayHasKey($packages[0]->id(), $renderable['package_list']);
@@ -222,8 +228,8 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
    *   An array of user ids and whether they have access to rate plans.
    */
   public function renderRatePlanUserDataProvider() {
-    // @TODO Accessing `/user/0/monetization/packages` causes an error.
     return [
+      [0, FALSE],
       [1, TRUE],
       [2, TRUE],
       [3, FALSE],

@@ -30,6 +30,8 @@ use CommerceGuys\Intl\Formatter\CurrencyFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
+use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -418,6 +420,30 @@ class Monetization implements MonetizationInterface {
   public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string {
     return $this->sdk_controller_factory->prepaidBalanceReportsController($developer_id)
       ->getReport($month, $currency);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool {
+    // Use cached result if available.
+    // TODO: Handle subscription caching per developer ont he storage level.
+    // See: \Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage::loadByDeveloperId()
+    $cid = "apigee_m10n:dev:subscriptions:{$developer_id}";
+
+    if (!($subscriptions_cache = $this->cache->get($cid))) {
+      if ($subscriptions = Subscription::loadByDeveloperId($developer_id)) {
+        $this->cache->set($cid, $subscriptions, strtotime('now + 5 minutes'));
+      }
+    }
+    else {
+      foreach ($subscriptions_cache->data as $subscription) {
+        if ($subscription->getRatePlan()->id() == $rate_plan->id() && $subscription->isSubscriptionActive()) {
+          return TRUE;
+        }
+      }
+    }
+    return FALSE;
   }
 
   /**
