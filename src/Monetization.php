@@ -428,17 +428,18 @@ class Monetization implements MonetizationInterface {
   public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool {
     // Use cached result if available.
     $cid = "apigee_m10n:dev:subscriptions:{$developer_id}";
-    $subscriptions_cache = $this->cache->get($cid);
-    $subscriptions = $subscriptions_cache ? $subscriptions_cache->data : NULL;
 
-    if (!$subscriptions) {
-      $subscriptions = Subscription::loadByDeveloperId($developer_id);
-      $expire_time = new \DateTime('now + 5 minutes');
-      $this->cache->set($cid, $subscriptions, $expire_time->getTimestamp());
+    if (!($subscriptions_cache = $this->cache->get($cid))) {
+      if ($subscriptions = Subscription::loadByDeveloperId($developer_id)) {
+        $expire_time = new \DateTime('now + 5 minutes');
+        $this->cache->set($cid, $subscriptions, $expire_time->getTimestamp());
+      }
     }
-    foreach ($subscriptions as $subscription) {
-      if ($subscription->getRatePlan()->id() == $rate_plan->id() && $subscription->isSubscriptionActive()) {
-        return TRUE;
+    else {
+      foreach ($subscriptions_cache->data as $subscription) {
+        if ($subscription->getRatePlan()->id() == $rate_plan->id() && $subscription->isSubscriptionActive()) {
+          return TRUE;
+        }
       }
     }
     return FALSE;
