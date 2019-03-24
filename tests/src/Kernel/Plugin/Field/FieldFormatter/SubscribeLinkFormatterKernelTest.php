@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeLinkFormatter;
 use Drupal\apigee_m10n\Plugin\Field\FieldType\SubscribeFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\user\Entity\User;
 
 /**
  * Test the `apigee_subscribe_link` field formatter.
@@ -68,6 +69,14 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->installEntitySchema('user');
+    $this->installSchema('system', ['sequences']);
+    $this->installSchema('user', ['users_data']);
+    $this->installConfig([
+      'user',
+      'system',
+    ]);
+
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
 
@@ -78,13 +87,13 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
   /**
    * Test viewing a subscribe link formatter.
    *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * @throws \Exception
    */
   public function testView() {
-    // Anon is no longer allowed to see monetization pages so mock the current
-    // user.
-    $this->mockCurrentUser();
+    $user = $this->createAccount([
+      'view subscription',
+    ]);
+    $this->setCurrentUser($user);
     $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
@@ -93,7 +102,7 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
     $instance = $this->formatter_manager->createInstance('apigee_subscribe_link', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
       'settings' => [
-        'label' => 'Subscribe'
+        'label' => 'Subscribe',
       ],
       'label' => TRUE,
       'view_mode' => 'default',

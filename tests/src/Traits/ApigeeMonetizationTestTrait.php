@@ -178,6 +178,10 @@ trait ApigeeMonetizationTestTrait {
     // This is here to make drupalLogin() work.
     $account->passRaw = $edit['pass'];
 
+    // Assume the account has no subscriptions initially.
+    $this->warmSubscriptionsCache($account);
+    \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$account->getEmail()}", []);
+
     $this->cleanup_queue[] = [
       'weight' => 99,
       // Prepare for deleting the developer.
@@ -393,6 +397,25 @@ trait ApigeeMonetizationTestTrait {
     // The subscription controller does not have a delete operation so there is
     // nothing to add to the cleanup queue.
     return $subscription;
+  }
+
+  /**
+   * Populates the subscriptions cache for a user.
+   *
+   * Use this for tests that fetch subscriptions.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @see \Drupal\apigee_m10n\Monetization::isDeveloperAlreadySubscribed()
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function warmSubscriptionsCache(UserInterface $user): void {
+    \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$user->getEmail()}", []);
   }
 
   /**
