@@ -179,6 +179,7 @@ trait ApigeeMonetizationTestTrait {
     $account->passRaw = $edit['pass'];
 
     // Assume the account has no subscriptions initially.
+    $this->warmSubscriptionsCache($account);
     \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$account->getEmail()}", []);
 
     $this->cleanup_queue[] = [
@@ -414,8 +415,7 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Twig_Error_Syntax
    */
   protected function warmSubscriptionsCache(UserInterface $user): void {
-    $subscription = $this->createSubscription($user, $this->createPackageRatePlan($this->createPackage()));
-    \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$user->getEmail()}", [$subscription]);
+    \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$user->getEmail()}", []);
   }
 
   /**

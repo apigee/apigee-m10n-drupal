@@ -103,8 +103,6 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testView() {
-    $this->warmSubscriptionsCache($this->developer);
-
     $this->stack->queueMockResponse([
       'get_terms_conditions',
       'get_developer_terms_conditions',

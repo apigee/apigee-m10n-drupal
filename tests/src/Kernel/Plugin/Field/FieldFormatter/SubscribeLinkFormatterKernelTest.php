@@ -87,15 +87,13 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
   /**
    * Test viewing a subscribe link formatter.
    *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * @throws \Exception
    */
   public function testView() {
     $user = $this->createAccount([
       'view subscription',
     ]);
     $this->setCurrentUser($user);
-    $this->warmSubscriptionsCache($user);
     $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
@@ -104,7 +102,7 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
     $instance = $this->formatter_manager->createInstance('apigee_subscribe_link', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
       'settings' => [
-        'label' => 'Subscribe'
+        'label' => 'Subscribe',
       ],
       'label' => TRUE,
       'view_mode' => 'default',
