@@ -27,3 +27,6 @@ view subscription:
 
 update subscription:
   title: 'Cancel purchased plan'
+
+view package:
+  title: 'View packages'

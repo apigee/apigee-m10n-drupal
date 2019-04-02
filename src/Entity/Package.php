@@ -48,7 +48,6 @@ use Drupal\user\UserInterface;
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\PackageStorage",
  *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
- *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\PackageListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider",
@@ -61,7 +60,6 @@ use Drupal\user\UserInterface;
  *   entity_keys = {
  *     "id" = "id",
  *   },
- *   permission_granularity = "entity_type",
  *   admin_permission = "administer apigee monetization",
  *   field_ui_base_route = "apigee_m10n.settings.package",
  * )
