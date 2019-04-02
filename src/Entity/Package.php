@@ -62,7 +62,7 @@ use Drupal\user\UserInterface;
  *     "id" = "id",
  *   },
  *   permission_granularity = "entity_type",
- *   admin_permission = "administer package",
+ *   admin_permission = "administer apigee monetization",
  *   field_ui_base_route = "apigee_m10n.settings.package",
  * )
  */

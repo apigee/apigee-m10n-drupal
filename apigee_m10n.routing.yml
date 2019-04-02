@@ -56,7 +56,7 @@ entity.package.collection:
     _entity_list: package
     _title: Packages
   requirements:
-    _permission: administer package
+    _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
