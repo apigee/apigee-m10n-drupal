@@ -29,6 +29,9 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface as DrupalRatePlanInterface;
 use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\user\Entity\User;
+use Drupal\user\EntityOwnerInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Defines the Subscription entity class.
@@ -59,7 +62,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   field_ui_base_route    = "apigee_m10n.settings.subscription",
  * )
  */
-class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface {
+class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface, EntityOwnerInterface {
 
   use EndDatePropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
@@ -72,6 +75,13 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
   protected $rate_plan;
+
+  /**
+   * The owner's user entity.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $owner;
 
   /**
    * Constructs a `subscription` entity.
@@ -345,6 +355,42 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    */
   protected function monetization() {
     return \Drupal::service('apigee_m10n.monetization');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    if (!isset($this->owner)) {
+      $owner = $this->entityTypeManager()->getStorage('user')->loadByProperties([
+        'mail' => $this->getDeveloper()->getEmail(),
+      ]);
+      $this->owner = !empty($owner) ? reset($owner) : NULL;
+    }
+    return $this->owner;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return ($owner = $this->getOwner()) ? $owner->id() : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    // The owner is not settable after instantiation.
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    // The owner is not settable after instantiation.
+    return $this;
   }
 
 }
