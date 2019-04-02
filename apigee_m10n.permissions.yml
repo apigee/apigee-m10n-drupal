@@ -21,3 +21,9 @@ view any monetization billing details:
 
 subscribe rate_plan:
   title: 'Purchase a rate plan'
+
+view subscription:
+  title: 'View purchased plan'
+
+update subscription:
+  title: 'Cancel purchased plan'

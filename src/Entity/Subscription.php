@@ -43,10 +43,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     plural   = "@count Subscriptions",
  *   ),
  *   handlers = {
- *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
- *     "access"              = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
- *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
- *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
+ *     "storage"      = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
+ *     "access"       = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
+ *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
  *       "default"     = "Drupal\apigee_m10n\Entity\Form\SubscriptionForm",
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
@@ -56,7 +55,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   entity_keys = {
  *     "id" = "id",
  *   },
- *   permission_granularity = "entity_type",
  *   admin_permission       = "administer apigee monetization",
  *   field_ui_base_route    = "apigee_m10n.settings.subscription",
  * )
