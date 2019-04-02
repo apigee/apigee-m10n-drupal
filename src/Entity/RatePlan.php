@@ -54,7 +54,6 @@ use Drupal\user\Entity\User;
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\RatePlanStorage",
  *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
- *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
@@ -64,7 +63,6 @@ use Drupal\user\Entity\User;
  *   entity_keys = {
  *     "id" = "id",
  *   },
- *   permission_granularity = "entity_type",
  *   admin_permission = "administer apigee monetization",
  *   field_ui_base_route = "apigee_m10n.settings.rate_plan",
  * )

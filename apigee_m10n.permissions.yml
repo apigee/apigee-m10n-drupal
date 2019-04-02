@@ -30,3 +30,6 @@ update subscription:
 
 view package:
   title: 'View packages'
+
+view rate_plan:
+  title: 'View rate plans'
