@@ -213,7 +213,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
     if (!isset($this->ratePlans)) {
       // Get the access control handler for rate plans.
       $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
-      $admin_access = \Drupal::currentUser()->hasPermission('administer rate_plan');
+      $admin_access = \Drupal::currentUser()->hasPermission('administer apigee monetization');
 
       $package_rate_plans = RatePlan::loadPackageRatePlans($this->id());
       // Load plans for each package.

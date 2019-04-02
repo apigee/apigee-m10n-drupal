@@ -65,7 +65,7 @@ use Drupal\user\Entity\User;
  *     "id" = "id",
  *   },
  *   permission_granularity = "entity_type",
- *   admin_permission = "administer rate_plan",
+ *   admin_permission = "administer apigee monetization",
  *   field_ui_base_route = "apigee_m10n.settings.rate_plan",
  * )
  */
