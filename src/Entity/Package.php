@@ -47,7 +47,7 @@ use Drupal\user\UserInterface;
  *   ),
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\PackageStorage",
- *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
+ *     "access" = "Drupal\entity\EntityAccessControlHandlerBase",
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\PackageListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider",

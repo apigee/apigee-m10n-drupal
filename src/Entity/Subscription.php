@@ -44,7 +44,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   ),
  *   handlers = {
  *     "storage"      = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
- *     "access"       = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
+ *     "access"       = "Drupal\entity\EntityAccessControlHandlerBase",
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
  *       "default"     = "Drupal\apigee_m10n\Entity\Form\SubscriptionForm",
