@@ -39,6 +39,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class PackagesController extends ControllerBase {
 
   /**
+   * Cache prefix that is used for cache tags for this controller.
+   */
+  const CACHE_PREFIX = 'apigee.monetization.catalog_page';
+
+  /**
    * Service for instantiating SDK controllers.
    *
    * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
@@ -113,6 +118,11 @@ class PackagesController extends ControllerBase {
     $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
     $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];
     $build['package_list']['#pre_render'][] = [$this, 'preRender'];
+    $build['#cache'] = [
+      'contexts' => ['url.path'],
+      'tags'     => $this->getCacheTags($user),
+      'keys'     => [static::getCacheId($user, 'catalog_page')],
+    ];
 
     return $build;
   }
@@ -166,6 +176,20 @@ class PackagesController extends ControllerBase {
     }
 
     return $build;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getCacheTags(UserInterface $user) {
+    return [static::CACHE_PREFIX, static::getCacheId($user)];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getCacheId(UserInterface $user, $suffix = NULL) {
+    return static::CACHE_PREFIX . ":user:{$user->id()}" . ($suffix ? ":{$suffix}" : '');
   }
 
 }
