@@ -119,7 +119,7 @@ class PackagesController extends ControllerBase {
     $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];
     $build['package_list']['#pre_render'][] = [$this, 'preRender'];
     $build['#cache'] = [
-      'contexts' => ['url.path'],
+      'contexts' => ['url.path', 'user.roles'],
       'tags'     => $this->getCacheTags($user),
       'keys'     => [static::getCacheId($user, 'catalog_page')],
     ];
