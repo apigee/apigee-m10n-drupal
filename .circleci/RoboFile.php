@@ -169,7 +169,8 @@ class RoboFile extends \Robo\Tasks
         $this->taskFilesystemStack()->remove('composer.lock')->run();
 
         $this->taskDeleteDir('vendor/behat/mink')->run();
-        $this->taskComposerUpdate()
+        // Composer often runs out of memory when installing drupal.
+        $this->taskComposerUpdate('php -d memory_limit=-1 /usr/local/bin/composer')
           ->optimizeAutoloader()
           ->run();
 
