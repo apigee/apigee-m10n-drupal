@@ -23,6 +23,7 @@ use Drupal\Core\ParamConverter\EntityConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -48,10 +49,7 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
     // Get the developer ID.
     $developer_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
     // `$developer_id` will be empty for the anonymous. Returning NULL = 404.
-    return empty($developer_id) ? NULL :
-      $this->entityManager
-        ->getStorage('subscription')
-        ->loadById($developer_id, $value);
+    return empty($developer_id) ? NULL : $this->loadSubscriptionById($developer_id, $value);
   }
 
   /**
@@ -60,6 +58,30 @@ class SubscriptionConverter extends EntityConverter implements ParamConverterInt
   public function applies($definition, $name, Route $route) {
     // This only applies to subscription entities.
     return (parent::applies($definition, $name, $route) && $definition['type'] === 'entity:subscription');
+  }
+
+  /**
+   * Loads the subscription by developer/purchased plan ID.
+   *
+   * @param string $developer_id
+   *   The developer ID for the subscription.
+   * @param string $purchased_plan_id
+   *   The purchased plan id.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The `subscription` entity.
+   */
+  protected function loadSubscriptionById($developer_id, $purchased_plan_id) {
+    try {
+      $subscription = $this->entityManager
+        ->getStorage('subscription')
+        ->loadById($developer_id, $purchased_plan_id);
+    }
+    catch (\Exception $ex) {
+      throw new NotFoundHttpException('Subscription not found for developer', $ex);
+    }
+
+    return $subscription;
   }
 
 }
