@@ -126,7 +126,7 @@ entity.subscription.developer_collection:
     _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _permission: view subscription
+    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::access
   options:
     _apigee_monetization_route: TRUE
 
