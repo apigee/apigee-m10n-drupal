@@ -64,7 +64,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     parent::setUp();
 
     $this->developer = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
       'download prepaid balance reports',
     ]);
     $this->drupalLogin($this->developer);
@@ -113,12 +113,11 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   public function testRefreshAnyPrepaidBalancePermission() {
     // Given a user with "refresh any prepaid balance" permission.
-    // TODO: Update permissions when 'view any prepaid balance' permission is added.
     $user_roles = $this->developer->getRoles();
-    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh any prepaid balance']);
+    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh any prepaid balance', 'view any prepaid balance']);
 
     // User can refresh another user account.
-    $other_user = $this->createAccount(['view mint prepaid reports']);
+    $other_user = $this->createAccount();
     $this->queueOrg();
     $this->assertRefreshPrepaidBalanceForUser($other_user);
   }

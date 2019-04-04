@@ -46,7 +46,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
    */
   public function testPrepaidBalancesAccessDenied() {
 
-    // If the user doesn't have the "view mint prepaid reports" permission, they should get access denied.
+    // If the user doesn't have the "view own prepaid balance" permission, they should get access denied.
     $this->developer = $this->createAccount([]);
 
     $this->drupalLogin($this->developer);
@@ -67,9 +67,9 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
    * @throws \Twig_Error_Syntax
    */
   public function testPrepaidBalancesView() {
-    // If the user has "view mint prepaid reports" permission, they should be
+    // If the user has "view own prepaid balance" permission, they should be
     // able to see some prepaid balances.
-    $this->developer = $this->createAccount(['view mint prepaid reports']);
+    $this->developer = $this->createAccount(['view own prepaid balance']);
 
     $this->drupalLogin($this->developer);
 
