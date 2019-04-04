@@ -157,9 +157,10 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
       $this->subscription->setEndDate($this->subscription->getStartDate());
     }
     else {
-      $this->subscription->setEndDate($end_type == 'on_date'
-        ? new \DateTimeImmutable($values['endDate'])
-        : new \DateTimeImmutable('-1 day'));
+      $end_date = $end_type == 'on_date' ? new \DateTimeImmutable($values['endDate']) : new \DateTimeImmutable('-1 day');
+      $org_timezone = $this->subscription->getRatePlan()->getOrganization()->getTimezone();
+      $end_date->setTime($org_timezone);
+      $this->subscription->setEndDate($end_date);
     }
     return $this->subscription;
   }
@@ -177,8 +178,8 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
         $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
     }
-    // TODO: Check to see if `EntityStorageException` is the only type of error
-    // to we need to catch here.
+      // TODO: Check to see if `EntityStorageException` is the only type of error
+      // to we need to catch here.
     catch (\Exception $e) {
       $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
