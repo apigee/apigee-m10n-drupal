@@ -81,7 +81,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
 
     $this->developer = $this->createAccount([
       'view package',
-      'view subscription',
+      'view own subscription',
       'view rate_plan',
     ]);
     $this->setCurrentUser($this->developer);

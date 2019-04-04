@@ -67,7 +67,7 @@ class SubscriptionRenderTest extends MonetizationKernelTestBase {
       'system',
     ]);
     $this->installEntitySchema('user');
-    $this->developer = $this->createAccount(['view subscription']);
+    $this->developer = $this->createAccount(['view own subscription']);
     $this->setCurrentUser($this->developer);
 
     $this->rate_plan = $this->createPackageRatePlan($this->createPackage());

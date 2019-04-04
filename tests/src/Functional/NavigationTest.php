@@ -58,7 +58,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->developer = $this->createAccount([
       'view mint prepaid reports',
       'view package',
-      'view subscription',
+      'view own subscription',
     ]);
 
     $this->drupalLogin($this->developer);

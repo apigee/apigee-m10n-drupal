@@ -104,7 +104,7 @@ apigee_monetization.my_subscriptions:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:
-    _permission: view subscription
+    _permission: view own subscription
   options:
     _apigee_monetization_route: TRUE
 
