@@ -19,6 +19,9 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -38,6 +41,25 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
       'apigee_monetization.billing',
       ['user' => $this->currentUser->id()],
       ['absolute' => TRUE]
+    );
+  }
+
+  /**
+   * Checks current users access.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   Run access checks for this account.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if passed permissions are present.
+   */
+  public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+    $user = $route_match->getParameter('user');
+    return AccessResult::allowedIf(
+      $account->hasPermission('view any prepaid balance') ||
+      ($account->hasPermission('view own prepaid balance') && $account->id() === $user->id())
     );
   }
 

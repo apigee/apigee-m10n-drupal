@@ -1,8 +1,11 @@
 administer apigee monetization:
   title: 'Administer Apigee Monetization'
 
-view mint prepaid reports:
-  title: 'View Mint Prepaid Reports'
+view own prepaid balance:
+  title: 'View own prepaid balance'
+
+view any prepaid balance:
+  title: 'View any prepaid balance'
 
 refresh own prepaid balance:
   title: 'Refresh own prepaid balance'
