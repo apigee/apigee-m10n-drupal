@@ -29,7 +29,6 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface as DrupalRatePlanInterface;
 use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\user\Entity\User;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
 
@@ -46,9 +45,10 @@ use Drupal\user\UserInterface;
  *     plural   = "@count Subscriptions",
  *   ),
  *   handlers = {
- *     "storage"      = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
- *     "access"       = "Drupal\entity\EntityAccessControlHandlerBase",
- *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
+ *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
+ *     "access"              = "Drupal\entity\UncacheableEntityAccessControlHandler",
+ *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\SubscriptionPermissionProvider",
+ *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
  *       "default"     = "Drupal\apigee_m10n\Entity\Form\SubscriptionForm",
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
