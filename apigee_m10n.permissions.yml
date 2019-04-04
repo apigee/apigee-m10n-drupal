@@ -28,5 +28,8 @@ subscribe rate_plan:
 view package:
   title: 'View packages'
 
+view package as anyone:
+  title: 'View packages as any developer'
+
 view rate_plan:
   title: 'View rate plans'

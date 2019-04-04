@@ -95,7 +95,7 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: Packages
   requirements:
-    _permission: view package
+    _custom_access: \Drupal\apigee_m10n\Access\PackageAccess::access
   options:
     _apigee_monetization_route: TRUE
 
