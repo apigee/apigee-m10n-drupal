@@ -16,11 +16,11 @@ refresh any prepaid balance:
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
 
-view own monetization billing details:
-  title: 'View own monetization billing details'
+view own billing details:
+  title: 'View own billing details'
 
-view any monetization billing details:
-  title: 'View any monetization billing details'
+view any billing details:
+  title: 'View any billing details'
 
 subscribe rate_plan:
   title: 'Purchase a rate plan'
