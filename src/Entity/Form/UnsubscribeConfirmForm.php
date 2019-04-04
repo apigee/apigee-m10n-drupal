@@ -159,7 +159,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
     else {
       $end_date = $end_type == 'on_date' ? new \DateTimeImmutable($values['endDate']) : new \DateTimeImmutable('-1 day');
       $org_timezone = $this->subscription->getRatePlan()->getOrganization()->getTimezone();
-      $end_date->setTime($org_timezone);
+      $end_date->setTimezone($org_timezone);
       $this->subscription->setEndDate($end_date);
     }
     return $this->subscription;
