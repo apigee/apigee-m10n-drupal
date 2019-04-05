@@ -22,9 +22,6 @@ view own billing details:
 view any billing details:
   title: 'View any billing details'
 
-subscribe rate_plan:
-  title: 'Purchase a rate plan'
-
 view package:
   title: 'View packages'
 
@@ -33,3 +30,13 @@ view package as anyone:
 
 view rate_plan:
   title: 'View rate plans'
+
+view rate_plan as anyone:
+  title: 'View rate plans'
+
+subscribe rate_plan:
+  title: 'Purchase a rate plan'
+
+subscribe rate_plan as anyone:
+  title: 'Purchase a rate plan on behalf of any developer'
+
