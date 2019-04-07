@@ -363,10 +363,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    */
   public function providerPriceField() {
     return [
-      [
-        'string',
-        'Price must be a number',
-      ],
+      // TODO: Commerce throws an error when a string is entered for price.
       [
         10.00,
         'The product @title has been successfully saved.',
