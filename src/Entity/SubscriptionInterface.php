@@ -90,4 +90,12 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
    */
   public function getDeveloper(): ?DeveloperInterface;
 
+  /**
+   * Gets Drupal ID of the developer accepted rate plan.
+   *
+   * @return int
+   *   Drupal user ID.
+   */
+  public function getDrupalDeveloperId(): int;
+
 }
