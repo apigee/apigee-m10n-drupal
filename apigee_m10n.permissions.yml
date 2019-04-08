@@ -38,4 +38,4 @@ subscribe rate_plan:
   title: 'Purchase a rate plan'
 
 subscribe rate_plan as anyone:
-  title: 'Purchase a rate plan on behalf of any developer'
+  title: 'Purchase a rate plan as any developer'
