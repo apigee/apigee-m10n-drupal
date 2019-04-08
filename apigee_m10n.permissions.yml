@@ -32,7 +32,7 @@ view rate_plan:
   title: 'View rate plans'
 
 view rate_plan as anyone:
-  title: 'View rate plans'
+  title: 'View rate plans as any developer'
 
 subscribe rate_plan:
   title: 'Purchase a rate plan'

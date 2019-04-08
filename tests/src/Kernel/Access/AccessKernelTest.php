@@ -192,7 +192,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view package as anyone' => 'View packages as any developer',
       // Rate plans.
       'view rate_plan' => 'View rate plans',
-      'view rate_plan as anyone' => 'View rate plans',
+      'view rate_plan as anyone' => 'View rate plans as any developer',
       'subscribe rate_plan' => 'Purchase a rate plan',
       'subscribe rate_plan as anyone' => 'Purchase a rate plan as any developer',
     ];
