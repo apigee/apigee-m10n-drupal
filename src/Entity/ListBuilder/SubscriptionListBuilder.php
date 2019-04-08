@@ -253,10 +253,13 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    */
   protected function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
+    $rate_plan = $entity->getRatePlan();
+    $org_timezone = $rate_plan->getOrganization()->getTimezone();
+    $today = new \DateTime('today', $org_timezone);
 
     if ($entity->access('update')
       && $entity->isSubscriptionActive()
-      && $entity->getStartDate() > $entity->getEndDate()
+      && ($today < $entity->getEndDate() || (!empty($rate_plan->getEndDate() && $today < $rate_plan->getEndDate())))
     ) {
       $operations['unsubscribe'] = [
         'title' => $this->t('Cancel'),
