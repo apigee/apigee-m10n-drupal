@@ -54,7 +54,7 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
   public function testDownloadPrepaidBalanceReportsAccessDenied() {
     // Create a user that can access the billing page.
     $this->account = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
     ]);
 
     $this->drupalLogin($this->account);
@@ -82,7 +82,7 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
   public function testPrepaidBalanceReportsDownloadForm() {
     // Create a user that can access the billing page and download report.
     $this->account = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
       'download prepaid balance reports',
     ]);
 

@@ -56,7 +56,7 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
     parent::setUp();
 
     $this->developer = $this->signIn([
-      'view mint prepaid reports',
+      'view own prepaid balance',
       'add credit to own developer prepaid balance',
     ]);
 

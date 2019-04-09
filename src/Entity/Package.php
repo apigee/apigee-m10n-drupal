@@ -47,8 +47,7 @@ use Drupal\user\UserInterface;
  *   ),
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\PackageStorage",
- *     "access" = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
- *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
+ *     "access" = "Drupal\entity\EntityAccessControlHandlerBase",
  *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\PackageListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider",
@@ -61,8 +60,7 @@ use Drupal\user\UserInterface;
  *   entity_keys = {
  *     "id" = "id",
  *   },
- *   permission_granularity = "entity_type",
- *   admin_permission = "administer package",
+ *   admin_permission = "administer apigee monetization",
  *   field_ui_base_route = "apigee_m10n.settings.package",
  * )
  */
@@ -213,7 +211,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
     if (!isset($this->ratePlans)) {
       // Get the access control handler for rate plans.
       $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
-      $admin_access = \Drupal::currentUser()->hasPermission('administer rate_plan');
+      $admin_access = \Drupal::currentUser()->hasPermission('administer apigee monetization');
 
       $package_rate_plans = RatePlan::loadPackageRatePlans($this->id());
       // Load plans for each package.

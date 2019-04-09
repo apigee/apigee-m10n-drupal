@@ -91,7 +91,7 @@ class SubscribeLinkFormatterKernelTest extends MonetizationKernelTestBase {
    */
   public function testView() {
     $user = $this->createAccount([
-      'view subscription',
+      'view own subscription',
     ]);
     $this->setCurrentUser($user);
     $item_list = $this->package_rate_plan->get('subscribe');

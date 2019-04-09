@@ -53,7 +53,7 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->developer = $this->signIn(['view mint prepaid reports', 'add credit to own developer prepaid balance']);
+    $this->developer = $this->signIn(['view own prepaid balance', 'add credit to own developer prepaid balance']);
 
     // Enable add credit for the product type.
     $product_type = ProductType::load('default');

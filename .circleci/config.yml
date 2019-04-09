@@ -88,7 +88,7 @@ unit_kernel_tests: &unit_kernel_tests
 
     - run:
         working_directory: /var/www/html
-        command: |
+        command: &unit_kernel_tests_command |
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test.sh apigee_m10n
 
@@ -109,7 +109,7 @@ functional_tests: &functional_tests
 
     - run:
         working_directory: /var/www/html
-        command: |
+        command: &functional_tests_command |
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional.sh apigee_m10n
 
@@ -130,7 +130,7 @@ functional_js_tests: &functional_js_tests
 
     - run:
         working_directory: /var/www/html
-        command: |
+        command: &functional_js_tests_command |
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional-js.sh apigee_m10n
 
@@ -150,7 +150,7 @@ code_sniffer: &code_sniffer
 
     - run:
         working_directory: /var/www/html
-        command: |
+        command: &code_sniffer_command |
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
           vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile artifacts/phpmd/index.html
@@ -180,6 +180,31 @@ code_coverage: &code_coverage
     - store_artifacts:
         path: /var/www/html/artifacts
 
+# Run all tests.
+all_tests: &all_tests
+  <<: *defaults
+  steps:
+    - attach_workspace:
+        at: /var/www/html
+
+    - checkout
+
+    - run:
+        working_directory: /var/www/html
+        command: *code_sniffer_command
+    - run:
+        working_directory: /var/www/html
+        command: *unit_kernel_tests_command
+    - run:
+        working_directory: /var/www/html
+        command: *functional_tests_command
+    - run:
+        working_directory: /var/www/html
+        command: *functional_js_tests_command
+
+    - store_artifacts:
+        path: /var/www/html/artifacts
+
 # Declare all of the jobs we should run.
 version: 2
 jobs:
@@ -191,6 +216,8 @@ jobs:
      <<: *functional_tests
   run-functional-js-tests:
      <<: *functional_js_tests
+  run-all-tests:
+    <<: *all_tests
   run-code-sniffer:
      <<: *code_sniffer
   run-code-coverage:

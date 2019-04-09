@@ -33,14 +33,11 @@ class PackageListBuilder extends EntityListBuilder {
    */
   public function buildHeader() {
     return [
-      'id' => $this->t('Id'),
       'title' => $this->t('Title'),
+      'id' => $this->t('Id'),
       'description' => $this->t('Description'),
       'products' => $this->t('Products'),
       'status' => $this->t('Status'),
-      // TODO: If the delete operation is enabled, create a `delete-form` link template.
-      // See: `\Drupal\Core\Entity\EntityListBuilder::getDefaultOperations()`.
-      'operations' => $this->t('Operations'),
     ];
   }
 
@@ -55,16 +52,15 @@ class PackageListBuilder extends EntityListBuilder {
     foreach ($entity->get('apiProducts') as $delta => $value) {
       /** @var \Drupal\apigee_edge\Entity\ApiProduct $product */
       $product = $value->entity;
-      $product_links[$delta] = $product->toLink($product->label())->toString();
+      $product_links[$delta] = $product->hasLinkTemplate('canonical') ? $product->toLink($product->label())->toString() : $product->label();
     }
 
     return [
-      'id' => $entity->id(),
       'title' => $entity->toLink($entity->label()),
+      'id' => $entity->id(),
       'description' => $entity->getDescription(),
       'products' => Markup::create(implode(', ', $product_links)),
       'status' => $entity->getStatus(),
-      'operations' => $this->buildOperations($entity),
     ];
   }
 

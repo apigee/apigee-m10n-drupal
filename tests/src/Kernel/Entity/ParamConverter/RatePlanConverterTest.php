@@ -63,10 +63,6 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
       'rate_plan' => $rate_plan->id(),
     ])->toString());
 
-    // Queue up API responses.
-    $this->stack
-      ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
-
     // Match the request.
     \Drupal::service('router')->matchRequest($request);
 

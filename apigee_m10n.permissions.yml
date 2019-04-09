@@ -1,8 +1,11 @@
 administer apigee monetization:
-  title: 'Administer apigee monetization'
+  title: 'Administer Apigee Monetization'
 
-view mint prepaid reports:
-  title: 'View Mint Prepaid Reports'
+view own prepaid balance:
+  title: 'View own prepaid balance'
+
+view any prepaid balance:
+  title: 'View any prepaid balance'
 
 refresh own prepaid balance:
   title: 'Refresh own prepaid balance'
@@ -13,11 +16,26 @@ refresh any prepaid balance:
 download prepaid balance reports:
   title: 'Download prepaid balance reports'
 
-view own monetization billing details:
-  title: 'View own monetization billing details'
+view own billing details:
+  title: 'View own billing details'
 
-view any monetization billing details:
-  title: 'View any monetization billing details'
+view any billing details:
+  title: 'View any billing details'
+
+view package:
+  title: 'View packages'
+
+view package as anyone:
+  title: 'View packages as any developer'
+
+view rate_plan:
+  title: 'View rate plans'
+
+view rate_plan as anyone:
+  title: 'View rate plans as any developer'
 
 subscribe rate_plan:
   title: 'Purchase a rate plan'
+
+subscribe rate_plan as anyone:
+  title: 'Purchase a rate plan as any developer'
