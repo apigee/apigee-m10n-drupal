@@ -122,6 +122,48 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->assertAdminRoutes();
     $this->assertPackageRoutes();
     $this->assertRatePlanRoutes();
+    $this->assertSubscriptionRoutes();
+  }
+
+  /**
+   * Tests rate_plan entity route permissions.
+   */
+  public function assertSubscriptionRoutes() {
+    // Unsubscribe route.
+    $subscription = $this->createSubscription(User::load($this->developer->id()), $this->rate_plan);
+    $unsubscribe_url = Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
+      'user' => $this->developer->id(),
+      'subscription' => $subscription->id(),
+    ]);
+    static::assertTrue($unsubscribe_url->access($this->administrator));
+    static::assertTrue($unsubscribe_url->access($this->developer));
+    static::assertFalse($unsubscribe_url->access($this->anonymous));
+
+    // Unsubscribe route for testing `any` permission.
+    $subscription = $this->createSubscription(User::load($this->administrator->id()), $this->rate_plan);
+    $unsubscribe_url = Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
+      'user' => $this->administrator->id(),
+      'subscription' => $subscription->id(),
+    ]);
+    static::assertTrue($unsubscribe_url->access($this->administrator));
+    static::assertFalse($unsubscribe_url->access($this->developer));
+    static::assertFalse($unsubscribe_url->access($this->anonymous));
+
+    // Subscription listing.
+    $collection_url = Url::fromRoute('entity.subscription.developer_collection', [
+      'user' => $this->developer->id(),
+    ]);
+    static::assertTrue($collection_url->access($this->administrator));
+    static::assertTrue($collection_url->access($this->developer));
+    static::assertFalse($collection_url->access($this->anonymous));
+
+    // Subscription listing for `any` permission.
+    $collection_url = Url::fromRoute('entity.subscription.developer_collection', [
+      'user' => $this->administrator->id(),
+    ]);
+    static::assertTrue($collection_url->access($this->administrator));
+    static::assertFalse($collection_url->access($this->developer));
+    static::assertFalse($collection_url->access($this->anonymous));
   }
 
   /**
