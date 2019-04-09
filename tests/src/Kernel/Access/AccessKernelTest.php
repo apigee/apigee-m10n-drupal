@@ -99,7 +99,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Tests admin route permissions.
+   * Tests package entity route permissions.
    */
   public function assertPackageRoutes() {
     // Test the redirect route.
@@ -126,7 +126,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
 
     // Developer route as developer.
     $package_route = Url::fromRoute('entity.package.developer', ['user' => $this->administrator->id(), 'package' => $package->id()]);
-    $this->stack->queueMockResponse(['package' => ['package' => $package]]);
     static::assertTrue($package_route->access($this->administrator));
     static::assertFalse($package_route->access($this->developer));
     static::assertFalse($package_route->access($this->anonymous));
