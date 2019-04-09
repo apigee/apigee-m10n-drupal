@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\Render;
 
-use Drupal\Component\Datetime\DateTimePlus;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
@@ -86,7 +85,11 @@ class SubscriptionRenderTest extends MonetizationKernelTestBase {
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
     $this->assertText($this->developer->getDisplayName(), 'The developer display name appears.');
-    $start_date = $this->subscription->getStartDate()->format('D, m/d/Y - H:i');
+    // The formatter will render with the default time zone.
+    $start_date = $this->subscription
+      ->getStartDate()
+      ->setTimezone(new \DateTimeZone(date_default_timezone_get()))
+      ->format('D, m/d/Y - H:i');
     static::assertNotEmpty($start_date);
     $this->assertText($start_date, 'The start date appears in the rendered subscription.');
   }
