@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Drupal\apigee_m10n\Controller\PackagesController;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Core\Entity\EntityConfirmFormBase;
@@ -166,7 +167,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
         $this->messenger->addStatus($this->t('You have successfully cancelled %label plan', [
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
-        Cache::invalidateTags(['apigee_my_subscriptions']);
+        Cache::invalidateTags(['apigee_my_subscriptions', PackagesController::CACHE_PREFIX]);
         $form_state->setRedirect('apigee_monetization.my_subscriptions');
       }
     }

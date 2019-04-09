@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Drupal\apigee_m10n\Controller\PackagesController;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -110,7 +111,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       }
 
       $display_name = $this->entity->getRatePlan()->getDisplayName();
-      Cache::invalidateTags(['apigee_my_subscriptions']);
+      Cache::invalidateTags(['apigee_my_subscriptions', PackagesController::CACHE_PREFIX]);
 
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
