@@ -88,9 +88,6 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
     // Make sure we are using our custom route provider.
     static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
-    // Queue a package API response.
-    $this->stack
-      ->queueMockResponse(['get_monetization_package' => ['package' => $this->package]]);
     // Test that package canonical urls are redirecting to developer urls.
     $request = Request::create(Url::fromRoute('entity.package.canonical', ['package' => $this->package->id()])->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);

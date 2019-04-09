@@ -29,6 +29,8 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface as DrupalRatePlanInterface;
 use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\user\EntityOwnerInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Defines the Subscription entity class.
@@ -44,8 +46,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   ),
  *   handlers = {
  *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
- *     "access"              = "Drupal\apigee_edge\Entity\EdgeEntityAccessControlHandler",
- *     "permission_provider" = "Drupal\apigee_edge\Entity\EdgeEntityPermissionProviderBase",
+ *     "access"              = "Drupal\entity\UncacheableEntityAccessControlHandler",
+ *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\SubscriptionPermissionProvider",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
  *       "default"     = "Drupal\apigee_m10n\Entity\Form\SubscriptionForm",
@@ -56,12 +58,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   entity_keys = {
  *     "id" = "id",
  *   },
- *   permission_granularity = "entity_type",
- *   admin_permission       = "administer subscription",
+ *   admin_permission       = "administer apigee monetization",
  *   field_ui_base_route    = "apigee_m10n.settings.subscription",
  * )
  */
-class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface {
+class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface, EntityOwnerInterface {
 
   use EndDatePropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
@@ -74,6 +75,13 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
   protected $rate_plan;
+
+  /**
+   * The owner's user entity.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $owner;
 
   /**
    * Constructs a `subscription` entity.
@@ -347,6 +355,42 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    */
   protected function monetization() {
     return \Drupal::service('apigee_m10n.monetization');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    if (!isset($this->owner)) {
+      $owner = $this->entityTypeManager()->getStorage('user')->loadByProperties([
+        'mail' => $this->getDeveloper()->getEmail(),
+      ]);
+      $this->owner = !empty($owner) ? reset($owner) : NULL;
+    }
+    return $this->owner;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return ($owner = $this->getOwner()) ? $owner->id() : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    // The owner is not settable after instantiation.
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    // The owner is not settable after instantiation.
+    return $this;
   }
 
 }

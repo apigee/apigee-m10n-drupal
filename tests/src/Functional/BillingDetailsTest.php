@@ -73,7 +73,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
    */
   public function testBillingDetailsPageView() {
     $user_roles = $this->developer->getRoles();
-    $this->grantPermissions(Role::load(reset($user_roles)), ['view any monetization billing details']);
+    $this->grantPermissions(Role::load(reset($user_roles)), ['view any billing details']);
 
     $this->queueOrg();
     $this->stack->queueMockResponse([

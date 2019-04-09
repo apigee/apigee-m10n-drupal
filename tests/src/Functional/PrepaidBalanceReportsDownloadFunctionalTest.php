@@ -51,7 +51,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     parent::setUp();
 
     $this->account = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
       'download prepaid balance reports',
     ]);
 

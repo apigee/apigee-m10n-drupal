@@ -151,16 +151,9 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $end_type = $values['end_type'] ?? 'now';
-
-    // Cancel future date.
-    if ($end_type == 'now' && $this->subscription->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE) {
-      $this->subscription->setEndDate($this->subscription->getStartDate());
-    }
-    else {
-      $this->subscription->setEndDate($end_type == 'on_date'
-        ? new \DateTimeImmutable($values['endDate'])
-        : new \DateTimeImmutable('-1 day'));
-    }
+    $end_date = $end_type == 'on_date' ? new \DateTimeImmutable($values['endDate']) : $this->subscription->getStartDate();
+    $end_date->setTimezone($this->subscription->getRatePlan()->getOrganization()->getTimezone());
+    $this->subscription->setEndDate($end_date);
     return $this->subscription;
   }
 

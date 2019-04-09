@@ -56,7 +56,7 @@ entity.package.collection:
     _entity_list: package
     _title: Packages
   requirements:
-    _permission: administer package
+    _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
@@ -65,7 +65,7 @@ apigee_monetization.my_billing:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::myRedirect
   requirements:
-    _permission: view mint prepaid reports
+    _permission: view own prepaid balance
   options:
     _apigee_monetization_route: TRUE
 
@@ -76,7 +76,7 @@ apigee_monetization.billing:
     _title: Prepaid balance
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _permission: view mint prepaid reports
+    _custom_access: \Drupal\apigee_m10n\Controller\PrepaidBalanceController::access
   options:
     _apigee_monetization_route: TRUE
 
@@ -95,7 +95,7 @@ apigee_monetization.packages:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
     _title: Packages
   requirements:
-    _permission: view package
+    _custom_access: \Drupal\apigee_m10n\Access\PackageAccess::access
   options:
     _apigee_monetization_route: TRUE
 
@@ -104,7 +104,7 @@ apigee_monetization.my_subscriptions:
   defaults:
     _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
   requirements:
-    _permission: view subscription
+    _permission: view own subscription
   options:
     _apigee_monetization_route: TRUE
 
@@ -126,7 +126,7 @@ entity.subscription.developer_collection:
     _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _permission: view subscription
+    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::access
   options:
     _apigee_monetization_route: TRUE
 
@@ -137,7 +137,7 @@ entity.rate_plan.canonical:
     _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _entity_access: rate_plan.view
+    _entity_developer_access: rate_plan.view
   options:
     _apigee_monetization_route: TRUE
     parameters:
@@ -154,7 +154,7 @@ entity.rate_plan.subscribe:
     _title_callback: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _entity_access: rate_plan.subscribe
+    _entity_developer_access: rate_plan.subscribe
   options:
     _apigee_monetization_route: TRUE
 

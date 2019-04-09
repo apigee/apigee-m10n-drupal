@@ -82,9 +82,9 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
    */
   public function testView() {
 
-    // If the user doesn't have the "view subscription" permission, they should
+    // If the user doesn't have the "view own subscription" permission, they should
     // get access denied.
-    $this->account = $this->createAccount(['view subscription']);
+    $this->account = $this->createAccount(['view own subscription']);
 
     $this->setCurrentUser($this->account);
 

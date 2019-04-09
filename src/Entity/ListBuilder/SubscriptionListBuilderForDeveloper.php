@@ -21,6 +21,9 @@ namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -55,6 +58,25 @@ class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
     $this->user = $user;
 
     return parent::render();
+  }
+
+  /**
+   * Checks current users access.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   Run access checks for this account.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if passed permissions are present.
+   */
+  public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+    $user = $route_match->getParameter('user');
+    return AccessResult::allowedIf(
+      $account->hasPermission('view any subscription') ||
+      ($account->hasPermission('view own subscription') && $account->id() === $user->id())
+    );
   }
 
   /**

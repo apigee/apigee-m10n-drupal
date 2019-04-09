@@ -49,7 +49,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // If the user doesn't have the "view subscription" permission, they should
+    // If the user doesn't have the "view own subscription" permission, they should
     // get access denied.
     $this->developer = $this->createAccount([]);
 
@@ -73,9 +73,9 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testSubscriptionListView() {
-    // Add the view subscription permission to the current user.
+    // Add the view own subscription permission to the current user.
     $user_roles = $this->developer->getRoles();
-    $this->grantPermissions(Role::load(reset($user_roles)), ['view subscription']);
+    $this->grantPermissions(Role::load(reset($user_roles)), ['view own subscription']);
 
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);

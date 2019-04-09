@@ -62,7 +62,7 @@ class MonetizationEntityRouteProvider extends DefaultHtmlRouteProvider {
           '_entity_view' => "{$entity_type_id}.full",
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
         ])
-        ->setRequirement('_entity_access', "{$entity_type_id}.view")
+        ->setRequirement('_entity_developer_access', "{$entity_type_id}.view")
         ->setOption('parameters', [
           'user' => ['type' => 'entity:user'],
           $entity_type_id => ['type' => 'entity:' . $entity_type_id],

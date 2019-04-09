@@ -95,7 +95,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
 
     // Create and sign in a user with no add credit permissions.
-    $this->developer = $this->signIn(['view mint prepaid reports']);
+    $this->developer = $this->signIn(['view own prepaid balance']);
     $this->queueOrg();
     $this->queueMockResponses(['get-prepaid-balances']);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
@@ -104,7 +104,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     $this->assertSession()->elementNotExists('css', '.add-credit.dropbutton');
 
     // Create and sign in a user with add credit permissions.
-    $this->developer = $this->signIn(['view mint prepaid reports', 'add credit to own developer prepaid balance']);
+    $this->developer = $this->signIn(['view own prepaid balance', 'add credit to own developer prepaid balance']);
     $this->queueMockResponses(['get-prepaid-balances']);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
