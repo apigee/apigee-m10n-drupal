@@ -23,6 +23,7 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxyInterface;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Exception\UnexpectedValueException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
@@ -120,6 +121,11 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
       $drupal_entity = ($sdk_entity = $controller->loadById($developer_id, $id))
         ? $this->createNewInstance($sdk_entity)
         : FALSE;
+
+      // Make sure the result is for the requested developer.
+      if ($developer_id !== $drupal_entity->getDeveloper()->getEmail()) {
+        throw new UnexpectedValueException($drupal_entity->decorated(), 'develoepr', $developer_id, $drupal_entity->getDeveloper()->getEmail());
+      }
 
       if ($drupal_entity) {
         $entities = [$drupal_entity->id() => $drupal_entity];

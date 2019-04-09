@@ -265,7 +265,9 @@ trait ApigeeMonetizationTestTrait {
       },
     ];
 
-    return Package::createFrom($package);
+    $this->stack->queueMockResponse(['package' => ['package' => $package]]);
+    // Load the package drupal entity and warm the cache.
+    return Package::load($package->id());
   }
 
   /**
@@ -349,9 +351,12 @@ trait ApigeeMonetizationTestTrait {
       'subscribe'             => [],
     ]);
 
-    $this->stack
-      ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+    $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
     $rate_plan->save();
+
+    // Warm the cache.
+    $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+    $rate_plan = RatePlan::loadById($package->id(), $rate_plan->id());
 
     // Remove the rate plan in the cleanup queue.
     $this->cleanup_queue[] = [
@@ -391,8 +396,13 @@ trait ApigeeMonetizationTestTrait {
       'startDate' => new \DateTimeImmutable(),
     ]);
 
-    $this->stack->queueMockResponse('subscription', ['subscription' => $subscription]);
+    $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
     $subscription->save();
+
+    // Warm the cache for this subscription.
+    $subscription->set('id', $this->getRandomUniqueId());
+    $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
+    $subscription = Subscription::load($subscription->id());
 
     // The subscription controller does not have a delete operation so there is
     // nothing to add to the cleanup queue.

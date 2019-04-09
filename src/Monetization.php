@@ -458,6 +458,21 @@ class Monetization implements MonetizationInterface {
         $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#value'] = 0;
       }
     }
+    // These permissions are provided by 3rd party modules and aren't needed.
+    // Since there is no hook_permissions_alter, we can at least remove them
+    // from the admin form.
+    $unused_permissions = [
+      'administer package fields',
+      'administer package form display',
+      'administer rate_plan fields',
+      'administer rate_plan form display',
+      'administer subscription fields',
+    ];
+    foreach ($unused_permissions as $unused_permission) {
+      if (isset($form['permissions'][$unused_permission])) {
+        $form['permissions'][$unused_permission]['#access'] = FALSE;
+      }
+    }
   }
 
   /**

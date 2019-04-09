@@ -103,17 +103,19 @@ class BillingDetailsForm extends FormBase {
   /**
    * Checks current users access to Billing Profile page.
    *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
    *
    * @return \Drupal\Core\Access\AccessResult
    *   Grants access to the route if passed permissions are present.
    */
-  public function access(AccountInterface $account) {
-    $userParameter = $this->routeMatch->getParameter('user');
+  public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+    $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
-      $account->hasPermission('view any monetization billing details') ||
-      ($account->hasPermission('view own monetization billing details') && $account->id() === $userParameter->id())
+      $account->hasPermission('view any billing details') ||
+      ($account->hasPermission('view own billing details') && $account->id() === $user->id())
     );
   }
 

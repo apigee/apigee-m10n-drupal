@@ -52,7 +52,7 @@ class PackageControllerFunctionalTest extends MonetizationFunctionalJavascriptTe
     $this->developer = $this->createAccount([
       'view package',
       'view rate_plan',
-      'view subscription',
+      'view own subscription',
     ]);
     $this->drupalLogin($this->developer);
   }
