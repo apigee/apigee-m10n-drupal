@@ -137,7 +137,7 @@ entity.rate_plan.canonical:
     _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _entity_access: rate_plan.view
+    _entity_developer_access: rate_plan.view
   options:
     _apigee_monetization_route: TRUE
     parameters:
@@ -154,7 +154,7 @@ entity.rate_plan.subscribe:
     _title_callback: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _entity_access: rate_plan.subscribe
+    _entity_developer_access: rate_plan.subscribe
   options:
     _apigee_monetization_route: TRUE
 

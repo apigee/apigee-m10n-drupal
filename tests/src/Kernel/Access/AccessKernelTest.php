@@ -23,6 +23,7 @@ use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\user\Entity\User;
 
 /**
  * Tests access control for `apigee_m10n` routes.
@@ -54,6 +55,20 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   protected $anonymous;
 
   /**
+   * A package.
+   *
+   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   */
+  protected $package;
+
+  /**
+   * A rate plan.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
+   */
+  protected $rate_plan;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
@@ -66,7 +81,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'user',
     ]);
 
-    // Admin.
+    // Spend the user with ID = 1 to avoid so we are going just on permissions.
+    $this->createAccount();
+
+    // An admin.
     $admin = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
     $this->administrator = new UserSession([
       'uid' => $admin->id(),
@@ -77,6 +95,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Developer.
     $developer = $this->createAccount([
       'view package',
+      'view rate_plan',
+      'subscribe rate_plan',
+      'view own subscription',
+      'update own subscription',
     ]);
     $this->developer = new UserSession([
       'uid' => $developer->id(),
@@ -87,6 +109,9 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Anonymous.
     $this->anonymous = new AnonymousUserSession();
 
+    $this->package = $this->createPackage();
+    $this->rate_plan = $this->createPackageRatePlan($this->package);
+
   }
 
   /**
@@ -96,6 +121,52 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->assertPermissionList();
     $this->assertAdminRoutes();
     $this->assertPackageRoutes();
+    $this->assertRatePlanRoutes();
+  }
+
+  /**
+   * Tests rate_plan entity route permissions.
+   */
+  public function assertRatePlanRoutes() {
+    // Rate plan canonical route.
+    $plan_url = Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $this->developer->id(),
+      'package' => $this->package->id(),
+      'rate_plan' => $this->rate_plan->id(),
+    ]);
+    static::assertTrue($plan_url->access($this->administrator));
+    static::assertTrue($plan_url->access($this->developer));
+    static::assertFalse($plan_url->access($this->anonymous));
+
+    // Rate plan canonical route for testing `any` permission.
+    $plan_url = Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $this->administrator->id(),
+      'package' => $this->package->id(),
+      'rate_plan' => $this->rate_plan->id(),
+    ]);
+    static::assertTrue($plan_url->access($this->administrator));
+    static::assertFalse($plan_url->access($this->developer));
+    static::assertFalse($plan_url->access($this->anonymous));
+
+    // Rate plan subscribe route.
+    $subscribe_url = Url::fromRoute('entity.rate_plan.subscribe', [
+      'user' => $this->developer->id(),
+      'package' => $this->package->id(),
+      'rate_plan' => $this->rate_plan->id(),
+    ]);
+    static::assertTrue($subscribe_url->access($this->administrator));
+    static::assertTrue($subscribe_url->access($this->developer));
+    static::assertFalse($subscribe_url->access($this->anonymous));
+
+    // Rate plan subscribe route for testing `any` permission.
+    $subscribe_url = Url::fromRoute('entity.rate_plan.subscribe', [
+      'user' => $this->administrator->id(),
+      'package' => $this->package->id(),
+      'rate_plan' => $this->rate_plan->id(),
+    ]);
+    static::assertTrue($subscribe_url->access($this->administrator));
+    static::assertFalse($subscribe_url->access($this->developer));
+    static::assertFalse($subscribe_url->access($this->anonymous));
   }
 
   /**
@@ -119,7 +190,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
 
     // Developer route as developer.
     $package_route = Url::fromRoute('entity.package.developer', ['user' => $this->developer->id(), 'package' => $package->id()]);
-    $this->stack->queueMockResponse(['package' => ['package' => $package]]);
     static::assertTrue($package_route->access($this->administrator));
     static::assertTrue($package_route->access($this->developer));
     static::assertFalse($package_route->access($this->anonymous));
