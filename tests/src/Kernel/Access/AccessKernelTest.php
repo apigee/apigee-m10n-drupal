@@ -99,6 +99,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'subscribe rate_plan',
       'view own subscription',
       'update own subscription',
+      'view own prepaid balance',
+      'view own billing details',
     ]);
     $this->developer = new UserSession([
       'uid' => $developer->id(),
@@ -123,10 +125,48 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->assertPackageRoutes();
     $this->assertRatePlanRoutes();
     $this->assertSubscriptionRoutes();
+    $this->assertBillingRoutes();
   }
 
   /**
-   * Tests rate_plan entity route permissions.
+   * Tests permissions for billing routes.
+   */
+  public function assertBillingRoutes() {
+    // Own prepaid balance.
+    $prepaid_balance_url = Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->developer->id(),
+    ]);
+    static::assertTrue($prepaid_balance_url->access($this->administrator));
+    static::assertTrue($prepaid_balance_url->access($this->developer));
+    static::assertFalse($prepaid_balance_url->access($this->anonymous));
+
+    // Any prepaid balance.
+    $prepaid_balance_url = Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->administrator->id(),
+    ]);
+    static::assertTrue($prepaid_balance_url->access($this->administrator));
+    static::assertFalse($prepaid_balance_url->access($this->developer));
+    static::assertFalse($prepaid_balance_url->access($this->anonymous));
+
+    // Own billing details.
+    $billing_details_url = Url::fromRoute('apigee_monetization.profile', [
+      'user' => $this->developer->id(),
+    ]);
+    static::assertTrue($billing_details_url->access($this->administrator));
+    static::assertTrue($billing_details_url->access($this->developer));
+    static::assertFalse($billing_details_url->access($this->anonymous));
+
+    // Any billing details.
+    $billing_details_url = Url::fromRoute('apigee_monetization.profile', [
+      'user' => $this->administrator->id(),
+    ]);
+    static::assertTrue($billing_details_url->access($this->administrator));
+    static::assertFalse($billing_details_url->access($this->developer));
+    static::assertFalse($billing_details_url->access($this->anonymous));
+  }
+
+  /**
+   * Tests subscription entity route permissions.
    */
   public function assertSubscriptionRoutes() {
     // Unsubscribe route.
