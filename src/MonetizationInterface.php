@@ -37,6 +37,21 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface;
 interface MonetizationInterface {
 
   /**
+   * A list of permissions that will be given to authenticated users on install.
+   */
+  const DEFAULT_AUTHENTICATED_PERMISSIONS = [
+    'view package',
+    'view rate_plan',
+    'subscribe rate_plan',
+    'view own subscription',
+    'update own subscription',
+    'view own prepaid balance',
+    'refresh own prepaid balance',
+    'download prepaid balance reports',
+    'view own billing details',
+  ];
+
+  /**
    * Tests whether the current organization has monetization enabled.
    *
    * A monitization enabled org is a requirement for using this module.
