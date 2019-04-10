@@ -93,12 +93,17 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('Connection error');
 
+    $start_date = $subscription
+      ->getStartDate()
+      ->setTimezone(new \DateTimeZone(date_default_timezone_get()))
+      ->format('m/d/Y');
+
     // Checking my subscriptions table columns.
     $this->assertCssElementContains('.subscription-row:nth-child(1) td.field-status', 'Future');
     $this->assertCssElementContains('.subscription-row:nth-child(1) td.package-name', $rate_plan->getPackage()->getDisplayName());
     $this->assertCssElementContains('.subscription-row:nth-child(1) td.products', $rate_plan->getPackage()->getApiProducts()[0]->getDisplayName());
     $this->assertCssElementContains('.subscription-row:nth-child(1) td.rate-plan-name', $rate_plan->getDisplayName());
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.subscription-start-date', $subscription->getStartDate()->format('m/d/Y'));
+    $this->assertCssElementContains('.subscription-row:nth-child(1) td.subscription-start-date', $start_date);
     static::assertSame($this->cssSelect('.subscription-row:nth-child(1) td.subscription-end-date')[0]->getText(), '');
 
   }
