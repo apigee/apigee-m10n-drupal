@@ -345,18 +345,6 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getDrupalDeveloperId(): int {
-    $users = \Drupal::entityTypeManager()->getStorage('user')
-      ->loadByProperties(['mail' => $this->getDeveloper()->getEmail()]);
-    $user = reset($users);
-    if ($user) {
-      return $user->id();
-    }
-  }
-
-  /**
    * Gets the monetization service.
    *
    * This gets the monetization service as needed avoiding loading the SDK

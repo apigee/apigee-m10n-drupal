@@ -116,7 +116,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
-        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getDrupalDeveloperId()]);
+        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getOwnerId()]);
       }
       else {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
