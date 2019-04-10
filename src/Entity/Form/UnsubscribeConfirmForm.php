@@ -167,7 +167,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
         Cache::invalidateTags(['apigee_my_subscriptions']);
-        $form_state->setRedirect('apigee_monetization.my_subscriptions');
+        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getOwnerId()]);
       }
     }
     // TODO: Check to see if `EntityStorageException` is the only type of error
