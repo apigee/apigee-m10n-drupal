@@ -69,6 +69,11 @@ class SubscriptionRenderTest extends MonetizationKernelTestBase {
     $this->developer = $this->createAccount(['view own subscription']);
     $this->setCurrentUser($this->developer);
 
+    // Set the default timezone for formatting the start  date.
+    $subscription_default_display = \Drupal::config('core.entity_view_display.subscription.subscription.default')->get('content');
+    $subscription_default_display['startDate']['settings']['timezone'] = 'America/Los_Angeles';
+    \Drupal::configFactory()->getEditable('core.entity_view_display.subscription.subscription.default')->set('content', $subscription_default_display)->save();
+
     $this->rate_plan = $this->createPackageRatePlan($this->createPackage());
     $this->subscription = $this->createSubscription($this->developer, $this->rate_plan);
   }
@@ -88,7 +93,7 @@ class SubscriptionRenderTest extends MonetizationKernelTestBase {
     // The formatter will render with the default time zone.
     $start_date = $this->subscription
       ->getStartDate()
-      ->setTimezone(new \DateTimeZone(date_default_timezone_get()))
+      ->setTimezone(new \DateTimeZone('America/Los_Angeles'))
       ->format('D, m/d/Y - H:i');
     static::assertNotEmpty($start_date);
     $this->assertText($start_date, 'The start date appears in the rendered subscription.');
