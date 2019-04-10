@@ -121,7 +121,7 @@ class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareS
   }
 
   /**
-   * Get's an entity reference compatible array for the team.
+   * Gets an entity reference compatible array for the team.
    *
    * @return array
    *   An entity reference array.
