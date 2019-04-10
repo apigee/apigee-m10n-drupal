@@ -80,7 +80,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
   public function teamTitle(TeamInterface $team, RatePlanInterface $rate_plan) {
     $title_template = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_form_title');
     $title_template = $title_template ?? 'Subscribe to @rate_plan';
-    // TODO: Add informaiton about the availability of `@teamname`.
+    // TODO: Add information about the availability of `@teamname`.
     return $this->t($title_template, [
       '@rate_plan' => $rate_plan->getDisplayName(),
       '%rate_plan' => $rate_plan->getDisplayName(),
