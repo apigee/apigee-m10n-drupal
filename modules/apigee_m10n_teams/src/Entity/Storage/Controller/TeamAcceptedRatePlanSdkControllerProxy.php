@@ -61,7 +61,7 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
   }
 
   /**
-   * Gets the subscription controller by developer ID.
+   * Gets the subscription controller by team ID.
    *
    * @param string $team_id
    *   The name of the team who has accepted the rate plan.
