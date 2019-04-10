@@ -216,7 +216,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function currentTeam(): ?TeamInterface {
     // TODO: This call could be much smarter.
-    // All team routes have the team ast the first parameter and we could be
+    // All team routes have the team as the first parameter and we could be
     // checking a route list to make sure the team is part of a team route
     // similar to the `_apigee_monetization_route` route option.
     return $this->route_match->getParameter('team');
