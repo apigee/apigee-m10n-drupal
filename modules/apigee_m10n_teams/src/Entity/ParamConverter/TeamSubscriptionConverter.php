@@ -51,7 +51,7 @@ class TeamSubscriptionConverter extends SubscriptionConverter {
       $user = $defaults['user'] ?? FALSE;
       // Load the user if it is still a string.
       $user = (!$user || $user instanceof UserInterface) ? $user : User::load($user);
-      $develoepr_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
+      $developer_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
 
       $entity = !empty($develoepr_id) ? $storage->loadById($develoepr_id, $value) : NULL;
     }
