@@ -84,15 +84,18 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
    * Tests the add credit button on prepaid balance.
    */
   public function testAddCreditButton() {
-    $this->queueOrg();
-
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
 
-    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->queueOrg();
+    $this->queueMockResponses([
+      'get-prepaid-balances',
+      'get-supported-currencies',
+      'get-billing-documents-months',
+    ]);
+
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
-
     $this->click('.add-credit--usd.dropbutton a');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertCssElementContains('.ui-dialog-title', $this->product->label());

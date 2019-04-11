@@ -255,6 +255,28 @@ trait AddCreditFunctionalTestTrait {
           ]),
         ],
       ],
+      'get-billing-documents-months' => [
+        'documents' => [
+          [
+            "month" => 9,
+            "monthEnum" => "SEPTEMBER",
+            "status" => "OPEN",
+            "year" => 2018,
+          ],
+          [
+            "month" => 8,
+            "monthEnum" => "AUGUST",
+            "status" => "OPEN",
+            "year" => 2018,
+          ],
+          [
+            "month" => 12,
+            "monthEnum" => "DECEMBER",
+            "status" => "OPEN",
+            "year" => 2017,
+          ],
+        ],
+      ],
     ];
   }
 
