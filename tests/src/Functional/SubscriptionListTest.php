@@ -20,7 +20,6 @@
 namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\Core\Url;
-use Drupal\user\Entity\Role;
 
 /**
  * Class SubscriptionListTest.
@@ -56,26 +55,11 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   }
 
   /**
-   * Tests permissions for `My Plans/Subscriptions` page.
-   */
-  public function testSubscriptionListAccessDenied() {
-    $this->drupalGet(Url::fromRoute('entity.subscription.developer_collection', [
-      'user' => $this->developer->id(),
-    ]));
-
-    $this->assertSession()->responseContains('Access denied');
-  }
-
-  /**
    * Tests for `My Plans/Subscriptions` page.
    *
    * @throws \Exception
    */
   public function testSubscriptionListView() {
-    // Add the view own subscription permission to the current user.
-    $user_roles = $this->developer->getRoles();
-    $this->grantPermissions(Role::load(reset($user_roles)), ['view own subscription']);
-
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
     $subscription = $this->createsubscription($this->developer, $rate_plan);
