@@ -1,0 +1,11 @@
+name: Apigee Monetization Teams
+description: Adds monetization support for Apigee Edge Teams.
+package: Apigee (Experimental)
+
+type: module
+core: 8.x
+
+dependencies:
+- apigee_edge:apigee_edge_teams
+
+php: "7.1"
