@@ -196,6 +196,14 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
       return $product->getDisplayName();
     }, $rate_plan->getPackage()->getApiProducts()));
 
+    $date_display_settings = [
+      'label' => 'hidden',
+      'settings' => [
+        'date_format' => 'custom',
+        'custom_date_format' => 'm/d/Y',
+      ],
+    ];
+
     return [
       'data' => [
         'plan' => [
@@ -211,19 +219,19 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
           'class' => ['products'],
         ],
         'start_date' => [
-          'data' => $entity->getStartDate()->format('m/d/Y'),
+          'data' => $entity->get('startDate')->view($date_display_settings),
           'class' => ['subscription-start-date'],
         ],
         'end_date' => [
-          'data' => $entity->getEndDate() ? $entity->getEndDate()->format('m/d/Y') : NULL,
+          'data' => $entity->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
           'class' => ['subscription-end-date'],
         ],
         'plan_end_date' => [
-          'data' => $rate_plan->getEndDate() ? $rate_plan->getEndDate()->format('m/d/Y') : NULL,
+          'data' => $rate_plan->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
           'class' => ['rate-plan-end-date'],
         ],
         'renewal_date' => [
-          'data' => $entity->getRenewalDate() ? $entity->getRenewalDate()->format('m/d/Y') : NULL,
+          'data' => $entity->getRenewalDate() ? $entity->get('renewalDate')->view($date_display_settings) : NULL,
           'class' => ['subscription-renewal-date'],
         ],
         'status' => [
