@@ -89,6 +89,13 @@ trait ApigeeMonetizationTestTrait {
   protected $cleanup_queue;
 
   /**
+   * The default org timezone.
+   *
+   * @var string
+   */
+  protected $org_default_timezone = 'America/Los_Angeles';
+
+  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -301,6 +308,8 @@ trait ApigeeMonetizationTestTrait {
     ]);
     $rate_plan_rate->setStartUnit(1);
 
+    $start_date = new \DateTimeImmutable('2018-07-26 00:00:00', new \DateTimeZone($this->org_default_timezone));
+    $end_date = new \DateTimeImmutable('today +1 year', new \DateTimeZone($this->org_default_timezone));
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = RatePlan::create([
       'advance'               => TRUE,
@@ -308,7 +317,7 @@ trait ApigeeMonetizationTestTrait {
       'description'           => $this->getRandomGenerator()->sentences(3),
       'displayName'           => $this->getRandomGenerator()->word(16),
       'earlyTerminationFee'   => '2.0000',
-      'endDate'               => new \DateTimeImmutable('now + 1 year'),
+      'endDate'               => $end_date,
       'frequencyDuration'     => 1,
       'frequencyDurationType' => FreemiumPropertiesInterface::FREEMIUM_DURATION_MONTH,
       'freemiumUnit'          => 1,
@@ -343,7 +352,7 @@ trait ApigeeMonetizationTestTrait {
       'recurringStartUnit'    => '1',
       'recurringType'         => 'CALENDAR',
       'setUpFee'              => '1.0000',
-      'startDate'             => new \DateTimeImmutable('2018-07-26 00:00:00'),
+      'startDate'             => $start_date,
       'type'                  => 'STANDARD',
       'organization'          => $org,
       'currency'              => $currency,
@@ -357,6 +366,10 @@ trait ApigeeMonetizationTestTrait {
     // Warm the cache.
     $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
     $rate_plan = RatePlan::loadById($package->id(), $rate_plan->id());
+
+    // Make sure the dates loaded the same as they were originally set.
+    static::assertEquals($start_date, $rate_plan->getStartDate());
+    static::assertEquals($end_date, $rate_plan->getEndDate());
 
     // Remove the rate plan in the cleanup queue.
     $this->cleanup_queue[] = [
@@ -387,13 +400,14 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Twig_Error_Syntax
    */
   protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
+    $start_date = new \DateTimeImmutable('today', new \DateTimeZone($this->org_default_timezone));
     $subscription = Subscription::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer([
         'email' => $user->getEmail(),
         'name' => $user->getDisplayName(),
       ]),
-      'startDate' => new \DateTimeImmutable(),
+      'startDate' => $start_date,
     ]);
 
     $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
@@ -403,6 +417,9 @@ trait ApigeeMonetizationTestTrait {
     $subscription->set('id', $this->getRandomUniqueId());
     $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
     $subscription = Subscription::load($subscription->id());
+
+    // Make sure the start date is unchanged while loading.
+    static::assertEquals($start_date, $subscription->decorated()->getStartDate());
 
     // The subscription controller does not have a delete operation so there is
     // nothing to add to the cleanup queue.
@@ -457,7 +474,29 @@ trait ApigeeMonetizationTestTrait {
    */
   protected function queueOrg($monetized = TRUE) {
     $this->stack
-      ->queueMockResponse(['get_organization' => ['monetization_enabled' => $monetized ? 'true' : 'false']]);
+      ->queueMockResponse([
+        'get_organization' => [
+          'monetization_enabled' => $monetized ? 'true' : 'false',
+          'timezone' => $this->org_default_timezone,
+        ],
+      ]);
+  }
+
+  /**
+   * Helper for testing element text matches by css selector.
+   *
+   * @param string $selector
+   *   The css selector.
+   * @param string $text
+   *   The test to look for.
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   */
+  protected function assertCssElementText($selector, $text) {
+    static::assertSame(
+      $this->getSession()->getPage()->find('css', $selector)->getText(),
+      $text
+    );
   }
 
   /**
