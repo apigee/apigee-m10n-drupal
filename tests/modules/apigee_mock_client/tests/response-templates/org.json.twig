@@ -10,6 +10,7 @@
  *
  * Variables:
  *   - org_name: The name of the org.
+ *   - timezone: The org timezone.
  */
 #}
 {
@@ -46,5 +47,5 @@
     "taxEngineExternalId" : "APIGEE01",
     "taxModel" : "HYBRID",
     "taxNexus" : "US",
-    "timezone" : "America/Los_Angeles"
+    "timezone" : "{{ timezone|default('America/Los_Angeles') }}"
 }
