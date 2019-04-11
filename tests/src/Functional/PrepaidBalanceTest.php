@@ -37,27 +37,6 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
   protected $developer;
 
   /**
-   * Test access.
-   *
-   * @throws \Behat\Mink\Exception\ExpectationException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
-   */
-  public function testPrepaidBalancesAccessDenied() {
-
-    // If the user doesn't have the "view own prepaid balance" permission, they should get access denied.
-    $this->developer = $this->createAccount([]);
-
-    $this->drupalLogin($this->developer);
-    $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->developer->id(),
-    ]));
-
-    $this->assertSession()->responseContains('Access denied');
-  }
-
-  /**
    * Test the prepaid balance response.
    *
    * @throws \Behat\Mink\Exception\ElementTextException
@@ -69,7 +48,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalancesView() {
     // If the user has "view own prepaid balance" permission, they should be
     // able to see some prepaid balances.
-    $this->developer = $this->createAccount(['view own prepaid balance']);
+    $this->developer = $this->createAccount();
 
     $this->drupalLogin($this->developer);
 
@@ -87,6 +66,8 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
         "topups_usd" => 30.0200,
       ],
     ]);
+
+    $this->stack->queueMockResponse(['get-supported-currencies', 'get-billing-documents-months']);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
