@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Traits\PrepaidBalanceReportsDownloadFormTestTrait;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
@@ -83,6 +84,10 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testNoPermission() {
+    $authenticated_role = Role::load(AccountInterface::AUTHENTICATED_ROLE);
+    $authenticated_role->revokePermission('refresh own prepaid balance');
+    $authenticated_role->save();
+
     // User cannot refresh prepaid balance.
     $this->queueOrg();
     $this->queueResponses();
