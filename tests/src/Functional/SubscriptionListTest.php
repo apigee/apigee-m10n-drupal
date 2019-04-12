@@ -78,7 +78,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
-    $subscription = $this->createsubscription($this->developer, $rate_plan);
+    $subscription = $this->createSubscription($this->developer, $rate_plan);
 
     $this->queueOrg();
     $this->stack
@@ -93,11 +93,11 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Connection error');
 
     // Checking my subscriptions table columns.
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.field-status', 'Future');
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.package-name', $rate_plan->getPackage()->getDisplayName());
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.field-status', 'Active');
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.package-name', $rate_plan->getPackage()->getDisplayName());
     $this->assertCssElementContains('.subscription-row:nth-child(1) td.products', $rate_plan->getPackage()->getApiProducts()[0]->getDisplayName());
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.rate-plan-name', $rate_plan->getDisplayName());
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.subscription-start-date', $subscription->getStartDate()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('m/d/Y'));
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.rate-plan-name', $rate_plan->getDisplayName());
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-start-date', $subscription->getStartDate()->format('m/d/Y'));
     static::assertSame($this->cssSelect('.subscription-row:nth-child(1) td.subscription-end-date')[0]->getText(), '');
 
   }

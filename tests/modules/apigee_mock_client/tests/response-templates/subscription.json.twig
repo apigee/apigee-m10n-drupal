@@ -29,6 +29,6 @@
     "nextCycleStartDate": "{{ subscription.nextCycleStartDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
     "nextRecurringFeeDate": "{{ subscription.nextRecurringFeeDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
     "ratePlan": {% include 'rate-plan.json.twig' with {"plan": subscription.ratePlan } %},
-    "startDate": "{{ subscription.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "startDate": "{{ subscription.startDate|date('Y-m-d 00:00:00')|default(date('today')|date('Y-m-d 00:00:00')) }}",
     "updated": "{{ subscription.updated|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}"
 }

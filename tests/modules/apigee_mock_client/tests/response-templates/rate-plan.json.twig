@@ -71,6 +71,7 @@
     "recurringStartUnit":       {{ plan.recurringStartUnit|default('1') }},
     "recurringType":            "{{ plan.recurringType|default('CALENDAR') }}",
     "setUpFee":                 {{ plan.setUpFee|default('1.0000') }},
-    "startDate":                "{{ plan.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "startDate":                "{{ plan.startDate|date('Y-m-d 00:00:00')|default(date('today -1 day')|date('Y-m-d 00:00:00')) }}",
+    "endDate":                  "{{ plan.endDate|date('Y-m-d 00:00:00')|default('null') }}",
     "type":                     "{{ plan.type|default('STANDARD') }}"
 }
