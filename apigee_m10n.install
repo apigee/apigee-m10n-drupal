@@ -19,6 +19,8 @@
  */
 
 use Drupal\apigee_m10n\Monetization;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * @file
@@ -34,7 +36,7 @@ function apigee_m10n_requirements($phase) {
   // If monetization is disabled after module has been installed, show error on status page.
   if ($phase === 'runtime') {
     /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
-    $monetization = \Drupal::service('apigee_m10n.monetization');
+    $monetization = Drupal::service('apigee_m10n.monetization');
 
     if (!$monetization->isMonetizationEnabled()) {
       $requirements['apigee_monetization_connection_error'] = [
@@ -46,4 +48,14 @@ function apigee_m10n_requirements($phase) {
   }
 
   return $requirements;
+}
+
+/**
+ * Implements hook_install().
+ */
+function apigee_m10n_install() {
+  // Populate the default permissions for the authenticated user.
+  if (Drupal::moduleHandler()->moduleExists('user')) {
+    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
+  }
 }
