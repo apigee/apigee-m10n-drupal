@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\Core\Url;
 use Drupal\user\Entity\Role;
 
@@ -49,8 +48,8 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // If the user doesn't have the "view own subscription" permission, they should
-    // get access denied.
+    // If the user doesn't have the "view own subscription" permission, they
+    // should get access denied.
     $this->developer = $this->createAccount([]);
 
     $this->drupalLogin($this->developer);
@@ -79,7 +78,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
 
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
-    $subscription = $this->createsubscription($this->developer, $rate_plan);
+    $subscription = $this->createSubscription($this->developer, $rate_plan);
 
     $this->queueOrg();
     $this->stack
@@ -99,11 +98,11 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
       ->format('m/d/Y');
 
     // Checking my subscriptions table columns.
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.field-status', 'Future');
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.package-name', $rate_plan->getPackage()->getDisplayName());
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.field-status', 'Active');
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.package-name', $rate_plan->getPackage()->getDisplayName());
     $this->assertCssElementContains('.subscription-row:nth-child(1) td.products', $rate_plan->getPackage()->getApiProducts()[0]->getDisplayName());
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.rate-plan-name', $rate_plan->getDisplayName());
-    $this->assertCssElementContains('.subscription-row:nth-child(1) td.subscription-start-date', $start_date);
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.rate-plan-name', $rate_plan->getDisplayName());
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-start-date', $subscription->getStartDate()->format('m/d/Y'));
     static::assertSame($this->cssSelect('.subscription-row:nth-child(1) td.subscription-end-date')[0]->getText(), '');
 
   }
