@@ -78,7 +78,11 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     // Configure an add credit product for USD.
     // There should be an add credit button for usd but NOT for aud.
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
-    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->queueMockResponses([
+      'get-prepaid-balances',
+      'get-supported-currencies',
+      'get-billing-documents-months',
+    ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
@@ -88,7 +92,11 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     // Configure an add credit product for AUD.
     // There should be an add credit button for BOTH usd and aud.
     $this->setAddCreditProductForCurrencyId($this->product, 'aud');
-    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->queueMockResponses([
+      'get-prepaid-balances',
+      'get-supported-currencies',
+      'get-billing-documents-months',
+    ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
@@ -98,7 +106,11 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     // Unpublish the add credit product.
     // There should NOT be any add credit button.
     $this->product->setUnpublished()->save();
-    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->queueMockResponses([
+      'get-prepaid-balances',
+      'get-supported-currencies',
+      'get-billing-documents-months',
+    ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));
@@ -110,7 +122,11 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->product->setPublished();
     $this->product->set(AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME, FALSE);
     $this->product->save();
-    $this->queueMockResponses(['get-prepaid-balances']);
+    $this->queueMockResponses([
+      'get-prepaid-balances',
+      'get-supported-currencies',
+      'get-billing-documents-months',
+    ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]));

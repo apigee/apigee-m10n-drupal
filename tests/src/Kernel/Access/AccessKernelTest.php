@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Access;
 
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
@@ -93,15 +94,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'mail' => $admin->getEmail(),
     ]);
     // Developer.
-    $developer = $this->createAccount([
-      'view package',
-      'view rate_plan',
-      'subscribe rate_plan',
-      'view own subscription',
-      'update own subscription',
-      'view own prepaid balance',
-      'view own billing details',
-    ]);
+    $developer = $this->createAccount(MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
     $this->developer = new UserSession([
       'uid' => $developer->id(),
       'name' => $developer->getAccountName(),
