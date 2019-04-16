@@ -22,11 +22,10 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\Package;
-use Drupal\Core\Access\AccessResultAllowed;
-use Drupal\Core\Access\AccessResultForbidden;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\KernelTestBase;
+use Prophecy\Argument;
 
 /**
  * Tests the module affected overrides are overridden properly.
@@ -38,6 +37,13 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class MonetizationTeamsTest extends KernelTestBase {
 
+  /**
+   * A test team.
+   *
+   * @var \Drupal\apigee_edge_teams\Entity\TeamInterface
+   */
+  protected $team;
+
   public static $modules = [
     'key',
     'user',
@@ -48,51 +54,51 @@ class MonetizationTeamsTest extends KernelTestBase {
   ];
 
   /**
-   * Tests the current team is retrieved.
+   * {@inheritdoc}
    */
-  public function testCurrentTeam() {
-    $team_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
-    $team = Team::create(['name' => $team_id]);
+  public function setUp() {
+    parent::setUp();
 
-    $this->setCurrentTeamRoute($team);
-
-    static::assertSame($team, $this->container->get('apigee_m10n.teams')->currentTeam());
+    // Create a team Entity.
+    $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
   }
 
   /**
-   * Tests the current team is retrieved.
+   * Runs all of the assertions in this test suite.
    */
-  public function testEntityAccess() {
-    // Create a team Entity.
-    $team_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
-    $team = Team::create(['name' => $team_id]);
-    $this->setCurrentTeamRoute($team);
+  public function testAll() {
+    $this->assertEntityAccess();
+  }
+
+  /**
+   * Tests team entity access.
+   */
+  public function assertEntityAccess() {
+    $this->setCurrentTeamRoute($this->team);
 
     // Mock an account.
-    $account = $this->prophesize(AccountInterface::class)->reveal();
+    $account = $this->prophesizeAccount();
+    $non_member = $this->prophesizeAccount();
+
     // Prophesize the `apigee_edge_teams.team_permissions` service.
     $team_handler = $this->prophesize(TeamPermissionHandlerInterface::class);
-    $team_handler->getDeveloperPermissionsByTeam($team, $account)->willReturn(['view package']);
+    $team_handler->getDeveloperPermissionsByTeam($this->team, $account)->willReturn([
+      'view package',
+      'view rate_plan',
+      'subscribe rate_plan',
+    ]);
+    $team_handler->getDeveloperPermissionsByTeam($this->team, $non_member)->willReturn([]);
     $this->container->set('apigee_edge_teams.team_permissions', $team_handler->reveal());
 
-    /** @var \Drupal\apigee_m10n_teams\MonetizationTeamsInterface $team_service */
-    $team_service = $this->container->get('apigee_m10n.teams');
-
-    // Create an eneity we can test against `entityAccess`.
+    // Create an entity we can test against `entityAccess`.
     $entity_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
     // We are only using package here because it's easy.
-    $entity = Package::create(['id' => $entity_id]);
+    $package = Package::create(['id' => $entity_id]);
 
-    // Test view entity.
-    static::assertInstanceOf(AccessResultAllowed::class, $team_service->entityAccess($entity, 'view', $account));
-    // Test update entity.
-    $update_result = $team_service->entityAccess($entity, 'update', $account);
-    static::assertInstanceOf(AccessResultForbidden::class, $update_result);
-    static::assertSame("The 'update package' permission is required.", $update_result->getReason());
-    // Test delete entity.
-    $delete_result = $team_service->entityAccess($entity, 'delete', $account);
-    static::assertInstanceOf(AccessResultForbidden::class, $delete_result);
-    static::assertSame("The 'delete package' permission is required.", $delete_result->getReason());
+    // Test view package for a team member.
+    static::assertTrue($package->access('view', $account));
+    // Test view package for a non team member.
+    static::assertFalse($package->access('view', $non_member));
   }
 
   /**
@@ -100,6 +106,8 @@ class MonetizationTeamsTest extends KernelTestBase {
    *
    * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
    *   The team.
+   *
+   * @throws \Exception
    */
   protected function setCurrentTeamRoute($team) {
     // Set the current route match with a mock.
@@ -110,6 +118,28 @@ class MonetizationTeamsTest extends KernelTestBase {
     // The `apigee_m10n_teams_entity_type_alter` will have already loaded the
     // `apigee_m10n.teams` service so we need to make sure it is reloaded.
     $this->container->set('apigee_m10n.teams', NULL);
+
+    static::assertSame($team, $this->container->get('apigee_m10n.teams')->currentTeam());
+  }
+
+  /**
+   * Prophesize a user account.
+   *
+   * @param array $permissions
+   *   Any permissions in the account should have.
+   *
+   * @return \Drupal\Core\Session\AccountInterface
+   *   The user account.
+   */
+  protected function prophesizeAccount($permissions = []) {
+    static $uid = 1;
+    return $this->prophesize(AccountInterface::class)
+      ->isAnonymous()->willReturn(FALSE)->getObjectProphecy()
+      ->id()->willReturn($uid++)->getObjectProphecy()
+      ->hasPermission(Argument::any())->will(function ($args) use ($permissions) {
+        return in_array($args[0], $permissions);
+      })->getObjectProphecy()
+      ->reveal();
   }
 
 }
