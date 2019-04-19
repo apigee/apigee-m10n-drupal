@@ -27,7 +27,7 @@ use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
  *
  * This is a class for packages that is aware of teams.
  */
-class TeamRouteAwarePackage extends Package implements TeamRouteAwarePackageInterface {
+class TeamsPackage extends Package implements TeamsPackageInterface {
 
   use TeamRouteAwarePropertyTrait;
 

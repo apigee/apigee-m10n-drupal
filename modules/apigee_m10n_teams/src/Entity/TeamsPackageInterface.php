@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_teams\Entity;
 /**
  * Interface for the `package` entity override class.
  */
-interface TeamRouteAwarePackageInterface {
+interface TeamsPackageInterface {
 
   /**
    * Get's a list of API packages that are available to a team.
