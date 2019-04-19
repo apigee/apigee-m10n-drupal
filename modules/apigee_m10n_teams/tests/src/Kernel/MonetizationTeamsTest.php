@@ -23,9 +23,8 @@ use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\KernelTestBase;
-use Prophecy\Argument;
+use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
 
 /**
  * Tests the module affected overrides are overridden properly.
@@ -36,6 +35,8 @@ use Prophecy\Argument;
  * @group apigee_m10n_teams_kernel
  */
 class MonetizationTeamsTest extends KernelTestBase {
+
+  use AccountProphecyTrait;
 
   /**
    * A test team.
@@ -120,26 +121,6 @@ class MonetizationTeamsTest extends KernelTestBase {
     $this->container->set('apigee_m10n.teams', NULL);
 
     static::assertSame($team, $this->container->get('apigee_m10n.teams')->currentTeam());
-  }
-
-  /**
-   * Prophesize a user account.
-   *
-   * @param array $permissions
-   *   Any permissions in the account should have.
-   *
-   * @return \Drupal\Core\Session\AccountInterface
-   *   The user account.
-   */
-  protected function prophesizeAccount($permissions = []) {
-    static $uid = 1;
-    return $this->prophesize(AccountInterface::class)
-      ->isAnonymous()->willReturn(FALSE)->getObjectProphecy()
-      ->id()->willReturn($uid++)->getObjectProphecy()
-      ->hasPermission(Argument::any())->will(function ($args) use ($permissions) {
-        return in_array($args[0], $permissions);
-      })->getObjectProphecy()
-      ->reveal();
   }
 
 }

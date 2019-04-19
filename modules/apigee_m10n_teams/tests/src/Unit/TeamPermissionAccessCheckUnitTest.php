@@ -25,7 +25,7 @@ use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessCheck;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Cache\Context\CacheContextsManager;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -40,6 +40,8 @@ use Symfony\Component\Routing\Route;
  * @group apigee_m10n_teams_unit
  */
 class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
+
+  use AccountProphecyTrait;
 
   /**
    * The team.
@@ -70,11 +72,7 @@ class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
     $this->team = $team->reveal();
 
     // Mock a user account.
-    $account = $this->prophesize(AccountInterface::class);
-    $account->getEmail()->willReturn('foo@example.com');
-    $account->isAnonymous()->willReturn(FALSE);
-    $account->hasPermission('administer team')->willReturn(FALSE);
-    $this->account = $account->reveal();
+    $this->account = $this->prophesizeAccount();
 
     // Mock the cache context manager.
     $cache_manager = $this->prophesize(CacheContextsManager::class);
@@ -91,11 +89,7 @@ class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
    */
   public function testAdminAccess() {
     // Mock an admin account.
-    $account_mock = $this->prophesize(AccountInterface::class);
-    $account_mock->getEmail()->willReturn('admin@example.com');
-    $account_mock->isAnonymous()->willReturn(FALSE);
-    $account_mock->hasPermission('administer team')->willReturn(TRUE);
-    $account = $account_mock->reveal();
+    $account = $this->prophesizeAccount(['administer team']);
 
     $checker = new TeamPermissionAccessCheck($this->getPermissionHandler([], NULL, $account));
 
