@@ -31,6 +31,7 @@ use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormat
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
 
@@ -53,8 +54,25 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   protected $team;
 
+  /**
+   * A test package.
+   *
+   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   */
   protected $package;
+
+  /**
+   * A test rate plan.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
+   */
   protected $rate_plan;
+
+  /**
+   * A test subscription.
+   *
+   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   */
   protected $subscription;
 
   /**
@@ -85,9 +103,17 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create a team Entity.
     $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
 
-    $this->package      = $this->entity_type_manager->getStorage('package')->create([]);
-    $this->rate_plan    = $this->entity_type_manager->getStorage('rate_plan')->create(['package' => $this->package]);
-    $this->subscription = $this->entity_type_manager->getStorage('subscription')->create(['rate_plan' => $this->rate_plan]);
+    $this->package      = $this->entity_type_manager->getStorage('package')->create([
+      'id' => $this->randomMachineName(),
+    ]);
+    $this->rate_plan    = $this->entity_type_manager->getStorage('rate_plan')->create([
+      'id' => $this->randomMachineName(),
+      'package' => $this->package,
+    ]);
+    $this->subscription = $this->entity_type_manager->getStorage('subscription')->create([
+      'id' => $this->randomMachineName(),
+      'rate_plan' => $this->rate_plan,
+    ]);
   }
 
   /**
@@ -97,6 +123,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     $this->assertCurrentTeam();
     $this->assertEntityAlter();
     $this->assertEntityAccess();
+    $this->assertEntityLinks();
     $this->assertFieldOverrides();
   }
 
@@ -152,6 +179,23 @@ class MonetizationTeamsTest extends KernelTestBase {
   }
 
   /**
+   * Make sure the monetization service returns the current team.
+   */
+  public function assertEntityLinks() {
+    // Package team url.
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
+    // Rate plan team url.
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/subscribe", $this->rate_plan->toUrl('team-subscribe')->toString());
+    // Team subscription URLs.
+    static::assertSame("/teams/{$this->team->id()}/monetization/subscriptions", Url::fromRoute('entity.subscription.team_collection', ['team' => $this->team->id()])->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/subscription/{$this->subscription->id()}/unsubscribe", Url::fromRoute('entity.subscription.team_unsubscribe_form', [
+      'team' => $this->team->id(),
+      'subscription' => $this->subscription->id(),
+    ])->toString());
+  }
+
+  /**
    * Make sure fields were overridden.
    */
   public function assertFieldOverrides() {
@@ -181,6 +225,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     $route_match = $this->prophesize(CurrentRouteMatch::class);
     $route_match->getRouteName()->willReturn('entity.team.canonical');
     $route_match->getParameter('team')->willReturn($team);
+    $route_match->getParameter('user')->willReturn(NULL);
     $this->container->set('current_route_match', $route_match->reveal());
     // The `apigee_m10n_teams_entity_type_alter` will have already loaded the
     // `apigee_m10n.teams` service so we need to make sure it is reloaded.
