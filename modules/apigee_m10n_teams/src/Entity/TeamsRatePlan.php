@@ -26,7 +26,7 @@ use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
 /**
  * Overridden team aware class for the `rate_plan` entity.
  */
-class TeamAwareRatePlan extends RatePlan {
+class TeamsRatePlan extends RatePlan {
 
   use TeamRouteAwarePropertyTrait;
 

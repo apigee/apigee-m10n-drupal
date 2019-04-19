@@ -28,7 +28,7 @@ use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
-use Drupal\apigee_m10n_teams\Entity\TeamAwareRatePlan;
+use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
 use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
@@ -123,7 +123,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     // Overrides for the `rate_plan` entity.
     if (isset($entity_types['rate_plan'])) {
       // Use our class to override the original entity class.
-      $entity_types['rate_plan']->setClass(TeamAwareRatePlan::class);
+      $entity_types['rate_plan']->setClass(TeamsRatePlan::class);
       $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
       $entity_types['rate_plan']->setLinkTemplate('team-subscribe', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/subscribe');
       // Get the entity route providers.
