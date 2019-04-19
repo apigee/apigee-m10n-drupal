@@ -22,6 +22,11 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorageInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
+use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
@@ -45,6 +50,17 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   protected $team;
 
+  protected $package;
+  protected $rate_plan;
+  protected $subscription;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entity_type_manager;
+
   public static $modules = [
     'key',
     'user',
@@ -60,15 +76,37 @@ class MonetizationTeamsTest extends KernelTestBase {
   public function setUp() {
     parent::setUp();
 
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+    $this->entity_type_manager = $this->container->get('entity_type.manager');
+
     // Create a team Entity.
     $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
+
+    $this->package      = $this->entity_type_manager->getStorage('package')->create([]);
+    $this->rate_plan    = $this->entity_type_manager->getStorage('rate_plan')->create(['package' => $this->package]);
+    $this->subscription = $this->entity_type_manager->getStorage('subscription')->create(['rate_plan' => $this->rate_plan]);
   }
 
   /**
    * Runs all of the assertions in this test suite.
    */
   public function testAll() {
+    $this->assertEntityAlter();
     $this->assertEntityAccess();
+  }
+
+  /**
+   * Tests entity classes are overridden.
+   */
+  public function assertEntityAlter() {
+    // Check class overrides.
+    static::assertInstanceOf(TeamsPackageInterface::class, $this->package);
+    static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
+    static::assertInstanceOf(TeamsSubscriptionInterface::class, $this->subscription);
+
+    // Check storage overrides.
+    static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
+    static::assertInstanceOf(TeamSubscriptionStorageInterface::class, $this->entity_type_manager->getStorage('subscription'));
   }
 
   /**
