@@ -27,6 +27,9 @@ use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
@@ -91,8 +94,18 @@ class MonetizationTeamsTest extends KernelTestBase {
    * Runs all of the assertions in this test suite.
    */
   public function testAll() {
+    $this->assertCurrentTeam();
     $this->assertEntityAlter();
     $this->assertEntityAccess();
+    $this->assertFieldOverrides();
+  }
+
+  /**
+   * Make sure the monetization service returns the current team.
+   */
+  public function assertCurrentTeam() {
+    $this->setCurrentTeamRoute($this->team);
+    static::assertSame($this->team, \Drupal::service('apigee_m10n.teams')->currentTeam());
   }
 
   /**
@@ -113,8 +126,6 @@ class MonetizationTeamsTest extends KernelTestBase {
    * Tests team entity access.
    */
   public function assertEntityAccess() {
-    $this->setCurrentTeamRoute($this->team);
-
     // Mock an account.
     $account = $this->prophesizeAccount();
     $non_member = $this->prophesizeAccount();
@@ -138,6 +149,23 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertTrue($package->access('view', $account));
     // Test view package for a non team member.
     static::assertFalse($package->access('view', $non_member));
+  }
+
+  /**
+   * Make sure fields were overridden.
+   */
+  public function assertFieldOverrides() {
+    /** @var \Drupal\Core\Field\FormatterPluginManager $formatter_manager */
+    $formatter_manager = \Drupal::service('plugin.manager.field.formatter');
+    /** @var \Drupal\Core\Field\WidgetPluginManager $widget_manager */
+    $widget_manager = \Drupal::service('plugin.manager.field.widget');
+
+    // Confirm formatter overrides.
+    static::assertSame(TeamSubscribeFormFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_form')['class']);
+    static::assertSame(TeamSubscribeLinkFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_link')['class']);
+
+    // Confirm widget overrides.
+    static::assertSame(CompanyTermsAndConditionsWidget::class, $widget_manager->getDefinition('apigee_tnc_widget')['class']);
   }
 
   /**
