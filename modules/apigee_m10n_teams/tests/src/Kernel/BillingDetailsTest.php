@@ -67,13 +67,7 @@ class BillingDetailsTest extends MonetizationTeamsKernelTestBase {
     $this->developer = $this->createAccount();
     $this->team = $this->createTeam();
 
-    $this->setCurrentUser(new UserSession([
-      'uid' => $this->developer->id(),
-      'name' => $this->developer->getAccountName(),
-      'roles' => $this->developer->getRoles(),
-      'mail' => $this->developer->getEmail(),
-      'timezone' => date_default_timezone_get(),
-    ]));
+    $this->createCurrentUserSession($this->developer);
   }
 
   /**

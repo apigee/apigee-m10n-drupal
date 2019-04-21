@@ -21,8 +21,11 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\UserSession;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
+use Drupal\user\UserInterface;
 
 /**
  * The base class for Monetization teams kernel tests.
@@ -60,6 +63,22 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
 
     $this->stack->queueMockResponse(['company' => ['company' => $team]]);
     return Team::load($team->getName());
+  }
+
+  /**
+   * Creates a user session for a user and sets it as the current user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The developer.
+   */
+  public function createCurrentUserSession(UserInterface $user) {
+    $this->setCurrentUser(new UserSession([
+      'uid' => $user->id(),
+      'name' => $user->getAccountName(),
+      'roles' => $user->getRoles(),
+      'mail' => $user->getEmail(),
+      'timezone' => date_default_timezone_get(),
+    ]));
   }
 
 }
