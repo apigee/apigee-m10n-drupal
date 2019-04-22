@@ -30,10 +30,10 @@ use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
-use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
 /**
  * Tests the module affected overrides are overridden properly.
@@ -46,6 +46,7 @@ use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
 class MonetizationTeamsTest extends KernelTestBase {
 
   use AccountProphecyTrait;
+  use TeamProphecyTrait;
 
   /**
    * A test team.
@@ -210,28 +211,6 @@ class MonetizationTeamsTest extends KernelTestBase {
 
     // Confirm widget overrides.
     static::assertSame(CompanyTermsAndConditionsWidget::class, $widget_manager->getDefinition('apigee_tnc_widget')['class']);
-  }
-
-  /**
-   * Sets the current routematch to a mock that returns a team.
-   *
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The team.
-   *
-   * @throws \Exception
-   */
-  protected function setCurrentTeamRoute($team) {
-    // Set the current route match with a mock.
-    $route_match = $this->prophesize(CurrentRouteMatch::class);
-    $route_match->getRouteName()->willReturn('entity.team.canonical');
-    $route_match->getParameter('team')->willReturn($team);
-    $route_match->getParameter('user')->willReturn(NULL);
-    $this->container->set('current_route_match', $route_match->reveal());
-    // The `apigee_m10n_teams_entity_type_alter` will have already loaded the
-    // `apigee_m10n.teams` service so we need to make sure it is reloaded.
-    $this->container->set('apigee_m10n.teams', NULL);
-
-    static::assertSame($team, $this->container->get('apigee_m10n.teams')->currentTeam());
   }
 
 }
