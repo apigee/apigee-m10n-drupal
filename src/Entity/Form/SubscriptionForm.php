@@ -19,12 +19,14 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge\Entity\Developer;
-use Drupal\Core\Url;
 
 /**
  * Subscription entity form.
@@ -36,6 +38,11 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
 
+  /*
+   * Insufficient funds API error code.
+   */
+  const INSUFFICIENT_FUNDS_ERROR = 'mint.insufficientFunds';
+
   /**
    * Messanger service.
    *
@@ -44,13 +51,33 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   protected $messenger;
 
   /**
+   * Apigee Monetization utility service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a SubscriptionEditForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   Apigee Monetization utility service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
+   *   The module handler service.
    */
-  public function __construct(MessengerInterface $messenger = NULL) {
+  public function __construct(MessengerInterface $messenger = NULL, MonetizationInterface $monetization, ModuleHandlerInterface $moduleHandler) {
     $this->messenger = $messenger;
+    $this->monetization = $monetization;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -58,7 +85,9 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('apigee_m10n.monetization'),
+      $container->get('module_handler')
     );
   }
 
@@ -125,7 +154,41 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       }
     }
     catch (\Exception $e) {
-      $this->messenger->addError($e->getMessage());
+      $previous = $e->getPrevious();
+
+      // If insufficient funds error, format nicely and add link to add credit.
+      if ($previous instanceof ClientErrorException && $previous->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) {
+        preg_match_all('/\[(?\'amount\'.+)\]/', $e->getMessage(), $matches);
+        $amount = $matches['amount'][0] ?? NULL;
+        $rate_plan = $this->getEntity()->getRatePlan();
+        $currency_id = $rate_plan->getCurrency()->id();
+
+        $message = 'You have insufficient funds to purchase plan %plan.';
+        $message .= $amount ? ' To purchase this plan you are required to add at least %amount to your account.' : '';
+        $params = [
+          '%plan' => $rate_plan->label(),
+          '%amount' => $this->monetization->formatCurrency($matches['amount'][0], $currency_id),
+        ];
+
+        if ($this->moduleHandler->moduleExists('apigee_m10n_add_credit')) {
+          $addcredit_products = $this->config('apigee_m10n_add_credit.config')->get('products');
+          if (!empty($addcredit_products[$currency_id]['product_id'])) {
+            /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
+            $addcredit_product = $this->entityTypeManager
+              ->getStorage('commerce_product')
+              ->load($addcredit_products[$currency_id]['product_id']);
+          }
+          if (!empty($addcredit_product)) {
+            $message .= ' @link';
+            $params['@link'] = \Drupal::service('link_generator')->generate($this->t('Add credit'), $addcredit_product->toUrl());
+          }
+        }
+
+        $this->messenger->addError($this->t($message, $params));
+      }
+      else {
+        $this->messenger->addError($e->getMessage());
+      }
     }
   }
 
