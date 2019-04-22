@@ -38,7 +38,7 @@ interface AddCreditServiceInterface {
    * @param string &$message
    *   The email message.
    * @param array|null $params
-   *   (optional) Parameters to be used int he email message.
+   *   (optional) Parameters to be used in the email message.
    */
   public function mail($key, &$message, $params);
 
