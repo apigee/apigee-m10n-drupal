@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Traits;
 
-use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Tests the team permission access checker.
@@ -36,7 +36,7 @@ trait TeamProphecyTrait {
    */
   protected function setCurrentTeamRoute($team) {
     // Set the current route match with a mock.
-    $route_match = $this->prophesize(CurrentRouteMatch::class);
+    $route_match = $this->prophesize(RouteMatchInterface::class);
     $route_match->getRouteName()->willReturn('entity.team.canonical');
     $route_match->getParameter('team')->willReturn($team);
     $route_match->getParameter('user')->willReturn(NULL);

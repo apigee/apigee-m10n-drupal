@@ -119,6 +119,41 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     foreach ($this->package->getApiProducts() as $product_id => $product) {
       static::assertArrayHasKey($product_id, $products);
     }
+
+    // Render the package.
+    $build = \Drupal::entityTypeManager()
+      ->getViewBuilder('package')
+      ->view($this->package);
+
+    $rate_plan_1 = $this->createPackageRatePlan($this->package);
+    $rate_plan_2 = $this->createPackageRatePlan($this->package);
+
+    $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan_1, $rate_plan_2]]]);
+    $content = \Drupal::service('renderer')->renderRoot($build);
+
+    $this->setRawContent((string) $content);
+
+    // Package detail as rendered.
+    static::assertSame($package->id(), trim($this->cssSelect('.apigee-package > div > div')[1]));
+    static::assertSame($package->getDisplayName(), trim($this->cssSelect('.apigee-package > div > div')[3]));
+    static::assertSame($package->getDescription(), trim($this->cssSelect('.apigee-package > div > div')[5]));
+
+    // API Products.
+    foreach ($this->package->get('apiProducts') as $index => $apiProduct) {
+      static::assertSame($apiProduct->entity->getName(), trim($this->cssSelect('.apigee-package .apigee-sdk-product .apigee-product-details .apigee-product-id')[$index]));
+      static::assertSame($apiProduct->entity->getDisplayName(), trim($this->cssSelect('.apigee-package .apigee-sdk-product .apigee-product-details .apigee-product-display-name .label')[$index]));
+      static::assertSame($apiProduct->entity->getDescription(), trim($this->cssSelect('.apigee-package .apigee-sdk-product .apigee-product-details .apigee-product-description')[$index]));
+    }
+
+    // Rate plans as rendered.
+    foreach ([$rate_plan_1, $rate_plan_2] as $index => $rate_plan) {
+      /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+      static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect('.apigee-package .apigee-package-rate-plan > div > a')[$index]));
+      static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}", (string) $this->cssSelect('.apigee-package .apigee-package-rate-plan > div > a')[$index]->attributes()['href']);
+      static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.apigee-package .apigee-package-rate-plan > div:nth-child(2) > div:nth-child(2)')[$index]));
+      static::assertSame('Purchase Plan', trim($this->cssSelect('.apigee-package .apigee-package-rate-plan > div:nth-child(4) > div:nth-child(2) > a')[$index]));
+      static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/subscribe", (string) $this->cssSelect('.apigee-package .apigee-package-rate-plan > div:nth-child(4) > div:nth-child(2) > a')[$index]->attributes()['href']);
+    }
   }
 
 }
