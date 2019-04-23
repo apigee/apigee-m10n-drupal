@@ -85,13 +85,26 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
    *   The developer.
    */
   public function createCurrentUserSession(UserInterface $user) {
-    $this->setCurrentUser(new UserSession([
+    $this->setCurrentUser($this->createUserSession($user));
+  }
+
+  /**
+   * Creates a user session for a user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The developer.
+   *
+   * @return \Drupal\Core\Session\AccountInterface
+   *   A user session.
+   */
+  public function createUserSession(UserInterface $user) {
+    return new UserSession([
       'uid' => $user->id(),
       'name' => $user->getAccountName(),
       'roles' => $user->getRoles(),
       'mail' => $user->getEmail(),
       'timezone' => date_default_timezone_get(),
-    ]));
+    ]);
   }
 
   /**

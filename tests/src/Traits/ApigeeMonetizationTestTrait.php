@@ -142,8 +142,6 @@ trait ApigeeMonetizationTestTrait {
    * appropriate response upon account creation.
    *
    * {@inheritdoc}
-   *
-   * @throws \Exception
    */
   protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = ''): ?UserInterface {
     $rid = NULL;
@@ -452,8 +450,6 @@ trait ApigeeMonetizationTestTrait {
    *   The developer user to get properties from.
    * @param string|null $response_code
    *   Add a response code to override the default.
-   *
-   * @throws \Exception
    */
   protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL) {
     $context = empty($response_code) ? [] : ['status_code' => $response_code];
