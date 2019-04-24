@@ -82,10 +82,6 @@ class MockHandlerStack extends MockHandler {
    *   e.g. `get-developer` or `get_developer` @see /tests/response-templates.
    *
    * @return $this
-   *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
    */
   public function queueMockResponse($response_ids) {
     $org_name = \Drupal::service('apigee_edge.sdk_connector')

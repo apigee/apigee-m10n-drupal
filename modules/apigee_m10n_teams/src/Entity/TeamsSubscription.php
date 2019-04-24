@@ -33,7 +33,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *
  * This is a class for purchased plans that is aware of teams.
  */
-class TeamRouteAwareSubscription extends Subscription implements TeamRouteAwareSubscriptionInterface {
+class TeamsSubscription extends Subscription implements TeamsSubscriptionInterface {
 
   /**
    * EdgeEntityBase constructor.

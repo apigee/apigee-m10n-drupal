@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
-use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
 
 /**
  * Interface for the overridden `subscription` storage controller.
@@ -47,9 +47,9 @@ interface TeamSubscriptionStorageInterface {
    * @param string $id
    *   The subscription ID.
    *
-   * @return \Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface
+   * @return \Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface
    *   The subscription.
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamRouteAwareSubscriptionInterface;
+  public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamsSubscriptionInterface;
 
 }

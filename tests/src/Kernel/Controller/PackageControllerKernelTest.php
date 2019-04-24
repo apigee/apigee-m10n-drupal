@@ -204,7 +204,7 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
 
     $page_controller = PackagesController::create($this->container);
     $renderable = $page_controller->catalogPage($user);
-    $this->setRawContent(\Drupal::service('renderer')->renderRoot($renderable));
+    $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($renderable));
     self::assertArrayHasKey($packages[0]->id(), $renderable['package_list']);
     self::assertArrayHasKey($packages[1]->id(), $renderable['package_list']);
     if ($user_has_access) {

@@ -8,11 +8,17 @@
  *
  * Variables:
  * - developer: The user account for the developer.
+ * - org_name: The name of the organization.
+ * - companies: A list of companies.
  */
 #}
 {
     "apps" : [ ],
-    "companies" : [ ],
+    "companies" : [
+        {% for company in companies %}
+            "{{ company }}"{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
     "email" : "{{ developer.mail.value }}",
     "developerId" : "{{ developer.uuid.value }}",
     "firstName" : "{{ developer.first_name.value }}",

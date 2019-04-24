@@ -22,11 +22,18 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\Package;
-use Drupal\Core\Access\AccessResultAllowed;
-use Drupal\Core\Access\AccessResultForbidden;
-use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorageInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
+use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
+use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
 /**
  * Tests the module affected overrides are overridden properly.
@@ -38,6 +45,44 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class MonetizationTeamsTest extends KernelTestBase {
 
+  use AccountProphecyTrait;
+  use TeamProphecyTrait;
+
+  /**
+   * A test team.
+   *
+   * @var \Drupal\apigee_edge_teams\Entity\TeamInterface
+   */
+  protected $team;
+
+  /**
+   * A test package.
+   *
+   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   */
+  protected $package;
+
+  /**
+   * A test rate plan.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
+   */
+  protected $rate_plan;
+
+  /**
+   * A test subscription.
+   *
+   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   */
+  protected $subscription;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entity_type_manager;
+
   public static $modules = [
     'key',
     'user',
@@ -48,68 +93,124 @@ class MonetizationTeamsTest extends KernelTestBase {
   ];
 
   /**
-   * Tests the current team is retrieved.
+   * {@inheritdoc}
    */
-  public function testCurrentTeam() {
-    $team_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
-    $team = Team::create(['name' => $team_id]);
+  public function setUp() {
+    parent::setUp();
 
-    $this->setCurrentTeamRoute($team);
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
+    $this->entity_type_manager = $this->container->get('entity_type.manager');
 
-    static::assertSame($team, $this->container->get('apigee_m10n.teams')->currentTeam());
+    // Create a team Entity.
+    $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
+
+    $this->package      = $this->entity_type_manager->getStorage('package')->create([
+      'id' => $this->randomMachineName(),
+    ]);
+    $this->rate_plan    = $this->entity_type_manager->getStorage('rate_plan')->create([
+      'id' => $this->randomMachineName(),
+      'package' => $this->package,
+    ]);
+    $this->subscription = $this->entity_type_manager->getStorage('subscription')->create([
+      'id' => $this->randomMachineName(),
+      'rate_plan' => $this->rate_plan,
+    ]);
   }
 
   /**
-   * Tests the current team is retrieved.
+   * Runs all of the assertions in this test suite.
    */
-  public function testEntityAccess() {
-    // Create a team Entity.
-    $team_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
-    $team = Team::create(['name' => $team_id]);
-    $this->setCurrentTeamRoute($team);
+  public function testAll() {
+    $this->assertCurrentTeam();
+    $this->assertEntityAlter();
+    $this->assertEntityAccess();
+    $this->assertEntityLinks();
+    $this->assertFieldOverrides();
+  }
 
+  /**
+   * Make sure the monetization service returns the current team.
+   */
+  public function assertCurrentTeam() {
+    $this->setCurrentTeamRoute($this->team);
+    static::assertSame($this->team, \Drupal::service('apigee_m10n.teams')->currentTeam());
+  }
+
+  /**
+   * Tests entity classes are overridden.
+   */
+  public function assertEntityAlter() {
+    // Check class overrides.
+    static::assertInstanceOf(TeamsPackageInterface::class, $this->package);
+    static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
+    static::assertInstanceOf(TeamsSubscriptionInterface::class, $this->subscription);
+
+    // Check storage overrides.
+    static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
+    static::assertInstanceOf(TeamSubscriptionStorageInterface::class, $this->entity_type_manager->getStorage('subscription'));
+  }
+
+  /**
+   * Tests team entity access.
+   */
+  public function assertEntityAccess() {
     // Mock an account.
-    $account = $this->prophesize(AccountInterface::class)->reveal();
+    $account = $this->prophesizeAccount();
+    $non_member = $this->prophesizeAccount();
+
     // Prophesize the `apigee_edge_teams.team_permissions` service.
     $team_handler = $this->prophesize(TeamPermissionHandlerInterface::class);
-    $team_handler->getDeveloperPermissionsByTeam($team, $account)->willReturn(['view package']);
+    $team_handler->getDeveloperPermissionsByTeam($this->team, $account)->willReturn([
+      'view package',
+      'view rate_plan',
+      'subscribe rate_plan',
+    ]);
+    $team_handler->getDeveloperPermissionsByTeam($this->team, $non_member)->willReturn([]);
     $this->container->set('apigee_edge_teams.team_permissions', $team_handler->reveal());
 
-    /** @var \Drupal\apigee_m10n_teams\MonetizationTeamsInterface $team_service */
-    $team_service = $this->container->get('apigee_m10n.teams');
-
-    // Create an eneity we can test against `entityAccess`.
+    // Create an entity we can test against `entityAccess`.
     $entity_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
     // We are only using package here because it's easy.
-    $entity = Package::create(['id' => $entity_id]);
+    $package = Package::create(['id' => $entity_id]);
 
-    // Test view entity.
-    static::assertInstanceOf(AccessResultAllowed::class, $team_service->entityAccess($entity, 'view', $account));
-    // Test update entity.
-    $update_result = $team_service->entityAccess($entity, 'update', $account);
-    static::assertInstanceOf(AccessResultForbidden::class, $update_result);
-    static::assertSame("The 'update package' permission is required.", $update_result->getReason());
-    // Test delete entity.
-    $delete_result = $team_service->entityAccess($entity, 'delete', $account);
-    static::assertInstanceOf(AccessResultForbidden::class, $delete_result);
-    static::assertSame("The 'delete package' permission is required.", $delete_result->getReason());
+    // Test view package for a team member.
+    static::assertTrue($package->access('view', $account));
+    // Test view package for a non team member.
+    static::assertFalse($package->access('view', $non_member));
   }
 
   /**
-   * Sets the current routematch to a mock that returns a team.
-   *
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The team.
+   * Make sure the monetization service returns the current team.
    */
-  protected function setCurrentTeamRoute($team) {
-    // Set the current route match with a mock.
-    $route_match = $this->prophesize(CurrentRouteMatch::class);
-    $route_match->getRouteName()->willReturn('entity.team.canonical');
-    $route_match->getParameter('team')->willReturn($team);
-    $this->container->set('current_route_match', $route_match->reveal());
-    // The `apigee_m10n_teams_entity_type_alter` will have already loaded the
-    // `apigee_m10n.teams` service so we need to make sure it is reloaded.
-    $this->container->set('apigee_m10n.teams', NULL);
+  public function assertEntityLinks() {
+    // Package team url.
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
+    // Rate plan team url.
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/subscribe", $this->rate_plan->toUrl('team-subscribe')->toString());
+    // Team subscription URLs.
+    static::assertSame("/teams/{$this->team->id()}/monetization/subscriptions", Url::fromRoute('entity.subscription.team_collection', ['team' => $this->team->id()])->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/subscription/{$this->subscription->id()}/unsubscribe", Url::fromRoute('entity.subscription.team_unsubscribe_form', [
+      'team' => $this->team->id(),
+      'subscription' => $this->subscription->id(),
+    ])->toString());
+  }
+
+  /**
+   * Make sure fields were overridden.
+   */
+  public function assertFieldOverrides() {
+    /** @var \Drupal\Core\Field\FormatterPluginManager $formatter_manager */
+    $formatter_manager = \Drupal::service('plugin.manager.field.formatter');
+    /** @var \Drupal\Core\Field\WidgetPluginManager $widget_manager */
+    $widget_manager = \Drupal::service('plugin.manager.field.widget');
+
+    // Confirm formatter overrides.
+    static::assertSame(TeamSubscribeFormFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_form')['class']);
+    static::assertSame(TeamSubscribeLinkFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_link')['class']);
+
+    // Confirm widget overrides.
+    static::assertSame(CompanyTermsAndConditionsWidget::class, $widget_manager->getDefinition('apigee_tnc_widget')['class']);
   }
 
 }
