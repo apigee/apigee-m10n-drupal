@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Entity\Controller;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
@@ -100,8 +99,6 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    * @throws \Exception
    */
   public function subscribeForm(UserInterface $user, RatePlanInterface $rate_plan) {
-    $page = [];
-
     // Create a subscription to pass to the subscription edit form.
     $subscription = Subscription::create([
       'ratePlan' => $rate_plan,
@@ -113,55 +110,13 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
     $save_label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_button_label');
     $save_label = $save_label ?? 'Subscribe';
 
-    // Add the subscribe form with the label set.
-    $page['form'] = $this->entityFormBuilder->getForm($subscription, 'default', [
+    // Return the subscribe form with the label set.
+    return $this->entityFormBuilder->getForm($subscription, 'default', [
       'save_label' => $this->t($save_label, [
         '@rate_plan' => $rate_plan->getDisplayName(),
         '@username' => $user->label(),
       ]),
     ]);
-
-    // Check if enough balance to subscribe to rate plan.
-    if ($this->moduleHandler->moduleExists('apigee_m10n_add_credit')) {
-      $prepaid_balances = [];
-      foreach ($this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
-        /* @var PrepaidBalanceInterface $prepaid_balance */
-        $prepaid_balances[$prepaid_balance->getCurrency()->id()] = $prepaid_balance->getCurrentBalance();
-      }
-
-      // Minimum balance needed is at least the setup fee.
-      // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
-      $min_balance_needed = $rate_plan->getSetUpFee();
-      $currency_id = $rate_plan->getCurrency()->id();
-
-      $addcredit_products = $this->config('apigee_m10n_add_credit.config')->get('products');
-      $addcredit_product_id = $addcredit_products[$currency_id]['product_id'] ?? NULL;
-
-      /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
-      $addcredit_product = $addcredit_product_id ? $this->entityTypeManager()
-        ->getStorage('commerce_product')
-        ->load($addcredit_product_id) : NULL;
-
-      $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
-      if ($addcredit_product && $min_balance_needed > $prepaid_balances[$currency_id]) {
-        $page['add_credit_message'] = [
-          '#type' => 'html_tag',
-          '#tag' => 'p',
-          '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
-            '%plan' => $rate_plan->label(),
-          ]),
-        ];
-        $page['add_credit_link'] = [
-          '#type' => 'link',
-          '#title' => $this->t('Add credit'),
-          '#url' => $addcredit_product->toUrl(),
-        ];
-
-        $page['form']['actions']['submit']['#attributes']['disabled']  = 'disabled';
-      }
-    }
-
-    return $page;
   }
 
   /**

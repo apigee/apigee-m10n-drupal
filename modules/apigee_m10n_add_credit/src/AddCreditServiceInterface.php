@@ -183,4 +183,16 @@ interface AddCreditServiceInterface {
    */
   public function commerceProductAccess(EntityInterface $entity, $operation, AccountInterface $account);
 
+  /**
+   * Handles the "add credit" link and subscribe button status on subcription
+   * to rate plan forms.
+   *
+   * @param array $form
+   *   The form to alter.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $form_id
+   *   The form id.
+   */
+  public function subscriptionFormAlter(&$form, FormStateInterface $form_state, $form_id);
 }

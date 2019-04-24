@@ -43,6 +43,8 @@ use Drupal\Core\Session\AccountInterface;
  */
 class AddCreditService implements AddCreditServiceInterface {
 
+  use Drupal\Core\StringTranslation\StringTranslationTrait;
+
   /**
    * The current user's account object.
    *
@@ -72,6 +74,13 @@ class AddCreditService implements AddCreditServiceInterface {
   protected $addCreditProductManager;
 
   /**
+   * Apigee Monetization utility service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
    * Constructor for the `apigee_m10n.add_credit` service.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -88,6 +97,19 @@ class AddCreditService implements AddCreditServiceInterface {
     $this->current_user = $user;
     $this->addCreditPluginManager = $add_credit_plugin_manager;
     $this->addCreditProductManager = $add_credit_product_manager;
+  }
+
+  /**
+   * Retrieves the monetization service.
+   *
+   * @return \Drupal\apigee_m10n\MonetizationInterface
+   *   Apigee Monetization utility service.
+   */
+  protected function monetization() {
+    if (!$this->monetization) {
+      $this->monetization = Drupal::service('apigee_m10n.monetization');
+    }
+    return $this->monetization;
   }
 
   /**
@@ -501,6 +523,63 @@ class AddCreditService implements AddCreditServiceInterface {
     }
 
     return t('N/A');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function subscriptionFormAlter(&$form, FormStateInterface $form_state, $form_id) {
+    // Check if insufficient_funds_workflow is disabled, and do nothing if so.
+    $apigee_m10n_add_credit_config = $this->config->get(AddCreditConfig::CONFIG_NAME);
+    if ($apigee_m10n_add_credit_config->get('disable_insufficient_funds_workflow')) {
+      return;
+    }
+
+    // Check if enough balance to subscribe to rate plan.
+    $prepaid_balances = [];
+
+    /* @var \Drupal\apigee_m10n\Entity\Subscription $subscription */
+    $subscription = $form_state->getFormObject()->getEntity();
+    $rate_plan = $subscription->getRatePlan();
+    $user = user_load_by_mail($subscription->getDeveloper()->getEmail());
+    foreach ($this->monetization()->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
+      $prepaid_balances[$prepaid_balance->getCurrency()->id()] = $prepaid_balance->getCurrentBalance();
+    }
+
+    // Minimum balance needed is at least the setup fee.
+    // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
+    $min_balance_needed = $rate_plan->getSetUpFee();
+    $currency_id = $rate_plan->getCurrency()->id();
+
+    $addcredit_products = $apigee_m10n_add_credit_config->get('products');
+    $addcredit_product_id = $addcredit_products[$currency_id]['product_id'] ?? NULL;
+
+    /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
+    $addcredit_product = $addcredit_product_id ? Drupal::service('entity_type.manager')
+      ->getStorage('commerce_product')
+      ->load($addcredit_product_id) : NULL;
+
+    $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
+    if ($addcredit_product && $min_balance_needed > $prepaid_balances[$currency_id]) {
+      $form['add_credit'] = [
+        '#type' => 'container',
+      ];
+
+      $form['add_credit']['add_credit_message'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'p',
+        '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
+          '%plan' => $rate_plan->label(),
+        ]),
+      ];
+      $form['add_credit']['add_credit_link'] = [
+        '#type' => 'link',
+        '#title' => $this->t('Add credit'),
+        '#url' => $addcredit_product->toUrl(),
+      ];
+
+      $form['actions']['submit']['#attributes']['disabled']  = 'disabled';
+    }
   }
 
 }
