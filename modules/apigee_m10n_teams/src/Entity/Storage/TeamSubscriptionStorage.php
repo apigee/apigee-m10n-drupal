@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_teams\Entity\Storage;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxyInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscriptionInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
@@ -82,7 +82,7 @@ class TeamSubscriptionStorage extends SubscriptionStorage implements TeamSubscri
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamRouteAwareSubscriptionInterface {
+  public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamsSubscriptionInterface {
     // Load from cache.
     $ids = [$id];
     $subscriptions = $this->getFromPersistentCache($ids);

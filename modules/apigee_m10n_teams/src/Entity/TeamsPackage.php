@@ -19,14 +19,15 @@
 
 namespace Drupal\apigee_m10n_teams\Entity;
 
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_m10n\Entity\RatePlan;
+use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
 
 /**
- * Overridden team aware class for the `rate_plan` entity.
+ * Overrides the `package` entity class.
+ *
+ * This is a class for packages that is aware of teams.
  */
-class TeamAwareRatePlan extends RatePlan {
+class TeamsPackage extends Package implements TeamsPackageInterface {
 
   use TeamRouteAwarePropertyTrait;
 
@@ -39,14 +40,11 @@ class TeamAwareRatePlan extends RatePlan {
 
     // Check for team context.
     $rel = (($team_id = $this->getTeamId()) && $rel === 'canonical') ? 'team' : $rel;
-    $rel = (($team_id = $this->getTeamId()) && $rel === 'subscribe') ? 'team-subscribe' : $rel;
 
     $url = parent::toUrl($rel, $options);
 
     // Add the team if this is a team URL.
-    if (in_array($rel, ['team', 'team-subscribe']) && !empty($team_id)) {
-      // Removes the user route parameter.
-      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['user' => NULL]));
+    if ($rel == 'team' &&  !empty($team_id)) {
       $url->setRouteParameter('team', $team_id);
     }
 
@@ -56,11 +54,10 @@ class TeamAwareRatePlan extends RatePlan {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribe():? array {
-    // Return a team array if this is a team route.
-    return (($team = $this->getTeam()) && $team instanceof TeamInterface)
-      ? ['team' => $team]
-      : parent::getSubscribe();
+  public static function getAvailableApiPackagesByTeam($team_id) {
+    return \Drupal::entityTypeManager()
+      ->getStorage(static::ENTITY_TYPE_ID)
+      ->getAvailableApiPackagesByTeam($team_id);
   }
 
 }

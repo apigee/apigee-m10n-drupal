@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_teams\Entity\ListBuilder;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder;
 use Drupal\apigee_m10n\Entity\SubscriptionInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamRouteAwareSubscription;
+use Drupal\apigee_m10n_teams\Entity\TeamsSubscription;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -55,7 +55,7 @@ class TeamSubscriptionListBuilder extends SubscriptionListBuilder {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function load() {
-    return TeamRouteAwareSubscription::loadByTeamId($this->team->id());
+    return TeamsSubscription::loadByTeamId($this->team->id());
   }
 
   /**

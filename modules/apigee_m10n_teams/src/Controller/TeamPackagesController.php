@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_teams\Controller;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Controller\PackagesController;
 use Drupal\apigee_m10n\Form\PackageConfigForm;
-use Drupal\apigee_m10n_teams\Entity\TeamRouteAwarePackage;
+use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
 
 /**
  * Generates the packages page.
@@ -45,7 +45,7 @@ class TeamPackagesController extends PackagesController {
    */
   public function teamCatalogPage(TeamInterface $team) {
     // Load purchased packages for comparison.
-    $packages = TeamRouteAwarePackage::getAvailableApiPackagesByTeam($team->id());
+    $packages = TeamsPackage::getAvailableApiPackagesByTeam($team->id());
     // Get the view mode from package config.
     $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
     $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];

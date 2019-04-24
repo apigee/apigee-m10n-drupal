@@ -84,7 +84,7 @@ class ModuleInstallKernelTest extends KernelTestBase {
     // Gets the uninstall page.
     $request = Request::create(Url::fromRoute('system.modules_uninstall')->toString());
     $response = $this->container->get('http_kernel')->handle($request);
-    $this->setRawContent($response->getContent());
+    $this->setRawContent((string) $response->getContent());
 
     // Make sure both modules are on the uninstall page.
     $this->assertText('Uninstall Apigee Edge module');

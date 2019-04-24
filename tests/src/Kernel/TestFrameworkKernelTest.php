@@ -107,16 +107,9 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
   /**
    * Tests the current user prophesier.
    */
-  public function testMockCurrentUser() {
-    // Test as a root user.
-    $root = $this->mockCurrentUser();
-    static::assertSame(1, $root->id());
-    static::assertTrue($root->hasPermission($this->getRandomGenerator()->sentences(2)));
-    static::assertTrue($root->hasPermission($this->getRandomGenerator()->sentences(2)));
-    static::assertTrue($root->hasPermission($this->getRandomGenerator()->sentences(2)));
-
+  public function testProphesizeCurrentUser() {
     // Test as a user with limited permissions.
-    $user = $this->mockCurrentUser(['foo']);
+    $user = $this->prophesizeCurrentUser(['foo']);
     static::assertTrue($user->hasPermission('foo'));
     static::assertFalse($user->hasPermission('bar'));
 
