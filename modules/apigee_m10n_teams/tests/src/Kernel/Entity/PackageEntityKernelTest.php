@@ -25,7 +25,7 @@ use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
 /**
- * Tests the billing details.
+ * Tests the team package entity.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
@@ -84,7 +84,7 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
   }
 
   /**
-   * Test loading a rate plan from drupal entity storage.
+   * Test team package entity rendering.
    *
    * @throws \Exception
    */
@@ -103,22 +103,11 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $package = Package::load($this->package->id());
 
     static::assertInstanceOf(TeamsPackageInterface::class, $package);
-    static::assertSame(gettype($package), gettype($this->package));
+    // Use the object comparator to compare the loaded package.
+    static::assertEquals($this->package, $package);
 
-    // Check properties.
-    static::assertSame($this->package->id(), $package->id());
-    static::assertSame($this->package->getDisplayName(), $package->getDisplayName());
-    static::assertSame($this->package->getName(), $package->getName());
-    static::assertSame($this->package->getDescription(), $package->getDescription());
-    static::assertSame($this->package->getStatus(), $package->getStatus());
     // Get the package products.
-    $products = $package->getApiProducts();
-    static::assertGreaterThan(0, $this->count($products));
-    static::assertCount(count($this->package->getApiProducts()), $products);
-
-    foreach ($this->package->getApiProducts() as $product_id => $product) {
-      static::assertArrayHasKey($product_id, $products);
-    }
+    static::assertGreaterThan(0, $this->count($package->getApiProducts()));
 
     // Render the package.
     $build = \Drupal::entityTypeManager()
