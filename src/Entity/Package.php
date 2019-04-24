@@ -154,7 +154,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
 
     // Fix some labels because these show up in the UI.
     $definitions['id']->setLabel(t('ID'));
-    $definitions['displayName']->setLabel(t('Plan name'));
+    $definitions['displayName']->setLabel(t('Package name'));
 
     return $definitions;
   }
