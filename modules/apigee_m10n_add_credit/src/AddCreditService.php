@@ -20,6 +20,8 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
+use Drupal\user\UserInterface;
+use Drupal\Core\Url;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
@@ -541,7 +543,8 @@ class AddCreditService implements AddCreditServiceInterface {
     /* @var \Drupal\apigee_m10n\Entity\Subscription $subscription */
     $subscription = $form_state->getFormObject()->getEntity();
     $rate_plan = $subscription->getRatePlan();
-    $user = user_load_by_mail($subscription->getDeveloper()->getEmail());
+    $user = $subscription->getOwner();
+    $prepaid_balances = [];
     foreach ($this->monetization()->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
       $prepaid_balances[$prepaid_balance->getCurrency()->id()] = $prepaid_balance->getCurrentBalance();
     }
@@ -550,17 +553,8 @@ class AddCreditService implements AddCreditServiceInterface {
     // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
     $min_balance_needed = $rate_plan->getSetUpFee();
     $currency_id = $rate_plan->getCurrency()->id();
-
-    $addcredit_products = $apigee_m10n_add_credit_config->get('products');
-    $addcredit_product_id = $addcredit_products[$currency_id]['product_id'] ?? NULL;
-
-    /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
-    $addcredit_product = $addcredit_product_id ? Drupal::service('entity_type.manager')
-      ->getStorage('commerce_product')
-      ->load($addcredit_product_id) : NULL;
-
     $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
-    if ($addcredit_product && $min_balance_needed > $prepaid_balances[$currency_id]) {
+    if ($min_balance_needed > $prepaid_balances[$currency_id]) {
       $form['add_credit'] = [
         '#type' => 'container',
       ];
@@ -575,11 +569,31 @@ class AddCreditService implements AddCreditServiceInterface {
       $form['add_credit']['add_credit_link'] = [
         '#type' => 'link',
         '#title' => $this->t('Add credit'),
-        '#url' => $addcredit_product->toUrl(),
+        '#url' => $this->getAddCreditUrl($currency_id, $user),
       ];
 
       $form['actions']['submit']['#attributes']['disabled']  = 'disabled';
     }
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAddCreditUrl($currency_id, UserInterface $account) {
+    $addcredit_products = $this->config
+      ->get(AddCreditConfig::CONFIG_NAME)
+      ->get('products');
+    $addcredit_product_id = $addcredit_products[$currency_id]['product_id'] ?? NULL;
+
+    /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
+    $addcredit_product = $addcredit_product_id ? Drupal::service('entity_type.manager')
+      ->getStorage('commerce_product')
+      ->load($addcredit_product_id) : NULL;
+
+    return $addcredit_product ? $addcredit_product->toUrl() : Url::fromRoute('apigee_monetization.billing', [
+      'user' => $account->id(),
+    ]);
   }
 
 }

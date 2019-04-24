@@ -171,17 +171,9 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         ];
 
         if ($this->moduleHandler->moduleExists('apigee_m10n_add_credit')) {
-          $addcredit_products = $this->config('apigee_m10n_add_credit.config')->get('products');
-          if (!empty($addcredit_products[$currency_id]['product_id'])) {
-            /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
-            $addcredit_product = $this->entityTypeManager
-              ->getStorage('commerce_product')
-              ->load($addcredit_products[$currency_id]['product_id']);
-          }
-          if (!empty($addcredit_product)) {
-            $message .= ' @link';
-            $params['@link'] = \Drupal::service('link_generator')->generate($this->t('Add credit'), $addcredit_product->toUrl());
-          }
+          $message .= ' @link';
+          $params['@link'] = \Drupal::service('link_generator')
+            ->generate($this->t('Add credit'), \Drupal::service('apigee_m10n.add_credit')->getAddCreditUrl($currency_id, $this->getEntity()->getOwner()));
         }
 
         $this->messenger->addError($this->t($message, $params));
