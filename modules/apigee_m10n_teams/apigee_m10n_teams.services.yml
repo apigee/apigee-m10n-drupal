@@ -12,3 +12,9 @@ services:
   apigee_m10n_teams.sdk_controller_factory:
     class: Drupal\apigee_m10n_teams\TeamSdkControllerFactory
     arguments: ['@apigee_edge.sdk_connector']
+
+  cache_context.url.team:
+    class: Drupal\apigee_m10n_teams\Cache\TeamCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }
