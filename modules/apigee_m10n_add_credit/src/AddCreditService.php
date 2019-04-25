@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
+use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Drupal;
 use Drupal\user\UserInterface;
 use Drupal\Core\Url;
@@ -537,45 +538,54 @@ class AddCreditService implements AddCreditServiceInterface {
       return;
     }
 
-    // Check if enough balance to subscribe to rate plan.
-    $prepaid_balances = [];
-
     /* @var \Drupal\apigee_m10n\Entity\Subscription $subscription */
     $subscription = $form_state->getFormObject()->getEntity();
     $rate_plan = $subscription->getRatePlan();
     $user = $subscription->getOwner();
-    $prepaid_balances = [];
-    foreach ($this->monetization()->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
-      $prepaid_balances[$prepaid_balance->getCurrency()->id()] = $prepaid_balance->getCurrentBalance();
+
+    /* @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdk */
+    $sdk = \Drupal::service('apigee_m10n.sdk_controller_factory');
+    try {
+      $developer = $sdk->developerController()->load($user->getEmail());
+    }
+    catch (\Exception $e) {
+      $developer = NULL;
     }
 
-    // Minimum balance needed is at least the setup fee.
-    // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
-    $min_balance_needed = $rate_plan->getSetUpFee();
-    $currency_id = $rate_plan->getCurrency()->id();
-    $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
-    if ($min_balance_needed > $prepaid_balances[$currency_id]) {
-      $form['add_credit'] = [
-        '#type' => 'container',
-      ];
+    // If developer is prepaid, check if enough balance to subscribe to rate plan.
+    if ($developer && $developer->getBillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
+      $prepaid_balances = [];
+      foreach ($this->monetization()->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
+        $prepaid_balances[$prepaid_balance->getCurrency()->id()] = $prepaid_balance->getCurrentBalance();
+      }
 
-      $form['add_credit']['add_credit_message'] = [
-        '#type' => 'html_tag',
-        '#tag' => 'p',
-        '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
-          '%plan' => $rate_plan->label(),
-        ]),
-      ];
-      $form['add_credit']['add_credit_link'] = [
-        '#type' => 'link',
-        '#title' => $this->t('Add credit'),
-        '#url' => $this->getAddCreditUrl($currency_id, $user),
-      ];
+      // Minimum balance needed is at least the setup fee.
+      // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
+      $min_balance_needed = $rate_plan->getSetUpFee();
+      $currency_id = $rate_plan->getCurrency()->id();
+      $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
+      if ($min_balance_needed > $prepaid_balances[$currency_id]) {
+        $form['add_credit'] = [
+          '#type' => 'container',
+        ];
 
-      $form['actions']['submit']['#attributes']['disabled']  = 'disabled';
+        $form['add_credit']['add_credit_message'] = [
+          '#type' => 'html_tag',
+          '#tag' => 'p',
+          '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
+            '%plan' => $rate_plan->label(),
+          ]),
+        ];
+        $form['add_credit']['add_credit_link'] = [
+          '#type' => 'link',
+          '#title' => $this->t('Add credit'),
+          '#url' => $this->getAddCreditUrl($currency_id, $user),
+        ];
+
+        $form['actions']['submit']['#attributes']['disabled']  = 'disabled';
+      }
     }
   }
-
 
   /**
    * {@inheritdoc}
