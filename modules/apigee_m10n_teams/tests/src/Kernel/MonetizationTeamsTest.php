@@ -177,6 +177,16 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertTrue($package->access('view', $account));
     // Test view package for a non team member.
     static::assertFalse($package->access('view', $non_member));
+
+    // Test view rate plan for a team member.
+    static::assertTrue($this->rate_plan->access('view', $account));
+    // Test view rate plan for a non team member.
+    static::assertFalse($this->rate_plan->access('view', $non_member));
+
+    // Test view rate plan for a team member.
+    static::assertTrue($this->rate_plan->access('subscribe', $account));
+    // Test view rate plan for a non team member.
+    static::assertFalse($this->rate_plan->access('subscribe', $non_member));
   }
 
   /**
