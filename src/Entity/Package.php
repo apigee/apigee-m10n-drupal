@@ -290,4 +290,11 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
     return $user instanceof UserInterface ? $user->id() : $user;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    return array_merge(['url.developer'], parent::getCacheContexts());
+  }
+
 }

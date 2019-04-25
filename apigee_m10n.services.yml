@@ -52,3 +52,9 @@ services:
     class: Drupal\apigee_m10n\Entity\Access\EntityDeveloperAccessCheck
     tags:
       - { name: access_check, applies_to: _entity_developer_access }
+
+  cache_context.url.developer:
+    class: Drupal\apigee_m10n\Cache\DeveloperCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }
