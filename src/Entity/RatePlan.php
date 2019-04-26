@@ -252,6 +252,13 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
+  public function getCacheContexts() {
+    return array_merge(['url.developer'], parent::getCacheContexts());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isAdvance(): bool {
     return $this->decorated->isAdvance();
   }

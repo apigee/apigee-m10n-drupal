@@ -63,4 +63,11 @@ class TeamsRatePlan extends RatePlan {
       : parent::getSubscribe();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    return array_merge(['url.team'], parent::getCacheContexts());
+  }
+
 }

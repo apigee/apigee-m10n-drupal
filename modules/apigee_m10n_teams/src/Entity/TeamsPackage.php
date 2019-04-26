@@ -60,4 +60,11 @@ class TeamsPackage extends Package implements TeamsPackageInterface {
       ->getAvailableApiPackagesByTeam($team_id);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    return array_merge(['url.team'], parent::getCacheContexts());
+  }
+
 }
