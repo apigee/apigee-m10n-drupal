@@ -32,6 +32,7 @@ use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -39,6 +40,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\user\PermissionHandlerInterface;
 use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
@@ -504,6 +506,33 @@ class Monetization implements MonetizationInterface {
     return array_filter($this->permission_handler->getPermissions(), function ($permission) {
       return ($permission['provider'] === 'apigee_m10n');
     });
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAddCreditUrl($currency_id, UserInterface $account) {
+    $module_handler = \Drupal::service('module_handler');
+
+    if ($module_handler->moduleExists('apigee_m10n_add_credit')) {
+      $addcredit_products = \Drupal::service('config.factory')
+        ->get(AddCreditConfig::CONFIG_NAME)
+        ->get('products');
+      $addcredit_product_id = $addcredit_products[$currency_id]['product_id'] ?? NULL;
+
+      /* @var \Drupal\commerce_product\Entity\ProductInterface $addcredit_product */
+      $addcredit_product = $addcredit_product_id ? \Drupal::service('entity_type.manager')
+        ->getStorage('commerce_product')
+        ->load($addcredit_product_id) : NULL;
+
+      if ($addcredit_product) {
+        return $addcredit_product->toUrl();
+      }
+    }
+
+    return Url::fromRoute('apigee_monetization.billing', [
+      'user' => $account->id(),
+    ]);
   }
 
 }

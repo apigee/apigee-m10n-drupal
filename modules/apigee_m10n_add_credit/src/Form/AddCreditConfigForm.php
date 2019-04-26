@@ -109,13 +109,6 @@ class AddCreditConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('use_modal'),
     ];
 
-    $form['general']['disable_insufficient_funds_workflow'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Disable the insufficient funds workflow.'),
-      '#description' => $this->t('If not checked, then the "Purchase" button on subscriptions will be disabled if developer does not have enough credit.'),
-      '#default_value' => $config->get('disable_insufficient_funds_workflow'),
-    ];
-
     $form['products_container'] = [
       '#type' => 'fieldset',
       '#tree' => FALSE,
@@ -281,7 +274,6 @@ class AddCreditConfigForm extends ConfigFormBase {
     $this->config(AddCreditConfig::CONFIG_NAME)
       ->set('products', $form_state->getValue('products'))
       ->set('use_modal', $form_state->getValue('use_modal'))
-      ->set('disable_insufficient_funds_workflow', $form_state->getValue('disable_insufficient_funds_workflow'))
       ->set('notify_on', $form_state->getValue('notify_on'))
       ->set('notification_recipient', $form_state->getValue('notification_recipient'))
       ->save();

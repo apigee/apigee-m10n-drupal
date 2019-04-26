@@ -23,11 +23,9 @@ use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Subscription;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -45,33 +43,13 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
   protected $entityFormBuilder;
 
   /**
-   * Apigee Monetization utility service.
-   *
-   * @var \Drupal\apigee_m10n\MonetizationInterface
-   */
-  protected $monetization;
-
-  /**
-   * The module handler service.
-   *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
-   */
-  protected $moduleHandler;
-
-  /**
    * BillingController constructor.
    *
    * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entityFormBuilder
    *   Entity form builder service.
-   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
-   *   Apigee Monetization utility service.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   The module handler service.
    */
-  public function __construct(EntityFormBuilderInterface $entityFormBuilder, MonetizationInterface $monetization, ModuleHandlerInterface $moduleHandler) {
+  public function __construct(EntityFormBuilderInterface $entityFormBuilder) {
     $this->entityFormBuilder = $entityFormBuilder;
-    $this->monetization = $monetization;
-    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -79,9 +57,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.form_builder'),
-      $container->get('apigee_m10n.monetization'),
-      $container->get('module_handler')
+      $container->get('entity.form_builder')
     );
   }
 

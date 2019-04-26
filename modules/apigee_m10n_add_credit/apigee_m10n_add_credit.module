@@ -108,13 +108,6 @@ function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity,
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
- */
-function apigee_m10n_add_credit_form_subscription_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  apigee_m10n_add_credit_service()->subscriptionFormAlter($form, $form_state, $form_id);
-}
-
-/**
  * Helper to get the `apigee_m10n.add_credit` service.
  *
  * @return \Drupal\apigee_m10n_add_credit\AddCreditServiceInterface

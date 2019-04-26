@@ -105,7 +105,6 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
     $this->queueMockResponses(['get-supported-currencies']);
     $this->submitForm([
       'use_modal' => FALSE,
-      'disable_insufficient_funds_workflow' => TRUE,
       'notify_on' => AddCreditConfig::NOTIFY_ALWAYS,
       'products[usd][product_id]' => "{$this->product->label()} ({$this->product->id()})",
     ], 'Save configuration');
@@ -114,7 +113,6 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
     // Load the saved config and test the changes.
     $settings = $this->config(AddCreditConfig::CONFIG_NAME);
     static::assertSame(FALSE, $settings->get('use_modal'));
-    static::assertSame(TRUE, $settings->get('disable_insufficient_funds_workflow'));
     static::assertSame($this->product->id(), $settings->get('products.usd.product_id'));
     static::assertSame(AddCreditConfig::NOTIFY_ALWAYS, $settings->get('notify_on'));
     static::assertSame($site_mail, $settings->get('notification_recipient'));

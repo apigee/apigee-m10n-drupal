@@ -1,3 +1,2 @@
 notify_on: "error_only"
 use_modal: TRUE
-disable_insufficient_funds_workflow: FALSE

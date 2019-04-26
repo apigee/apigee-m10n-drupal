@@ -218,4 +218,18 @@ interface MonetizationInterface {
    */
   public function userRolePresave(RoleInterface $user_role);
 
+  /**
+   * Get the URL object for the "add credit" product in the requested currency.
+   * Fallback to the user's prepaid balances page if there isn't a product for
+   * the requested currency.
+   *
+   * @param string $currency_id
+   *   The currency ID.
+   * @param \Drupal\user\UserInterface $account
+   *   The user entity for which to generate the fallback link.
+   *
+   * @return \Drupal\Core\Url
+   */
+  public function getAddCreditUrl($currency_id, UserInterface $account);
+
 }
