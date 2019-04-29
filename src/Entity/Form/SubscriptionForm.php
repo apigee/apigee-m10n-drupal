@@ -197,6 +197,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   }
 
   /**
+   * Insufficient funds workflow.
+   *
    * Handles the "add credit" link and subscribe button status on subcription
    * to rate plan forms.
    *
@@ -256,7 +258,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
           '#url' => $this->monetization->getAddCreditUrl($currency_id, $user),
         ];
 
-        $form['actions']['submit']['#attributes']['disabled']  = 'disabled';
+        $form['actions']['submit']['#attributes']['disabled'] = 'disabled';
       }
     }
   }
