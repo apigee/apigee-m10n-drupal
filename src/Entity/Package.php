@@ -245,13 +245,6 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   /**
    * {@inheritdoc}
    */
-  public function isDefaultRevision($new_value = NULL) {
-    return TRUE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function drupalEntityId(): ?string {
     return $this->decorated->id();
   }

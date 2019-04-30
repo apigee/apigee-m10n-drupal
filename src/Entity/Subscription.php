@@ -186,13 +186,6 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
 
   /**
    * {@inheritdoc}
-   */
-  public function isDefaultRevision($new_value = NULL) {
-    return TRUE;
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException

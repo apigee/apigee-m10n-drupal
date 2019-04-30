@@ -170,13 +170,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
 
   /**
    * {@inheritdoc}
-   */
-  public function isDefaultRevision($new_value = NULL) {
-    return TRUE;
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    *   Thrown if the entity type doesn't exist.
