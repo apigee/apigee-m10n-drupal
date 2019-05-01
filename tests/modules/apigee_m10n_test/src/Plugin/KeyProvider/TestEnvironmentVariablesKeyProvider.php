@@ -64,8 +64,8 @@ class TestEnvironmentVariablesKeyProvider extends EnvironmentVariablesKeyProvide
   /**
    * {@inheritdoc}
    */
-  public function getKeyValue(KeyInterface $key) {
-    $key_value = parent::getKeyValue($key);
+  public function realGetKeyValue(KeyInterface $key) {
+    $key_value = parent::realGetKeyValue($key);
 
     // If the key_value is empty during a request callback get credentials from
     // state.
