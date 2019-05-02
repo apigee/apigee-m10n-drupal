@@ -125,8 +125,17 @@ trait ApigeeMonetizationTestTrait {
     ]);
 
     $key->save();
+
+    // Collect credentials from environment variables.
+    $fields = [];
+    foreach (array_keys($key->getKeyType()->getPluginDefinition()['multivalue']['fields']) as $field) {
+      $id = 'APIGEE_EDGE_' . strtoupper($field);
+      if ($value = getenv($id)) {
+        $fields[$id] = $value;
+      }
+    }
     // Make sure the credentials persists for functional tests.
-    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $key->getKeyValue());
+    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $fields);
 
     $this->config('apigee_edge.auth')
       ->set('active_key', 'apigee_m10n_test_auth')
