@@ -25,7 +25,7 @@ use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessCheck;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultNeutral;
 use Drupal\Core\Cache\Context\CacheContextsManager;
-use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;

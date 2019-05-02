@@ -39,7 +39,6 @@ use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
-use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 

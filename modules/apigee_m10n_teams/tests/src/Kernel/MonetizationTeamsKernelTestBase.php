@@ -26,15 +26,12 @@ use Drupal\apigee_edge_teams\Entity\TeamRole;
 use Drupal\apigee_edge_teams\Entity\TeamRoleInterface;
 use Drupal\Core\Session\UserSession;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
-use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
 use Drupal\user\UserInterface;
 
 /**
  * The base class for Monetization teams kernel tests.
  */
 class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
-
-  use AccountProphecyTrait;
 
   public static $modules = [
     'key',
