@@ -80,7 +80,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     $form = parent::form($form, $form_state);
     // Redirect to Rate Plan detail page on submit.
     $form['#action'] = $this->getEntity()->getRatePlan()->url('subscribe');
-    return $form;
+    return $this->conflictForm($form, $form_state);
   }
 
   /**
@@ -126,7 +126,104 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
+      $messages = $this->messenger->all();
+      $this->messenger->deleteAll();
+      if (!empty($messages['error'][0])) {
+        $overlap_error = $messages['error'][0];
+        // Make sure this is overlapping error message.
+        if (strstr($overlap_error, 'has following overlapping')) {
+          $form_state->setStorage([
+            'planConflicts' => $this->getOverlappingProducts($overlap_error),
+          ]);
+        }
+      }
     }
+  }
+
+  /**
+   * Generate conflict form.
+   *
+   * @param array $form
+   *   A nested array form elements comprising the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The form structure.
+   */
+  protected function conflictForm(array $form, FormStateInterface $form_state) {
+    $storage = $form_state->getStorage();
+    if (!empty($storage['planConflicts'])) {
+      $form['conflicting'] = [
+        '#theme' =>'conflicting_products',
+        '#items' => $storage['planConflicts'],
+      ];
+    }
+    return $form;
+  }
+
+  /**
+   * Parse overlap error message.
+   *
+   * @param string $message
+   *   Error message.
+   *
+   * @return array
+   *   Conflicting/overlapping plans.
+   */
+  protected function getOverlappingProducts($message) {
+    $overlaps = json_decode(substr($message, strpos($message, '=') + 1), TRUE);
+
+    // Remove prefix xxx@ from product ids.
+    $overlaps = array_map(function ($products) {
+      $values = array();
+      foreach ($products as $product_id => $product_name) {
+        $values[substr($product_id, strrpos($product_id, '@') + 1)] = $product_name;
+      }
+      return $values;
+    }, $overlaps);
+
+    $package = $this->getEntity()->getRatePlan()->getPackage();
+
+    // Process products in attempted purchased plan.
+    $products = array();
+    foreach ($package->getApiProducts() as $product) {
+      $products[$product->id()] = $product;
+    }
+
+    $plan_items = array();
+    $overlapping = array();
+    foreach ($overlaps as $plan_id => $overlapping_products) {
+      list($id, $name) = explode('|', $plan_id);
+      $plan_item = array(
+        'data' => $name,
+        'children' => array(),
+      );
+      $overlapping = array(
+        $this->t('Additional products:') => array_diff_key($products, $overlapping_products),
+        $this->t('Excluded products:') => array_diff_key($overlapping_products, $products),
+        $this->t('Conflicting products:') => array_intersect_key($products, $overlapping_products),
+      );
+      foreach ($overlapping as $situation => $situation_products) {
+        if (!empty($situation_products)) {
+          $product_items = array(
+            'data' => $situation,
+            'children' => array(),
+          );
+          foreach ($situation_products as $situation_product) {
+            $product_name = is_object($situation_product) ? $situation_product->getDisplayName() : $situation_product;
+            if (!in_array($product_name, $product_items['children'])) {
+              $product_items['children'][] = $product_name;
+            }
+          }
+          $plan_item['children'][] = $product_items;
+        }
+      }
+      $plan_items[] = $plan_item;
+    }
+
+    return $plan_items;
+
   }
 
 }
