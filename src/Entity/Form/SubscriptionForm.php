@@ -91,6 +91,14 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // Set the save label if one has been passed into storage.
     if (!empty($actions['submit']) && ($save_label = $form_state->get('save_label'))) {
       $actions['submit']['#value'] = $save_label;
+      if ($items = $form_state->get('planConflicts')) {
+        $parameters = \Drupal::routeMatch()->getParameters()->all();
+        $actions['cancel'] = [
+          '#title' => $this->t('Cancel'),
+          '#type'  => 'link',
+          '#url'   => Url::fromRoute('apigee_monetization.packages', ['user' => $parameters['user']->id()]),
+        ];
+      }
     }
     return $actions;
   }
@@ -132,9 +140,9 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $overlap_error = $messages['error'][0];
         // Make sure this is overlapping error message.
         if (strstr($overlap_error, 'has following overlapping')) {
-          $form_state->setStorage([
-            'planConflicts' => $this->getOverlappingProducts($overlap_error),
-          ]);
+          $form_state->set('planConflicts', $this->getOverlappingProducts($overlap_error));
+          // $form_state->getValue('startDate')
+          $form_state->setRebuild(TRUE);
         }
       }
     }
@@ -152,12 +160,12 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    *   The form structure.
    */
   protected function conflictForm(array $form, FormStateInterface $form_state) {
-    $storage = $form_state->getStorage();
-    if (!empty($storage['planConflicts'])) {
+    if ($items = $form_state->get('planConflicts')) {
       $form['conflicting'] = [
         '#theme' =>'conflicting_products',
-        '#items' => $storage['planConflicts'],
+        '#items' => $items,
       ];
+      unset($form['startDate']);
     }
     return $form;
   }
@@ -176,7 +184,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
 
     // Remove prefix xxx@ from product ids.
     $overlaps = array_map(function ($products) {
-      $values = array();
+      $values = [];
       foreach ($products as $product_id => $product_name) {
         $values[substr($product_id, strrpos($product_id, '@') + 1)] = $product_name;
       }
@@ -186,34 +194,35 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     $package = $this->getEntity()->getRatePlan()->getPackage();
 
     // Process products in attempted purchased plan.
-    $products = array();
+    $products = [];
     foreach ($package->getApiProducts() as $product) {
       $products[$product->id()] = $product;
     }
 
-    $plan_items = array();
-    $overlapping = array();
+    $plan_items = [];
     foreach ($overlaps as $plan_id => $overlapping_products) {
       list($id, $name) = explode('|', $plan_id);
-      $plan_item = array(
+      $plan_item = [
         'data' => $name,
-        'children' => array(),
-      );
-      $overlapping = array(
-        $this->t('Additional products:') => array_diff_key($products, $overlapping_products),
-        $this->t('Excluded products:') => array_diff_key($overlapping_products, $products),
-        $this->t('Conflicting products:') => array_intersect_key($products, $overlapping_products),
-      );
+        'children' => [],
+      ];
+      $additional = array_diff_key($products, $overlapping_products);
+      $excluded = array_diff_key($overlapping_products, $products);
+      $conflicting = array_intersect_key($products, $overlapping_products);
+      $overlapping = [
+        'Additional products:' => $additional,
+        'Excluded products:' => $excluded,
+        'Conflicting products:' => $conflicting,
+      ];
       foreach ($overlapping as $situation => $situation_products) {
         if (!empty($situation_products)) {
-          $product_items = array(
-            'data' => $situation,
-            'children' => array(),
-          );
+          $product_items = [
+            'data' => $this->t($situation),
+            'children' => [],
+          ];
           foreach ($situation_products as $situation_product) {
-            $product_name = is_object($situation_product) ? $situation_product->getDisplayName() : $situation_product;
-            if (!in_array($product_name, $product_items['children'])) {
-              $product_items['children'][] = $product_name;
+            if (!in_array($situation_product->getDisplayName(), $product_items['children'])) {
+              $product_items['children'][] = $situation_product->getDisplayName();
             }
           }
           $plan_item['children'][] = $product_items;
