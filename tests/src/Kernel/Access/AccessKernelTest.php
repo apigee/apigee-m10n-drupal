@@ -107,6 +107,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->package = $this->createPackage();
     $this->rate_plan = $this->createPackageRatePlan($this->package);
 
+    $this->prophesizeCurrentUser([]);
   }
 
   /**

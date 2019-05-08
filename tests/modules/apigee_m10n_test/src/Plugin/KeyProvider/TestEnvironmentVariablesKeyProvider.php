@@ -64,15 +64,18 @@ class TestEnvironmentVariablesKeyProvider extends EnvironmentVariablesKeyProvide
   /**
    * {@inheritdoc}
    */
-  public function getKeyValue(KeyInterface $key) {
-    $key_value = parent::getKeyValue($key);
-
+  public function checkRequirements(KeyInterface $key): void {
     // If the key_value is empty during a request callback get credentials from
     // state.
-    $key_value = (!empty($key_value) && $key_value !== '{}') ? $key_value
-      : $this->state->get(static::KEY_VALUE_STATE_ID);
+    $values = $this->state->get(static::KEY_VALUE_STATE_ID);
 
-    return $key_value;
+    foreach ($values as $env_name => $value) {
+      if (!getenv($env_name)) {
+        putenv("{$env_name}={$value}");
+      }
+    }
+
+    parent::checkRequirements($key);
   }
 
 }

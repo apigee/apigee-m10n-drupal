@@ -17,13 +17,13 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n_teams\Traits;
+namespace Drupal\Tests\apigee_m10n\Traits;
 
 use Drupal\Core\Session\AccountProxyInterface;
 use Prophecy\Argument;
 
 /**
- * Tests the team permission access checker.
+ * Trait to prophesize an account.
  */
 trait AccountProphecyTrait {
 

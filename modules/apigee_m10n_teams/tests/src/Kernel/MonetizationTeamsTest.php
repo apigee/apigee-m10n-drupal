@@ -32,7 +32,7 @@ use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormat
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
 /**

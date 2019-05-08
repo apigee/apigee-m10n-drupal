@@ -38,8 +38,7 @@ use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 use Drupal\key\Entity\Key;
-use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeTestTrait;
-use Drupal\Tests\apigee_m10n_teams\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -49,8 +48,7 @@ use Drupal\user\UserInterface;
 trait ApigeeMonetizationTestTrait {
 
   use AccountProphecyTrait;
-  use ApigeeEdgeTestTrait {
-    setUp as edgeSetup;
+  use ApigeeEdgeFunctionalTestTrait {
     createAccount as edgeCreateAccount;
   }
 
@@ -127,8 +125,17 @@ trait ApigeeMonetizationTestTrait {
     ]);
 
     $key->save();
+
+    // Collect credentials from environment variables.
+    $fields = [];
+    foreach (array_keys($key->getKeyType()->getPluginDefinition()['multivalue']['fields']) as $field) {
+      $id = 'APIGEE_EDGE_' . strtoupper($field);
+      if ($value = getenv($id)) {
+        $fields[$id] = $value;
+      }
+    }
     // Make sure the credentials persists for functional tests.
-    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $key->getKeyValue());
+    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $fields);
 
     $this->config('apigee_edge.auth')
       ->set('active_key', 'apigee_m10n_test_auth')
@@ -138,7 +145,7 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Create an account.
    *
-   * We override this function from `ApigeeEdgeTestTrait` so we can queue the
+   * We override this function from `ApigeeEdgeFunctionalTestTrait` so we can queue the
    * appropriate response upon account creation.
    *
    * {@inheritdoc}
