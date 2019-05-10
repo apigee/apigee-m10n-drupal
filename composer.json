@@ -24,12 +24,5 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "extra": {
-        "patches": {
-            "apigee/apigee-client-php": {
-                "The `keepOriginalStartDate` attribute is not always set on rate plan revisions.": "https://github.com/apigee/apigee-client-php/files/2998801/keep-original-start-date.patch.txt"
-            }
-        }
-    }
+    "prefer-stable": true
 }
