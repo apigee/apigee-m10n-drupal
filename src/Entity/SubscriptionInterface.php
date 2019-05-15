@@ -90,4 +90,25 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
    */
   public function getDeveloper(): ?DeveloperInterface;
 
+  /**
+   * Sets the suppressWarning value.
+   *
+   * @param bool $value
+   *   Set to TRUE to suppress all warnings.
+   *
+   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   *   The subscription entity.
+   */
+  public function setSuppressWarning(bool $value): SubscriptionInterface;
+
+  /**
+   * Flag that specifies whether to suppress the error if the developer
+   * attempts to accept a rate plan that overlaps another accepted
+   * rate plan.
+   *
+   * @return bool
+   *   TRUE is warning should be suppressed.
+   */
+  public function getSuppressWarning(): bool;
+
 }

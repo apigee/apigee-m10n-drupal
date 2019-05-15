@@ -121,6 +121,14 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       $display_name = $this->entity->getRatePlan()->getDisplayName();
       Cache::invalidateTags(['apigee_my_subscriptions']);
 
+      // This means the user has confirmed purchase.
+      // We can suppress warning and terminates all purchased rate plans that
+      // the developer has to API packages that contain the conflicting API
+      // products. It then purchases a new API package for the developer.
+      if ($form_state->get('confirm')) {
+        $this->entity->setSuppressWarning(TRUE);
+      }
+
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
@@ -175,6 +183,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
           ],
         ],
       ];
+
+      $form_state->set('confirm', TRUE);
 
       unset($form['startDate']);
     }
