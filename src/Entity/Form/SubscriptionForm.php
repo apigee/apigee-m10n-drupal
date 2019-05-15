@@ -91,6 +91,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // Set the save label if one has been passed into storage.
     if (!empty($actions['submit']) && ($save_label = $form_state->get('save_label'))) {
       $actions['submit']['#value'] = $save_label;
+      $actions['submit']['#button_type'] = 'primary';
       if ($items = $form_state->get('planConflicts')) {
         $parameters = \Drupal::routeMatch()->getParameters()->all();
         $actions['cancel'] = [
@@ -165,6 +166,16 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         '#theme' =>'conflicting_products',
         '#items' => $items,
       ];
+
+      $form['warning'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          'warning' => [
+            $this->t('<strong>Warning:</strong> This action cannot be undone.'),
+          ],
+        ],
+      ];
+
       unset($form['startDate']);
     }
     return $form;
