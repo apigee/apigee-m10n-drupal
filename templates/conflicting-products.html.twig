@@ -8,28 +8,30 @@
  */
 #}
 {% if items %}
-<h4 class="conflict-message">{{ 'The plans below share some common products with the plan you are trying to purchase. However if you continue to purchase then these plans will be replaced by the plan you are about to purchase'|t }}</h4>
-<table class='conflicting-produts'>
-  <thead>
+  <h4
+    class="conflict-message">{{ 'The plans below share some common products with the plan you are trying to purchase. However if you continue to purchase then these plans will be replaced by the plan you are about to purchase'|t }}</h4>
+  <table class='conflicting-produts'>
+    <thead>
     <tr>
       <th>{{ 'Already Purchased Plan'|t }}</th>
       <th>{{ 'Has Product'|t }}</th>
     </tr>
-  </thead>
-  <tbody>
-  {% for item in items %}
+    </thead>
+    <tbody>
+    {% for item in items %}
       <tr>
         <td>{{ item.data }}</td>
         <td>
-            {% for situation_item in item.children %}
-              <p class="conflict-type-name">{{ situation_item.data }}</p>
-                {% for situation_children in situation_item.children %}
-                    <p class="conflict">{{ situation_children }}</p>
-                {% endfor %}
-          {% endfor %}
+          <div class="item-list">
+            <ul>
+              {% for product in item.products %}
+                <li class="conflict">{{ product }}</li>
+              {% endfor %}
+            </ul>
+          </div>
         </td>
       </tr>
-  {% endfor %}
-  </tbody>
-</table>
+    {% endfor %}
+    </tbody>
+  </table>
 {% endif %}

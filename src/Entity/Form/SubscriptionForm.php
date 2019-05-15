@@ -201,38 +201,21 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
 
     $plan_items = [];
     foreach ($overlaps as $plan_id => $overlapping_products) {
-      list($id, $name) = explode('|', $plan_id);
+      list(, $name) = explode('|', $plan_id);
       $plan_item = [
         'data' => $name,
-        'children' => [],
+        'products' => [],
       ];
-      $additional = array_diff_key($products, $overlapping_products);
-      $excluded = array_diff_key($overlapping_products, $products);
+
       $conflicting = array_intersect_key($products, $overlapping_products);
-      $overlapping = [
-        'Additional products:' => $additional,
-        'Excluded products:' => $excluded,
-        'Conflicting products:' => $conflicting,
-      ];
-      foreach ($overlapping as $situation => $situation_products) {
-        if (!empty($situation_products)) {
-          $product_items = [
-            'data' => $this->t($situation),
-            'children' => [],
-          ];
-          foreach ($situation_products as $situation_product) {
-            if (!in_array($situation_product->getDisplayName(), $product_items['children'])) {
-              $product_items['children'][] = $situation_product->getDisplayName();
-            }
-          }
-          $plan_item['children'][] = $product_items;
-        }
+      foreach ($conflicting as $situation_product) {
+        $plan_item['products'][] = $situation_product->getDisplayName();
       }
+
       $plan_items[] = $plan_item;
     }
 
     return $plan_items;
-
   }
 
 }
