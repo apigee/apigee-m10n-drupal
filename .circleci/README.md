@@ -1,4 +1,4 @@
-# Continous Integration
+# Continuous Integration
 
 Continuous integration has been set up using the GitHub project
 [deviantintegral/drupal_tests](https://github.com/deviantintegral/drupal_tests).
