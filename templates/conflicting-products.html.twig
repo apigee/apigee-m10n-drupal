@@ -23,7 +23,9 @@
         <td>{{ item.data }}</td>
         <td>
           {% for situation_item in item.children %}
-            <h3 class="conflict-type-name">{{ situation_item.data }}</h3>
+            <h3 class="conflict-type-name">
+              <strong>{{ situation_item.data }}</strong>
+            </h3>
             <div class="item-list">
               <ul>
                 {% for situation_children in situation_item.children %}

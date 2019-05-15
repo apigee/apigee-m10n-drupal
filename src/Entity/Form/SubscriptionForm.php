@@ -221,9 +221,9 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       $excluded = array_diff_key($overlapping_products, $products);
       $conflicting = array_intersect_key($products, $overlapping_products);
       $overlapping = [
+        'Conflicting products' => $conflicting,
         'Additional products' => $additional,
         'Excluded products' => $excluded,
-        'Conflicting products' => $conflicting,
       ];
       foreach ($overlapping as $situation => $situation_products) {
         if (!empty($situation_products)) {
