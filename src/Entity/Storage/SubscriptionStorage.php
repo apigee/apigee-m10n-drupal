@@ -103,10 +103,13 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
     return $entities;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function doSave($id, EntityInterface $entity) {
     $result = static::SAVED_UNKNOWN;
     $this->withController(function (DeveloperAcceptedRatePlanSdkControllerProxyInterface $controller) use ($id, $entity, &$result) {
-      /** @var SubscriptionInterface $entity */
+      /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
       if ($entity->isNew()) {
         $controller->doCreate($entity->decorated(), $entity->getSuppressWarning());
         $result = SAVED_NEW;
@@ -118,7 +121,6 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
     });
     return $result;
   }
-
 
   /**
    * {@inheritdoc}

@@ -171,7 +171,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   protected function conflictForm(array $form, FormStateInterface $form_state) {
     if ($items = $form_state->get('planConflicts')) {
       $form['conflicting'] = [
-        '#theme' =>'conflicting_products',
+        '#theme' => 'conflicting_products',
         '#items' => $items,
       ];
 

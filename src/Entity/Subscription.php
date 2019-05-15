@@ -72,9 +72,7 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   public const ENTITY_TYPE_ID = 'subscription';
 
   /**
-   * Flag that specifies whether to suppress the error if the developer
-   * attempts to accept a rate plan that overlaps another accepted
-   * rate plan.
+   * Suppress errors if rate plan that overlaps another accepted rate plan.
    *
    * @var bool
    */

@@ -102,9 +102,7 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
   public function setSuppressWarning(bool $value): SubscriptionInterface;
 
   /**
-   * Flag that specifies whether to suppress the error if the developer
-   * attempts to accept a rate plan that overlaps another accepted
-   * rate plan.
+   * Returns the suppressWarning value.
    *
    * @return bool
    *   TRUE is warning should be suppressed.
