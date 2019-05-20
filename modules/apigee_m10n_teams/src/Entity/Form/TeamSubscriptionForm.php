@@ -33,13 +33,6 @@ class TeamSubscriptionForm extends SubscriptionForm {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
-    return parent::form($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function save(array $form, FormStateInterface $form_state) {
     try {
       if ($this->entity instanceof TeamsSubscriptionInterface && $this->entity->isTeamSubscription()) {
