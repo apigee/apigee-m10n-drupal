@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity\Form;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\Cache;
@@ -44,13 +45,23 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   protected $messenger;
 
   /**
+   * The current_route_match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $currentRouteMatch;
+
+  /**
    * Constructs a SubscriptionEditForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
+   *   The current_route_match service.
    */
-  public function __construct(MessengerInterface $messenger = NULL) {
+  public function __construct(MessengerInterface $messenger = NULL, CurrentRouteMatch $current_route_match) {
     $this->messenger = $messenger;
+    $this->currentRouteMatch = $current_route_match;
   }
 
   /**
@@ -58,7 +69,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('current_route_match')
     );
   }
 
@@ -92,8 +104,9 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     if (!empty($actions['submit']) && ($save_label = $form_state->get('save_label'))) {
       $actions['submit']['#value'] = $save_label;
       $actions['submit']['#button_type'] = 'primary';
-      if ($items = $form_state->get('planConflicts')) {
-        $parameters = \Drupal::routeMatch()->getParameters()->all();
+
+      if ($form_state->get('planConflicts')) {
+        $parameters = $this->currentRouteMatch->getParameters()->all();
         $actions['cancel'] = [
           '#title' => $this->t('Cancel'),
           '#type'  => 'link',
@@ -150,7 +163,6 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         // Make sure this is overlapping error message.
         if (strstr($overlap_error, 'has following overlapping')) {
           $form_state->set('planConflicts', $this->getOverlappingProducts($overlap_error));
-          // $form_state->getValue('startDate')
           $form_state->setRebuild(TRUE);
         }
       }
