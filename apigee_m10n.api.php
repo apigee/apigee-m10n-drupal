@@ -20,6 +20,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * @file
@@ -42,6 +43,17 @@ use Drupal\Core\Entity\EntityInterface;
  * @see \Drupal\apigee_m10n\Controller\PrepaidBalanceControllerBase::render()
  */
 function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterface $entity) {
+}
+
+/**
+ * Alters the insufficient balance error message.
+ *
+ * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
+ *   A translatable error message.
+ *
+ * @see \Drupal\apigee_m10n\Entity\Form\SubscriptionForm::save()
+ */
+function hook_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup $message) {
 }
 
 /**

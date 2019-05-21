@@ -24,6 +24,7 @@ use Apigee\Edge\Exception\ClientErrorException;
 use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -40,7 +41,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    */
   const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
 
-  /*
+  /**
    * Insufficient funds API error code.
    */
   const INSUFFICIENT_FUNDS_ERROR = 'mint.insufficientFunds';
@@ -60,11 +61,18 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   protected $monetization;
 
   /**
-   * The system theme config object.
+   * The config factory.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $config;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $module_handler;
 
   /**
    * Constructs a SubscriptionEditForm object.
@@ -75,11 +83,14 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    *   Apigee Monetization utility service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
-  public function __construct(MessengerInterface $messenger = NULL, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory) {
+  public function __construct(MessengerInterface $messenger, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
     $this->messenger = $messenger;
     $this->monetization = $monetization;
     $this->config = $config_factory;
+    $this->module_handler = $module_handler;
   }
 
   /**
@@ -89,7 +100,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     return new static(
       $container->get('messenger'),
       $container->get('apigee_m10n.monetization'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('module_handler')
     );
   }
 
@@ -147,7 +159,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       // Auto assign legal name.
       $developer_id = $this->entity->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
-      // Autopopulate legal name when developer has no legal name attribute set.
+      // Auto-populate legal name when developer has no legal name attribute.
       if (empty($developer->getAttributeValue(static::LEGAL_NAME_ATTR))) {
         $developer->setAttribute(static::LEGAL_NAME_ATTR, $developer_id);
         $developer->save();
@@ -178,17 +190,14 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $rate_plan = $this->getEntity()->getRatePlan();
         $currency_id = $rate_plan->getCurrency()->id();
 
-        $message = 'You have insufficient funds to purchase plan %plan.';
-        $message .= $amount ? ' To purchase this plan you are required to add at least %amount to your account.' : '';
-        $message .= ' @link';
-        $params = [
+        $amount_formatted = $this->monetization->formatCurrency($matches['amount'][0], $currency_id);
+        $insufficient_funds_error_message = $this->t('You have insufficient funds to purchase plan %plan. @adenndum', [
           '%plan' => $rate_plan->label(),
-          '%amount' => $this->monetization->formatCurrency($matches['amount'][0], $currency_id),
-          '@link' => \Drupal::service('link_generator')
-            ->generate($this->t('Add credit'), $this->monetization->getAddCreditUrl($currency_id, $this->getEntity()->getOwner())),
-        ];
-
-        $this->messenger->addError($this->t($message, $params));
+          '%amount' => $amount_formatted,
+          '@adenndum' => $amount ? $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]) : '',
+        ]);
+        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message);
+        $this->messenger->addError($insufficient_funds_error_message);
       }
       else {
         $this->messenger->addError($e->getMessage());
@@ -206,11 +215,12 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    *   The form to alter.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
+   *
+   * @throws \Exception
    */
   protected function insufficientFundsWorkflow(array &$form, FormStateInterface $form_state) {
     // Check if insufficient_funds_workflow is disabled, and do nothing if so.
-    $prepaid_balance_config = $this->config->get(PrepaidBalanceConfigForm::CONFIG_NAME);
-    if (!$prepaid_balance_config->get('enable_insufficient_funds_workflow')) {
+    if (!$this->config->get(PrepaidBalanceConfigForm::CONFIG_NAME)->get('enable_insufficient_funds_workflow') !== TRUE) {
       return;
     }
 
@@ -228,7 +238,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       $developer = NULL;
     }
 
-    // If developer is prepaid, check if enough balance to subscribe to rate plan.
+    // If developer is prepaid, check for sufficient balance to subscribe to the
+    // rate plan.
     if ($developer && $developer->getBillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
       $prepaid_balances = [];
       foreach ($this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
@@ -241,21 +252,18 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       $currency_id = $rate_plan->getCurrency()->id();
       $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
       if ($min_balance_needed > $prepaid_balances[$currency_id]) {
-        $form['add_credit'] = [
+        $form['insufficient_balance'] = [
           '#type' => 'container',
         ];
 
-        $form['add_credit']['add_credit_message'] = [
-          '#type' => 'html_tag',
-          '#tag' => 'p',
-          '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
-            '%plan' => $rate_plan->label(),
-          ]),
-        ];
-        $form['add_credit']['add_credit_link'] = [
-          '#type' => 'link',
-          '#title' => $this->t('Add credit'),
-          '#url' => $this->monetization->getAddCreditUrl($currency_id, $user),
+        $form['insufficient_balance'][$currency_id] = [
+          'message' => [
+            '#type' => 'html_tag',
+            '#tag' => 'p',
+            '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
+              '%plan' => $rate_plan->label(),
+            ]),
+          ],
         ];
 
         $form['actions']['submit']['#attributes']['disabled'] = 'disabled';
