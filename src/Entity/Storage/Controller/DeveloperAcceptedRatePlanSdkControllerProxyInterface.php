@@ -51,4 +51,16 @@ interface DeveloperAcceptedRatePlanSdkControllerProxyInterface extends EdgeEntit
    */
   public function loadById(string $developer_id, string $id): ?EntityInterface;
 
+  /**
+   * Creates an entity in Apigee Edge.
+   *
+   * Applies incoming values from Apigee Edge in $entity.
+   *
+   * @param \Apigee\Edge\Entity\EntityInterface $entity
+   *   The created entity.
+   * @param bool $suppress_warning
+   *   Set to TRUE to suppress warnings. See \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface::acceptRatePlan.
+   */
+  public function doCreate(EntityInterface $entity, bool $suppress_warning = FALSE): void;
+
 }
