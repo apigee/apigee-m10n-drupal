@@ -20,10 +20,12 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
+use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_product\Entity\ProductType;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Access\AccessResult;
@@ -33,8 +35,10 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\commerce_product\Entity\ProductType;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Url;
 
 /**
  * Helper service to handle basic module tasks.
@@ -42,6 +46,8 @@ use Drupal\Core\Session\AccountInterface;
  * @package Drupal\apigee_m10n_add_credit
  */
 class AddCreditService implements AddCreditServiceInterface {
+
+  use StringTranslationTrait;
 
   /**
    * The current user's account object.
@@ -98,16 +104,16 @@ class AddCreditService implements AddCreditServiceInterface {
     switch ($key) {
       case 'balance_adjustment_report':
         $options = ['langcode' => $message['langcode']];
-        $message['subject'] = t('Add Credit successfully applied to account (@email@team_name) from @site', $params, $options);
-        $message['body'][0] = t($params['report_text'], $params, $options);
+        $message['subject'] = $this->t('Add Credit successfully applied to account (@email@team_name) from @site', $params, $options);
+        $message['body'][0] = $this->t($params['report_text'], $params, $options);
         break;
 
       case 'balance_adjustment_error_report':
         $options = ['langcode' => $message['langcode']];
         $params['@site'] = $this->config->get('system.site')->get('name');
-        $message['subject'] = t('Developer account add credit error from @site', $params, $options);
+        $message['subject'] = $this->t('Developer account add credit error from @site', $params, $options);
         $body = "There was an error applying a credit to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error";
-        $message['body'][0] = t($body, $params, $options);
+        $message['body'][0] = $this->t($body, $params, $options);
         break;
 
     }
@@ -125,7 +131,7 @@ class AddCreditService implements AddCreditServiceInterface {
         // to be allocated but the option to enable will be hidden and unused
         // unless enabled for that bundle.
         $fields[AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME] = BaseFieldDefinition::create('boolean')
-          ->setLabel(t('This is an Apigee add credit product'))
+          ->setLabel($this->t('This is an Apigee add credit product'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
           ->setDefaultValue(FALSE);
@@ -133,7 +139,7 @@ class AddCreditService implements AddCreditServiceInterface {
 
       case 'commerce_product_variation':
         $fields['apigee_price_range'] = BaseFieldDefinition::create('apigee_price_range')
-          ->setLabel(t('Price range'))
+          ->setLabel($this->t('Price range'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
           ->setDisplayConfigurable('form', TRUE)
@@ -143,7 +149,7 @@ class AddCreditService implements AddCreditServiceInterface {
       case 'commerce_order_item':
         // Add a field to set the add credit target entity.
         $fields[AddCreditConfig::TARGET_FIELD_NAME] = BaseFieldDefinition::create('add_credit_target_entity')
-          ->setLabel(t('Add credit target'))
+          ->setLabel($this->t('Add credit target'))
           ->setRevisionable(TRUE)
           ->setTranslatable(TRUE)
           ->setRequired(TRUE)
@@ -189,14 +195,14 @@ class AddCreditService implements AddCreditServiceInterface {
     // Add an option to allow enabling Apigee add credit for a product type.
     $form['apigee_m10n_enable_add_credit'] = [
       '#type' => 'checkbox',
-      '#title' => t('Enable <em>Apigee Monetization Add Credit</em> for this product type.'),
+      '#title' => $this->t('Enable <em>Apigee Monetization Add Credit</em> for this product type.'),
       '#default_value' => $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit'),
     ];
 
     // Add an option to allow skip cart for a product type.
     $form['apigee_m10n_enable_skip_cart'] = [
       '#type' => 'checkbox',
-      '#title' => t('Skip cart and go directly to checkout for this product type.'),
+      '#title' => $this->t('Skip cart and go directly to checkout for this product type.'),
       '#default_value' => $product_type->getThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart'),
     ];
 
@@ -286,6 +292,22 @@ class AddCreditService implements AddCreditServiceInterface {
       // Add a custom validation handler to check for add credit products.
       array_unshift($form['#validate'], [static::class, 'checkoutFormReviewValidate']);
     }
+    // Add links to add credit to the account.
+    if (($form_object = $form_state->getFormObject())
+      && $form_object instanceof SubscriptionForm
+      && !empty($form["insufficient_balance"])
+    ) {
+      foreach (Element::children($form["insufficient_balance"]) as $currency_id) {
+        $subscription = $form_object->getEntity();
+        if ($add_credit_url = $this->getAddCreditUrl($currency_id, $subscription->getOwner())) {
+          $form["insufficient_balance"][$currency_id]['add_credit_link'] = [
+            '#type' => 'link',
+            '#title' => $this->t('Add credit'),
+            '#url' => $add_credit_url,
+          ];
+        }
+      }
+    }
   }
 
   /**
@@ -297,8 +319,6 @@ class AddCreditService implements AddCreditServiceInterface {
     if ((count($build['table']['#rows']))) {
       $has_operations = FALSE;
       $config = $this->config->get(AddCreditConfig::CONFIG_NAME);
-      $plugin_id = $entity->getEntityTypeId() === 'user' ? 'developer' : $entity->getEntityTypeId();
-      $plugin = $this->addCreditPluginManager->getPluginById($plugin_id);
 
       $attributes['class'][] = 'button';
       if ($use_modal = $config->get('use_modal')) {
@@ -313,7 +333,7 @@ class AddCreditService implements AddCreditServiceInterface {
       }
 
       foreach ($build['table']['#rows'] as $currency_id => &$row) {
-        if ($plugin->access($entity, $this->current_user)->isAllowed()
+        if (($add_credit_url = $this->getAddCreditUrl($currency_id, $entity))
           && ($product = $this->addCreditProductManager->getProductForCurrency($currency_id))) {
           // Add cache tags even if product is not add credit enabled.
           // This allows cache invalidation when product is add credit enabled
@@ -322,37 +342,28 @@ class AddCreditService implements AddCreditServiceInterface {
 
           // If the currency has a configured add credit product, add a link to
           // add credit to this balance.
-          if ($product->isPublished() && $this->addCreditProductManager->isProductAddCreditEnabled($product)) {
-            $has_operations = TRUE;
-            $row['data']['operations']['data'] = [
-              '#type' => 'operations',
-              '#links' => [
-                'add_credit' => [
-                  'title' => t('Add credit'),
-                  'url' => $product->toUrl('canonical', [
-                    'query' => [
-                      AddCreditConfig::TARGET_FIELD_NAME => [
-                        'target_type' => $plugin_id,
-                        'target_id' => $plugin->getEntityId($entity),
-                      ],
-                    ],
-                  ]),
-                  'attributes' => $attributes,
-                ],
+          $has_operations = TRUE;
+          $row['data']['operations']['data'] = [
+            '#type' => 'operations',
+            '#links' => [
+              'add_credit' => [
+                'title' => $this->t('Add credit'),
+                'url' => $add_credit_url,
+                'attributes' => $attributes,
               ],
-              '#attributes' => [
-                'class' => [
-                  'add-credit',
-                  'add-credit--' . $currency_id,
-                ],
+            ],
+            '#attributes' => [
+              'class' => [
+                'add-credit',
+                'add-credit--' . $currency_id,
               ],
-            ];
-          }
+            ],
+          ];
         }
       }
 
       if ($has_operations) {
-        $build['table']['#header']['operations'] = t('Operations');
+        $build['table']['#header']['operations'] = $this->t('Operations');
 
         // Fill in empty operation column.
         foreach ($build['table']['#rows'] as $currency_id => &$row) {
@@ -376,6 +387,41 @@ class AddCreditService implements AddCreditServiceInterface {
       $build['table']['#cache']['contexts'][] = 'user.permissions';
       $build['table']['#cache']['tags'] = Cache::mergeTags($build['table']['#cache']['tags'], ['config:' . AddCreditConfig::CONFIG_NAME]);
     }
+  }
+
+  /**
+   * Gets an add credit URL for a user.
+   *
+   * @param string $currency_id
+   *   The ID cor the currency the add credit link should be for.
+   * @param \Drupal\Core\Entity\EntityInterface $add_credit_target
+   *   The developer/team the credit should be added to.
+   *
+   * @return \Drupal\Core\Url|null
+   *   The URL if it is available.
+   */
+  protected function getAddCreditUrl($currency_id, EntityInterface $add_credit_target): ?Url {
+    $target_id = $add_credit_target->id();
+
+    // Make sure the product is enabled and check access.
+    if (($product = $this->addCreditProductManager->getProductForCurrency($currency_id))
+      && $product->isPublished()
+      && ($add_credit_type_plugin = $this->addCreditPluginManager->getPluginById($add_credit_target->getEntityTypeId() === 'user' ? 'developer' : $add_credit_target->getEntityTypeId()))
+      && $add_credit_type_plugin->access($add_credit_target, $this->current_user)->isAllowed()
+      && $this->addCreditProductManager->isProductAddCreditEnabled($product)
+    ) {
+      // Returns the product URL.
+      return $product->toUrl('canonical', [
+        'query' => [
+          AddCreditConfig::TARGET_FIELD_NAME => [
+            'target_type' => $add_credit_type_plugin->getPluginId(),
+            'target_id' => $target_id,
+          ],
+        ],
+      ]);
+    }
+
+    return NULL;
   }
 
   /**
