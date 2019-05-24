@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Apigee\Edge\Exception\ClientErrorException;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -155,16 +156,12 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       }
     }
     catch (\Exception $e) {
-      $this->messenger->addError($e->getMessage());
-      $messages = $this->messenger->all();
-      $this->messenger->deleteAll();
-      if (!empty($messages['error'][0])) {
-        $overlap_error = $messages['error'][0];
-        // Make sure this is overlapping error message.
-        if (strstr($overlap_error, 'has following overlapping')) {
-          $form_state->set('planConflicts', $this->getOverlappingProducts($overlap_error));
-          $form_state->setRebuild(TRUE);
-        }
+      if (($client_error = $e->getPrevious())
+        && $client_error instanceof ClientErrorException
+        && $client_error->getEdgeErrorCode() === 'mint.developerHasFollowingOverlapRatePlans'
+      ) {
+        $form_state->set('planConflicts', $this->getOverlappingProducts($e->getMessage()));
+        $form_state->setRebuild(TRUE);
       }
     }
   }
