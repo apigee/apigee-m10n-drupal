@@ -70,6 +70,9 @@ class TeamsSubscription extends Subscription implements TeamsSubscriptionInterfa
     if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof RatePlanInterface) {
       $this->setRatePlan($values['ratePlan']);
     }
+
+    // Do not suppress warnings by default.
+    $this->suppressWarning = FALSE;
   }
 
   /**
