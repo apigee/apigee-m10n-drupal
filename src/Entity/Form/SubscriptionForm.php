@@ -260,13 +260,12 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
           'message' => [
             '#type' => 'html_tag',
             '#tag' => 'p',
-            '#value' => $this->t('You have insufficient funds to purchase plan %plan.', [
-              '%plan' => $rate_plan->label(),
-            ]),
+            '#value' => $this->t('You have insufficient funds to purchase this rate plan.'),
           ],
         ];
 
-        $form['actions']['submit']['#attributes']['disabled'] = 'disabled';
+        $form['startDate']['#access'] = FALSE;
+        $form['actions']['submit']['#access'] = FALSE;
       }
     }
   }
