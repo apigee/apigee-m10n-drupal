@@ -114,9 +114,5 @@ function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity,
  *   The `apigee_m10n.add_credit` service.
  */
 function apigee_m10n_add_credit_service() {
-  // Use static caching for performance.
-  static $service;
-  $service = $service ?: \Drupal::service('apigee_m10n.add_credit');
-
-  return $service;
+  return \Drupal::service('apigee_m10n.add_credit');
 }
