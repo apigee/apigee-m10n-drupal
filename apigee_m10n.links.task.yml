@@ -20,29 +20,37 @@ apigee_m10n.settings.subscription:
   base_route: apigee_m10n.settings.subscription
   weight: -10
 
+apigee_m10n.balance_and_plans:
+  route_name: apigee_monetization.billing
+  title: 'Balance and plans'
+  base_route: entity.user.canonical
+
 apigee_m10n.billing:
   title: 'Prepaid balance'
   route_name: apigee_monetization.billing
   base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
   weight: -2
-
-apigee_m10n.settings.prepaid_balance:
-  title: 'Prepaid balance'
-  route_name: apigee_m10n.settings.prepaid_balance
-  base_route: apigee_m10n.settings.prepaid_balance
-  weight: -10
 
 apigee_m10n.subscriptions:
   title: 'Purchased plans'
   route_name: entity.subscription.developer_collection
   base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
   weight: -1
 
 apigee_m10n.profile:
   title: 'Billing Details'
   route_name: apigee_monetization.profile
   base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
   weight: 0
+
+apigee_m10n.settings.prepaid_balance:
+  title: 'Prepaid balance'
+  route_name: apigee_m10n.settings.prepaid_balance
+  base_route: apigee_m10n.settings.prepaid_balance
+  weight: -10
 
 entity.package.collection:
   title: 'Packages'
