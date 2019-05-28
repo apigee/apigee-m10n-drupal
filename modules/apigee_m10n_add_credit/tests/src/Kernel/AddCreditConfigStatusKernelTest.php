@@ -96,14 +96,12 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
 
     $requirements = $this->checkAddCreditRequirements();
     $this->assertEquals(REQUIREMENT_WARNING, $requirements['severity']);
-    $description = strip_tags((string) $requirements['description']);
-    $this->assertEquals('The following supported currencies have not been configured for add credit: usd, aud.', $description);
+    $this->assertEquals('The following supported currencies have not been configured for add credit: usd, aud.', strip_tags((string) $requirements['description']));
 
     // Configure product for usd.
     $this->configureProductForCurrencies(['usd']);
     $requirements = $this->checkAddCreditRequirements();
-    $description = strip_tags((string) $requirements['description']);
-    $this->assertEquals('The following supported currencies have not been configured for add credit: aud.', $description);
+    $this->assertEquals('The following supported currencies have not been configured for add credit: aud.', strip_tags((string) $requirements['description']));
 
     // Configure product for all currencies.
     $this->configureProductForCurrencies(['usd', 'aud']);
