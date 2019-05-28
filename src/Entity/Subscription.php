@@ -72,6 +72,13 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   public const ENTITY_TYPE_ID = 'subscription';
 
   /**
+   * Suppress errors if rate plan that overlaps another accepted rate plan.
+   *
+   * @var bool
+   */
+  protected $suppressWarning;
+
+  /**
    * The rate plan this subscription belongs to.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
@@ -109,6 +116,9 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
       // benefit worth it?
       $this->setRatePlan($values['ratePlan']);
     }
+
+    // Do not suppress warnings by default.
+    $this->suppressWarning = FALSE;
   }
 
   /**
@@ -337,6 +347,21 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   public function getDeveloper(): ?DeveloperInterface {
     // TODO: Return the `apigee_edge` developer entity reference.
     return $this->decorated->getDeveloper();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSuppressWarning(bool $value): SubscriptionInterface {
+    $this->suppressWarning = $value;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSuppressWarning(): bool {
+    return $this->suppressWarning;
   }
 
   /**
