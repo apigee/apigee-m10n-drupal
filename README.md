@@ -49,6 +49,6 @@ to get you started quickly.
 
 Development is happening in our [GitHub repository](https://github.com/apigee/apigee-m10n-drupal). The Drupal.org issue queue is disabled; we use the [Github issue queue](https://github.com/apigee/apigee-m10n-drupal/issues) to coordinate development.
 
-## Disclaimer
+## Support
 
-This is not an officially supported Google product.
+This project, which integrates Drupal 8 with Apigee Edge, is supported by Google.
