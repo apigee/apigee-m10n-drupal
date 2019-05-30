@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
-use Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface;
 use Apigee\Edge\Api\Monetization\Entity\RatePlan as MonetizationRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
@@ -33,6 +32,7 @@ use Drupal\apigee_m10n\Entity\Property\FreemiumPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\IdPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
@@ -77,6 +77,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use IdPropertyAwareDecoratorTrait;
   use NamePropertyAwareDecoratorTrait;
   use OrganizationPropertyAwareDecoratorTrait;
+  use PackagePropertyAwareDecoratorTrait;
   use PaymentDueDaysPropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
 
@@ -345,20 +346,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function setPrivate(bool $private): void {
     $this->decorated->setPrivate($private);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPackage(): ?ApiPackageInterface {
-    return $this->decorated->getPackage();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPackage(ApiPackageInterface $package): void {
-    $this->decorated->setPackage($package);
   }
 
   /**
