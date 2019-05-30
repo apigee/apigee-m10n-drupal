@@ -144,10 +144,11 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   protected static function getProperties(): array {
-    $properties = parent::getProperties();
-    $properties['subscribe'] = 'apigee_subscribe';
-
-    return $properties;
+    return [
+      'subscribe' => 'apigee_subscribe',
+      'packageEntity' => 'entity_reference',
+      'packageProducts' => 'entity_reference',
+    ] + parent::getProperties();
   }
 
   /**
@@ -165,6 +166,18 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     $subscribe_label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_label');
     // `$subscribe_label` is not translated, use `config_translation` instead.
     $definitions['subscribe']->setLabel($subscribe_label ?? t('Purchase'));
+
+    // The API products are many-to-one.
+    $definitions['packageEntity']->setCardinality(1)
+      ->setSetting('target_type', 'package')
+      ->setLabel(t('Package'))
+      ->setDescription(t('The API package the rate plan belongs to.'));
+
+    // The API products are many-to-one.
+    $definitions['packageProducts']->setCardinality(-1)
+      ->setSetting('target_type', 'api_product')
+      ->setLabel(t('Products'))
+      ->setDescription(t('Products included in the API package.'));
 
     return $definitions;
   }
@@ -444,6 +457,25 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function setSetUpFee(float $setUpFee): void {
     $this->decorated->setSetUpFee($setUpFee);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPackageEntity() {
+    return ['target_id' => $this->getPackage()->id()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPackageProducts() {
+    return $this
+      ->get('packageEntity')
+      ->first()
+      ->get('entity')
+      ->getValue()
+      ->getApiProducts();
   }
 
 }

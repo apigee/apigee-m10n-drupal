@@ -98,6 +98,11 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getRecurringType(), $this->rate_plan->getRecurringType());
     static::assertSame($rate_plan->getSetUpFee(), $this->rate_plan->getSetUpFee());
     static::assertSame("/user/{$account->id()}/monetization/package/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
+    // Check package API products.
+    $product_ids = array_map(function ($product) {
+      return ['target_id' => $product->id()];
+    }, $rate_plan->getPackage()->getApiProducts());
+    static::assertSame($product_ids, $this->rate_plan->getPackageProducts());
   }
 
 }
