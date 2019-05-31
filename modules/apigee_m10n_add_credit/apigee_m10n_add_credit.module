@@ -18,10 +18,12 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Implements hook_mail().
@@ -105,6 +107,13 @@ function apigee_m10n_add_credit_apigee_m10n_prepaid_balance_list_alter(array &$b
  */
 function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity, $operation, AccountInterface $account) {
   return apigee_m10n_add_credit_service()->commerceProductAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_apigee_m10n_insufficient_balance_error_message_alter().
+ */
+function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, SubscriptionInterface $subscription) {
+  return apigee_m10n_add_credit_service()->insufficientBalanceErrorMessageAlter($message, $subscription);
 }
 
 /**

@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
 use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
+use Drupal\apigee_m10n\Entity\SubscriptionInterface;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
@@ -35,9 +36,11 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
 /**
@@ -387,6 +390,19 @@ class AddCreditService implements AddCreditServiceInterface {
       $build['table']['#cache']['contexts'][] = 'user.permissions';
       $build['table']['#cache']['tags'] = Cache::mergeTags($build['table']['#cache']['tags'], ['config:' . AddCreditConfig::CONFIG_NAME]);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, SubscriptionInterface $subscription) {
+    $arguments = $message->getArguments();
+    $options = $message->getOptions();
+    $original_message = $message->getUntranslatedString();
+
+    // Add the "Add credit" link.
+    $arguments['@link'] = Link::fromTextAndUrl('Add credit', $this->getAddCreditUrl($subscription->getRatePlan()->getCurrency()->id(), user_load_by_mail($subscription->getDeveloper()->getEmail())))->toString();
+    $message = $this->t("{$original_message} @link", $arguments, $options);
   }
 
   /**
