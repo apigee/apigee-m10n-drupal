@@ -129,6 +129,10 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'variables' => ['detail' => NULL],
       'template' => 'rate-plan-detail',
     ],
+    'conflicting_products' => [
+      'variables' => ['items' => NULL],
+      'template' => 'conflicting-products',
+    ],
   ];
 }
 

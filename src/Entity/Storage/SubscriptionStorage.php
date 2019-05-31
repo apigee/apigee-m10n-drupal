@@ -27,6 +27,7 @@ use Drupal\apigee_m10n\Exception\UnexpectedValueException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -100,6 +101,25 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
     });
 
     return $entities;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function doSave($id, EntityInterface $entity) {
+    $result = static::SAVED_UNKNOWN;
+    $this->withController(function (DeveloperAcceptedRatePlanSdkControllerProxyInterface $controller) use ($id, $entity, &$result) {
+      /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+      if ($entity->isNew()) {
+        $controller->doCreate($entity->decorated(), $entity->getSuppressWarning());
+        $result = SAVED_NEW;
+      }
+      else {
+        $controller->update($entity->decorated());
+        $result = SAVED_UPDATED;
+      }
+    });
+    return $result;
   }
 
   /**

@@ -38,13 +38,20 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function create(EntityInterface $entity): void {
-    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+    $this->doCreate($entity);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function doCreate(EntityInterface $entity, bool $suppress_warning = FALSE): void {
     $this->getSubscriptionController($entity)
       ->acceptRatePlan(
         $entity->getRatePlan(),
         $entity->getStartDate(),
         $entity->getEndDate(),
-        $entity->getQuotaTarget()
+        $entity->getQuotaTarget(),
+        $suppress_warning
       );
     // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
   }

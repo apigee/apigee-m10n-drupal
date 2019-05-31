@@ -21,15 +21,16 @@ namespace Drupal\apigee_m10n\Entity\Form;
 
 use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Cache\Cache;
-use Drupal\apigee_edge\Entity\Developer;
+use Drupal\Core\Routing\CurrentRouteMatch;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Subscription entity form.
@@ -52,6 +53,13 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
+
+  /**
+   * The current_route_match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $currentRouteMatch;
 
   /**
    * Apigee Monetization utility service.
@@ -79,6 +87,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
+   *   The current_route_match service.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   Apigee Monetization utility service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -86,8 +96,9 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    */
-  public function __construct(MessengerInterface $messenger, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
+  public function __construct(MessengerInterface $messenger, CurrentRouteMatch $current_route_match, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
     $this->messenger = $messenger;
+    $this->currentRouteMatch = $current_route_match;
     $this->monetization = $monetization;
     $this->config = $config_factory;
     $this->module_handler = $module_handler;
@@ -99,6 +110,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('messenger'),
+      $container->get('current_route_match'),
       $container->get('apigee_m10n.monetization'),
       $container->get('config.factory'),
       $container->get('module_handler')
@@ -113,7 +125,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // without adding rate plan ID this form is getting cached
     // and when rendered as a formatter.
     // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146.
-    return parent::getFormId() . '_' . $this->entity->getRatePlan()->id();
+    return parent::getFormId() . '_' . $this->getEntity()->getRatePlan()->id();
   }
 
   /**
@@ -123,7 +135,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     $form = parent::form($form, $form_state);
     // Redirect to Rate Plan detail page on submit.
     $form['#action'] = $this->getEntity()->getRatePlan()->url('subscribe');
-    return $form;
+    return $this->conflictForm($form, $form_state);
   }
 
   /**
@@ -147,6 +159,16 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // Set the save label if one has been passed into storage.
     if (!empty($actions['submit']) && ($save_label = $form_state->get('save_label'))) {
       $actions['submit']['#value'] = $save_label;
+      $actions['submit']['#button_type'] = 'primary';
+
+      if ($form_state->get('planConflicts')) {
+        $parameters = $this->currentRouteMatch->getParameters()->all();
+        $actions['cancel'] = [
+          '#title' => $this->t('Cancel'),
+          '#type'  => 'link',
+          '#url'   => Url::fromRoute('apigee_monetization.packages', ['user' => $parameters['user']->id()]),
+        ];
+      }
     }
     return $actions;
   }
@@ -157,7 +179,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     try {
       // Auto assign legal name.
-      $developer_id = $this->entity->getDeveloper()->getEmail();
+      $developer_id = $this->getEntity()->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
       // Auto-populate legal name when developer has no legal name attribute.
       if (empty($developer->getAttributeValue(static::LEGAL_NAME_ATTR))) {
@@ -165,14 +187,22 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $developer->save();
       }
 
-      $display_name = $this->entity->getRatePlan()->getDisplayName();
+      $display_name = $this->getEntity()->getRatePlan()->getDisplayName();
       Cache::invalidateTags(['apigee_my_subscriptions']);
 
-      if ($this->entity->save()) {
+      // This means the user has confirmed purchase.
+      // We can suppress warning and terminates all purchased rate plans that
+      // the developer has to API packages that contain the conflicting API
+      // products. It then purchases a new API package for the developer.
+      if ($form_state->get('confirm')) {
+        $this->getEntity()->setSuppressWarning(TRUE);
+      }
+
+      if ($this->getEntity()->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
-        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getOwnerId()]);
+        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->getEntity()->getOwnerId()]);
       }
       else {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
@@ -181,10 +211,16 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       }
     }
     catch (\Exception $e) {
-      $previous = $e->getPrevious();
+      $client_error = $e->getPrevious();
 
+      if ($client_error instanceof ClientErrorException
+        && $client_error->getEdgeErrorCode() === 'mint.developerHasFollowingOverlapRatePlans'
+      ) {
+        $form_state->set('planConflicts', $this->getOverlappingProducts($e->getMessage()));
+        $form_state->setRebuild(TRUE);
+      }
       // If insufficient funds error, format nicely and add link to add credit.
-      if ($previous instanceof ClientErrorException && $previous->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) {
+      if ($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) {
         preg_match_all('/\[(?\'amount\'.+)\]/', $e->getMessage(), $matches);
         $amount = $matches['amount'][0] ?? NULL;
         $rate_plan = $this->getEntity()->getRatePlan();
@@ -196,7 +232,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
           '%amount' => $amount_formatted,
           '@adenndum' => $amount ? $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]) : '',
         ]);
-        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $this->entity);
+        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $this->getEntity());
         $this->messenger->addError($insufficient_funds_error_message);
       }
       else {
@@ -268,6 +304,105 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $form['actions']['submit']['#access'] = FALSE;
       }
     }
+  }
+
+  /**
+   * Generate conflict form.
+   *
+   * @param array $form
+   *   A nested array form elements comprising the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   *
+   * @return array
+   *   The form structure.
+   */
+  protected function conflictForm(array $form, FormStateInterface $form_state) {
+    if ($items = $form_state->get('planConflicts')) {
+      $form['conflicting'] = [
+        '#theme' => 'conflicting_products',
+        '#items' => $items,
+      ];
+
+      $form['warning'] = [
+        '#theme' => 'status_messages',
+        '#message_list' => [
+          'warning' => [
+            $this->t('<strong>Warning:</strong> This action cannot be undone.'),
+          ],
+        ],
+      ];
+
+      $form_state->set('confirm', TRUE);
+
+      unset($form['startDate']);
+    }
+    return $form;
+  }
+
+  /**
+   * Parse overlap error message.
+   *
+   * @param string $message
+   *   Error message.
+   *
+   * @return array
+   *   Conflicting/overlapping plans.
+   */
+  protected function getOverlappingProducts($message) {
+    $overlaps = json_decode(substr($message, strpos($message, '=') + 1), TRUE);
+
+    // Remove prefix xxx@ from product ids.
+    $overlaps = array_map(function ($products) {
+      $values = [];
+      foreach ($products as $product_id => $product_name) {
+        $values[substr($product_id, strrpos($product_id, '@') + 1)] = $product_name;
+      }
+      return $values;
+    }, $overlaps);
+
+    $package = $this->getEntity()->getRatePlan()->getPackage();
+
+    // Process products in attempted purchased plan.
+    $products = [];
+    foreach ($package->getApiProducts() as $product) {
+      $products[$product->id()] = $product;
+    }
+
+    $plan_items = [];
+    foreach ($overlaps as $plan_id => $overlapping_products) {
+      list($id, $name) = explode('|', $plan_id);
+      $plan_item = [
+        'data' => $name,
+        'children' => [],
+      ];
+      $additional = array_diff_key($products, $overlapping_products);
+      $excluded = array_diff_key($overlapping_products, $products);
+      $conflicting = array_intersect_key($products, $overlapping_products);
+      $overlapping = [
+        'Conflicting products' => $conflicting,
+        'Additional products' => $additional,
+        'Excluded products' => $excluded,
+      ];
+      foreach ($overlapping as $situation => $situation_products) {
+        if (!empty($situation_products)) {
+          $product_items = [
+            'data' => $this->t($situation),
+            'children' => [],
+          ];
+          foreach ($situation_products as $situation_product) {
+            if (!in_array($situation_product->getDisplayName(), $product_items['children'])) {
+              $product_items['children'][] = $situation_product->getDisplayName();
+            }
+          }
+          $plan_item['children'][] = $product_items;
+        }
+      }
+      $plan_items[] = $plan_item;
+    }
+
+    return $plan_items;
+
   }
 
 }
