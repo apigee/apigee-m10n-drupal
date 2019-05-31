@@ -19,14 +19,18 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\apigee_edge\Entity\Developer;
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Cache\Cache;
-use Drupal\apigee_edge\Entity\Developer;
-use Drupal\Core\Url;
 
 /**
  * Subscription entity form.
@@ -37,6 +41,11 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    * Developer legal name attribute name.
    */
   const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
+
+  /**
+   * Insufficient funds API error code.
+   */
+  const INSUFFICIENT_FUNDS_ERROR = 'mint.insufficientFunds';
 
   /**
    * Messanger service.
@@ -53,16 +62,46 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   protected $currentRouteMatch;
 
   /**
+   * Apigee Monetization utility service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $config;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $module_handler;
+
+  /**
    * Constructs a SubscriptionEditForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
    * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
    *   The current_route_match service.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   Apigee Monetization utility service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
-  public function __construct(MessengerInterface $messenger = NULL, CurrentRouteMatch $current_route_match) {
+  public function __construct(MessengerInterface $messenger, CurrentRouteMatch $current_route_match, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
     $this->messenger = $messenger;
     $this->currentRouteMatch = $current_route_match;
+    $this->monetization = $monetization;
+    $this->config = $config_factory;
+    $this->module_handler = $module_handler;
   }
 
   /**
@@ -71,7 +110,10 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('messenger'),
-      $container->get('current_route_match')
+      $container->get('current_route_match'),
+      $container->get('apigee_m10n.monetization'),
+      $container->get('config.factory'),
+      $container->get('module_handler')
     );
   }
 
@@ -83,7 +125,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // without adding rate plan ID this form is getting cached
     // and when rendered as a formatter.
     // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146.
-    return parent::getFormId() . '_' . $this->entity->getRatePlan()->id();
+    return parent::getFormId() . '_' . $this->getEntity()->getRatePlan()->id();
   }
 
   /**
@@ -94,6 +136,19 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     // Redirect to Rate Plan detail page on submit.
     $form['#action'] = $this->getEntity()->getRatePlan()->url('subscribe');
     return $this->conflictForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+
+    // We can't alter the form in the form() method because the actions buttons
+    // get added on buildForm().
+    $this->insufficientFundsWorkflow($form, $form_state);
+
+    return $form;
   }
 
   /**
@@ -124,15 +179,15 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     try {
       // Auto assign legal name.
-      $developer_id = $this->entity->getDeveloper()->getEmail();
+      $developer_id = $this->getEntity()->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
-      // Autopopulate legal name when developer has no legal name attribute set.
+      // Auto-populate legal name when developer has no legal name attribute.
       if (empty($developer->getAttributeValue(static::LEGAL_NAME_ATTR))) {
         $developer->setAttribute(static::LEGAL_NAME_ATTR, $developer_id);
         $developer->save();
       }
 
-      $display_name = $this->entity->getRatePlan()->getDisplayName();
+      $display_name = $this->getEntity()->getRatePlan()->getDisplayName();
       Cache::invalidateTags(['apigee_my_subscriptions']);
 
       // This means the user has confirmed purchase.
@@ -140,14 +195,14 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       // the developer has to API packages that contain the conflicting API
       // products. It then purchases a new API package for the developer.
       if ($form_state->get('confirm')) {
-        $this->entity->setSuppressWarning(TRUE);
+        $this->getEntity()->setSuppressWarning(TRUE);
       }
 
-      if ($this->entity->save()) {
+      if ($this->getEntity()->save()) {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
-        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getOwnerId()]);
+        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->getEntity()->getOwnerId()]);
       }
       else {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
@@ -156,12 +211,98 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       }
     }
     catch (\Exception $e) {
-      if (($client_error = $e->getPrevious())
-        && $client_error instanceof ClientErrorException
+      $client_error = $e->getPrevious();
+
+      if ($client_error instanceof ClientErrorException
         && $client_error->getEdgeErrorCode() === 'mint.developerHasFollowingOverlapRatePlans'
       ) {
         $form_state->set('planConflicts', $this->getOverlappingProducts($e->getMessage()));
         $form_state->setRebuild(TRUE);
+      }
+      // If insufficient funds error, format nicely and add link to add credit.
+      if ($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) {
+        preg_match_all('/\[(?\'amount\'.+)\]/', $e->getMessage(), $matches);
+        $amount = $matches['amount'][0] ?? NULL;
+        $rate_plan = $this->getEntity()->getRatePlan();
+        $currency_id = $rate_plan->getCurrency()->id();
+
+        $amount_formatted = $this->monetization->formatCurrency($matches['amount'][0], $currency_id);
+        $insufficient_funds_error_message = $this->t('You have insufficient funds to purchase plan %plan. @adenndum', [
+          '%plan' => $rate_plan->label(),
+          '%amount' => $amount_formatted,
+          '@adenndum' => $amount ? $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]) : '',
+        ]);
+        $subscription_entity = $this->getEntity();
+        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $subscription_entity);
+        $this->messenger->addError($insufficient_funds_error_message);
+      }
+      else {
+        $this->messenger->addError($e->getMessage());
+      }
+    }
+  }
+
+  /**
+   * Insufficient funds workflow.
+   *
+   * Handles the "add credit" link and subscribe button status on subcription
+   * to rate plan forms.
+   *
+   * @param array $form
+   *   The form to alter.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @throws \Exception
+   */
+  protected function insufficientFundsWorkflow(array &$form, FormStateInterface $form_state) {
+    // Check if insufficient_funds_workflow is disabled, and do nothing if so.
+    if (!$this->config->get(PrepaidBalanceConfigForm::CONFIG_NAME)->get('enable_insufficient_funds_workflow') !== TRUE) {
+      return;
+    }
+
+    /* @var \Drupal\apigee_m10n\Entity\Subscription $subscription */
+    $subscription = $form_state->getFormObject()->getEntity();
+    $rate_plan = $subscription->getRatePlan();
+    $user = $subscription->getOwner();
+
+    /* @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdk */
+    $sdk = \Drupal::service('apigee_m10n.sdk_controller_factory');
+    try {
+      $developer = $sdk->developerController()->load($user->getEmail());
+    }
+    catch (\Exception $e) {
+      $developer = NULL;
+    }
+
+    // If developer is prepaid, check for sufficient balance to subscribe to the
+    // rate plan.
+    if ($developer && $developer->getBillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
+      $prepaid_balances = [];
+      foreach ($this->monetization->getDeveloperPrepaidBalances($user, new \DateTimeImmutable('now')) as $prepaid_balance) {
+        $prepaid_balances[$prepaid_balance->getCurrency()->id()] = $prepaid_balance->getCurrentBalance();
+      }
+
+      // Minimum balance needed is at least the setup fee.
+      // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
+      $min_balance_needed = $rate_plan->getSetUpFee();
+      $currency_id = $rate_plan->getCurrency()->id();
+      $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
+      if ($min_balance_needed > $prepaid_balances[$currency_id]) {
+        $form['insufficient_balance'] = [
+          '#type' => 'container',
+        ];
+
+        $form['insufficient_balance'][$currency_id] = [
+          'message' => [
+            '#type' => 'html_tag',
+            '#tag' => 'p',
+            '#value' => $this->t('You have insufficient funds to purchase this rate plan.'),
+          ],
+        ];
+
+        $form['startDate']['#access'] = FALSE;
+        $form['actions']['submit']['#access'] = FALSE;
       }
     }
   }

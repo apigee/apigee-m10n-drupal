@@ -43,6 +43,13 @@ class AddCreditProductManager implements AddCreditProductManagerInterface {
   protected $entityTypeManager;
 
   /**
+   * Local cache of products keyed by the currency ID..
+   *
+   * @var \Drupal\commerce_product\Entity\ProductInterface[]
+   */
+  protected $productByCurrency = [];
+
+  /**
    * AddCreditProductManager constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -59,13 +66,11 @@ class AddCreditProductManager implements AddCreditProductManagerInterface {
    * {@inheritdoc}
    */
   public function getProductForCurrency(string $currency_id): ?ProductInterface {
-    /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-    if (($product_id = $this->configFactory->get(AddCreditConfig::CONFIG_NAME)->get("products.$currency_id.product_id"))
-      && ($product = $this->entityTypeManager->getStorage('commerce_product')->load($product_id))) {
-      return $product;
+    if (!isset($this->productByCurrency[$currency_id])) {
+      $this->productByCurrency[$currency_id] = ($product_id = $this->configFactory->get(AddCreditConfig::CONFIG_NAME)->get("products.$currency_id.product_id"))
+        && ($product = $this->entityTypeManager->getStorage('commerce_product')->load($product_id)) ? $product : NULL;
     }
-
-    return NULL;
+    return $this->productByCurrency[$currency_id];
   }
 
   /**

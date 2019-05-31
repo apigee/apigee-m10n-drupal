@@ -103,6 +103,21 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
       '#description' => $this->t('Set the cache age for the prepaid balance for a developer.'),
     ];
 
+    $form['general'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('General'),
+    ];
+
+    $description = 'If checked, the "Purchase" button on subscriptions will be 
+                   disabled if developer billing type is PREPAID and does not 
+                   have enough credit.';
+    $form['general']['enable_insufficient_funds_workflow'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable insufficient funds workflow.'),
+      '#description' => $this->t($description),
+      '#default_value' => $config->get('enable_insufficient_funds_workflow'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -112,6 +127,7 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config(static::CONFIG_NAME)
       ->set('cache.max_age', $form_state->getValue('max_age'))
+      ->set('enable_insufficient_funds_workflow', $form_state->getValue('enable_insufficient_funds_workflow'))
       ->save();
 
     // Clear caches.

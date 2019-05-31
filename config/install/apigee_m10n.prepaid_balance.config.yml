@@ -1,2 +1,3 @@
 cache:
   max_age: 0
+enable_insufficient_funds_workflow: TRUE
