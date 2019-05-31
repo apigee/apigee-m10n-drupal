@@ -108,13 +108,10 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
       '#title' => $this->t('General'),
     ];
 
-    $description = 'If checked, the "Purchase" button on subscriptions will be 
-                   disabled if developer billing type is PREPAID and does not 
-                   have enough credit.';
     $form['general']['enable_insufficient_funds_workflow'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable insufficient funds workflow.'),
-      '#description' => $this->t($description),
+      '#description' => $this->t('If checked, the "Purchase" button on subscriptions will be disabled if developer billing type is PREPAID and does not have enough credit.'),
       '#default_value' => $config->get('enable_insufficient_funds_workflow'),
     ];
 
