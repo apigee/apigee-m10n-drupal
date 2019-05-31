@@ -232,7 +232,8 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
           '%amount' => $amount_formatted,
           '@adenndum' => $amount ? $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]) : '',
         ]);
-        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $this->getEntity());
+        $subscription_entity = $this->getEntity();
+        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $subscription_entity);
         $this->messenger->addError($insufficient_funds_error_message);
       }
       else {
