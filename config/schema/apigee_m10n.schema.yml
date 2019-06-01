@@ -16,6 +16,9 @@ apigee_m10n.prepaid_balance.config:
         max_age:
           type: integer
           label: 'Max age for prepaid balance'
+    enable_insufficient_funds_workflow:
+      type: boolean
+      label: 'Whether to enable insufficient funds workflow'
 
 apigee_m10n.subscription.config:
   type: config_object
