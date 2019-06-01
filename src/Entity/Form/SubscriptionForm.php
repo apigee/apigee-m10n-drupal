@@ -80,7 +80,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected $module_handler;
+  protected $moduleHandler;
 
   /**
    * Constructs a SubscriptionEditForm object.
@@ -101,7 +101,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
     $this->currentRouteMatch = $current_route_match;
     $this->monetization = $monetization;
     $this->config = $config_factory;
-    $this->module_handler = $module_handler;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -233,7 +233,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
           '@adenndum' => $amount ? $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]) : '',
         ]);
         $subscription_entity = $this->getEntity();
-        $this->module_handler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $subscription_entity);
+        $this->moduleHandler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $subscription_entity);
         $this->messenger->addError($insufficient_funds_error_message);
       }
       else {
