@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * Copyright 2018 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+use Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface;
+use Drupal\Core\Link;
+
+/**
+ * @file
+ * Install, update and uninstall functions for Apigee Monetization Add Credit.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function apigee_m10n_add_credit_requirements($phase) {
+  $requirements = [];
+
+  // Show a warning if products are not configured for add credit links.
+  if ($phase === 'runtime') {
+    $currencies = array_filter(Drupal::service('apigee_m10n.monetization')->getSupportedCurrencies(), function (SupportedCurrencyInterface $currency) {
+      return !Drupal::service('apigee_m10n_add_credit.product_manager')->getProductForCurrency($currency->id());
+    });
+
+    if (count($currencies)) {
+      $requirements['add_credit_products'] = [
+        'title' => t('Add credit products'),
+        'value' => Link::createFromRoute(t('Missing configuration'), 'apigee_m10n_add_credit.settings.add_credit'),
+        'description' => t('The following supported currencies have not been configured for add credit: <strong>@currencies</strong>.', [
+          '@currencies' => implode(', ', array_keys($currencies)),
+        ]),
+        'severity' => REQUIREMENT_WARNING,
+      ];
+    }
+  }
+
+  return $requirements;
+}
