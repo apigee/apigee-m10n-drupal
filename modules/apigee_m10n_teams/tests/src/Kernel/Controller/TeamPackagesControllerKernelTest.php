@@ -105,9 +105,6 @@ class TeamPackagesControllerKernelTest extends MonetizationTeamsKernelTestBase {
     // Queue packages and plans responses.
     $this->stack
       ->queueMockResponse(['get_monetization_packages' => ['packages' => $sdk_packages]]);
-    foreach ($packages as $package) {
-      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans[$package->id()]]]]);
-    }
 
     // Create a controller and render the packages and plans content.
     $controller = TeamPackagesController::create($this->container);
@@ -143,14 +140,6 @@ class TeamPackagesControllerKernelTest extends MonetizationTeamsKernelTestBase {
       static::assertSame($product->entity->getDisplayName(), trim($this->cssSelect("{$prefix} .apigee-sdk-product .apigee-product-details .apigee-product-display-name .label")[$product_index]));
       static::assertSame($product->entity->getDescription(), trim($this->cssSelect("{$prefix} .apigee-sdk-product .apigee-product-details .apigee-product-description")[$product_index]));
     }
-
-    // Rate plans as rendered.
-    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-    static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect("{$prefix} .apigee-package-rate-plan > div > a")[0]));
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$package->id()}/plan/{$rate_plan->id()}", (string) $this->cssSelect("{$prefix} .apigee-package-rate-plan > div > a")[0]->attributes()['href']);
-    static::assertSame($rate_plan->getDescription(), trim($this->cssSelect("{$prefix} .apigee-package-rate-plan > div:nth-child(2) > div:nth-child(2)")[0]));
-    static::assertSame('Purchase Plan', trim($this->cssSelect("{$prefix} .apigee-package-rate-plan > div:nth-child(4) > div:nth-child(2) > a")[0]));
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$package->id()}/plan/{$rate_plan->id()}/subscribe", (string) $this->cssSelect("{$prefix} .apigee-package-rate-plan > div:nth-child(4) > div:nth-child(2) > a")[0]->attributes()['href']);
   }
 
 }

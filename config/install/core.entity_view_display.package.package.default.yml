@@ -41,15 +41,6 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-  ratePlans:
-    type: entity_reference_entity_view
-    weight: 5
-    region: content
-    label: above
-    settings:
-      link: true
-      view_mode: default
-    third_party_settings: {  }
   status:
     type: string
     weight: 3
@@ -61,3 +52,4 @@ content:
 hidden:
   name: true
   organization: true
+  ratePlans: true

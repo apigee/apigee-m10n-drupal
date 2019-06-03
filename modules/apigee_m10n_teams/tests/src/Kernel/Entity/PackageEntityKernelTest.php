@@ -21,6 +21,7 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
+use Drupal\Tests\apigee_m10n\Traits\RatePlansPropertyEnablerTrait;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
@@ -35,6 +36,7 @@ use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
   use TeamProphecyTrait;
+  use RatePlansPropertyEnablerTrait;
 
   /**
    * Drupal user.
@@ -71,6 +73,7 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->installConfig([
       'user',
       'system',
+      'apigee_m10n',
     ]);
     // Makes sure the new user isn't root.
     $this->createAccount();
@@ -81,6 +84,9 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->createCurrentUserSession($this->developer);
 
     $this->package = $this->createPackage();
+
+    // Enable the `ratePlans` field.
+    $this->enableRatePlansForViewDisplay();
   }
 
   /**

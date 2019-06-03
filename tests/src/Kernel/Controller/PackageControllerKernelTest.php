@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Controller\PackagesController;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\Tests\apigee_m10n\Traits\RatePlansPropertyEnablerTrait;
 use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +38,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @coversDefaultClass \Drupal\apigee_m10n\Controller\PackagesController
  */
 class PackageControllerKernelTest extends MonetizationKernelTestBase {
+
+  use RatePlansPropertyEnablerTrait;
 
   /**
    * Drupal user.
@@ -56,7 +59,11 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
+      'apigee_m10n',
     ]);
+
+    // Enable the rate plans field for display.
+    $this->enableRatePlansForViewDisplay();
 
     // User install is going to try to create a developer for the root user.
     $this->stack->queueMockResponse([
