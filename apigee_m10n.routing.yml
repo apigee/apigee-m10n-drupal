@@ -99,6 +99,25 @@ apigee_monetization.packages:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_monetization.my_plans:
+  path: /plans
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PricingAndPlansController::myPlans
+  requirements:
+    _permission: view rate_plan
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_monetization.plans:
+  path: /user/{user}/plans
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PricingAndPlansController::catalogPage
+    _title: Pricing and Plans
+  requirements:
+    _custom_access: \Drupal\apigee_m10n\Controller\PricingAndPlansController::access
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_monetization.my_subscriptions:
   path: /monetization/subscriptions
   defaults:

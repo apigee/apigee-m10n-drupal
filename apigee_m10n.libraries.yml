@@ -10,6 +10,12 @@ package:
     - core/jquery.once
     - core/drupal
 
+rate_plan.entity_list:
+  version: 1.0
+  css:
+    theme:
+      css/apigee_m10n.plan-list.css: {}
+
 prepaid_balance:
   css:
     theme:
