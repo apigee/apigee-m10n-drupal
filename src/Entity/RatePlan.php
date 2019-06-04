@@ -36,6 +36,7 @@ use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 
@@ -260,7 +261,14 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getCacheContexts() {
-    return array_merge(['url.developer'], parent::getCacheContexts());
+    return Cache::mergeTags(parent::getCacheContexts(), ['url.developer']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    return Cache::mergeTags(parent::getCacheTags(), $this->get('packageEntity')->entity->getCacheTags());
   }
 
   /**
