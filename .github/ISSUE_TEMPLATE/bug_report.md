@@ -6,7 +6,6 @@ labels: bug
 assignees: ''
 
 ---
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -25,3 +24,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Version Info**
+This can be the version you can see on admin/modules in Drupal or 
+the output of this command: `composer show`.  Add Drupal core and
+other version information if needed.
+
