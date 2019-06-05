@@ -70,7 +70,7 @@ behavior is threatening or harassing, report it. We are dedicated to providing
 an environment where participants feel welcome and safe.
 
 Reports should be directed to Chris Novak [chrisnovak@google.com], the
-Project Steward for apigee-m10n-drupal. It is the Project Steward’s duty to
+Project Steward for Apigee Monetization module for Drupal. It is the Project Steward’s duty to
 receive and address reported violations of the code of conduct. They will then
 work with a committee consisting of representatives from the Open Source
 Programs Office and the Google Open Source Strategy team. If for any reason you
