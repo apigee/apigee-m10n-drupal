@@ -132,6 +132,29 @@ class PricingAndPlansController extends ControllerBase {
     }
 
     $rate_plans = [];
+
+    // Load rate plans for each package.
+    foreach (Package::getAvailableApiPackagesByDeveloper($user->getEmail()) as $package) {
+      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $package */
+      foreach ($package->get('ratePlans') as $rate_plan) {
+        $rate_plans["{$package->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+      };
+    }
+
+
+    return $this->buildPage($rate_plans);
+  }
+
+  /**
+   * Builds the page for a rate plan listing.
+   *
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface[] $plans
+   *   A list of rate plans.
+   *
+   * @return array
+   *   A render array for plans.
+   */
+  protected function buildPage($plans) {
     $build = [
       '#type' => 'container',
       '#attributes' => ['class' => ['rate-plan-list']],
@@ -146,36 +169,17 @@ class PricingAndPlansController extends ControllerBase {
       '#attached' => ['library' => ['apigee_m10n/rate_plan.entity_list']],
     ];
 
-    // Load rate plans for each package.
-    foreach (Package::getAvailableApiPackagesByDeveloper($user->getEmail()) as $package) {
-      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $package */
-      foreach ($package->get('ratePlans') as $rate_plan) {
-        $rate_plans["{$package->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
-        // TODO: Add a test for render cache.
-        $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $rate_plan->entity->getCacheTags());
-      };
+    foreach ($plans as $plan) {
+      // TODO: Add a test for render cache.
+      $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $plan->getCacheTags());
     }
-
     // Get the view mode from package config.
     $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode');
 
     // Generate a build array using the view builder.
-    $build['plan_list'] = $this->entityTypeManager()->getViewBuilder('rate_plan')->viewMultiple($rate_plans, $view_mode ?? 'default');
+    $build['plan_list'] = $this->entityTypeManager()->getViewBuilder('rate_plan')->viewMultiple($plans, $view_mode ?? 'default');
 
     return $build;
-  }
-
-  /**
-   * Get a rate plan controller.
-   *
-   * @param string $package_id
-   *   The package ID.
-   *
-   * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
-   *   The rate plan controller.
-   */
-  protected function packageRatePlanController($package_id): RatePlanControllerInterface {
-    return $this->controller_factory->ratePlanController($package_id);
   }
 
 }
