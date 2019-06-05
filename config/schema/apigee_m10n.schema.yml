@@ -1,10 +1,10 @@
-apigee_m10n.package.config:
+apigee_m10n.rate_plan.config:
   type: config_object
-  label: 'Package settings'
+  label: 'Rate plan settings'
   mapping:
     catalog_view_mode:
       type: string
-      label: 'View mode to use for packages on the "Pricing and plans" page.'
+      label: 'View mode to use for rate plans on the "Pricing and plans" page.'
 
 apigee_m10n.prepaid_balance.config:
   type: config_object

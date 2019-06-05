@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n_teams\Controller;
 
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Controller\PackagesController;
-use Drupal\apigee_m10n\Form\PackageConfigForm;
+use Drupal\apigee_m10n\Form\RatePlanConfigForm;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
 
 /**
@@ -47,7 +47,7 @@ class TeamPackagesController extends PackagesController {
     // Load purchased packages for comparison.
     $packages = TeamsPackage::getAvailableApiPackagesByTeam($team->id());
     // Get the view mode from package config.
-    $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
+    $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode');
     $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];
     $build['package_list']['#pre_render'][] = [$this, 'preRender'];
 

@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n\Controller;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Form\PackageConfigForm;
+use Drupal\apigee_m10n\Form\RatePlanConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
@@ -157,7 +157,7 @@ class PricingAndPlansController extends ControllerBase {
     }
 
     // Get the view mode from package config.
-    $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
+    $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode');
 
     // Generate a build array using the view builder.
     $build['plan_list'] = $this->entityTypeManager()->getViewBuilder('rate_plan')->viewMultiple($rate_plans, $view_mode ?? 'default');

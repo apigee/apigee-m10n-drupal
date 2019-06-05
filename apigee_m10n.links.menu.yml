@@ -3,17 +3,17 @@ system.admin_apigee_m10n:
   parent: system.admin_config_edge
   route_name: apigee_m10n.settings
 
-apigee_m10n.settings.package:
+entity.package.collection:
   title: 'Packages'
-  route_name: apigee_m10n.settings.package
-  description: 'Package settings.'
+  route_name: entity.package.collection
+  description: 'Manage packages.'
   parent: system.admin_apigee_m10n
   weight: 99
 
 # This goes straight to display settings since there aren't any config items.
-entity.entity_view_display.rate_plan.default:
+apigee_m10n.settings.rate_plan:
   title: 'Rate plans'
-  route_name: entity.entity_view_display.rate_plan.default
+  route_name: apigee_m10n.settings.rate_plan
   description: 'Configure rate plans.'
   parent: system.admin_apigee_m10n
   weight: 99

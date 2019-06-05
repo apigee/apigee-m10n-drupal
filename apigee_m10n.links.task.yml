@@ -1,8 +1,3 @@
-apigee_m10n.settings.package:
-  route_name: apigee_m10n.settings.package
-  title: 'Settings'
-  base_route: apigee_m10n.settings.package
-
 apigee_m10n.settings.rate_plan:
   route_name: apigee_m10n.settings.rate_plan
   title: 'Rate plan settings'
@@ -10,8 +5,8 @@ apigee_m10n.settings.rate_plan:
   weight: -10
 
 entity.package.collection:
+  title: 'List packages'
   route_name: entity.package.collection
-  title: 'List'
   base_route: apigee_m10n.settings.package
 
 apigee_m10n.settings.subscription:
@@ -51,8 +46,3 @@ apigee_m10n.settings.prepaid_balance:
   route_name: apigee_m10n.settings.prepaid_balance
   base_route: apigee_m10n.settings.prepaid_balance
   weight: -10
-
-entity.package.collection:
-  title: 'Packages'
-  route_name: entity.package.collection
-  base_route: entity.package.collection

@@ -25,16 +25,16 @@ use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class for managing `apigee_m10n.package.config` settings.
+ * Class for managing `apigee_m10n.rate_plan.config` settings.
  *
  * @package Drupal\apigee_m10n\Form
  */
-class PackageConfigForm extends ConfigFormBase {
+class RatePlanConfigForm extends ConfigFormBase {
 
   /**
    * The config named used by this form.
    */
-  const CONFIG_NAME = 'apigee_m10n.package.config';
+  const CONFIG_NAME = 'apigee_m10n.rate_plan.config';
 
   /**
    * The entity display repository.
@@ -44,7 +44,7 @@ class PackageConfigForm extends ConfigFormBase {
   protected $entity_display_repository;
 
   /**
-   * Constructs a \Drupal\apigee_m10n\Form\PackageConfigForm object.
+   * Constructs a \Drupal\apigee_m10n\Form\RatePlanConfigForm object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
@@ -77,7 +77,7 @@ class PackageConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'package_settings';
+    return 'rate_plan_settings';
   }
 
   /**
@@ -88,12 +88,12 @@ class PackageConfigForm extends ConfigFormBase {
     $config = $this->config(static::CONFIG_NAME);
 
     // Get view mode options from the repository service.
-    $options = $this->entity_display_repository->getViewModeOptionsByBundle('package', 'package');
+    $options = $this->entity_display_repository->getViewModeOptionsByBundle('rate_plan', 'rate_plan');
 
     $form['catalog_view_mode'] = [
       '#type' => 'select',
       '#title' => $this->t('Catalog view mode'),
-      '#description' => $this->t('View mode to use for packages on the "Pricing and plans" page.'),
+      '#description' => $this->t('View mode to use for rate plans on the "Pricing and plans" page.'),
       '#options' => $options,
       '#default_value' => $config->get('catalog_view_mode'),
     ];
