@@ -248,10 +248,56 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    * {@inheritdoc}
    */
   public function render() {
-    $build = parent::render();
+    $build = [];
 
-    array_push($build['table']['#cache']['contexts'], 'url.query_args');
-    array_push($build['table']['#cache']['tags'], 'apigee_my_subscriptions');
+    // Group the subscriptions by status.
+    $subscriptions = [
+      SubscriptionInterface::STATUS_ACTIVE => [
+        'title' => $this->t('Active and Future Plans'),
+      ],
+      SubscriptionInterface::STATUS_ENDED => [
+        'title' => $this->t('Cancelled and Expired Plans'),
+      ],
+    ];
+
+    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+    foreach ($this->load() as $entity) {
+      if (in_array($entity->getSubscriptionStatus(), [SubscriptionInterface::STATUS_ACTIVE, SubscriptionInterface::STATUS_FUTURE])) {
+        $subscriptions[SubscriptionInterface::STATUS_ACTIVE]['entities'][] = $entity;
+        continue;
+      }
+
+      $subscriptions[SubscriptionInterface::STATUS_ENDED]['entities'][] = $entity;
+    }
+
+    foreach ($subscriptions as $key => $subscription) {
+      $build[$key]['heading'] = [
+        '#type' => 'html_tag',
+        '#value' => $subscription['title'],
+        '#tag' => 'h3',
+      ];
+      
+      $build[$key]['table'] = [
+        '#type' => 'table',
+        '#header' => $this->buildHeader(),
+        '#title' => $subscription['title'],
+        '#rows' => [],
+        '#empty' => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
+        '#cache' => [
+          'contexts' => $this->entityType->getListCacheContexts(),
+          'tags' => $this->entityType->getListCacheTags(),
+        ],
+      ];
+
+      foreach ($subscription['entities'] as $entity) {
+        if ($row = $this->buildRow($entity)) {
+          $build[$key]['table']['#rows'][$entity->id()] = $row;
+        }
+      }
+
+      array_push($build[$key]['table']['#cache']['contexts'], 'url.query_args');
+      array_push($build[$key]['table']['#cache']['tags'], 'apigee_my_subscriptions');
+    }
 
     return $build;
   }
