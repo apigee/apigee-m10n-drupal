@@ -276,7 +276,7 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         '#value' => $subscription['title'],
         '#tag' => 'h3',
       ];
-      
+
       $build[$key]['table'] = [
         '#type' => 'table',
         '#header' => $this->buildHeader(),
