@@ -138,20 +138,14 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
   public function buildHeader() {
     return [
       'plan' => [
-        'data' => $this->t('Plan Name'),
+        'data' => $this->t('Rate plan'),
         'class' => ['rate-plan-name'],
         'field' => 'plan',
       ],
-      'package' => [
-        'data'  => $this->t('Package'),
-        'field' => 'package',
-        'class' => ['package-name'],
-        'sort'  => 'desc',
-      ],
-      'products' => [
-        'data' => $this->t('Products'),
-        'class' => ['products'],
-        'field' => 'products',
+      'status' => [
+        'data' => $this->t('Status'),
+        'field' => 'status',
+        'class' => ['field-status'],
       ],
       'start_date' => [
         'data' => $this->t('Start Date'),
@@ -162,21 +156,6 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         'data' => $this->t('End Date'),
         'class' => ['subscription-end-date'],
         'field' => 'end_date',
-      ],
-      'plan_end_date' => [
-        'data' => $this->t('Plan End Date'),
-        'class' => ['rate-plan-end-date'],
-        'field' => 'plan_end_date',
-      ],
-      'renewal_date' => [
-        'data' => $this->t('Renewal Date'),
-        'class' => ['subscription-renewal-date'],
-        'field' => 'renewal_date',
-      ],
-      'status' => [
-        'data' => $this->t('Status'),
-        'field' => 'status',
-        'class' => ['field-status'],
       ],
       'operations' => [
         'data' => $this->t('Actions'),
@@ -190,11 +169,6 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
     $rate_plan = $entity->getRatePlan();
-
-    // Concatenate all of the product names.
-    $products = implode(', ', array_map(function ($product) {
-      return $product->getDisplayName();
-    }, $rate_plan->getPackage()->getApiProducts()));
 
     $date_display_settings = [
       'label' => 'hidden',
@@ -210,13 +184,9 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
           'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $this->ratePlanUrl($entity)),
           'class' => ['rate-plan-name'],
         ],
-        'package' => [
-          'data' => $rate_plan->getPackage()->getDisplayName(),
-          'class' => ['package-name'],
-        ],
-        'products' => [
-          'data' => $products,
-          'class' => ['products'],
+        'status' => [
+          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
+          'class' => ['field-status'],
         ],
         'start_date' => [
           'data' => $entity->get('startDate')->view($date_display_settings),
@@ -225,18 +195,6 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         'end_date' => [
           'data' => $entity->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
           'class' => ['subscription-end-date'],
-        ],
-        'plan_end_date' => [
-          'data' => $rate_plan->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
-          'class' => ['rate-plan-end-date'],
-        ],
-        'renewal_date' => [
-          'data' => $entity->getRenewalDate() ? $entity->get('renewalDate')->view($date_display_settings) : NULL,
-          'class' => ['subscription-renewal-date'],
-        ],
-        'status' => [
-          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
-          'class' => ['field-status'],
         ],
         'operations'    => ['data' => $this->buildOperations($entity)],
       ],
