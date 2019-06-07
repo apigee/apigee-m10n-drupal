@@ -185,7 +185,11 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
           'class' => ['rate-plan-name'],
         ],
         'status' => [
-          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
+          'data' => [
+            '#type' => 'inline_template',
+            '#template' => '<span class="status status--{{ status|clean_class }}">{{ status }}</span>',
+            '#context' => ['status' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()])],
+          ],
           'class' => ['field-status'],
         ],
         'start_date' => [
