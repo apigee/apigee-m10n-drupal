@@ -50,7 +50,7 @@ class PricingAndPlansController extends ControllerBase {
   protected $controller_factory;
 
   /**
-   * PackagesController constructor.
+   * PricingAndPlansController constructor.
    *
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
@@ -140,7 +140,6 @@ class PricingAndPlansController extends ControllerBase {
         $rate_plans["{$package->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
       };
     }
-
 
     return $this->buildPage($rate_plans);
   }

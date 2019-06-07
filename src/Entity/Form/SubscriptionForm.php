@@ -166,7 +166,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
         $actions['cancel'] = [
           '#title' => $this->t('Cancel'),
           '#type'  => 'link',
-          '#url'   => Url::fromRoute('apigee_monetization.packages', ['user' => $parameters['user']->id()]),
+          '#url'   => Url::fromRoute('apigee_monetization.plans', ['user' => $parameters['user']->id()]),
         ];
       }
     }

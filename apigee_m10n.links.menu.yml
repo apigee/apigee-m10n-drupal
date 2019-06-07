@@ -32,9 +32,9 @@ apigee_m10n.settings.subscription:
   parent: system.admin_apigee_m10n
   weight: 100
 
-apigee_m10n.packages:
+apigee_m10n.pricing_and_plans:
   title: 'Pricing & plans'
   description: 'Pricing & plans.'
-  route_name: apigee_monetization.my_packages
+  route_name: apigee_monetization.my_plans
   menu_name: main
   weight: 10

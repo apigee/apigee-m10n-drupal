@@ -116,6 +116,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   public function testAll() {
     $this->assertPermissionList();
     $this->assertAdminRoutes();
+    $this->assertPricingAndPlanRoutes();
     $this->assertPackageRoutes();
     $this->assertRatePlanRoutes();
     $this->assertSubscriptionRoutes();
@@ -249,18 +250,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
    * Tests package entity route permissions.
    */
   public function assertPackageRoutes() {
-    // Test the redirect route.
-    $redirect_route = Url::fromRoute('apigee_monetization.my_packages');
-    static::assertTrue($redirect_route->access($this->administrator));
-    static::assertTrue($redirect_route->access($this->developer));
-    static::assertFalse($redirect_route->access($this->anonymous));
-
-    // Collection route.
-    $collection_route = Url::fromRoute('apigee_monetization.my_packages', ['user' => $this->developer->id()]);
-    static::assertTrue($collection_route->access($this->administrator));
-    static::assertTrue($collection_route->access($this->developer));
-    static::assertFalse($collection_route->access($this->anonymous));
-
     // Create a package.
     $package = $this->createPackage();
 
@@ -275,7 +264,23 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertTrue($package_route->access($this->administrator));
     static::assertFalse($package_route->access($this->developer));
     static::assertFalse($package_route->access($this->anonymous));
+  }
 
+  /**
+   * Tests pricing and plans route permissions.
+   */
+  public function assertPricingAndPlanRoutes() {
+    // Test the redirect route.
+    $redirect_route = Url::fromRoute('apigee_monetization.my_plans');
+    static::assertTrue($redirect_route->access($this->administrator));
+    static::assertTrue($redirect_route->access($this->developer));
+    static::assertFalse($redirect_route->access($this->anonymous));
+
+    // Collection route.
+    $collection_route = Url::fromRoute('apigee_monetization.plans', ['user' => $this->developer->id()]);
+    static::assertTrue($collection_route->access($this->administrator));
+    static::assertTrue($collection_route->access($this->developer));
+    static::assertFalse($collection_route->access($this->anonymous));
   }
 
   /**

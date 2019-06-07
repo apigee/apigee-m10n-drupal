@@ -20,8 +20,11 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,18 +37,11 @@ use Symfony\Component\HttpFoundation\Response;
 class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
 
   /**
-   * Drupal user.
+   * Accounts to use for testing.
    *
-   * @var \Drupal\user\UserInterface
+   * @var array
    */
-  protected $developer;
-
-  /**
-   * A user that doesn't have access to do anything.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  protected $user_no_access;
+  private $accounts = [];
 
   /**
    * {@inheritdoc}
@@ -58,6 +54,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
+      'system',
       'apigee_m10n',
     ]);
 
@@ -65,55 +62,153 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     \Drupal::service('theme_handler')->install(['classy']);
     $this->config('system.theme')->set('default', 'classy')->save();
 
-    $this->developer = $this->createAccount([
+    // User install is going to try to create a developer for the root user.
+    $this->stack->queueMockResponse([
+      'get_not_found' => [
+        'status_code' => 404,
+        'code' => 'developer.service.DeveloperIdDoesNotExist',
+        'message' => 'DeveloperId v1 does not exist in organization foo-org',
+      ],
+    ])->queueMockResponse([
+      'get_developer' => [
+        'status_code' => 201,
+      ],
+    ])->queueMockResponse([
+      // The call to save happens twice in a row because of `setStatus()`.
+      // See: \Drupal\apigee_edge\Entity\Storage\DeveloperStorage::doSave()`.
+      'get_developer' => [
+        'status_code' => 201,
+      ],
+    ]);
+    // Install user 0 and user 1. Workaround because or `user_install()` errors.
+    User::create([
+      'uid' => 0,
+      'status' => 0,
+      'name' => '',
+      'mail' => 'prevent-apigee_edge_user_presave-error',
+    ])->save();
+    Database::getConnection()->update('users_field_data')->fields(['mail' => NULL])->condition('uid', 0)->execute();
+    User::create([
+      'uid' => 1,
+      'name' => 'placeholder-for-uid-1',
+      'mail' => 'placeholder-for-uid-1',
+      'status' => TRUE,
+    ])->save();
+
+    $this->accounts['anon'] = User::load(0);
+    $this->accounts['admin'] = User::load(1);
+    // Assume admin has no subscriptions initially.
+    $this->warmSubscriptionsCache($this->accounts['admin']);
+
+    // Create user 2 as a developer.
+    $this->accounts['developer'] = $this->createAccount([
       'view package',
       'view own subscription',
       'view rate_plan',
     ]);
-
-    $this->user_no_access = $this->createAccount();
+    // Create user 3 as a user with no permissions.
+    $this->accounts['no_access'] = $this->createAccount();
   }
 
   /**
    * Tests the redirects for accessing plans for the current user.
    */
   public function testMyRedirects() {
-    // Test a user with no access.
-    $this->setCurrentUser($this->user_no_access);
-    // Test the plans redirect.
-    $request = Request::create(Url::fromRoute('apigee_monetization.my_plans')->toString(), 'GET');
-    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
-    $kernel = $this->container->get('http_kernel');
-    $response = $kernel->handle($request);
-    // Make sure a 404 was returned.
-    static::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
-
-    // Test the plans redirect.
-    $this->setCurrentUser($this->developer);
-    $request = Request::create(Url::fromRoute('apigee_monetization.my_plans')->toString(), 'GET');
-    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
-    $kernel = $this->container->get('http_kernel');
     // Queue up a monetized org response.
     $this->stack->queueMockResponse('get_monetized_org');
-    $response = $kernel->handle($request);
-    static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame('http://localhost/user/' . $this->developer->id() . '/plans', $response->headers->get('location'));
+
+    $this->assertRedirectNoAccess($this->accounts['anon']);
+    $this->assertRedirectNoAccess($this->accounts['no_access']);
+    $this->assertRedirect($this->accounts['admin']);
+    $this->assertRedirect($this->accounts['developer']);
   }
 
   /**
    * Tests the plan controller response.
    */
-  public function testControllerResposne() {
+  public function testControllerResponse() {
+    // Queue up a monetized org response.
+    $this->stack->queueMockResponse('get_monetized_org');
+    // Warm the cache for the monetized org check.
+    \Drupal::service('apigee_m10n.monetization')->isMonetizationEnabled();
+
+    $this->assertPlansNoAccess($this->accounts['anon']);
+    $this->assertPlansNoAccess($this->accounts['no_access']);
+    $this->assertPlansPage($this->accounts['developer']);
+    $this->assertPlansPage($this->accounts['admin']);
+  }
+
+  /**
+   * Assert a user cannot access a redirect link.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user account.
+   *
+   * @throws \Exception
+   */
+  protected function assertRedirectNoAccess(UserInterface $user) {
     // Test a user with no access.
-    $this->setCurrentUser($this->user_no_access);
+    $this->setCurrentUser($user);
     // Test the plans redirect.
-    $request = Request::create(Url::fromRoute('apigee_monetization.plans', ['user' => $this->user_no_access->id()])->toString(), 'GET');
+    $request = Request::create(Url::fromRoute('apigee_monetization.my_plans')
+      ->toString(), 'GET');
     /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
     $kernel = $this->container->get('http_kernel');
-    // Queue up a monetized org response.
     $response = $kernel->handle($request);
     // Make sure a 404 was returned.
     static::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+  }
+
+  /**
+   * Assert a user CAN access a redirect link.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user account.
+   *
+   * @throws \Exception
+   */
+  protected function assertRedirect(UserInterface $user) {
+    // Test the plans redirect.
+    $this->setCurrentUser($user);
+    $request = Request::create(Url::fromRoute('apigee_monetization.my_plans')
+      ->toString(), 'GET');
+    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
+    $kernel = $this->container->get('http_kernel');
+    $response = $kernel->handle($request);
+    static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
+    static::assertSame('http://localhost/user/' . $user->id() . '/plans', $response->headers->get('location'));
+  }
+
+  /**
+   * Assert a user cannot access the plans page.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user account.
+   *
+   * @throws \Exception
+   */
+  protected function assertPlansNoAccess(UserInterface $user) {
+    // Test a user with no access.
+    $this->setCurrentUser($user);
+    // Test the plans redirect.
+    $request = Request::create(Url::fromRoute('apigee_monetization.plans', ['user' => $user->id()])
+      ->toString(), 'GET');
+    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
+    $kernel = $this->container->get('http_kernel');
+    $response = $kernel->handle($request);
+    // Make sure a 404 was returned.
+    static::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+  }
+
+  /**
+   * Assert plans page response for a user.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user account.
+   *
+   * @throws \Exception
+   */
+  protected function assertPlansPage(UserInterface $user) {
 
     // Set up packages and plans for the developer.
     $rate_plans = [];
@@ -131,7 +226,12 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
       $entity_static_cache->set("values:package:{$package->id()}", $package);
       // Warm the static cache for each package product.
       foreach ($package->decorated()->getApiProducts() as $product) {
-        $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::createFrom($product));
+        $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::create([
+          'id' => $product->id(),
+          'name' => $product->getName(),
+          'displayName' => $product->getDisplayName(),
+          'description' => $product->getDescription(),
+        ]));
       }
       $rate_plans[$package->id()] = [];
       for ($i = rand(1, 3); $i > 0; $i--) {
@@ -139,8 +239,6 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
       }
     }
 
-    // Queue up a monetized org response.
-    $this->stack->queueMockResponse('get_monetized_org');
     // Queue the package response.
     $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
     foreach ($rate_plans as $package_id => $plans) {
@@ -148,8 +246,9 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     }
 
     // Test the controller output for a user with plans.
-    $this->setCurrentUser($this->developer);
-    $request = Request::create(Url::fromRoute('apigee_monetization.plans', ['user' => $this->developer->id()])->toString(), 'GET');
+    $this->setCurrentUser($user);
+    $request = Request::create(Url::fromRoute('apigee_monetization.plans', ['user' => $user->id()])
+      ->toString(), 'GET');
     /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
     $kernel = $this->container->get('http_kernel');
     $response = $kernel->handle($request);

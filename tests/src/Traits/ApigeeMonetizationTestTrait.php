@@ -192,7 +192,6 @@ trait ApigeeMonetizationTestTrait {
 
     // Assume the account has no subscriptions initially.
     $this->warmSubscriptionsCache($account);
-    \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$account->getEmail()}", []);
 
     $this->cleanup_queue[] = [
       'weight' => 99,
