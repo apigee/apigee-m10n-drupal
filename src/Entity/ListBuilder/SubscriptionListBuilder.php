@@ -254,9 +254,11 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
     $subscriptions = [
       SubscriptionInterface::STATUS_ACTIVE => [
         'title' => $this->t('Active and Future Plans'),
+        'entities' => [],
       ],
       SubscriptionInterface::STATUS_ENDED => [
         'title' => $this->t('Cancelled and Expired Plans'),
+        'entities' => [],
       ],
     ];
 
@@ -282,16 +284,18 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         '#header' => $this->buildHeader(),
         '#title' => $subscription['title'],
         '#rows' => [],
-        '#empty' => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
+        '#empty' => $this->t('There are no @label yet.', ['@label' => strtolower($this->entityType->getPluralLabel())]),
         '#cache' => [
           'contexts' => $this->entityType->getListCacheContexts(),
           'tags' => $this->entityType->getListCacheTags(),
         ],
       ];
 
-      foreach ($subscription['entities'] as $entity) {
-        if ($row = $this->buildRow($entity)) {
-          $build[$key]['table']['#rows'][$entity->id()] = $row;
+      if (count($subscription['entities'])) {
+        foreach ($subscription['entities'] as $entity) {
+          if ($row = $this->buildRow($entity)) {
+            $build[$key]['table']['#rows'][$entity->id()] = $row;
+          }
         }
       }
 
