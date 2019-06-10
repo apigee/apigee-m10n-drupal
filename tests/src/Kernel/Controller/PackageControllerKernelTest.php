@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
 use Drupal\apigee_m10n\Controller\PackagesController;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\user\Entity\User;
@@ -75,8 +76,20 @@ class PackageControllerKernelTest extends MonetizationKernelTestBase {
         'status_code' => 201,
       ],
     ]);
-    // Install user 0 and user 1.
-    \user_install();
+    // Install user 0 and user 1. Workaround because or `user_install()` errors.
+    User::create([
+      'uid' => 0,
+      'status' => 0,
+      'name' => '',
+      'mail' => 'prevent-apigee_edge_user_presave-error',
+    ])->save();
+    Database::getConnection()->update('users_field_data')->fields(['mail' => NULL])->condition('uid', 0)->execute();
+    User::create([
+      'uid' => 1,
+      'name' => 'placeholder-for-uid-1',
+      'mail' => 'placeholder-for-uid-1',
+      'status' => TRUE,
+    ])->save();
     $this->warmSubscriptionsCache(User::load(1));
 
     $this->developer = $this->createAccount([
