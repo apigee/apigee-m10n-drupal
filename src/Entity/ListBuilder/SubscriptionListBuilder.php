@@ -30,7 +30,6 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Url;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -138,20 +137,14 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
   public function buildHeader() {
     return [
       'plan' => [
-        'data' => $this->t('Plan Name'),
-        'class' => ['rate-plan-name'],
+        'data' => $this->t('Rate plan'),
+        'class' => ['subscription-rate-plan'],
         'field' => 'plan',
       ],
-      'package' => [
-        'data'  => $this->t('Package'),
-        'field' => 'package',
-        'class' => ['package-name'],
-        'sort'  => 'desc',
-      ],
-      'products' => [
-        'data' => $this->t('Products'),
-        'class' => ['products'],
-        'field' => 'products',
+      'status' => [
+        'data' => $this->t('Status'),
+        'field' => 'status',
+        'class' => ['subscription-status'],
       ],
       'start_date' => [
         'data' => $this->t('Start Date'),
@@ -162,21 +155,6 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         'data' => $this->t('End Date'),
         'class' => ['subscription-end-date'],
         'field' => 'end_date',
-      ],
-      'plan_end_date' => [
-        'data' => $this->t('Plan End Date'),
-        'class' => ['rate-plan-end-date'],
-        'field' => 'plan_end_date',
-      ],
-      'renewal_date' => [
-        'data' => $this->t('Renewal Date'),
-        'class' => ['subscription-renewal-date'],
-        'field' => 'renewal_date',
-      ],
-      'status' => [
-        'data' => $this->t('Status'),
-        'field' => 'status',
-        'class' => ['field-status'],
       ],
       'operations' => [
         'data' => $this->t('Actions'),
@@ -191,11 +169,6 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
     /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
     $rate_plan = $entity->getRatePlan();
 
-    // Concatenate all of the product names.
-    $products = implode(', ', array_map(function ($product) {
-      return $product->getDisplayName();
-    }, $rate_plan->getPackage()->getApiProducts()));
-
     $date_display_settings = [
       'label' => 'hidden',
       'settings' => [
@@ -208,15 +181,15 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
       'data' => [
         'plan' => [
           'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $this->ratePlanUrl($entity)),
-          'class' => ['rate-plan-name'],
+          'class' => ['subscription-rate-plan'],
         ],
-        'package' => [
-          'data' => $rate_plan->getPackage()->getDisplayName(),
-          'class' => ['package-name'],
-        ],
-        'products' => [
-          'data' => $products,
-          'class' => ['products'],
+        'status' => [
+          'data' => [
+            '#type' => 'inline_template',
+            '#template' => '<span class="status status--{{ status|clean_class }}">{{ status }}</span>',
+            '#context' => ['status' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()])],
+          ],
+          'class' => ['subscription-status'],
         ],
         'start_date' => [
           'data' => $entity->get('startDate')->view($date_display_settings),
@@ -225,18 +198,6 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         'end_date' => [
           'data' => $entity->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
           'class' => ['subscription-end-date'],
-        ],
-        'plan_end_date' => [
-          'data' => $rate_plan->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
-          'class' => ['rate-plan-end-date'],
-        ],
-        'renewal_date' => [
-          'data' => $entity->getRenewalDate() ? $entity->get('renewalDate')->view($date_display_settings) : NULL,
-          'class' => ['subscription-renewal-date'],
-        ],
-        'status' => [
-          'data' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()]),
-          'class' => ['field-status'],
         ],
         'operations'    => ['data' => $this->buildOperations($entity)],
       ],
@@ -248,10 +209,63 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    * {@inheritdoc}
    */
   public function render() {
-    $build = parent::render();
+    $build = [];
+    $label = $this->entityType->getPluralLabel();
 
-    array_push($build['table']['#cache']['contexts'], 'url.query_args');
-    array_push($build['table']['#cache']['tags'], 'apigee_my_subscriptions');
+    // Group the subscriptions by status.
+    $subscriptions = [
+      SubscriptionInterface::STATUS_ACTIVE => [
+        'title' => $this->t('Active and Future @label', ['@label' => $label]),
+        'empty' => $this->t('No active or future @label.', ['@label' => strtolower($label)]),
+        'entities' => [],
+      ],
+      SubscriptionInterface::STATUS_ENDED => [
+        'title' => $this->t('Cancelled and Expired @label', ['@label' => $label]),
+        'empty' => $this->t('No cancelled or expired @label.', ['@label' => strtolower($label)]),
+        'entities' => [],
+      ],
+    ];
+
+    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+    foreach ($this->load() as $entity) {
+      if (in_array($entity->getSubscriptionStatus(), [SubscriptionInterface::STATUS_ACTIVE, SubscriptionInterface::STATUS_FUTURE])) {
+        $subscriptions[SubscriptionInterface::STATUS_ACTIVE]['entities'][] = $entity;
+        continue;
+      }
+
+      $subscriptions[SubscriptionInterface::STATUS_ENDED]['entities'][] = $entity;
+    }
+
+    foreach ($subscriptions as $key => $subscription) {
+      $build[$key]['heading'] = [
+        '#type' => 'html_tag',
+        '#value' => $subscription['title'],
+        '#tag' => 'h3',
+      ];
+
+      $build[$key]['table'] = [
+        '#type' => 'table',
+        '#header' => $this->buildHeader(),
+        '#title' => $subscription['title'],
+        '#rows' => [],
+        '#empty' => $subscription['empty'],
+        '#cache' => [
+          'contexts' => $this->entityType->getListCacheContexts(),
+          'tags' => $this->entityType->getListCacheTags(),
+        ],
+      ];
+
+      if (count($subscription['entities'])) {
+        foreach ($subscription['entities'] as $entity) {
+          if ($row = $this->buildRow($entity)) {
+            $build[$key]['table']['#rows'][$entity->id()] = $row;
+          }
+        }
+      }
+
+      array_push($build[$key]['table']['#cache']['contexts'], 'url.query_args');
+      array_push($build[$key]['table']['#cache']['tags'], 'apigee_my_subscriptions');
+    }
 
     return $build;
   }
