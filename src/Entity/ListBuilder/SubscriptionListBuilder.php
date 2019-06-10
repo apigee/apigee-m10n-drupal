@@ -30,7 +30,6 @@ use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Url;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -211,15 +210,18 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    */
   public function render() {
     $build = [];
+    $label = $this->entityType->getPluralLabel();
 
     // Group the subscriptions by status.
     $subscriptions = [
       SubscriptionInterface::STATUS_ACTIVE => [
-        'title' => $this->t('Active and Future Plans'),
+        'title' => $this->t('Active and Future @label', ['@label' => $label]),
+        'empty' => $this->t('No active or future @label.', ['@label' => strtolower($label)]),
         'entities' => [],
       ],
       SubscriptionInterface::STATUS_ENDED => [
-        'title' => $this->t('Cancelled and Expired Plans'),
+        'title' => $this->t('Cancelled and Expired @label', ['@label' => $label]),
+        'empty' => $this->t('No cancelled or expired @label.', ['@label' => strtolower($label)]),
         'entities' => [],
       ],
     ];
@@ -246,7 +248,7 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
         '#header' => $this->buildHeader(),
         '#title' => $subscription['title'],
         '#rows' => [],
-        '#empty' => $this->t('There are no @label yet.', ['@label' => strtolower($this->entityType->getPluralLabel())]),
+        '#empty' => $subscription['empty'],
         '#cache' => [
           'contexts' => $this->entityType->getListCacheContexts(),
           'tags' => $this->entityType->getListCacheTags(),
