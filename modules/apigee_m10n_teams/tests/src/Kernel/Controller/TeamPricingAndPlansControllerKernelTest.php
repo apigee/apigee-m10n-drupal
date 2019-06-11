@@ -156,7 +156,7 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
     $rate_plan_css_index = 1;
     foreach ($rate_plans as $package_id => $plan_list) {
       foreach ($plan_list as $rate_plan) {
-        $prefix = "div.rate-plan-list .apigee-package-rate-plan:nth-child({$rate_plan_css_index})";
+        $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .apigee-package-rate-plan";
         // Check the plan name.
         $this->assertCssElementText("{$prefix} .field--name-displayname a", $rate_plan->getDisplayName());
         // Check the plan description.

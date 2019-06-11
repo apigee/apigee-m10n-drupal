@@ -1,27 +1,27 @@
-.rate-plan-list > .apigee-package-rate-plan {
+.pricing-and-plans > .pricing-and-plans__item > .apigee-package-rate-plan {
   border: 1px solid #e3e3e3;
   background-color: #f5f5f5;
   margin: 20px 0;
   padding: 20px;
 }
 
-.rate-plan-list > .apigee-package-rate-plan > .field:not(:first-child) {
+.pricing-and-plans > .pricing-and-plans__item > .apigee-package-rate-plan > .field:not(:first-child) {
   padding: 10px 0 0;
 }
 
-.rate-plan-list > .apigee-package-rate-plan > .field--name-displayname{
+.pricing-and-plans > .pricing-and-plans__item > .apigee-package-rate-plan > .field--name-displayname{
   font-weight: bold;
   font-size: 1.1em;
 }
 
-.rate-plan-list > .apigee-package-rate-plan > .field--name-packageproducts > .field__label {
+.pricing-and-plans > .pricing-and-plans__item > .apigee-package-rate-plan > .field--name-packageproducts > .field__label {
   font-size: inherit;
   font-weight: bold;
 }
 
-.rate-plan-list > .apigee-package-rate-plan > .field--name-packageproducts > .field__items > .field__item {
+.pricing-and-plans > .pricing-and-plans__item > .apigee-package-rate-plan > .field--name-packageproducts > .field__items > .field__item {
   display: inline-block;
 }
-.rate-plan-list > .apigee-package-rate-plan > .field--name-packageproducts > .field__items > .field__item:not(:last-child):after {
+.pricing-and-plans > .pricing-and-plans__item > .apigee-package-rate-plan > .field--name-packageproducts > .field__items > .field__item:not(:last-child):after {
   content: ", ";
 }

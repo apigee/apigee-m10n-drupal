@@ -155,8 +155,9 @@ class PricingAndPlansController extends ControllerBase {
    */
   protected function buildPage($plans) {
     $build = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['rate-plan-list']],
+      '#theme' => 'container__pricing_and_plans',
+      '#children' => [],
+      '#attributes' => ['class' => ['pricing-and-plans']],
       '#cache' => [
         'contexts' => [
           'user',
@@ -168,15 +169,17 @@ class PricingAndPlansController extends ControllerBase {
       '#attached' => ['library' => ['apigee_m10n/rate_plan.entity_list']],
     ];
 
-    foreach ($plans as $plan) {
+    // Get the view mode from package config.
+    $view_mode = ($view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode')) ? $view_mode : 'default';
+    $view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
+
+    foreach ($plans as $id => $plan) {
       // TODO: Add a test for render cache.
       $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $plan->getCacheTags());
+      // Generate a build array using the view builder.
+      $build['#children'][$id] = $view_builder->view($plan, $view_mode);
+      $build['#children'][$id]['#theme_wrappers'] = ['container__pricing_and_plans__item' => ['#attributes' => ['class' => ['pricing-and-plans__item']]]];
     }
-    // Get the view mode from package config.
-    $view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode');
-
-    // Generate a build array using the view builder.
-    $build['plan_list'] = $this->entityTypeManager()->getViewBuilder('rate_plan')->viewMultiple($plans, $view_mode ?? 'default');
 
     return $build;
   }
