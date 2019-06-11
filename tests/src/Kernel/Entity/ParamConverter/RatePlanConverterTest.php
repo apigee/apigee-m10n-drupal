@@ -20,6 +20,8 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\ParamConverter;
 
 use Drupal\apigee_m10n\Entity\ParamConverter\RatePlanConverter;
+use Drupal\Core\Http\Exception\CacheableNotFoundHttpException;
+use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,6 +69,40 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
     \Drupal::service('router')->matchRequest($request);
 
     $this->assertEquals($rate_plan->id(), $request->get('rate_plan')->id());
+
+    // Tests an invalid package.
+    $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $developer->id(),
+      'package' => 0,
+      'rate_plan' => $rate_plan->id(),
+    ])->toString());
+    // Match the request.
+    try {
+      \Drupal::service('router')->matchRequest($request);
+    }
+    catch (CacheableNotFoundHttpException $ex) {
+    }
+
+    // Tests rate plan not found exception.
+    $plan_id = $this->randomMachineName();
+    $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
+      'user' => $developer->id(),
+      'package' => $this->randomMachineName(),
+      'rate_plan' => $plan_id,
+    ])->toString());
+    // Queue a not found response.
+    $this->stack->queueMockResponse([
+      'get_not_found'  => [
+        'status_code' => 404,
+        'message' => "RatePlan with id [{$plan_id}] does not exist",
+      ],
+    ]);
+    // Match the request.
+    try {
+      \Drupal::service('router')->matchRequest($request);
+    }
+    catch (ParamNotConvertedException $ex) {
+    }
   }
 
   /**

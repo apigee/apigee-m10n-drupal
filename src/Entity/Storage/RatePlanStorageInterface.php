@@ -47,6 +47,9 @@ interface RatePlanStorageInterface {
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   The rate plan.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   *   Thrown if the rate plan doesn't exist.
    */
   public function loadById(string $package_name, string $id): RatePlanInterface;
 
