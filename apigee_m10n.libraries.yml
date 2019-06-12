@@ -1,5 +1,4 @@
 package:
-  version: 1.0
   css:
     theme:
       css/package.css: {}
@@ -11,7 +10,6 @@ package:
     - core/drupal
 
 rate_plan.entity_list:
-  version: 1.0
   css:
     theme:
       css/apigee_m10n.plan-list.css: {}
@@ -22,7 +20,6 @@ prepaid_balance:
       css/apigee_m10n.prepaid-balance.css: {}
 
 tnc-widget:
-  version: 1.0
   css:
     theme:
       css/tnc-widget.css: {}
