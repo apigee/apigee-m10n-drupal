@@ -35,11 +35,14 @@ use Drupal\user\UserInterface;
 /**
  * Defines the Subscription entity class.
  *
+ * The label was changed to purchased plan after the entity was created because
+ * it was decided it was a better match.
+ *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
  *   id             = "subscription",
- *   label          = @Translation("Subscription"),
- *   label_singular = @Translation("Subscription"),
- *   label_plural   = @Translation("Subscriptions"),
+ *   label          = @Translation("Purchased Plan"),
+ *   label_singular = @Translation("Purchased Plan"),
+ *   label_plural   = @Translation("Purchased Plans"),
  *   label_count = @PluralTranslation(
  *     singular = "@count Subscription",
  *     plural   = "@count Subscriptions",
