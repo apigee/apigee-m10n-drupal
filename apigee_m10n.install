@@ -18,6 +18,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+use Apigee\Edge\Exception\ApiException;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\RoleInterface;
@@ -35,15 +36,20 @@ function apigee_m10n_requirements($phase) {
 
   // If monetization is disabled after module has been installed, show error on status page.
   if ($phase === 'runtime') {
-    /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
-    $monetization = Drupal::service('apigee_m10n.monetization');
+    try {
+      /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
+      $monetization = Drupal::service('apigee_m10n.monetization');
 
-    if (!$monetization->isMonetizationEnabled()) {
-      $requirements['apigee_monetization_connection_error'] = [
-        'title' => t('Apigee Monetization'),
-        'description' => t(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE),
-        'severity' => REQUIREMENT_ERROR,
-      ];
+      if (!$monetization->isMonetizationEnabled()) {
+        $requirements['apigee_monetization_connection_error'] = [
+          'title' => t('Apigee Monetization'),
+          'description' => t(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+    }
+    catch (ApiException $exception) {
+      Drupal::logger('apigee_m10n')->error($exception->getMessage());
     }
   }
 

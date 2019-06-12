@@ -27,6 +27,7 @@ use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\user\Entity\Role;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tests module install.
@@ -80,6 +81,12 @@ class ModuleInstallKernelTest extends KernelTestBase {
     // Installing modules updates the container and needs a router rebuild.
     $this->container = \Drupal::getContainer();
     $this->container->get('router.builder')->rebuildIfNeeded();
+
+    // Ensure requirements does not fail on /admin/config page.
+    $this->setInstallProfile('standard');
+    $request = Request::create(Url::fromRoute('system.admin_config')->toString());
+    $response = $this->container->get('http_kernel')->handle($request);
+    $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
 
     // Gets the uninstall page.
     $request = Request::create(Url::fromRoute('system.modules_uninstall')->toString());
