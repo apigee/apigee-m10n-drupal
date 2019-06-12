@@ -18,6 +18,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+use Apigee\Edge\Exception\ApiException;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\RoleInterface;
@@ -47,8 +48,8 @@ function apigee_m10n_requirements($phase) {
         ];
       }
     }
-    catch (Exception $exception) {
-
+    catch (ApiException $exception) {
+      Drupal::logger('apigee_m10n')->error($exception->getMessage());
     }
   }
 
