@@ -22,10 +22,14 @@ namespace Drupal\apigee_m10n\Controller;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Form\PackageConfigForm;
+use Drupal\apigee_m10n\Form\RatePlanConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -36,7 +40,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @package Drupal\apigee_m10n\Controller
  */
-class PackagesController extends ControllerBase {
+class PricingAndPlansController extends ControllerBase {
 
   /**
    * Service for instantiating SDK controllers.
@@ -46,7 +50,7 @@ class PackagesController extends ControllerBase {
   protected $controller_factory;
 
   /**
-   * PackagesController constructor.
+   * PricingAndPlansController constructor.
    *
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
@@ -63,14 +67,33 @@ class PackagesController extends ControllerBase {
   }
 
   /**
+   * Checks route access.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   Run access checks for this account.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if passed permissions are present.
+   */
+  public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+    $user = $route_match->getParameter('user');
+    return AccessResult::allowedIf(
+      $account->hasPermission('view rate_plan as anyone') ||
+      ($account->hasPermission('view rate_plan') && $account->id() === $user->id())
+    );
+  }
+
+  /**
    * Redirect to the users catalog page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   A redirect to the current user's packages page.
    */
-  public function myCatalog(): RedirectResponse {
+  public function myPlans(): RedirectResponse {
     return $this->redirect(
-      'apigee_monetization.packages',
+      'apigee_monetization.plans',
       ['user' => \Drupal::currentUser()->id()],
       ['absolute' => TRUE]
     );
@@ -107,62 +130,55 @@ class PackagesController extends ControllerBase {
     if (empty($user->getEmail())) {
       throw new NotFoundHttpException((string) $this->t("The user (@uid) doesn't have an email address.", ['@uid' => $user->id()]));
     }
-    // Load purchased packages for comparison.
-    $packages = Package::getAvailableApiPackagesByDeveloper($user->getEmail());
-    // Get the view mode from package config.
-    $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
-    $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];
-    $build['package_list']['#pre_render'][] = [$this, 'preRender'];
 
-    return $build;
+    $rate_plans = [];
+
+    // Load rate plans for each package.
+    foreach (Package::getAvailableApiPackagesByDeveloper($user->getEmail()) as $package) {
+      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $package */
+      foreach ($package->get('ratePlans') as $rate_plan) {
+        $rate_plans["{$package->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+      };
+    }
+
+    return $this->buildPage($rate_plans);
   }
 
   /**
-   * Get a rate plan controller.
+   * Builds the page for a rate plan listing.
    *
-   * @param string $package_id
-   *   The package ID.
-   *
-   * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
-   *   The rate plan controller.
-   */
-  protected function packageRatePlanController($package_id): RatePlanControllerInterface {
-    return $this->controller_factory->ratePlanController($package_id);
-  }
-
-  /**
-   * Call back to pre-process the entity list.
-   *
-   * @param array $build
-   *   A render array as processed by
-   *   `\Drupal\Core\Entity\EntityViewBuilder::buildMultiple()`.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface[] $plans
+   *   A list of rate plans.
    *
    * @return array
-   *   The processed render array.
+   *   A render array for plans.
    */
-  public function preRender(array $build) {
-    // Add a wrapper around the list.
-    $build['#prefix'] = '<ul class="apigee-package-list">';
-    $build['#suffix'] = '</ul>';
-    // Wrap each package as a list item.
-    foreach (Element::children($build) as $index) {
-      // Header HTML.
-      $header_html = '
-        <div class="apigee-sdk-package-basic">
-          <div class="apigee-package-label">@package_label</div>
-          <div class="apigee-sdk-product-list-basic">(<span class="apigee-sdk-product"> @product_labels </span>)</div>
-        </div>
-        <div class="apigee-package-details">';
-      // Build a list of product labels for the basic info header.
-      $product_labels = [];
-      foreach ($build[$index]['#package']->get('apiProducts') as $item) {
-        $product_labels[] = $item->entity->label();
-      }
-      $build[$index]['#prefix'] = new FormattableMarkup('<li class="apigee-sdk-package">' . $header_html, [
-        '@package_label' => $build[$index]['#package']->label(),
-        '@product_labels' => implode(', ', $product_labels),
-      ]);
-      $build[$index]['#suffix'] = '</div></li>';
+  protected function buildPage($plans) {
+    $build = [
+      '#theme' => 'container__pricing_and_plans',
+      '#children' => [],
+      '#attributes' => ['class' => ['pricing-and-plans']],
+      '#cache' => [
+        'contexts' => [
+          'user',
+          'url.developer',
+        ],
+        'tags' => [],
+        'max-age' => 300,
+      ],
+      '#attached' => ['library' => ['apigee_m10n/rate_plan.entity_list']],
+    ];
+
+    // Get the view mode from package config.
+    $view_mode = ($view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode')) ? $view_mode : 'default';
+    $view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
+
+    foreach ($plans as $id => $plan) {
+      // TODO: Add a test for render cache.
+      $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $plan->getCacheTags());
+      // Generate a build array using the view builder.
+      $build['#children'][$id] = $view_builder->view($plan, $view_mode);
+      $build['#children'][$id]['#theme_wrappers'] = ['container__pricing_and_plans__item' => ['#attributes' => ['class' => ['pricing-and-plans__item']]]];
     }
 
     return $build;

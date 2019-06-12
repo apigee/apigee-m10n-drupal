@@ -68,4 +68,28 @@ class MonetizationKernelTestBase extends KernelTestBase {
     $this->baseSetUp();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementText($selector, $text) {
+    $element = $this->cssSelect($selector);
+    static::assertSame((string) $element[0], $text);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementContains($selector, $text) {
+    $element = $this->cssSelect($selector);
+    static::assertTrue(strpos((string) $element[0], $text) !== FALSE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementNotContains($selector, $text) {
+    $element = $this->cssSelect($selector);
+    static::assertTrue(strpos((string) $element[0], $text) === FALSE);
+  }
+
 }

@@ -20,38 +20,35 @@
 namespace Drupal\apigee_m10n_teams\Controller;
 
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_m10n\Controller\PackagesController;
-use Drupal\apigee_m10n\Form\PackageConfigForm;
+use Drupal\apigee_m10n\Controller\PricingAndPlansController;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
 
 /**
- * Generates the packages page.
- *
- * @package Drupal\apigee_m10n\Controller
+ * Generates the pricing and plans page.
  */
-class TeamPackagesController extends PackagesController {
+class TeamPricingAndPlansController extends PricingAndPlansController {
 
   /**
-   * Gets a list of available packages for this user.
+   * Gets a list of available plans for this user.
    *
    * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
    *   The drupal user/developer.
    *
    * @return array
-   *   The pager render array.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   The plans render array.
    */
   public function teamCatalogPage(TeamInterface $team) {
-    // Load purchased packages for comparison.
-    $packages = TeamsPackage::getAvailableApiPackagesByTeam($team->id());
-    // Get the view mode from package config.
-    $view_mode = $this->config(PackageConfigForm::CONFIG_NAME)->get('catalog_view_mode');
-    $build = ['package_list' => $this->entityTypeManager()->getViewBuilder('package')->viewMultiple($packages, $view_mode ?? 'default')];
-    $build['package_list']['#pre_render'][] = [$this, 'preRender'];
+    $rate_plans = [];
 
-    return $build;
+    // Load rate plans for each package.
+    foreach (TeamsPackage::getAvailableApiPackagesByTeam($team->id()) as $package) {
+      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $package */
+      foreach ($package->get('ratePlans') as $rate_plan) {
+        $rate_plans["{$package->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+      };
+    }
+
+    return $this->buildPage($rate_plans);
   }
 
 }

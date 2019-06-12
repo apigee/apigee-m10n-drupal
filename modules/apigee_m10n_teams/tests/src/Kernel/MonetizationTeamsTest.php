@@ -104,10 +104,10 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create a team Entity.
     $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
 
-    $this->package      = $this->entity_type_manager->getStorage('package')->create([
+    $this->package = $this->entity_type_manager->getStorage('package')->create([
       'id' => $this->randomMachineName(),
     ]);
-    $this->rate_plan    = $this->entity_type_manager->getStorage('rate_plan')->create([
+    $this->rate_plan = $this->entity_type_manager->getStorage('rate_plan')->create([
       'id' => $this->randomMachineName(),
       'package' => $this->package,
     ]);
@@ -177,6 +177,10 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertTrue($package->access('view', $account));
     // Test view package for a non team member.
     static::assertFalse($package->access('view', $non_member));
+
+    // Populate the entity cache with the rate plan's API package because it
+    // will be loaded when the rate plan cache tags are loaded.
+    \Drupal::service('entity.memory_cache')->set("values:package:{$this->package->id()}", $this->package);
 
     // Test view rate plan for a team member.
     static::assertTrue($this->rate_plan->access('view', $account));

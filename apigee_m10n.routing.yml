@@ -13,7 +13,7 @@ apigee_m10n.settings:
 apigee_m10n.settings.rate_plan:
   path: /admin/config/apigee-edge/monetization/rate-plan
   defaults:
-    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
+    _form: \Drupal\apigee_m10n\Form\RatePlanConfigForm
     _title: Rate Plans
   requirements:
     _permission: administer apigee monetization
@@ -23,7 +23,7 @@ apigee_m10n.settings.rate_plan:
 apigee_m10n.settings.package:
   path: /admin/config/apigee-edge/monetization/package
   defaults:
-    _form: \Drupal\apigee_m10n\Form\PackageConfigForm
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Package settings
   requirements:
     _permission: administer apigee monetization
@@ -80,31 +80,22 @@ apigee_monetization.billing:
   options:
     _apigee_monetization_route: TRUE
 
-apigee_monetization.my_packages:
-  path: /monetization/packages
+apigee_monetization.my_plans:
+  path: /plans
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PackagesController::myCatalog
+    _controller: \Drupal\apigee_m10n\Controller\PricingAndPlansController::myPlans
   requirements:
-    _permission: view package
+    _permission: view rate_plan
   options:
     _apigee_monetization_route: TRUE
 
-apigee_monetization.packages:
-  path: /user/{user}/monetization/packages
+apigee_monetization.plans:
+  path: /user/{user}/plans
   defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PackagesController::catalogPage
-    _title: Packages
+    _controller: \Drupal\apigee_m10n\Controller\PricingAndPlansController::catalogPage
+    _title: "Pricing and Plans"
   requirements:
-    _custom_access: \Drupal\apigee_m10n\Access\PackageAccess::access
-  options:
-    _apigee_monetization_route: TRUE
-
-apigee_monetization.my_subscriptions:
-  path: /monetization/subscriptions
-  defaults:
-    _controller: \Drupal\apigee_m10n\Controller\PackagesController::mySubscriptions
-  requirements:
-    _permission: view own subscription
+    _custom_access: \Drupal\apigee_m10n\Controller\PricingAndPlansController::access
   options:
     _apigee_monetization_route: TRUE
 

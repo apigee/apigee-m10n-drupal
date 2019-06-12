@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
-use Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface;
 use Apigee\Edge\Api\Monetization\Entity\RatePlan as MonetizationRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
@@ -33,9 +32,11 @@ use Drupal\apigee_m10n\Entity\Property\FreemiumPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\IdPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 
@@ -77,6 +78,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use IdPropertyAwareDecoratorTrait;
   use NamePropertyAwareDecoratorTrait;
   use OrganizationPropertyAwareDecoratorTrait;
+  use PackagePropertyAwareDecoratorTrait;
   use PaymentDueDaysPropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
 
@@ -143,10 +145,11 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   protected static function getProperties(): array {
-    $properties = parent::getProperties();
-    $properties['subscribe'] = 'apigee_subscribe';
-
-    return $properties;
+    return [
+      'subscribe' => 'apigee_subscribe',
+      'packageEntity' => 'entity_reference',
+      'packageProducts' => 'entity_reference',
+    ] + parent::getProperties();
   }
 
   /**
@@ -164,6 +167,18 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     $subscribe_label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_label');
     // `$subscribe_label` is not translated, use `config_translation` instead.
     $definitions['subscribe']->setLabel($subscribe_label ?? t('Purchase'));
+
+    // The API products are many-to-one.
+    $definitions['packageEntity']->setCardinality(1)
+      ->setSetting('target_type', 'package')
+      ->setLabel(t('Package'))
+      ->setDescription(t('The API package the rate plan belongs to.'));
+
+    // The API products are many-to-one.
+    $definitions['packageProducts']->setCardinality(-1)
+      ->setSetting('target_type', 'api_product')
+      ->setLabel(t('Products'))
+      ->setDescription(t('Products included in the API package.'));
 
     return $definitions;
   }
@@ -246,7 +261,14 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getCacheContexts() {
-    return array_merge(['url.developer'], parent::getCacheContexts());
+    return Cache::mergeTags(parent::getCacheContexts(), ['url.developer']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    return Cache::mergeTags(parent::getCacheTags(), $this->get('packageEntity')->entity->getCacheTags());
   }
 
   /**
@@ -350,20 +372,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPackage(): ?ApiPackageInterface {
-    return $this->decorated->getPackage();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPackage(ApiPackageInterface $package): void {
-    $this->decorated->setPackage($package);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function isProrate(): bool {
     return $this->decorated->isProrate();
   }
@@ -457,6 +465,25 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function setSetUpFee(float $setUpFee): void {
     $this->decorated->setSetUpFee($setUpFee);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPackageEntity() {
+    return ['target_id' => $this->getPackage()->id()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPackageProducts() {
+    return $this
+      ->get('packageEntity')
+      ->first()
+      ->get('entity')
+      ->getValue()
+      ->getApiProducts();
   }
 
 }
