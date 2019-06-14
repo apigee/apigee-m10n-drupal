@@ -62,7 +62,7 @@ use Drupal\user\UserInterface;
  *     "id" = "id",
  *   },
  *   admin_permission       = "administer apigee monetization",
- *   field_ui_base_route    = "apigee_m10n.settings.subscription",
+ *   field_ui_base_route    = "apigee_m10n.settings.purchased_plan",
  * )
  */
 class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface, EntityOwnerInterface {

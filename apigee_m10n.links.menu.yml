@@ -25,9 +25,9 @@ apigee_m10n.settings.prepaid_balance:
   parent: system.admin_apigee_m10n
   weight: 100
 
-apigee_m10n.settings.subscription:
+apigee_m10n.settings.purchased_plan:
   title: 'Rate plan purchases'
-  route_name: apigee_m10n.settings.subscription
+  route_name: apigee_m10n.settings.purchased_plan
   description: 'Configure rate plan purchases.'
   parent: system.admin_apigee_m10n
   weight: 100

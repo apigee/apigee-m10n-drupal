@@ -9,10 +9,10 @@ entity.package.collection:
   route_name: entity.package.collection
   base_route: apigee_m10n.settings.package
 
-apigee_m10n.settings.subscription:
-  route_name: apigee_m10n.settings.subscription
+apigee_m10n.settings.purchased_plan:
+  route_name: apigee_m10n.settings.purchased_plan
   title: 'Rate plan purchase settings'
-  base_route: apigee_m10n.settings.subscription
+  base_route: apigee_m10n.settings.purchased_plan
   weight: -10
 
 apigee_m10n.balance_and_plans:
