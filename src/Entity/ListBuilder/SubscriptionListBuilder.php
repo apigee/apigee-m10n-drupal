@@ -43,7 +43,7 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
   /**
    * Subscription storage.
    *
-   * @var \Drupal\apigee_m10n\Entity\Storage\SubscriptionStorageInterface
+   * @var \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorageInterface
    */
   protected $storage;
 

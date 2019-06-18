@@ -27,7 +27,7 @@ use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
@@ -138,7 +138,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Use our class to override the original entity class.
       $entity_types['subscription']->setClass(TeamsPurchasedPlan::class);
       // Override the storage class.
-      $entity_types['subscription']->setStorageClass(TeamSubscriptionStorage::class);
+      $entity_types['subscription']->setStorageClass(TeamPurchasedPlanStorage::class);
       // Override subscribe form.
       $entity_types['subscription']->setFormClass('default', TeamPurchasedPlanForm::class);
     }

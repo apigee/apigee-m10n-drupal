@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
-use Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage;
+use Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxyInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -28,7 +28,7 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Overridden storage controller for the `subscription` entity for teams.
  */
-class TeamSubscriptionStorage extends SubscriptionStorage implements TeamSubscriptionStorageInterface {
+class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurchasedPlanStorageInterface {
 
   /**
    * {@inheritdoc}

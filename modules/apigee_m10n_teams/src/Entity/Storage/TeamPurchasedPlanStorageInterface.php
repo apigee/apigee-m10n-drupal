@@ -24,7 +24,7 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 /**
  * Interface for the overridden `subscription` storage controller.
  */
-interface TeamSubscriptionStorageInterface {
+interface TeamPurchasedPlanStorageInterface {
 
   /**
    * Load all subscriptions for a team.

@@ -48,7 +48,7 @@ use Drupal\user\UserInterface;
  *     plural   = "@count Subscriptions",
  *   ),
  *   handlers = {
- *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\SubscriptionStorage",
+ *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage",
  *     "access"              = "Drupal\entity\UncacheableEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\SubscriptionPermissionProvider",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",

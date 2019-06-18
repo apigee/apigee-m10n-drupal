@@ -34,7 +34,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * The storage controller for the `subscription` entity.
  */
-class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionStorageInterface {
+class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPlanStorageInterface {
 
   /**
    * The controller proxy.
@@ -48,7 +48,7 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
   protected $controller_proxy;
 
   /**
-   * Constructs an SubscriptionStorage instance.
+   * Constructs an PurchasedPlanStorage instance.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.

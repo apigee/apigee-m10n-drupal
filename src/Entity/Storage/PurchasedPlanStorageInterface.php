@@ -24,7 +24,7 @@ use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 /**
  * Defines an interface for the subscription entity storage class.
  */
-interface SubscriptionStorageInterface {
+interface PurchasedPlanStorageInterface {
 
   /**
    * Load an individual subscription by developer_id and the subscription ID.

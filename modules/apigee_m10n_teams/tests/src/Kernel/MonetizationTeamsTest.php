@@ -23,7 +23,7 @@ use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorageInterface;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
@@ -150,7 +150,7 @@ class MonetizationTeamsTest extends KernelTestBase {
 
     // Check storage overrides.
     static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
-    static::assertInstanceOf(TeamSubscriptionStorageInterface::class, $this->entity_type_manager->getStorage('subscription'));
+    static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('subscription'));
   }
 
   /**

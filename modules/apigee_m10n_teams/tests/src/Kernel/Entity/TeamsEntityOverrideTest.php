@@ -22,7 +22,7 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 use Drupal\apigee_edge\Entity\EdgeEntityType;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Routing\CurrentRouteMatch;
@@ -101,7 +101,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
     // Make sure our entity class has taken over.
     static::assertSame(TeamsPurchasedPlan::class, $entity_type->getClass());
     // Make sure our entity storage class has taken over.
-    static::assertSame(TeamSubscriptionStorage::class, $entity_type->getStorageClass());
+    static::assertSame(TeamPurchasedPlanStorage::class, $entity_type->getStorageClass());
   }
 
 }
