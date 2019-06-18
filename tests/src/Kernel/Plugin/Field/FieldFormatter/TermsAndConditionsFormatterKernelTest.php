@@ -91,7 +91,7 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
 
-    $subscription = PurchasedPlan::create([
+    $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer(['email' => $this->account->getEmail()]),
       'startDate' => new \DateTimeImmutable(),
@@ -102,7 +102,7 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
       'get_developer_terms_conditions',
     ]);
 
-    $item_list = $subscription->get('termsAndConditions');
+    $item_list = $purchased_plan->get('termsAndConditions');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(TermsAndConditionsFieldItem::class, $item_list->get(0));
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\TermsAndConditionsFormatter $instance */

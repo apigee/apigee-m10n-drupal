@@ -23,7 +23,7 @@ use Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
- * Tests the subscription param converter.
+ * Tests the purchased plan param converter.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel

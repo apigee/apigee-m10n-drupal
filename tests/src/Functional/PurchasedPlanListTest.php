@@ -22,12 +22,12 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 use Drupal\Core\Url;
 
 /**
- * Class SubscriptionListTest.
+ * Class PurchasedPlanListTest.
  *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
-class SubscriptionListTest extends MonetizationFunctionalTestBase {
+class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
 
   /**
    * Drupal user.
@@ -55,18 +55,18 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
   }
 
   /**
-   * Tests for `My Plans/Subscriptions` page.
+   * Tests for `My Plans` page.
    *
    * @throws \Exception
    */
-  public function testSubscriptionListView() {
+  public function testPurchasedPlanListView() {
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
-    $subscription = $this->createSubscription($this->developer, $rate_plan);
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
 
     $this->queueOrg();
     $this->stack
-      ->queueMockResponse(['get_developer_subscriptions' => ['subscriptions' => [$subscription]]]);
+      ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
     $this->drupalGet(Url::fromRoute('entity.subscription.developer_collection', [
       'user' => $this->developer->id(),
@@ -79,7 +79,7 @@ class SubscriptionListTest extends MonetizationFunctionalTestBase {
     // Checking my subscriptions table columns.
     $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-status', 'Active');
     $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-rate-plan', $rate_plan->getDisplayName());
-    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-start-date', $subscription->getStartDate()->format('m/d/Y'));
+    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-start-date', $purchased_plan->getStartDate()->format('m/d/Y'));
     static::assertSame($this->cssSelect('.subscription-row:nth-child(1) td.subscription-end-date')[0]->getText(), '');
 
   }

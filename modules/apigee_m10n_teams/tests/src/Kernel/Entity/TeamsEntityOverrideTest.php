@@ -94,7 +94,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
    *
    * @throws \Exception
    */
-  public function testSubscriptionEntityOverrides() {
+  public function testPurchasedPlanEntityOverrides() {
     $entity_type = $this->container->get('entity_type.manager')->getDefinition('subscription');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 

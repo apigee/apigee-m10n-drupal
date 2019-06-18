@@ -190,8 +190,8 @@ trait ApigeeMonetizationTestTrait {
     // This is here to make drupalLogin() work.
     $account->passRaw = $edit['pass'];
 
-    // Assume the account has no subscriptions initially.
-    $this->warmSubscriptionsCache($account);
+    // Assume the account has no purchased plans initially.
+    $this->warmPurchasedPlanCache($account);
 
     $this->cleanup_queue[] = [
       'weight' => 99,
@@ -388,7 +388,7 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Creates a subscription.
+   * Creates a purchased plan.
    *
    * @param \Drupal\user\UserInterface $user
    *   The user to subscribe to the rate plan.
@@ -396,16 +396,16 @@ trait ApigeeMonetizationTestTrait {
    *   The rate plan to subscribe to.
    *
    * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
-   *   The subscription.
+   *   The purchased plan.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    * @throws \Twig_Error_Loader
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): PurchasedPlanInterface {
+  protected function createPurchasedPlan(UserInterface $user, RatePlanInterface $rate_plan): PurchasedPlanInterface {
     $start_date = new \DateTimeImmutable('today', new \DateTimeZone($this->org_default_timezone));
-    $subscription = PurchasedPlan::create([
+    $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer([
         'email' => $user->getEmail(),
@@ -414,26 +414,26 @@ trait ApigeeMonetizationTestTrait {
       'startDate' => $start_date,
     ]);
 
-    $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
-    $subscription->save();
+    $this->stack->queueMockResponse(['purchased_plan' => ['purchased_plan' => $purchased_plan]]);
+    $purchased_plan->save();
 
-    // Warm the cache for this subscription.
-    $subscription->set('id', $this->getRandomUniqueId());
-    $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
-    $subscription = PurchasedPlan::load($subscription->id());
+    // Warm the cache for this purchased_plan.
+    $purchased_plan->set('id', $this->getRandomUniqueId());
+    $this->stack->queueMockResponse(['purchased_plan' => ['purchased_plan' => $purchased_plan]]);
+    $purchased_plan = PurchasedPlan::load($purchased_plan->id());
 
     // Make sure the start date is unchanged while loading.
-    static::assertEquals($start_date, $subscription->decorated()->getStartDate());
+    static::assertEquals($start_date, $purchased_plan->decorated()->getStartDate());
 
-    // The subscription controller does not have a delete operation so there is
+    // The purchased_plan controller does not have a delete operation so there is
     // nothing to add to the cleanup queue.
-    return $subscription;
+    return $purchased_plan;
   }
 
   /**
-   * Populates the subscriptions cache for a user.
+   * Populates the purchased plan cache for a user.
    *
-   * Use this for tests that fetch subscriptions.
+   * Use this for tests that fetch purchased plans.
    *
    * @param \Drupal\user\UserInterface $user
    *   The user entity.
@@ -445,7 +445,7 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  protected function warmSubscriptionsCache(UserInterface $user): void {
+  protected function warmPurchasedPlanCache(UserInterface $user): void {
     \Drupal::cache()->set("apigee_m10n:dev:subscriptions:{$user->getEmail()}", []);
   }
 

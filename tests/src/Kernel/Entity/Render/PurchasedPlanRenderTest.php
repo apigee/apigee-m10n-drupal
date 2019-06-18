@@ -27,7 +27,7 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class SubscriptionRenderTest extends MonetizationKernelTestBase {
+class PurchasedPlanRenderTest extends MonetizationKernelTestBase {
 
   /**
    * Test package rate plan.
@@ -37,11 +37,11 @@ class SubscriptionRenderTest extends MonetizationKernelTestBase {
   protected $rate_plan;
 
   /**
-   * Test subscription.
+   * Test purchased plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $subscription;
+  protected $purchased_plan;
 
   /**
    * The developer drupal user.
@@ -70,33 +70,33 @@ class SubscriptionRenderTest extends MonetizationKernelTestBase {
     $this->setCurrentUser($this->developer);
 
     // Set the default timezone for formatting the start  date.
-    $subscription_default_display = \Drupal::config('core.entity_view_display.subscription.subscription.default')->get('content');
-    $subscription_default_display['startDate']['settings']['timezone'] = 'America/Los_Angeles';
-    \Drupal::configFactory()->getEditable('core.entity_view_display.subscription.subscription.default')->set('content', $subscription_default_display)->save();
+    $purchased_plan_default_display = \Drupal::config('core.entity_view_display.subscription.subscription.default')->get('content');
+    $purchased_plan_default_display['startDate']['settings']['timezone'] = 'America/Los_Angeles';
+    \Drupal::configFactory()->getEditable('core.entity_view_display.subscription.subscription.default')->set('content', $purchased_plan_default_display)->save();
 
     $this->rate_plan = $this->createPackageRatePlan($this->createPackage());
-    $this->subscription = $this->createSubscription($this->developer, $this->rate_plan);
+    $this->purchased_plan = $this->createPurchasedPlan($this->developer, $this->rate_plan);
   }
 
   /**
    * Tests theme preprocess functions being able to attach assets.
    */
-  public function testRenderSubscription() {
+  public function testRenderPurchasedPlan() {
 
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->subscription->getEntityTypeId());
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->purchased_plan->getEntityTypeId());
 
-    $build = $view_builder->view($this->subscription, 'default');
+    $build = $view_builder->view($this->purchased_plan, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
     $this->assertText($this->developer->getDisplayName(), 'The developer display name appears.');
     // The formatter will render with the default time zone.
-    $start_date = $this->subscription
+    $start_date = $this->purchased_plan
       ->getStartDate()
       ->setTimezone(new \DateTimeZone('America/Los_Angeles'))
       ->format('D, m/d/Y - H:i');
     static::assertNotEmpty($start_date);
-    $this->assertText($start_date, 'The start date appears in the rendered subscription.');
+    $this->assertText($start_date, 'The start date appears in the rendered purchased plan.');
   }
 
 }

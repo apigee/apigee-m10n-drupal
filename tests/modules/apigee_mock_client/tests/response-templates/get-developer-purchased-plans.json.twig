@@ -8,9 +8,9 @@
 #}
 {
     "developerRatePlan": [
-        {% for subscription in subscriptions %}
-            {% include 'subscription.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% for purchased_plan in purchased_plans %}
+            {% include 'purchased-plan.json.twig' %}{{ loop.last ? '' : ',' }}
         {% endfor %}
     ],
-    "totalRecords": {{ subscriptions|length }}
+    "totalRecords": {{ purchased_plan|length }}
 }
