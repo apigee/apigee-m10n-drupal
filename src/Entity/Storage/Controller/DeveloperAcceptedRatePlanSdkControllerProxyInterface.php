@@ -28,13 +28,13 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 interface DeveloperAcceptedRatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterface {
 
   /**
-   * Loads all subscriptions for a given developer.
+   * Loads all purchased plans for a given developer.
    *
    * @param string $developer_id
    *   The developer ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[]
-   *   A list of subscriptions keyed by ID.
+   *   A list of purchased plans keyed by ID.
    */
   public function loadByDeveloperId(string $developer_id): array;
 

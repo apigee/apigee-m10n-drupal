@@ -27,13 +27,13 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 interface TeamPurchasedPlanStorageInterface {
 
   /**
-   * Load all subscriptions for a team.
+   * Load all purchased plans for a team.
    *
    * @param string $team_id
    *   The team ID.
    *
    * @return array
-   *   An array of subscriptions for the given team.
+   *   An array of purchased plans for the given team.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */

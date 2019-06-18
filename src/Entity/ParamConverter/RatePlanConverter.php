@@ -28,7 +28,7 @@ use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Symfony\Component\Routing\Route;
 
 /**
- * Parameter converter for up-casting subscriptions entity IDs to full objects.
+ * Parameter converter for up-casting purchased plan entity IDs to full objects.
  *
  * {@inheritdoc}
  */

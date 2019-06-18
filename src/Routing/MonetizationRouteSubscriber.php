@@ -41,7 +41,7 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
       "field_ui.field_storage_config_add_rate_plan",
       "entity.entity_form_display.rate_plan.default",
       "entity.entity_form_display.rate_plan.form_mode",
-      // Subscriptions.
+      // Purchased plans.
       "entity.field_config.subscription_field_edit_form",
       "entity.field_config.subscription_storage_edit_form",
       "entity.field_config.subscription_field_delete_form",

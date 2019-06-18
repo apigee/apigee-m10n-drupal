@@ -49,7 +49,7 @@ interface TeamsPurchasedPlanInterface {
   public function isTeamSubscription(): bool;
 
   /**
-   * Loads subscriptions by team ID.
+   * Loads purchased plans by team ID.
    *
    * @param string $team_id
    *   The `team` ID.

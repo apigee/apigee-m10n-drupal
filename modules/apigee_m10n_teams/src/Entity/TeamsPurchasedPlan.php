@@ -159,7 +159,7 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
   }
 
   /**
-   * Loads subscriptions by team ID.
+   * Loads purchased plans by team ID.
    *
    * @param string $team_id
    *   The `team` ID.

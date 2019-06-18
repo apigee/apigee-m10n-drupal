@@ -40,13 +40,13 @@ interface PurchasedPlanStorageInterface {
   public function loadById(string $developer_id, string $id): ?PurchasedPlanInterface;
 
   /**
-   * Load Subscriptions by developer ID.
+   * Load purchases by developer ID.
    *
    * @param string $developer_id
    *   Either the developer UUID or email address.
    *
    * @return array
-   *   An array of subscriptions for the given developer.
+   *   An array of `purchased_plan` entities for the given developer.
    */
   public function loadByDeveloperId(string $developer_id): array;
 

@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
+use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -34,7 +35,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines implementation of a subscriptions listing page.
+ * Defines implementation of a purchased plan listing page.
  *
  * @ingroup entity_api
  */
@@ -126,8 +127,8 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    * {@inheritdoc}
    */
   public function getTitle() {
-    return $this->t('@subscriptions', [
-      '@subscriptions' => (string) $this->entityTypeManager->getDefinition('subscription')->getPluralLabel(),
+    return $this->t('@label', [
+      '@label' => (string) $this->entityType->getPluralLabel(),
     ]);
   }
 
@@ -187,7 +188,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
           'data' => [
             '#type' => 'inline_template',
             '#template' => '<span class="status status--{{ status|clean_class }}">{{ status }}</span>',
-            '#context' => ['status' => $this->t('@status', ['@status' => $entity->getSubscriptionStatus()])],
+            '#context' => ['status' => $this->t('@status', ['@status' => $entity->getStatus()])],
           ],
           'class' => ['subscription-status'],
         ],
@@ -228,7 +229,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
 
     /** @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $entity */
     foreach ($this->load() as $entity) {
-      if (in_array($entity->getSubscriptionStatus(), [PurchasedPlanInterface::STATUS_ACTIVE, PurchasedPlanInterface::STATUS_FUTURE])) {
+      if (in_array($entity->getStatus(), [PurchasedPlanInterface::STATUS_ACTIVE, PurchasedPlanInterface::STATUS_FUTURE])) {
         $purchased_plans[PurchasedPlanInterface::STATUS_ACTIVE]['entities'][] = $entity;
         continue;
       }
@@ -264,7 +265,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
       }
 
       array_push($build[$key]['table']['#cache']['contexts'], 'url.query_args');
-      array_push($build[$key]['table']['#cache']['tags'], 'apigee_my_subscriptions');
+      array_push($build[$key]['table']['#cache']['tags'], PurchasedPlanForm::MY_PURCHASES_CACHE_TAG);
     }
 
     return $build;

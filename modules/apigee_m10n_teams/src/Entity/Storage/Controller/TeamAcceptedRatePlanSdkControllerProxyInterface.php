@@ -27,13 +27,13 @@ use Apigee\Edge\Entity\EntityInterface;
 interface TeamAcceptedRatePlanSdkControllerProxyInterface {
 
   /**
-   * Loads all subscriptions for a given team.
+   * Loads all purchased plans for a given team.
    *
    * @param string $team_id
    *   The team ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface[]
-   *   A list of subscriptions keyed by ID.
+   *   A list of purchased plans keyed by ID.
    */
   public function loadByTeamId(string $team_id): array;
 
@@ -48,6 +48,6 @@ interface TeamAcceptedRatePlanSdkControllerProxyInterface {
    * @return \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface
    *   The subscription.
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?EntityInterface;
+  public function loadTeamPurchasedPlanById(string $team_id, string $id): ?EntityInterface;
 
 }

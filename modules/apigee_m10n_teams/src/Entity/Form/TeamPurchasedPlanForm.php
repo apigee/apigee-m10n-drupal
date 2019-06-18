@@ -46,7 +46,7 @@ class TeamPurchasedPlanForm extends PurchasedPlanForm {
         }
 
         $display_name = $this->entity->getRatePlan()->getDisplayName();
-        Cache::invalidateTags(['apigee_my_subscriptions']);
+        Cache::invalidateTags([PurchasedPlanForm::MY_PURCHASES_CACHE_TAG]);
 
         if ($this->entity->save()) {
           $this->messenger->addStatus($this->t('You have purchased %label plan', [

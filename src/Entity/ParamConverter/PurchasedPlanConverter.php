@@ -27,7 +27,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Route;
 
 /**
- * Parameter converter for upcasting subscriptions entity IDs to full objects.
+ * Param converter for up-casting `purchased_plan` entity IDs to full objects.
  *
  * {@inheritdoc}
  */

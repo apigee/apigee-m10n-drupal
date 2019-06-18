@@ -76,7 +76,7 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('Connection error');
 
-    // Checking my subscriptions table columns.
+    // Checking my purchased plans table columns.
     $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-status', 'Active');
     $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-rate-plan', $rate_plan->getDisplayName());
     $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-start-date', $purchased_plan->getStartDate()->format('m/d/Y'));

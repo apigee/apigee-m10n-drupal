@@ -63,7 +63,7 @@ class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurch
     $entities = [];
 
     $this->withController(function (TeamAcceptedRatePlanSdkControllerProxyInterface $controller) use ($team_id, &$entities) {
-      // Load the subscriptions for this team.
+      // Load the purchases for this team.
       $sdk_entities = $controller->loadByTeamId($team_id);
       // Convert the SDK entities to drupal entities.
       foreach ($sdk_entities as $id => $entity) {
@@ -93,7 +93,7 @@ class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurch
 
     $entity = NULL;
     $this->withController(function (TeamAcceptedRatePlanSdkControllerProxyInterface $controller) use ($team_id, $id, &$entity) {
-      $drupal_entity = ($sdk_entity = $controller->loadTeamSubscriptionById($team_id, $id))
+      $drupal_entity = ($sdk_entity = $controller->loadTeamPurchasedPlanById($team_id, $id))
         ? $this->createNewInstance($sdk_entity)
         : FALSE;
 

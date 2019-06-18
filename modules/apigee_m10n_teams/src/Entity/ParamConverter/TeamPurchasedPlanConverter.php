@@ -25,7 +25,7 @@ use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
 /**
- * Parameter converter for up-casting team subscriptions.
+ * Parameter converter for up-casting team purchased plans.
  *
  * {@inheritdoc}
  */

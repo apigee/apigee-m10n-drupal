@@ -40,12 +40,14 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
   /**
    * Developer legal name attribute name.
    */
-  const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
+  public const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
 
   /**
    * Insufficient funds API error code.
    */
-  const INSUFFICIENT_FUNDS_ERROR = 'mint.insufficientFunds';
+  public const INSUFFICIENT_FUNDS_ERROR = 'mint.insufficientFunds';
+
+  public const MY_PURCHASES_CACHE_TAG = 'apigee_my_purchased_plans';
 
   /**
    * Messanger service.
@@ -188,7 +190,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       }
 
       $display_name = $this->getEntity()->getRatePlan()->getDisplayName();
-      Cache::invalidateTags(['apigee_my_subscriptions']);
+      Cache::invalidateTags([static::MY_PURCHASES_CACHE_TAG]);
 
       // This means the user has confirmed purchase.
       // We can suppress warning and terminates all purchased rate plans that

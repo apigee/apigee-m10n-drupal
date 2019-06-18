@@ -36,17 +36,17 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    * {@inheritdoc}
    */
   public function loadByTeamId(string $team_id): array {
-    // Get all subscriptions for this team.
-    return $this->getSubscriptionControllerByTeamId($team_id)
+    // Get all purchases for this team.
+    return $this->getPurchasedPlanControllerByTeamId($team_id)
       ->getAllAcceptedRatePlans();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?EntityInterface {
-    // Get all subscriptions for this team.
-    return $this->getSubscriptionControllerByTeamId($team_id)->load($id);
+  public function loadTeamPurchasedPlanById(string $team_id, string $id): ?EntityInterface {
+    // Get all purchases for this team.
+    return $this->getPurchasedPlanControllerByTeamId($team_id)->load($id);
   }
 
   /**
@@ -54,7 +54,7 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    */
   public function update(EntityInterface $entity): void {
     $controller = $entity instanceof CompanyAcceptedRatePlanInterface
-      ? $this->getSubscriptionControllerByTeamId($entity->getCompany()->id())
+      ? $this->getPurchasedPlanControllerByTeamId($entity->getCompany()->id())
       : $this->getSubscriptionController($entity);
 
     $controller->updateSubscription($entity);
@@ -69,7 +69,7 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
    *   The subscription controller.
    */
-  protected function getSubscriptionControllerByTeamId($team_id) {
+  protected function getPurchasedPlanControllerByTeamId($team_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.
@@ -91,7 +91,7 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
         throw new RuntimeException('The Team must be set to create a subscription controller.');
       }
       // Get the controller.
-      return $this->getSubscriptionControllerByTeamId($company->id());
+      return $this->getPurchasedPlanControllerByTeamId($company->id());
     }
     else {
       /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */

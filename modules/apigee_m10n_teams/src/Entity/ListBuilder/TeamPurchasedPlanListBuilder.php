@@ -24,15 +24,14 @@ use Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilder;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Url;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Entity list builder for team subscriptions.
+ * Entity list builder for team purchased plans.
  */
 class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
 
   /**
-   * The team that is used to load subscriptions.
+   * The team that is used to load purchases.
    *
    * @var \Drupal\apigee_edge_teams\Entity\TeamInterface
    */

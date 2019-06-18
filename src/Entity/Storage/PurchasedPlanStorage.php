@@ -89,7 +89,7 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
     $entities = [];
 
     $this->withController(function (DeveloperAcceptedRatePlanSdkControllerProxyInterface $controller) use ($developer_id, &$entities) {
-      // Load the subscriptions for this developer.
+      // Load the purchases for this developer.
       $sdk_entities = $controller->loadByDeveloperId($developer_id);
       // Convert the SDK entities to drupal entities.
       foreach ($sdk_entities as $id => $entity) {

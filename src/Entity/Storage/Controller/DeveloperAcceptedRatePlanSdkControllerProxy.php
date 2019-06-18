@@ -77,7 +77,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function delete(string $id): void {
-    throw new RuntimeException('Unable to delete subscriptions. Update the end date to cancel purchase.');
+    throw new RuntimeException('Unable to delete purchase. Update the end date to cancel.');
   }
 
   /**
@@ -93,13 +93,13 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
     /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[] $purchased_plans */
     $purchased_plans = [];
 
-    // Loops through all developer emails to get their subscriptions.
+    // Loops through all developer emails to get their purchased plans.
     foreach ($select->execute()->fetchCol() as $developer_email) {
-      // Get all subscriptions for this developer.
-      $developer_subscriptions = $this->loadByDeveloperId($developer_email);
-      foreach ($developer_subscriptions as $developer_subscription) {
-        // Subscriptions are keyed by their ID.
-        $purchased_plans[$developer_subscription->id()] = $developer_subscription;
+      // Get all purchases for this developer.
+      $developer_purchases = $this->loadByDeveloperId($developer_email);
+      foreach ($developer_purchases as $purchased_plan) {
+        // Purchases are keyed by their ID.
+        $purchased_plans[$purchased_plan->id()] = $purchased_plan;
       }
     }
 
@@ -110,7 +110,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function loadByDeveloperId(string $developer_id): array {
-    // Get all subscriptions for this developer.
+    // Get all purchases for this developer.
     // TODO: Cache subscription lists per developer.
     return $this->getSubscriptionControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();

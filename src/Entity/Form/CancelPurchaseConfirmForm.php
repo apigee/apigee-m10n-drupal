@@ -165,7 +165,7 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
         $this->messenger->addStatus($this->t('You have successfully cancelled %label plan', [
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
-        Cache::invalidateTags(['apigee_my_subscriptions']);
+        Cache::invalidateTags([PurchasedPlanForm::MY_PURCHASES_CACHE_TAG]);
         $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getOwnerId()]);
       }
     }

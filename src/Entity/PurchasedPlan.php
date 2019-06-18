@@ -44,8 +44,8 @@ use Drupal\user\UserInterface;
  *   label_singular = @Translation("Purchased Plan"),
  *   label_plural   = @Translation("Purchased Plans"),
  *   label_count = @PluralTranslation(
- *     singular = "@count Subscription",
- *     plural   = "@count Subscriptions",
+ *     singular = "@count Purchased Plan",
+ *     plural   = "@count Purchased Plans",
  *   ),
  *   handlers = {
  *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage",
@@ -227,8 +227,8 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
    * {@inheritdoc}
    */
   public function isSubscriptionActive(): bool {
-    return ($this->getSubscriptionStatus() === PurchasedPlanInterface::STATUS_ACTIVE
-      || $this->getSubscriptionStatus() === PurchasedPlanInterface::STATUS_FUTURE);
+    return ($this->getStatus() === PurchasedPlanInterface::STATUS_ACTIVE
+      || $this->getStatus() === PurchasedPlanInterface::STATUS_FUTURE);
   }
 
   /**
@@ -243,7 +243,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
   /**
    * {@inheritdoc}
    */
-  public function getSubscriptionStatus(): string {
+  public function getStatus(): string {
     $org_timezone = $this->getRatePlan()->getOrganization()->getTimezone();
     $today = new \DateTime('today', $org_timezone);
 

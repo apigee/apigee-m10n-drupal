@@ -100,10 +100,10 @@ class PricingAndPlansController extends ControllerBase {
   }
 
   /**
-   * Redirect to the users subscriptions page.
+   * Redirect to the users purchased plans page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   A redirect to the current user's subscriptions page.
+   *   A redirect to the current user's purchased plans page.
    */
   public function mySubscriptions(): RedirectResponse {
     return $this->redirect(

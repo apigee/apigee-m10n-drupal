@@ -26,18 +26,17 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Defines implementation of a subscriptions listing page.
+ * Defines implementation of a purchased plan listing page.
  *
  * @ingroup entity_api
  */
 class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
 
   /**
-   * The developer's user that is used to load subscriptions.
+   * The developer's user that is used to load purchased plans.
    *
    * @var \Drupal\user\UserInterface
    */

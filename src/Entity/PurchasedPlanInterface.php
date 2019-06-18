@@ -28,22 +28,22 @@ use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
 
   /**
-   * Status text for ended subscriptions.
+   * Status text for ended purchases.
    */
   const STATUS_ENDED = 'Ended';
 
   /**
-   * Status text for future subscriptions.
+   * Status text for future purchases.
    */
   const STATUS_FUTURE = 'Future';
 
   /**
-   * Status text for active subscriptions.
+   * Status text for active purchases.
    */
   const STATUS_ACTIVE = 'Active';
 
   /**
-   * Loads subscriptions by developer email.
+   * Loads purchased plans by developer email.
    *
    * @param string $developer_id
    *   The email of a developer registered with apigee edge.
@@ -63,12 +63,12 @@ interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
   public function isSubscriptionActive(): bool;
 
   /**
-   * Getter for the `getSubscriptionStatus` call.
+   * Getter for the `status` property.
    *
    * @return string
-   *   Subscription status as a string.
+   *   Purchased plan status as a string.
    */
-  public function getSubscriptionStatus(): string;
+  public function getStatus(): string;
 
   /**
    * Gets data for the `apigee_tnc` field formatter.
