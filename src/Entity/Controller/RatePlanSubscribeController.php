@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n\Entity\Controller;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
@@ -83,7 +83,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
     ]);
 
     // Get the save label from settings.
-    $save_label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_button_label');
+    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_button_label');
     $save_label = $save_label ?? 'Subscribe';
 
     // Return the subscribe form with the label set.
@@ -109,7 +109,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    *   The title.
    */
   public function title(RouteMatchInterface $route_match, UserInterface $user = NULL, RatePlanInterface $rate_plan = NULL) {
-    $title_template = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_form_title');
+    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_form_title');
     $title_template = $title_template ?? 'Subscribe to @rate_plan';
     return $this->t($title_template, [
       '@rate_plan' => $rate_plan->getDisplayName(),

@@ -28,7 +28,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Link;
 use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
 /**
  * Plugin implementation of the 'apigee_subscription_form' formatter.
@@ -137,7 +137,7 @@ class SubscribeLinkFormatter extends FormatterBase implements ContainerFactoryPl
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
       if ($this->monetization->isDeveloperAlreadySubscribed($value['user']->getEmail(), $rate_plan)) {
-        $label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
+        $label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('already_purchased_label');
         return [
           '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
             '%rate_plan' => $rate_plan->getDisplayName()

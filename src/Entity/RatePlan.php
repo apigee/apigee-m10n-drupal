@@ -35,7 +35,7 @@ use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
-use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
@@ -164,7 +164,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
     // If the subscription label setting is available, use it.
-    $subscribe_label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_label');
+    $subscribe_label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_label');
     // `$subscribe_label` is not translated, use `config_translation` instead.
     $definitions['subscribe']->setLabel($subscribe_label ?? t('Purchase'));
 

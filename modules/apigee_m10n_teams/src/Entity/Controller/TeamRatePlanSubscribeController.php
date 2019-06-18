@@ -24,7 +24,7 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
 /**
  * Controller for subscribing to rate plans.
@@ -53,7 +53,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
     ]);
 
     // Get the save label from settings.
-    $save_label = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_button_label');
+    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_button_label');
     $save_label = $save_label ?? 'Subscribe';
 
     // Return the subscribe form with the label set.
@@ -78,7 +78,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    *   The title.
    */
   public function teamTitle(TeamInterface $team, RatePlanInterface $rate_plan) {
-    $title_template = $this->config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_form_title');
+    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_form_title');
     $title_template = $title_template ?? 'Subscribe to @rate_plan';
     // TODO: Add information about the availability of `@teamname`.
     return $this->t($title_template, [

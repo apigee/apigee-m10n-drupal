@@ -26,7 +26,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @package Drupal\apigee_m10n\Form
  */
-class SubscriptionConfigForm extends ConfigFormBase {
+class PurchasedPlanConfigForm extends ConfigFormBase {
 
   /**
    * The config named used by this form.

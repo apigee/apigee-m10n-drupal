@@ -30,7 +30,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
+use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
 /**
  * Plugin implementation of the 'apigee_subscription_form' formatter.
@@ -153,7 +153,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
     if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
       $developer_id = $value['user']->getEmail();
       if ($this->monetization->isDeveloperAlreadySubscribed($developer_id, $rate_plan)) {
-        $label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('already_purchased_label');
+        $label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('already_purchased_label');
         return [
           '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
             '%rate_plan' => $rate_plan->getDisplayName()
