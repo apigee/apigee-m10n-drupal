@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
-use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamSubscriptionConverter;
+use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamPurchasedPlanConverter;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxy;
 use Drupal\apigee_m10n_teams\TeamSdkControllerFactory;
 use Drupal\KernelTests\KernelTestBase;
@@ -52,7 +52,7 @@ class ApigeeM10nTeamsServiceProviderTest extends KernelTestBase {
   public function testServiceAlter() {
     static::assertSame(TeamAcceptedRatePlanSdkControllerProxy::class, $this->container->getDefinition('apigee_m10n.sdk_controller_proxy.subscription')->getClass());
     static::assertSame(TeamSdkControllerFactory::class, $this->container->getDefinition('apigee_m10n.sdk_controller_factory')->getClass());
-    static::assertSame(TeamSubscriptionConverter::class, $this->container->getDefinition('paramconverter.entity.subscription')->getClass());
+    static::assertSame(TeamPurchasedPlanConverter::class, $this->container->getDefinition('paramconverter.entity.subscription')->getClass());
   }
 
 }

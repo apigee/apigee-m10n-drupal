@@ -31,7 +31,7 @@ use Symfony\Component\Routing\Route;
  *
  * {@inheritdoc}
  */
-class SubscriptionConverter extends EntityConverter implements ParamConverterInterface {
+class PurchasedPlanConverter extends EntityConverter implements ParamConverterInterface {
 
   /**
    * {@inheritdoc}

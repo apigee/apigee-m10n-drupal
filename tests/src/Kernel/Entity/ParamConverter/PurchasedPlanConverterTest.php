@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\ParamConverter;
 
-use Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter;
+use Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
@@ -28,7 +28,7 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class SubscriptionConverterTest extends MonetizationKernelTestBase {
+class PurchasedPlanConverterTest extends MonetizationKernelTestBase {
 
   /**
    * Test entities are converted.
@@ -44,7 +44,7 @@ class SubscriptionConverterTest extends MonetizationKernelTestBase {
     $converter_manager = \Drupal::service('paramconverter_manager');
 
     $converter = $converter_manager->getConverter('paramconverter.entity.subscription');
-    static::assertInstanceOf(SubscriptionConverter::class, $converter);
+    static::assertInstanceOf(PurchasedPlanConverter::class, $converter);
 
     /** @var \Drupal\Core\Routing\RouteProviderInterface $route_provider */
     $route_provider = \Drupal::service('router.route_provider');

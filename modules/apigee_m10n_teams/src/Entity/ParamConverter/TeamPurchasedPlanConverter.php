@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n_teams\Entity\ParamConverter;
 
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter;
+use Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -29,7 +29,7 @@ use Drupal\user\UserInterface;
  *
  * {@inheritdoc}
  */
-class TeamSubscriptionConverter extends SubscriptionConverter {
+class TeamPurchasedPlanConverter extends PurchasedPlanConverter {
 
   /**
    * {@inheritdoc}

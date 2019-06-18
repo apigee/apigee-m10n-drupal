@@ -38,7 +38,7 @@ services:
     arguments: ['@entity.manager', '@language_manager']
 
   paramconverter.entity.subscription:
-    class: Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter
+    class: Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter
     tags:
       - { name: paramconverter }
     arguments: ['@entity.manager', '@language_manager']

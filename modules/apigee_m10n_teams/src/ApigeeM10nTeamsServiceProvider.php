@@ -2,7 +2,7 @@
 
 namespace Drupal\apigee_m10n_teams;
 
-use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamSubscriptionConverter;
+use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamPurchasedPlanConverter;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxy;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
@@ -26,7 +26,7 @@ class ApigeeM10nTeamsServiceProvider implements ServiceModifierInterface {
     }
     if ($container->hasDefinition('paramconverter.entity.subscription')) {
       $container->getDefinition('paramconverter.entity.subscription')
-        ->setClass(TeamSubscriptionConverter::class);
+        ->setClass(TeamPurchasedPlanConverter::class);
     }
   }
 
