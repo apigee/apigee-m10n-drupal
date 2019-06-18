@@ -113,11 +113,11 @@ apigee_monetization.profile:
 entity.subscription.developer_collection:
   path: /user/{user}/monetization/purchased-plans
   defaults:
-    _controller: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render
-    _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle
+    _controller: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilderForDeveloper::render
+    _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilderForDeveloper::getPageTitle
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::access
+    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilderForDeveloper::access
   options:
     _apigee_monetization_route: TRUE
 

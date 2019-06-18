@@ -12,8 +12,8 @@ apigee_monetization_teams.billing:
 entity.subscription.team_collection:
   path: '/teams/{team}/monetization/purchased-plans'
   defaults:
-    _controller: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamSubscriptionListBuilder::render'
-    _title_callback: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamSubscriptionListBuilder::getPageTitle'
+    _controller: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamPurchasedPlanListBuilder::render'
+    _title_callback: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamPurchasedPlanListBuilder::getPageTitle'
   requirements:
     user: '\d+'
     _team_permission: 'view subscription'

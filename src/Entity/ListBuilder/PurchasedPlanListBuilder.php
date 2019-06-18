@@ -38,7 +38,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup entity_api
  */
-abstract class SubscriptionListBuilder extends EntityListBuilder implements ContainerInjectionInterface {
+abstract class PurchasedPlanListBuilder extends EntityListBuilder implements ContainerInjectionInterface {
 
   /**
    * Subscription storage.
@@ -69,7 +69,7 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
   protected $messenger;
 
   /**
-   * SubscriptionListBuilderForDeveloper constructor.
+   * PurchasedPlanListBuilder constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   Entity type service.

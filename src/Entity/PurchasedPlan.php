@@ -51,7 +51,7 @@ use Drupal\user\UserInterface;
  *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage",
  *     "access"              = "Drupal\entity\UncacheableEntityAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\PurchasedPlanPermissionProvider",
- *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
+ *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilder",
  *     "form" = {
  *       "default"     = "Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm",
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",

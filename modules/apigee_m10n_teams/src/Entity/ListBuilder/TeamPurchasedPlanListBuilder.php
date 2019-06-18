@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n_teams\Entity\ListBuilder;
 
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder;
+use Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilder;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Url;
@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
  * Entity list builder for team subscriptions.
  */
-class TeamSubscriptionListBuilder extends SubscriptionListBuilder {
+class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
 
   /**
    * The team that is used to load subscriptions.

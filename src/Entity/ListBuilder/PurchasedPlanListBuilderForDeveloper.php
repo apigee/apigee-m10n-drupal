@@ -34,7 +34,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @ingroup entity_api
  */
-class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
+class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
 
   /**
    * The developer's user that is used to load subscriptions.
