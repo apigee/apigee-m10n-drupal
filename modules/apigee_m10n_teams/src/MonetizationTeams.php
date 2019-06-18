@@ -34,7 +34,7 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
-use Drupal\apigee_m10n_teams\Entity\Form\TeamSubscriptionForm;
+use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
@@ -140,7 +140,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Override the storage class.
       $entity_types['subscription']->setStorageClass(TeamSubscriptionStorage::class);
       // Override subscribe form.
-      $entity_types['subscription']->setFormClass('default', TeamSubscriptionForm::class);
+      $entity_types['subscription']->setFormClass('default', TeamPurchasedPlanForm::class);
     }
   }
 

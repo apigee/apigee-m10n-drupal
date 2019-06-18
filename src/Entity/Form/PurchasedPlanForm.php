@@ -35,7 +35,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Subscription entity form.
  */
-class SubscriptionForm extends FieldableMonetizationEntityForm {
+class PurchasedPlanForm extends FieldableMonetizationEntityForm {
 
   /**
    * Developer legal name attribute name.

@@ -53,7 +53,7 @@ use Drupal\user\UserInterface;
  *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\SubscriptionPermissionProvider",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
- *       "default"     = "Drupal\apigee_m10n\Entity\Form\SubscriptionForm",
+ *       "default"     = "Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm",
  *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
  *     },
  *   },

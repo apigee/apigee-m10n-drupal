@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Form;
 
-use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
+use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge_teams\Entity\Team;
@@ -28,7 +28,7 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 /**
  * Team Subscription entity form.
  */
-class TeamSubscriptionForm extends SubscriptionForm {
+class TeamPurchasedPlanForm extends PurchasedPlanForm {
 
   /**
    * {@inheritdoc}

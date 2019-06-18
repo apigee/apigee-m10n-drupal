@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
-use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
+use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
@@ -297,7 +297,7 @@ class AddCreditService implements AddCreditServiceInterface {
     }
     // Add links to add credit to the account.
     if (($form_object = $form_state->getFormObject())
-      && $form_object instanceof SubscriptionForm
+      && $form_object instanceof PurchasedPlanForm
       && !empty($form["insufficient_balance"])
     ) {
       foreach (Element::children($form["insufficient_balance"]) as $currency_id) {
