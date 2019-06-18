@@ -50,7 +50,7 @@ use Drupal\user\UserInterface;
  *   handlers = {
  *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage",
  *     "access"              = "Drupal\entity\UncacheableEntityAccessControlHandler",
- *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\SubscriptionPermissionProvider",
+ *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\PurchasedPlanPermissionProvider",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder",
  *     "form" = {
  *       "default"     = "Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm",

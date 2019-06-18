@@ -25,7 +25,7 @@ use Drupal\entity\UncacheableEntityPermissionProvider;
 /**
  * Provides the permissions for the `subscription` entity.
  */
-class SubscriptionPermissionProvider extends UncacheableEntityPermissionProvider {
+class PurchasedPlanPermissionProvider extends UncacheableEntityPermissionProvider {
 
   /**
    * {@inheritdoc}
