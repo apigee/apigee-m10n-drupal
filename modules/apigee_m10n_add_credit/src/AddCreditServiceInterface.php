@@ -190,12 +190,12 @@ interface AddCreditServiceInterface {
    *
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
    *   The original message.
-   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
+   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
    *   The failed subscription.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The altered message.
    */
-  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedPlanInterface $subscription);
+  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan);
 
 }

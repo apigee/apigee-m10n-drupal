@@ -232,8 +232,8 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
           '%amount' => $amount_formatted,
           '@adenndum' => $amount ? $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]) : '',
         ]);
-        $subscription_entity = $this->getEntity();
-        $this->moduleHandler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $subscription_entity);
+        $purchased_plan = $this->getEntity();
+        $this->moduleHandler->alter('apigee_m10n_insufficient_balance_error_message', $insufficient_funds_error_message, $purchased_plan);
         $this->messenger->addError($insufficient_funds_error_message);
       }
       else {
@@ -261,10 +261,10 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       return;
     }
 
-    /* @var \Drupal\apigee_m10n\Entity\PurchasedPlan $subscription */
-    $subscription = $form_state->getFormObject()->getEntity();
-    $rate_plan = $subscription->getRatePlan();
-    $user = $subscription->getOwner();
+    /* @var \Drupal\apigee_m10n\Entity\PurchasedPlan $purchased_plan */
+    $purchased_plan = $form_state->getFormObject()->getEntity();
+    $rate_plan = $purchased_plan->getRatePlan();
+    $user = $purchased_plan->getOwner();
 
     /* @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdk */
     $sdk = \Drupal::service('apigee_m10n.sdk_controller_factory');

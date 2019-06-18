@@ -69,11 +69,11 @@ class PurchasedPlanConverter extends EntityConverter implements ParamConverterIn
    *   The purchased plan id.
    *
    * @return \Drupal\Core\Entity\EntityInterface
-   *   The `subscription` entity.
+   *   The `purchased_plan` entity.
    */
   protected function loadSubscriptionById($developer_id, $purchased_plan_id) {
     try {
-      $subscription = $this->entityManager
+      $purchased_plan = $this->entityManager
         ->getStorage('subscription')
         ->loadById($developer_id, $purchased_plan_id);
     }
@@ -81,7 +81,7 @@ class PurchasedPlanConverter extends EntityConverter implements ParamConverterIn
       throw new NotFoundHttpException('Subscription not found for developer', $ex);
     }
 
-    return $subscription;
+    return $purchased_plan;
   }
 
 }

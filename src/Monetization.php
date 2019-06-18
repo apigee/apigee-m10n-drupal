@@ -431,14 +431,14 @@ class Monetization implements MonetizationInterface {
     // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
     $cid = "apigee_m10n:dev:subscriptions:{$developer_id}";
 
-    if (!($subscriptions_cache = $this->cache->get($cid))) {
-      if ($subscriptions = PurchasedPlan::loadByDeveloperId($developer_id)) {
-        $this->cache->set($cid, $subscriptions, strtotime('now + 5 minutes'));
+    if (!($cache = $this->cache->get($cid))) {
+      if ($purchases = PurchasedPlan::loadByDeveloperId($developer_id)) {
+        $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
       }
     }
     else {
-      foreach ($subscriptions_cache->data as $subscription) {
-        if ($subscription->getRatePlan()->id() == $rate_plan->id() && $subscription->isSubscriptionActive()) {
+      foreach ($cache->data as $purchased_plan) {
+        if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isSubscriptionActive()) {
           return TRUE;
         }
       }

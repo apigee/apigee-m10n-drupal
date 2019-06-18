@@ -89,21 +89,21 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function unsubscribeUrl(PurchasedPlanInterface $subscription) {
+  protected function unsubscribeUrl(PurchasedPlanInterface $purchased_plan) {
     return $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
       'user' => $this->user->id(),
-      'subscription' => $subscription->id(),
+      'subscription' => $purchased_plan->id(),
     ]));
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function ratePlanUrl(PurchasedPlanInterface $subscription) {
+  protected function ratePlanUrl(PurchasedPlanInterface $purchased_plan) {
     return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->user->id(),
-      'package' => $subscription->getRatePlan()->getPackage()->id(),
-      'rate_plan' => $subscription->getRatePlan()->id(),
+      'package' => $purchased_plan->getRatePlan()->getPackage()->id(),
+      'rate_plan' => $purchased_plan->getRatePlan()->id(),
     ]));
   }
 

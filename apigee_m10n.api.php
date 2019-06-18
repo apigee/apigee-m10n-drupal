@@ -51,12 +51,12 @@ function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterf
  *
  * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
  *   A translatable error message.
- * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
- *   The failed subscription.
+ * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
+ *   The failed purchased plan.
  *
  * @see \Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm::save()
  */
-function hook_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $subscription) {
+function hook_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan) {
 }
 
 /**

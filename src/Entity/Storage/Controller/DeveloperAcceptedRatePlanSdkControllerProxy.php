@@ -90,8 +90,8 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
     $select->condition('status', 1);
     $select->condition('uid', [0, 1], 'NOT IN');
 
-    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[] $subscriptions */
-    $subscriptions = [];
+    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[] $purchased_plans */
+    $purchased_plans = [];
 
     // Loops through all developer emails to get their subscriptions.
     foreach ($select->execute()->fetchCol() as $developer_email) {
@@ -99,11 +99,11 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
       $developer_subscriptions = $this->loadByDeveloperId($developer_email);
       foreach ($developer_subscriptions as $developer_subscription) {
         // Subscriptions are keyed by their ID.
-        $subscriptions[$developer_subscription->id()] = $developer_subscription;
+        $purchased_plans[$developer_subscription->id()] = $developer_subscription;
       }
     }
 
-    return $subscriptions;
+    return $purchased_plans;
   }
 
   /**

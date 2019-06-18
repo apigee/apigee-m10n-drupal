@@ -112,6 +112,6 @@ function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity,
 /**
  * Implements hook_apigee_m10n_insufficient_balance_error_message_alter().
  */
-function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $subscription) {
-  return \Drupal::service('apigee_m10n.add_credit')->insufficientBalanceErrorMessageAlter($message, $subscription);
+function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan) {
+  return \Drupal::service('apigee_m10n.add_credit')->insufficientBalanceErrorMessageAlter($message, $purchased_plan);
 }

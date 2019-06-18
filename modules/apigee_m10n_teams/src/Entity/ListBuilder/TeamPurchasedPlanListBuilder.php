@@ -61,21 +61,21 @@ class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function unsubscribeUrl(PurchasedPlanInterface $subscription) {
+  protected function unsubscribeUrl(PurchasedPlanInterface $purchased_plan) {
     return $this->ensureDestination(Url::fromRoute('entity.subscription.team_unsubscribe_form', [
       'team' => $this->team->id(),
-      'subscription' => $subscription->id(),
+      'subscription' => $purchased_plan->id(),
     ]));
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function ratePlanUrl(PurchasedPlanInterface $subscription) {
+  protected function ratePlanUrl(PurchasedPlanInterface $purchased_plan) {
     return $this->ensureDestination(Url::fromRoute('entity.rate_plan.team', [
       'team' => $this->team->id(),
-      'package' => $subscription->getRatePlan()->getPackage()->id(),
-      'rate_plan' => $subscription->getRatePlan()->id(),
+      'package' => $purchased_plan->getRatePlan()->getPackage()->id(),
+      'rate_plan' => $purchased_plan->getRatePlan()->id(),
     ]));
   }
 

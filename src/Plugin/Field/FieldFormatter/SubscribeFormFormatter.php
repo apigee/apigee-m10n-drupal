@@ -163,14 +163,14 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
       $start_date = new \DateTimeImmutable();
       $org_timezone = $rate_plan->getOrganization()->getTimezone();
       $start_date->setTimezone($org_timezone);
-      $subscription = PurchasedPlan::create([
+      $purchased_plan = PurchasedPlan::create([
         'ratePlan' => $rate_plan,
         // TODO: User a controller proxy that caches the developer entity.
         // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
         'developer' => new Developer(['email' => $developer_id]),
         'startDate' => $start_date,
       ]);
-      return $this->entityFormBuilder->getForm($subscription, 'default', [
+      return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
         'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
       ]);
     }

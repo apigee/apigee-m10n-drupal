@@ -46,7 +46,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    */
   public function teamSubscribeForm(TeamInterface $team, RatePlanInterface $rate_plan) {
     // Create a subscription to pass to the subscription edit form.
-    $subscription = PurchasedPlan::create([
+    $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'company' => new Company(['id' => $team->id()]),
       'startDate' => new \DateTimeImmutable(),
@@ -57,7 +57,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
     $save_label = $save_label ?? 'Subscribe';
 
     // Return the subscribe form with the label set.
-    return $this->entityFormBuilder->getForm($subscription, 'default', [
+    return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
       'save_label' => $this->t($save_label, [
         '@rate_plan' => $rate_plan->getDisplayName(),
         '@team' => $team->label(),

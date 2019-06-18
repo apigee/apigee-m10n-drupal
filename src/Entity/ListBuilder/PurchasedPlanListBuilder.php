@@ -212,8 +212,8 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
     $build = [];
     $label = $this->entityType->getPluralLabel();
 
-    // Group the subscriptions by status.
-    $subscriptions = [
+    // Group the purchases by status.
+    $purchased_plans = [
       PurchasedPlanInterface::STATUS_ACTIVE => [
         'title' => $this->t('Active and Future @label', ['@label' => $label]),
         'empty' => $this->t('No active or future @label.', ['@label' => strtolower($label)]),
@@ -229,34 +229,34 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
     /** @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $entity */
     foreach ($this->load() as $entity) {
       if (in_array($entity->getSubscriptionStatus(), [PurchasedPlanInterface::STATUS_ACTIVE, PurchasedPlanInterface::STATUS_FUTURE])) {
-        $subscriptions[PurchasedPlanInterface::STATUS_ACTIVE]['entities'][] = $entity;
+        $purchased_plans[PurchasedPlanInterface::STATUS_ACTIVE]['entities'][] = $entity;
         continue;
       }
 
-      $subscriptions[PurchasedPlanInterface::STATUS_ENDED]['entities'][] = $entity;
+      $purchased_plans[PurchasedPlanInterface::STATUS_ENDED]['entities'][] = $entity;
     }
 
-    foreach ($subscriptions as $key => $subscription) {
+    foreach ($purchased_plans as $key => $purchased_plan) {
       $build[$key]['heading'] = [
         '#type' => 'html_tag',
-        '#value' => $subscription['title'],
+        '#value' => $purchased_plan['title'],
         '#tag' => 'h3',
       ];
 
       $build[$key]['table'] = [
         '#type' => 'table',
         '#header' => $this->buildHeader(),
-        '#title' => $subscription['title'],
+        '#title' => $purchased_plan['title'],
         '#rows' => [],
-        '#empty' => $subscription['empty'],
+        '#empty' => $purchased_plan['empty'],
         '#cache' => [
           'contexts' => $this->entityType->getListCacheContexts(),
           'tags' => $this->entityType->getListCacheTags(),
         ],
       ];
 
-      if (count($subscription['entities'])) {
-        foreach ($subscription['entities'] as $entity) {
+      if (count($purchased_plan['entities'])) {
+        foreach ($purchased_plan['entities'] as $entity) {
           if ($row = $this->buildRow($entity)) {
             $build[$key]['table']['#rows'][$entity->id()] = $row;
           }
@@ -299,23 +299,23 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    * We could just use `$entity->toUrl('unsubscribe')` but then we would have to
    * look up the drupal user ID in `toUrl()`.
    *
-   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
+   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
    *   The subscription entity.
    *
    * @return \Drupal\Core\Url
    *   The unsubscribe url.
    */
-  abstract protected function unsubscribeUrl(PurchasedPlanInterface $subscription);
+  abstract protected function unsubscribeUrl(PurchasedPlanInterface $purchased_plan);
 
   /**
    * Gets the rate plan URL for the subscribed rate plan.
    *
-   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
+   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
    *   The subscription entity.
    *
    * @return \Drupal\Core\Url
    *   The rate plan canonical url.
    */
-  abstract protected function ratePlanUrl(PurchasedPlanInterface $subscription);
+  abstract protected function ratePlanUrl(PurchasedPlanInterface $purchased_plan);
 
 }

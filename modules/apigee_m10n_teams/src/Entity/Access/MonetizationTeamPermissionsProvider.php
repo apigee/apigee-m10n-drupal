@@ -35,26 +35,26 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
    * {@inheritdoc}
    */
   public function permissions(): array {
-    $subscription_group = $this->t('Purchased plans');
+    $group = $this->t('Purchased plans');
     $plan_group = $this->t('Rate plan');
     $package_group = $this->t('Package');
     return [
       'subscribe rate_plan' => new TeamPermission(
         'subscribe rate_plan',
         $this->t('Purchase a rate plan'),
-        $subscription_group,
+        $group,
         $this->t('This allows a team member to purchase a plan.')
       ),
       'update subscription' => new TeamPermission(
         'update subscription',
         $this->t('Update a purchased plan'),
-        $subscription_group,
+        $group,
         $this->t('This allows a team member to unsubscribe from a plan.')
       ),
       'view subscription' => new TeamPermission(
         'view subscription',
         $this->t('View purchased plans'),
-        $subscription_group,
+        $group,
         $this->t('This allows a team member to view purchased plans')
       ),
       // Rate plans.

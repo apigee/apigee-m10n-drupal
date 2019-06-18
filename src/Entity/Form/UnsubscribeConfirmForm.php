@@ -36,11 +36,11 @@ use Drupal\Core\Cache\Cache;
 class UnsubscribeConfirmForm extends EntityConfirmFormBase {
 
   /**
-   * Subscription entity.
+   * Purchased plan entity.
    *
    * @var \Drupal\apigee_m10n\Entity\PurchasedPlan|null
    */
-  protected $subscription;
+  protected $purchasedPlan;
 
   /**
    * Messenger service.
@@ -67,7 +67,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    *   SDK Controller factory.
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
-    $this->subscription = $route_match->getParameter('subscription');
+    $this->purchasedPlan = $route_match->getParameter('subscription');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;
   }
@@ -107,8 +107,8 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public function getQuestion() {
     $question = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('unsubscribe_question');
     return $this->t($question ?? 'Cancel %rate_plan', [
-      '%rate_plan' => $this->subscription->getRatePlan()->getDisplayName(),
-      '@rate_plan' => $this->subscription->getRatePlan()->getDisplayName(),
+      '%rate_plan' => $this->purchasedPlan->getRatePlan()->getDisplayName(),
+      '@rate_plan' => $this->purchasedPlan->getRatePlan()->getDisplayName(),
     ]);
   }
 
@@ -151,10 +151,10 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   public function buildEntity(array $form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $end_type = $values['end_type'] ?? 'now';
-    $end_date = $end_type == 'on_date' ? new \DateTimeImmutable($values['endDate']) : $this->subscription->getStartDate();
-    $end_date->setTimezone($this->subscription->getRatePlan()->getOrganization()->getTimezone());
-    $this->subscription->setEndDate($end_date);
-    return $this->subscription;
+    $end_date = $end_type == 'on_date' ? new \DateTimeImmutable($values['endDate']) : $this->purchasedPlan->getStartDate();
+    $end_date->setTimezone($this->purchasedPlan->getRatePlan()->getOrganization()->getTimezone());
+    $this->purchasedPlan->setEndDate($end_date);
+    return $this->purchasedPlan;
   }
 
   /**

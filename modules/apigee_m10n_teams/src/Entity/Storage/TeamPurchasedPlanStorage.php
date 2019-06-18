@@ -85,10 +85,10 @@ class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurch
   public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamsPurchasedPlanInterface {
     // Load from cache.
     $ids = [$id];
-    $subscriptions = $this->getFromPersistentCache($ids);
+    $purchased_plan = $this->getFromPersistentCache($ids);
     // Return the cached entity.
-    if (isset($subscriptions[$id])) {
-      return $subscriptions[$id];
+    if (isset($purchased_plan[$id])) {
+      return $purchased_plan[$id];
     }
 
     $entity = NULL;

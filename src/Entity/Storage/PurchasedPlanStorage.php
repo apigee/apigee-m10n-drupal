@@ -130,10 +130,10 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
   public function loadById(string $developer_id, string $id): ?PurchasedPlanInterface {
     // Load from cache.
     $ids = [$id];
-    $subscriptions = $this->getFromPersistentCache($ids);
+    $purchased_plans = $this->getFromPersistentCache($ids);
     // Return the cached entity.
-    if (isset($subscriptions[$id])) {
-      return $subscriptions[$id];
+    if (isset($purchased_plans[$id])) {
+      return $purchased_plans[$id];
     }
 
     $entity = NULL;
