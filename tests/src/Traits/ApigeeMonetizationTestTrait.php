@@ -33,8 +33,8 @@ use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\Subscription;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 use Drupal\key\Entity\Key;
@@ -395,7 +395,7 @@ trait ApigeeMonetizationTestTrait {
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
    *   The rate plan to subscribe to.
    *
-   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    *   The subscription.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -403,9 +403,9 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
+  protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): PurchasedPlanInterface {
     $start_date = new \DateTimeImmutable('today', new \DateTimeZone($this->org_default_timezone));
-    $subscription = Subscription::create([
+    $subscription = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer([
         'email' => $user->getEmail(),
@@ -420,7 +420,7 @@ trait ApigeeMonetizationTestTrait {
     // Warm the cache for this subscription.
     $subscription->set('id', $this->getRandomUniqueId());
     $this->stack->queueMockResponse(['subscription' => ['subscription' => $subscription]]);
-    $subscription = Subscription::load($subscription->id());
+    $subscription = PurchasedPlan::load($subscription->id());
 
     // Make sure the start date is unchanged while loading.
     static::assertEquals($start_date, $subscription->decorated()->getStartDate());

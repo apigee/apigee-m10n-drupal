@@ -24,7 +24,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeInterface;
 
@@ -33,7 +33,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *
  * This is a class for purchased plans that is aware of teams.
  */
-class TeamsSubscription extends Subscription implements TeamsSubscriptionInterface {
+class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInterface {
 
   /**
    * EdgeEntityBase constructor.

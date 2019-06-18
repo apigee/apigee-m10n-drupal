@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -190,12 +190,12 @@ interface AddCreditServiceInterface {
    *
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
    *   The original message.
-   * @param \Drupal\apigee_m10n\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
    *   The failed subscription.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The altered message.
    */
-  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, SubscriptionInterface $subscription);
+  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedPlanInterface $subscription);
 
 }

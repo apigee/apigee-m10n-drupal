@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_teams\Entity;
 /**
  * Team specific additions to the the subscription entity.
  */
-interface TeamsSubscriptionInterface {
+interface TeamsPurchasedPlanInterface {
 
   const SUBSCRIPTION_TYPE_TEAM      = 'TEAM';
   const SUBSCRIPTION_TYPE_DEVELOPER = 'DEVELOPER';

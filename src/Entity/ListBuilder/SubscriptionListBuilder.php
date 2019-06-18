@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
@@ -166,7 +166,7 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+    /** @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $entity */
     $rate_plan = $entity->getRatePlan();
 
     $date_display_settings = [
@@ -214,26 +214,26 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
 
     // Group the subscriptions by status.
     $subscriptions = [
-      SubscriptionInterface::STATUS_ACTIVE => [
+      PurchasedPlanInterface::STATUS_ACTIVE => [
         'title' => $this->t('Active and Future @label', ['@label' => $label]),
         'empty' => $this->t('No active or future @label.', ['@label' => strtolower($label)]),
         'entities' => [],
       ],
-      SubscriptionInterface::STATUS_ENDED => [
+      PurchasedPlanInterface::STATUS_ENDED => [
         'title' => $this->t('Cancelled and Expired @label', ['@label' => $label]),
         'empty' => $this->t('No cancelled or expired @label.', ['@label' => strtolower($label)]),
         'entities' => [],
       ],
     ];
 
-    /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+    /** @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $entity */
     foreach ($this->load() as $entity) {
-      if (in_array($entity->getSubscriptionStatus(), [SubscriptionInterface::STATUS_ACTIVE, SubscriptionInterface::STATUS_FUTURE])) {
-        $subscriptions[SubscriptionInterface::STATUS_ACTIVE]['entities'][] = $entity;
+      if (in_array($entity->getSubscriptionStatus(), [PurchasedPlanInterface::STATUS_ACTIVE, PurchasedPlanInterface::STATUS_FUTURE])) {
+        $subscriptions[PurchasedPlanInterface::STATUS_ACTIVE]['entities'][] = $entity;
         continue;
       }
 
-      $subscriptions[SubscriptionInterface::STATUS_ENDED]['entities'][] = $entity;
+      $subscriptions[PurchasedPlanInterface::STATUS_ENDED]['entities'][] = $entity;
     }
 
     foreach ($subscriptions as $key => $subscription) {
@@ -299,23 +299,23 @@ abstract class SubscriptionListBuilder extends EntityListBuilder implements Cont
    * We could just use `$entity->toUrl('unsubscribe')` but then we would have to
    * look up the drupal user ID in `toUrl()`.
    *
-   * @param \Drupal\apigee_m10n\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
    *   The subscription entity.
    *
    * @return \Drupal\Core\Url
    *   The unsubscribe url.
    */
-  abstract protected function unsubscribeUrl(SubscriptionInterface $subscription);
+  abstract protected function unsubscribeUrl(PurchasedPlanInterface $subscription);
 
   /**
    * Gets the rate plan URL for the subscribed rate plan.
    *
-   * @param \Drupal\apigee_m10n\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
    *   The subscription entity.
    *
    * @return \Drupal\Core\Url
    *   The rate plan canonical url.
    */
-  abstract protected function ratePlanUrl(SubscriptionInterface $subscription);
+  abstract protected function ratePlanUrl(PurchasedPlanInterface $subscription);
 
 }

@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
@@ -51,12 +51,12 @@ function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterf
  *
  * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
  *   A translatable error message.
- * @param \Drupal\apigee_m10n\Entity\SubscriptionInterface $subscription
+ * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $subscription
  *   The failed subscription.
  *
  * @see \Drupal\apigee_m10n\Entity\Form\SubscriptionForm::save()
  */
-function hook_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, SubscriptionInterface $subscription) {
+function hook_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $subscription) {
 }
 
 /**

@@ -21,8 +21,8 @@ namespace Drupal\apigee_m10n_teams\Entity\ListBuilder;
 
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilder;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamsSubscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -55,13 +55,13 @@ class TeamSubscriptionListBuilder extends SubscriptionListBuilder {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function load() {
-    return TeamsSubscription::loadByTeamId($this->team->id());
+    return TeamsPurchasedPlan::loadByTeamId($this->team->id());
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function unsubscribeUrl(SubscriptionInterface $subscription) {
+  protected function unsubscribeUrl(PurchasedPlanInterface $subscription) {
     return $this->ensureDestination(Url::fromRoute('entity.subscription.team_unsubscribe_form', [
       'team' => $this->team->id(),
       'subscription' => $subscription->id(),
@@ -71,7 +71,7 @@ class TeamSubscriptionListBuilder extends SubscriptionListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function ratePlanUrl(SubscriptionInterface $subscription) {
+  protected function ratePlanUrl(PurchasedPlanInterface $subscription) {
     return $this->ensureDestination(Url::fromRoute('entity.rate_plan.team', [
       'team' => $this->team->id(),
       'package' => $subscription->getRatePlan()->getPackage()->id(),

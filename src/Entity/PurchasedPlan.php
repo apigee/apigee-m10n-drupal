@@ -65,7 +65,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route    = "apigee_m10n.settings.purchased_plan",
  * )
  */
-class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterface, EntityOwnerInterface {
+class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInterface, EntityOwnerInterface {
 
   use EndDatePropertyAwareDecoratorTrait {
     getEndDate as traitGetEndDate;
@@ -227,8 +227,8 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
    * {@inheritdoc}
    */
   public function isSubscriptionActive(): bool {
-    return ($this->getSubscriptionStatus() === SubscriptionInterface::STATUS_ACTIVE
-      || $this->getSubscriptionStatus() === SubscriptionInterface::STATUS_FUTURE);
+    return ($this->getSubscriptionStatus() === PurchasedPlanInterface::STATUS_ACTIVE
+      || $this->getSubscriptionStatus() === PurchasedPlanInterface::STATUS_FUTURE);
   }
 
   /**
@@ -250,21 +250,21 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
     // If rate plan ended before today, the status is ended.
     $plan_end_date = $this->getRatePlan()->getEndDate();
     if (!empty($plan_end_date) && $plan_end_date < $today) {
-      return SubscriptionInterface::STATUS_ENDED;
+      return PurchasedPlanInterface::STATUS_ENDED;
     }
     // If the developer ended the plan before today, the plan has ended.
     $developer_plan_end_date = $this->getEndDate();
     if (!empty($developer_plan_end_date) && $developer_plan_end_date < $today) {
-      return SubscriptionInterface::STATUS_ENDED;
+      return PurchasedPlanInterface::STATUS_ENDED;
     }
 
     // If the start date is later than today, it is a future plan.
     $developer_plan_start_date = $this->getStartDate();
     if (!empty($developer_plan_start_date) && $developer_plan_start_date > $today) {
-      return SubscriptionInterface::STATUS_FUTURE;
+      return PurchasedPlanInterface::STATUS_FUTURE;
     }
 
-    return SubscriptionInterface::STATUS_ACTIVE;
+    return PurchasedPlanInterface::STATUS_ACTIVE;
   }
 
   /**
@@ -355,7 +355,7 @@ class Subscription extends FieldableEdgeEntityBase implements SubscriptionInterf
   /**
    * {@inheritdoc}
    */
-  public function setSuppressWarning(bool $value): SubscriptionInterface {
+  public function setSuppressWarning(bool $value): PurchasedPlanInterface {
     $this->suppressWarning = $value;
     return $this;
   }

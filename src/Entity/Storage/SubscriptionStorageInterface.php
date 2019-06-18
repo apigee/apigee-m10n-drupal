@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage;
 
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 
 /**
  * Defines an interface for the subscription entity storage class.
@@ -34,10 +34,10 @@ interface SubscriptionStorageInterface {
    * @param string $id
    *   The subscription ID.
    *
-   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    *   The subscription.
    */
-  public function loadById(string $developer_id, string $id): ?SubscriptionInterface;
+  public function loadById(string $developer_id, string $id): ?PurchasedPlanInterface;
 
   /**
    * Load Subscriptions by developer ID.

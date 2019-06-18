@@ -26,7 +26,7 @@ use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
-use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
@@ -72,7 +72,7 @@ class MonetizationTeamsTest extends KernelTestBase {
   /**
    * A test subscription.
    *
-   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */
   protected $subscription;
 
@@ -146,7 +146,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Check class overrides.
     static::assertInstanceOf(TeamsPackageInterface::class, $this->package);
     static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
-    static::assertInstanceOf(TeamsSubscriptionInterface::class, $this->subscription);
+    static::assertInstanceOf(TeamsPurchasedPlanInterface::class, $this->subscription);
 
     // Check storage overrides.
     static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));

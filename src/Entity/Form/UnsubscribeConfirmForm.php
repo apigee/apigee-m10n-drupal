@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n\Entity\Form;
 
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -38,7 +38,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   /**
    * Subscription entity.
    *
-   * @var \Drupal\apigee_m10n\Entity\Subscription|null
+   * @var \Drupal\apigee_m10n\Entity\PurchasedPlan|null
    */
   protected $subscription;
 

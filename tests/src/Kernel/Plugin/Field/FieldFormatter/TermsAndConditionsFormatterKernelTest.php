@@ -24,7 +24,7 @@ use Drupal\apigee_m10n\Plugin\Field\FieldType\TermsAndConditionsFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 
 /**
  * Test the `apigee_tnc_default` field formatter.
@@ -91,7 +91,7 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
 
-    $subscription = Subscription::create([
+    $subscription = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer(['email' => $this->account->getEmail()]),
       'startDate' => new \DateTimeImmutable(),

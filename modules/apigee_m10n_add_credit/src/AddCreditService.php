@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
 use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
@@ -395,7 +395,7 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, SubscriptionInterface $subscription) {
+  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedPlanInterface $subscription) {
     $arguments = $message->getArguments();
     $options = $message->getOptions();
     $original_message = $message->getUntranslatedString();

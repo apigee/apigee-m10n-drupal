@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxyInterface;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n\Exception\UnexpectedValueException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -109,7 +109,7 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
   protected function doSave($id, EntityInterface $entity) {
     $result = static::SAVED_UNKNOWN;
     $this->withController(function (DeveloperAcceptedRatePlanSdkControllerProxyInterface $controller) use ($id, $entity, &$result) {
-      /** @var \Drupal\apigee_m10n\Entity\SubscriptionInterface $entity */
+      /** @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $entity */
       if ($entity->isNew()) {
         $controller->doCreate($entity->decorated(), $entity->getSuppressWarning());
         $result = SAVED_NEW;
@@ -127,7 +127,7 @@ class SubscriptionStorage extends EdgeEntityStorageBase implements SubscriptionS
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadById(string $developer_id, string $id): ?SubscriptionInterface {
+  public function loadById(string $developer_id, string $id): ?PurchasedPlanInterface {
     // Load from cache.
     $ids = [$id];
     $subscriptions = $this->getFromPersistentCache($ids);

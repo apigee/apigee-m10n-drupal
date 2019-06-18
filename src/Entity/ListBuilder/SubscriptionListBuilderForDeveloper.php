@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\Subscription;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -83,13 +83,13 @@ class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
    * {@inheritdoc}
    */
   public function load() {
-    return Subscription::loadByDeveloperId($this->user->getEmail());
+    return PurchasedPlan::loadByDeveloperId($this->user->getEmail());
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function unsubscribeUrl(SubscriptionInterface $subscription) {
+  protected function unsubscribeUrl(PurchasedPlanInterface $subscription) {
     return $this->ensureDestination(Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
       'user' => $this->user->id(),
       'subscription' => $subscription->id(),
@@ -99,7 +99,7 @@ class SubscriptionListBuilderForDeveloper extends SubscriptionListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function ratePlanUrl(SubscriptionInterface $subscription) {
+  protected function ratePlanUrl(PurchasedPlanInterface $subscription) {
     return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->user->id(),
       'package' => $subscription->getRatePlan()->getPackage()->id(),

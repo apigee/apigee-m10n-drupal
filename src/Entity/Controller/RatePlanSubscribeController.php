@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n\Entity\Controller;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -76,7 +76,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    */
   public function subscribeForm(UserInterface $user, RatePlanInterface $rate_plan) {
     // Create a subscription to pass to the subscription edit form.
-    $subscription = Subscription::create([
+    $subscription = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer(['email' => $user->getEmail()]),
       'startDate' => new \DateTimeImmutable(),

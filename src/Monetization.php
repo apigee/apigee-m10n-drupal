@@ -30,7 +30,7 @@ use CommerceGuys\Intl\Formatter\CurrencyFormatter;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -432,7 +432,7 @@ class Monetization implements MonetizationInterface {
     $cid = "apigee_m10n:dev:subscriptions:{$developer_id}";
 
     if (!($subscriptions_cache = $this->cache->get($cid))) {
-      if ($subscriptions = Subscription::loadByDeveloperId($developer_id)) {
+      if ($subscriptions = PurchasedPlan::loadByDeveloperId($developer_id)) {
         $this->cache->set($cid, $subscriptions, strtotime('now + 5 minutes'));
       }
     }

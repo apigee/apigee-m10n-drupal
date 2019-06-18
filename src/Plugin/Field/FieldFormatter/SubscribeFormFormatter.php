@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -163,7 +163,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
       $start_date = new \DateTimeImmutable();
       $org_timezone = $rate_plan->getOrganization()->getTimezone();
       $start_date->setTimezone($org_timezone);
-      $subscription = Subscription::create([
+      $subscription = PurchasedPlan::create([
         'ratePlan' => $rate_plan,
         // TODO: User a controller proxy that caches the developer entity.
         // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.

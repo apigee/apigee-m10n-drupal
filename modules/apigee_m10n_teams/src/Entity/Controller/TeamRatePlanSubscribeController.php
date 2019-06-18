@@ -23,7 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 
 /**
@@ -46,7 +46,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    */
   public function teamSubscribeForm(TeamInterface $team, RatePlanInterface $rate_plan) {
     // Create a subscription to pass to the subscription edit form.
-    $subscription = Subscription::create([
+    $subscription = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'company' => new Company(['id' => $team->id()]),
       'startDate' => new \DateTimeImmutable(),

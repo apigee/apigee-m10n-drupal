@@ -45,7 +45,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   /**
    * The subscription.
    *
-   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */
   protected $entity;
 

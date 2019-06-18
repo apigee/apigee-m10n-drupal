@@ -23,7 +23,7 @@ use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\apigee_edge_teams\Entity\Team;
-use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 
 /**
  * Team Subscription entity form.
@@ -35,7 +35,7 @@ class TeamSubscriptionForm extends SubscriptionForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      if ($this->entity instanceof TeamsSubscriptionInterface && $this->entity->isTeamSubscription()) {
+      if ($this->entity instanceof TeamsPurchasedPlanInterface && $this->entity->isTeamSubscription()) {
         // Auto assign legal name.
         $company_id = $this->entity->decorated()->getCompany()->id();
         $company = Team::load($company_id);

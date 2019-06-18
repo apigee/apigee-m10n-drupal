@@ -25,7 +25,7 @@ use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 /**
  * Defines the interface for subscription entity objects.
  */
-interface SubscriptionInterface extends AcceptedRatePlanInterface {
+interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
 
   /**
    * Status text for ended subscriptions.
@@ -48,7 +48,7 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
    * @param string $developer_id
    *   The email of a developer registered with apigee edge.
    *
-   * @return \Drupal\apigee_m10n\Entity\Subscription[]
+   * @return \Drupal\apigee_m10n\Entity\PurchasedPlan[]
    *   An array of subscription entities for a given developer (identified by
    *   email).
    */
@@ -96,10 +96,10 @@ interface SubscriptionInterface extends AcceptedRatePlanInterface {
    * @param bool $value
    *   Set to TRUE to suppress all warnings.
    *
-   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    *   The subscription entity.
    */
-  public function setSuppressWarning(bool $value): SubscriptionInterface;
+  public function setSuppressWarning(bool $value): PurchasedPlanInterface;
 
   /**
    * Returns the suppressWarning value.

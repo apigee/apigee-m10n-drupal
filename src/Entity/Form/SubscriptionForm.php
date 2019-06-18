@@ -261,7 +261,7 @@ class SubscriptionForm extends FieldableMonetizationEntityForm {
       return;
     }
 
-    /* @var \Drupal\apigee_m10n\Entity\Subscription $subscription */
+    /* @var \Drupal\apigee_m10n\Entity\PurchasedPlan $subscription */
     $subscription = $form_state->getFormObject()->getEntity();
     $rate_plan = $subscription->getRatePlan();
     $user = $subscription->getOwner();
