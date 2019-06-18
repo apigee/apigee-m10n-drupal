@@ -77,7 +77,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function delete(string $id): void {
-    throw new RuntimeException('Unable to delete subscriptions. Update the end date to unsubscribe.');
+    throw new RuntimeException('Unable to delete subscriptions. Update the end date to cancel purchase.');
   }
 
   /**

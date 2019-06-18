@@ -149,10 +149,10 @@ entity.rate_plan.subscribe:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.developer_unsubscribe_form:
-  path: /user/{user}/monetization/purchased-plan/{subscription}/unsubscribe
+entity.subscription.developer_cancel_form:
+  path: /user/{user}/monetization/purchased-plan/{subscription}/cancel
   defaults:
-    _entity_form: subscription.unsubscribe
+    _entity_form: subscription.cancel
     _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
   requirements:
     user: '^[1-9]+[0-9]*$'

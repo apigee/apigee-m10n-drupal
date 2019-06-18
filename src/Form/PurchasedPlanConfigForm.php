@@ -72,23 +72,23 @@ class PurchasedPlanConfigForm extends ConfigFormBase {
       '#description' => $this->t('Button label for purchasing a rate plan.'),
       '#default_value' => $config->get('subscribe_button_label'),
     ];
-    $form['unsubscribe_question'] = [
+    $form['cancel_question'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Cancel rate plan form title'),
       '#description' => $this->t('Title of the cancel form. For example: "Cancel %rate_plan".'),
-      '#default_value' => $config->get('unsubscribe_question'),
+      '#default_value' => $config->get('cancel_question'),
     ];
-    $form['unsubscribe_description'] = [
+    $form['cancel_description'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Cancel rate plan form prompt'),
       '#description' => $this->t('Prompt that appears as a subtitle on the cancel rate plan form.'),
-      '#default_value' => $config->get('unsubscribe_description'),
+      '#default_value' => $config->get('cancel_description'),
     ];
-    $form['unsubscribe_button_label'] = [
+    $form['cancel_button_label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Cancel rate plan button label'),
       '#description' => $this->t('Button label for canceling a rate plan.'),
-      '#default_value' => $config->get('unsubscribe_button_label'),
+      '#default_value' => $config->get('cancel_button_label'),
     ];
     $form['already_purchased_label'] = [
       '#type' => 'textfield',
@@ -110,9 +110,9 @@ class PurchasedPlanConfigForm extends ConfigFormBase {
       ->set('subscribe_label', $form_state->getValue('subscribe_label'))
       ->set('subscribe_form_title', $form_state->getValue('subscribe_form_title'))
       ->set('subscribe_button_label', $form_state->getValue('subscribe_button_label'))
-      ->set('unsubscribe_question', $form_state->getValue('unsubscribe_question'))
-      ->set('unsubscribe_description', $form_state->getValue('unsubscribe_description'))
-      ->set('unsubscribe_button_label', $form_state->getValue('unsubscribe_button_label'))
+      ->set('cancel_question', $form_state->getValue('cancel_question'))
+      ->set('cancel_description', $form_state->getValue('cancel_description'))
+      ->set('cancel_button_label', $form_state->getValue('cancel_button_label'))
       ->set('already_purchased_label', $form_state->getValue('already_purchased_label'))
       ->save();
   }

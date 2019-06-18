@@ -283,10 +283,10 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
       && $entity->isSubscriptionActive()
       && ($today < $entity->getEndDate() || (!empty($rate_plan->getEndDate() && $today < $rate_plan->getEndDate())))
     ) {
-      $operations['unsubscribe'] = [
+      $operations['cancel'] = [
         'title' => $this->t('Cancel'),
         'weight' => 10,
-        'url' => $this->unsubscribeUrl($entity),
+        'url' => $this->cancelUrl($entity),
       ];
     }
 
@@ -294,18 +294,18 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
   }
 
   /**
-   * Gets an unsubscribe url for the given entity.
+   * Gets a cancel url for the given entity.
    *
-   * We could just use `$entity->toUrl('unsubscribe')` but then we would have to
+   * We could just use `$entity->toUrl('cancel')` but then we would have to
    * look up the drupal user ID in `toUrl()`.
    *
    * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
    *   The subscription entity.
    *
    * @return \Drupal\Core\Url
-   *   The unsubscribe url.
+   *   The cancel purchased plan url.
    */
-  abstract protected function unsubscribeUrl(PurchasedPlanInterface $purchased_plan);
+  abstract protected function cancelUrl(PurchasedPlanInterface $purchased_plan);
 
   /**
    * Gets the rate plan URL for the subscribed rate plan.

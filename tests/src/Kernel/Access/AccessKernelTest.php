@@ -164,9 +164,9 @@ class AccessKernelTest extends MonetizationKernelTestBase {
    * Tests subscription entity route permissions.
    */
   public function assertPurchasedPlanRoutes() {
-    // Unsubscribe route.
+    // Cancel purchased plan route.
     $purchased_plan = $this->createPurchasedPlan(User::load($this->developer->id()), $this->rate_plan);
-    $cancel_url = Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
+    $cancel_url = Url::fromRoute('entity.subscription.developer_cancel_form', [
       'user' => $this->developer->id(),
       'subscription' => $purchased_plan->id(),
     ]);
@@ -174,9 +174,9 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertTrue($cancel_url->access($this->developer));
     static::assertFalse($cancel_url->access($this->anonymous));
 
-    // Unsubscribe route for testing `any` permission.
+    // Cancel purchased plan route for testing `any` permission.
     $purchased_plan = $this->createPurchasedPlan(User::load($this->administrator->id()), $this->rate_plan);
-    $cancel_url = Url::fromRoute('entity.subscription.developer_unsubscribe_form', [
+    $cancel_url = Url::fromRoute('entity.subscription.developer_cancel_form', [
       'user' => $this->administrator->id(),
       'subscription' => $purchased_plan->id(),
     ]);

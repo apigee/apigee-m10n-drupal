@@ -53,8 +53,8 @@ use Drupal\user\UserInterface;
  *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\PurchasedPlanPermissionProvider",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilder",
  *     "form" = {
- *       "default"     = "Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm",
- *       "unsubscribe" = "Drupal\apigee_m10n\Entity\Form\UnsubscribeConfirmForm",
+ *       "default" = "Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm",
+ *       "cancel"  = "Drupal\apigee_m10n\Entity\Form\CancelPurchaseConfirmForm",
  *     },
  *   },
  *   links = {},

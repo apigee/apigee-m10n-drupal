@@ -61,8 +61,8 @@ class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function unsubscribeUrl(PurchasedPlanInterface $purchased_plan) {
-    return $this->ensureDestination(Url::fromRoute('entity.subscription.team_unsubscribe_form', [
+  protected function cancelUrl(PurchasedPlanInterface $purchased_plan) {
+    return $this->ensureDestination(Url::fromRoute('entity.subscription.team_cancel_form', [
       'team' => $this->team->id(),
       'subscription' => $purchased_plan->id(),
     ]));

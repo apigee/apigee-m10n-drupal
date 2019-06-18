@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Entity\Form;
 
 use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
-use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -31,9 +30,9 @@ use Drupal\Core\Url;
 use Drupal\Core\Cache\Cache;
 
 /**
- * Unsubscribe entity form for subscriptions.
+ * Cancel entity form for `purchased_plan` entities.
  */
-class UnsubscribeConfirmForm extends EntityConfirmFormBase {
+class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
 
   /**
    * Purchased plan entity.
@@ -57,7 +56,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
   protected $sdkControllerFactory;
 
   /**
-   * UnsubscribeConfirmForm constructor.
+   * CancelPurchaseConfirmForm constructor.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   Route match service.
@@ -87,9 +86,9 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getDescription() {
-    // Get the unsubscribe text from config. Use `config_translate` to
+    // Get the cancel text from config. Use `config_translate` to
     // translate if necessary.
-    $description = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('unsubscribe_description');
+    $description = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('cancel_description');
     return $description ?? $this->t('Are you sure you would to like cancel this plan?');
   }
 
@@ -97,7 +96,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    $button_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('unsubscribe_button_label');
+    $button_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('cancel_button_label');
     return $button_label ?? $this->t('End This Plan');
   }
 
@@ -105,7 +104,7 @@ class UnsubscribeConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $question = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('unsubscribe_question');
+    $question = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('cancel_question');
     return $this->t($question ?? 'Cancel %rate_plan', [
       '%rate_plan' => $this->purchasedPlan->getRatePlan()->getDisplayName(),
       '@rate_plan' => $this->purchasedPlan->getRatePlan()->getDisplayName(),
