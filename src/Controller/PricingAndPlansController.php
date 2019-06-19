@@ -100,20 +100,6 @@ class PricingAndPlansController extends ControllerBase {
   }
 
   /**
-   * Redirect to the users purchased plans page.
-   *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   A redirect to the current user's purchased plans page.
-   */
-  public function mySubscriptions(): RedirectResponse {
-    return $this->redirect(
-      'entity.subscription.developer_collection',
-      ['user' => \Drupal::currentUser()->id()],
-      ['absolute' => TRUE]
-    );
-  }
-
-  /**
    * Gets a list of available packages for this user.
    *
    * @param \Drupal\user\UserInterface $user
