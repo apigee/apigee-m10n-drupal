@@ -106,7 +106,7 @@ class TeamsSubscription extends Subscription implements TeamsSubscriptionInterfa
   public function getTermsAndConditions(): bool {
     if ($this->isTeamSubscription()) {
       $decorated = $this->decorated();
-      return apigee_m10n_teams_service()->isLatestTermsAndConditionAccepted($decorated->getCompany()->id());
+      return \Drupal::service('apigee_m10n.teams')->isLatestTermsAndConditionAccepted($decorated->getCompany()->id());
     }
     else {
       return parent::getTermsAndConditions();
