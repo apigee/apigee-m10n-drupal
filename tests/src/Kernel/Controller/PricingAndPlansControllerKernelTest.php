@@ -259,9 +259,9 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     $rate_plan_css_index = 1;
     foreach ($rate_plans as $package_id => $plan_list) {
       foreach ($plan_list as $rate_plan) {
-        $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .apigee-package-rate-plan";
+        $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .rate-plan";
         // Check the plan name.
-        $this->assertCssElementText("{$prefix} .field--name-displayname a", $rate_plan->getDisplayName());
+        $this->assertCssElementText("{$prefix} h2 a", $rate_plan->getDisplayName());
         // Check the plan description.
         $this->assertCssElementText("{$prefix} .field--name-description .field__item", $rate_plan->getDescription());
         // Check the package products.
