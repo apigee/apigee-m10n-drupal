@@ -225,25 +225,25 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertFalse($plan_url->access($this->developer));
     static::assertFalse($plan_url->access($this->anonymous));
 
-    // Rate plan subscribe route.
-    $subscribe_url = Url::fromRoute('entity.rate_plan.subscribe', [
+    // Rate plan purchase route.
+    $purchase_url = Url::fromRoute('entity.rate_plan.subscribe', [
       'user' => $this->developer->id(),
       'package' => $this->package->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
-    static::assertTrue($subscribe_url->access($this->administrator));
-    static::assertTrue($subscribe_url->access($this->developer));
-    static::assertFalse($subscribe_url->access($this->anonymous));
+    static::assertTrue($purchase_url->access($this->administrator));
+    static::assertTrue($purchase_url->access($this->developer));
+    static::assertFalse($purchase_url->access($this->anonymous));
 
-    // Rate plan subscribe route for testing `any` permission.
-    $subscribe_url = Url::fromRoute('entity.rate_plan.subscribe', [
+    // Rate plan purchase route for testing `any` permission.
+    $purchase_url = Url::fromRoute('entity.rate_plan.subscribe', [
       'user' => $this->administrator->id(),
       'package' => $this->package->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
-    static::assertTrue($subscribe_url->access($this->administrator));
-    static::assertFalse($subscribe_url->access($this->developer));
-    static::assertFalse($subscribe_url->access($this->anonymous));
+    static::assertTrue($purchase_url->access($this->administrator));
+    static::assertFalse($purchase_url->access($this->developer));
+    static::assertFalse($purchase_url->access($this->anonymous));
   }
 
   /**

@@ -57,7 +57,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   protected $monetization;
 
   /**
-   * SubscribeLinkFormatter constructor.
+   * TermsAndConditionsWidget constructor.
    *
    * @param string $plugin_id
    *   The plugin_id for the widget.

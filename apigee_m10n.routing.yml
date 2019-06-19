@@ -139,7 +139,7 @@ entity.rate_plan.canonical:
         converter: paramconverter.entity.rate_plan
 
 entity.rate_plan.subscribe:
-  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe
+  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase
   defaults:
     _controller: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm
     _title_callback: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title

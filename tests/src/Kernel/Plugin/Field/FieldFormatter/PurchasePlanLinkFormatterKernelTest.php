@@ -23,7 +23,6 @@ use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanLinkFormatter;
 use Drupal\apigee_m10n\Plugin\Field\FieldType\SubscribeFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
-use Drupal\user\Entity\User;
 
 /**
  * Test the `apigee_purchase_plan_link` field formatter.
@@ -85,7 +84,7 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Test viewing a subscribe link formatter.
+   * Test viewing a purchase link formatter.
    *
    * @throws \Exception
    */
@@ -102,7 +101,7 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
     $instance = $this->formatter_manager->createInstance('apigee_purchase_plan_link', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
       'settings' => [
-        'label' => 'Subscribe',
+        'label' => 'Purchase',
       ],
       'label' => TRUE,
       'view_mode' => 'default',

@@ -24,15 +24,15 @@ apigee_m10n.purchased_plan.config:
   type: config_object
   label: 'Rate plan purchase settings'
   mapping:
-    subscribe_label:
+    purchase_label:
       type: label
-      label: 'The subscribe label.'
-    subscribe_form_title:
+      label: 'The purchase label.'
+    purchase_form_title:
       type: label
-      label: 'Subscribe form page title.'
-    subscribe_button_label:
+      label: 'Purchase form page title.'
+    purchase_button_label:
       type: label
-      label: 'Subscribe button label.'
+      label: 'Purchase button label.'
     cancel_question:
       type: label
       label: 'Cancel purchased plan form page title.'

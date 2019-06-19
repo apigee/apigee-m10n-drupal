@@ -54,23 +54,23 @@ class PurchasedPlanConfigForm extends ConfigFormBase {
     // Get the working configuration.
     $config = $this->config(static::CONFIG_NAME);
 
-    $form['subscribe_label'] = [
+    $form['purchase_label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Purchase rate plan label'),
       '#description' => $this->t('If configured to be displayed, the heading label used in the purchase rate plan form.'),
-      '#default_value' => $config->get('subscribe_label'),
+      '#default_value' => $config->get('purchase_label'),
     ];
-    $form['subscribe_form_title'] = [
+    $form['purchase_form_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Purchase rate plan form title'),
       '#description' => $this->t('Title of the purchase rate plan form. For example: "Purchase %rate_plan".'),
-      '#default_value' => $config->get('subscribe_form_title'),
+      '#default_value' => $config->get('purchase_form_title'),
     ];
-    $form['subscribe_button_label'] = [
+    $form['purchase_button_label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Purchase rate plan button label'),
       '#description' => $this->t('Button label for purchasing a rate plan.'),
-      '#default_value' => $config->get('subscribe_button_label'),
+      '#default_value' => $config->get('purchase_button_label'),
     ];
     $form['cancel_question'] = [
       '#type' => 'textfield',
@@ -107,9 +107,9 @@ class PurchasedPlanConfigForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
 
     $this->config(static::CONFIG_NAME)
-      ->set('subscribe_label', $form_state->getValue('subscribe_label'))
-      ->set('subscribe_form_title', $form_state->getValue('subscribe_form_title'))
-      ->set('subscribe_button_label', $form_state->getValue('subscribe_button_label'))
+      ->set('purchase_label', $form_state->getValue('purchase_label'))
+      ->set('purchase_form_title', $form_state->getValue('purchase_form_title'))
+      ->set('purchase_button_label', $form_state->getValue('purchase_button_label'))
       ->set('cancel_question', $form_state->getValue('cancel_question'))
       ->set('cancel_description', $form_state->getValue('cancel_description'))
       ->set('cancel_button_label', $form_state->getValue('cancel_button_label'))

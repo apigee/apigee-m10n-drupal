@@ -29,8 +29,8 @@ use Drupal\Core\TypedData\DataDefinition;
  *
  * @FieldType(
  *   id = "apigee_subscribe",
- *   label = @Translation("Apigee Edge subscribe"),
- *   description = @Translation("Apigee Edge subscribe"),
+ *   label = @Translation("Purchase rate plan"),
+ *   description = @Translation("Purchase rate plan computed item."),
  *   default_formatter = "apigee_purchase_plan_link"
  * )
  */

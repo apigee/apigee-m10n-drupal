@@ -65,12 +65,12 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    * Page callback to create a new purchased_plan.
    *
    * @param \Drupal\user\UserInterface $user
-   *   The user to subscribe.
+   *   The user that will be purchasing the plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
    *   The rate plan.
    *
    * @return array
-   *   A subscribe form render array.
+   *   A purchase form render array.
    *
    * @throws \Exception
    */
@@ -83,10 +83,10 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
     ]);
 
     // Get the save label from settings.
-    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_button_label');
+    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_button_label');
     $save_label = $save_label ?? 'Subscribe';
 
-    // Return the subscribe form with the label set.
+    // Return the purchase form with the label set.
     return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
       'save_label' => $this->t($save_label, [
         '@rate_plan' => $rate_plan->getDisplayName(),
@@ -96,7 +96,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
   }
 
   /**
-   * Gets the title for the subscribe page.
+   * Gets the title for the purchase page.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The route match.
@@ -109,8 +109,8 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    *   The title.
    */
   public function title(RouteMatchInterface $route_match, UserInterface $user = NULL, RatePlanInterface $rate_plan = NULL) {
-    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_form_title');
-    $title_template = $title_template ?? 'Subscribe to @rate_plan';
+    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_form_title');
+    $title_template = $title_template ?? 'Purchase @rate_plan';
     return $this->t($title_template, [
       '@rate_plan' => $rate_plan->getDisplayName(),
       '%rate_plan' => $rate_plan->getDisplayName(),

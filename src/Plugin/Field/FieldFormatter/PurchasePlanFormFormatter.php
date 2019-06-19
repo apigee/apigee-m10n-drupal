@@ -60,7 +60,7 @@ class PurchasePlanFormFormatter extends FormatterBase implements ContainerFactor
   private $monetization;
 
   /**
-   * SubscribeLinkFormatter constructor.
+   * PurchasePlanFormFormatter constructor.
    *
    * @param string $plugin_id
    *   The plugin_id for the formatter.

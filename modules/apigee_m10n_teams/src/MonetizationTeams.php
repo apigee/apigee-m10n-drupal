@@ -125,7 +125,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Use our class to override the original entity class.
       $entity_types['rate_plan']->setClass(TeamsRatePlan::class);
       $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
-      $entity_types['rate_plan']->setLinkTemplate('team-subscribe', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/subscribe');
+      $entity_types['rate_plan']->setLinkTemplate('team-subscribe', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase');
       // Get the entity route providers.
       $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
       // Override the `html` route provider.
@@ -139,7 +139,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['purchased_plan']->setClass(TeamsPurchasedPlan::class);
       // Override the storage class.
       $entity_types['purchased_plan']->setStorageClass(TeamPurchasedPlanStorage::class);
-      // Override subscribe form.
+      // Override purchase form.
       $entity_types['purchased_plan']->setFormClass('default', TeamPurchasedPlanForm::class);
       // Create a link template for team purchased plan collection.
       $entity_types['purchased_plan']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-plans');
@@ -150,7 +150,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    * {@inheritdoc}
    */
   public function fieldFormatterInfoAlter(array &$info) {
-    // Override the subscribe link and form formatters.
+    // Override the purchase link and form formatters.
     $info['apigee_purchase_plan_form']['class'] = TeamPurchasePlanFormFormatter::class;
     $info['apigee_purchase_plan_link']['class'] = TeamPurchasePlanLinkFormatter::class;
   }

@@ -391,9 +391,9 @@ trait ApigeeMonetizationTestTrait {
    * Creates a purchased plan.
    *
    * @param \Drupal\user\UserInterface $user
-   *   The user to subscribe to the rate plan.
+   *   The user to purchase the rate plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
-   *   The rate plan to subscribe to.
+   *   The rate plan to purchase.
    *
    * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    *   The purchased plan.

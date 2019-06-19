@@ -98,7 +98,7 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Test viewing a subscribe form formatter.
+   * Test viewing a purchase form formatter.
    *
    * @throws \Exception
    */

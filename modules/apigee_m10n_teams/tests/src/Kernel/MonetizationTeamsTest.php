@@ -204,7 +204,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
     // Rate plan team url.
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/subscribe", $this->rate_plan->toUrl('team-subscribe')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-subscribe')->toString());
     // Team purchased plan URLs.
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [

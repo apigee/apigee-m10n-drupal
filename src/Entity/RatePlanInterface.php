@@ -55,7 +55,7 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
    * Get's data for the `apigee_subscribe` field formatter.
    *
    * @return array|null
-   *   An array with data to build a link or form to subscribe to a rate plan.
+   *   An array with data to build a link or form to purchase a rate plan.
    */
   public function getSubscribe():? array;
 

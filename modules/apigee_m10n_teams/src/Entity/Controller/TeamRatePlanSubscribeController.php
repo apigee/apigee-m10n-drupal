@@ -35,12 +35,12 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    * Page callback to create a new team purchased_plan.
    *
    * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The team to subscribe.
+   *   The team purchasing the rate plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
    *   The rate plan.
    *
    * @return array
-   *   A subscribe form render array.
+   *   A purchase form render array.
    *
    * @throws \Exception
    */
@@ -53,10 +53,10 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
     ]);
 
     // Get the save label from settings.
-    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_button_label');
-    $save_label = $save_label ?? 'Subscribe';
+    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_button_label');
+    $save_label = $save_label ?? 'Purchase';
 
-    // Return the subscribe form with the label set.
+    // Return the purchase form with the label set.
     return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
       'save_label' => $this->t($save_label, [
         '@rate_plan' => $rate_plan->getDisplayName(),
@@ -67,10 +67,10 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
   }
 
   /**
-   * Gets the title for the subscribe page.
+   * Gets the title for the purchase page.
    *
    * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The team to subscribe.
+   *   The team purchasing the rate plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
    *   The rate plan.
    *
@@ -78,8 +78,8 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    *   The title.
    */
   public function teamTitle(TeamInterface $team, RatePlanInterface $rate_plan) {
-    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_form_title');
-    $title_template = $title_template ?? 'Subscribe to @rate_plan';
+    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_form_title');
+    $title_template = $title_template ?? 'Purchase @rate_plan';
     // TODO: Add information about the availability of `@teamname`.
     return $this->t($title_template, [
       '@rate_plan' => $rate_plan->getDisplayName(),

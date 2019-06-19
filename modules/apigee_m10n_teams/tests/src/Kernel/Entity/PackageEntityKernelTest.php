@@ -143,11 +143,11 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Rate plans as rendered.
     foreach ([$rate_plan_1, $rate_plan_2] as $index => $rate_plan) {
       /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-      static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]));
       static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}", (string) $this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]->attributes()['href']);
+      static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]));
       static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(1) > div:nth-child(2)')[$index]));
       static::assertSame('Purchase Plan', trim($this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[$index]));
-      static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/subscribe", (string) $this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[$index]->attributes()['href']);
+      static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/purchase", (string) $this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[$index]->attributes()['href']);
     }
   }
 

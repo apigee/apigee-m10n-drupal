@@ -22,7 +22,7 @@ entity.purchased_plan.team_collection:
     _apigee_developer_route: entity.purchased_plan.developer_collection
 
 entity.rate_plan.team_subscribe:
-  path: '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/subscribe'
+  path: '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase'
   defaults:
     _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamRatePlanSubscribeController::teamSubscribeForm'
     _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamRatePlanSubscribeController::teamTitle'

@@ -41,7 +41,7 @@ class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget implement
   protected $team_monetization;
 
   /**
-   * SubscribeLinkFormatter constructor.
+   * CompanyTermsAndConditionsWidget constructor.
    *
    * @param string $plugin_id
    *   The plugin_id for the widget.

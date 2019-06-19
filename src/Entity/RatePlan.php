@@ -59,7 +59,7 @@ use Drupal\user\Entity\User;
  *   },
  *   links = {
  *     "canonical" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}",
- *     "subscribe" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe",
+ *     "subscribe" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase",
  *   },
  *   entity_keys = {
  *     "id" = "id",
@@ -164,9 +164,9 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
     // If the purchased plan label setting is available, use it.
-    $subscribe_label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_label');
-    // `$subscribe_label` is not translated, use `config_translation` instead.
-    $definitions['subscribe']->setLabel($subscribe_label ?? t('Purchase'));
+    $purchase_label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_label');
+    // `$purchase_label` is not translated, use `config_translation` instead.
+    $definitions['subscribe']->setLabel($purchase_label ?? t('Purchase'));
 
     // The API products are many-to-one.
     $definitions['packageEntity']->setCardinality(1)

@@ -31,7 +31,7 @@ use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
 /**
- * Plugin implementation of the 'apigee_subscription_form' formatter.
+ * Plugin implementation of the 'apigee_purchase_plan_link' formatter.
  *
  * @FieldFormatter(
  *   id = "apigee_purchase_plan_link",
@@ -106,7 +106,7 @@ class PurchasePlanLinkFormatter extends FormatterBase implements ContainerFactor
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['label'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Subscribe label'),
+      '#title' => $this->t('Purchase label'),
       '#default_value' => $this->getSetting('label'),
     ];
     return $form;
