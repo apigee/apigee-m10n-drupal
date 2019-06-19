@@ -282,7 +282,11 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
 
     if ($entity->access('update')
       && $entity->isSubscriptionActive()
-      && ($today < $entity->getEndDate() || (!empty($rate_plan->getEndDate() && $today < $rate_plan->getEndDate())))
+      && (
+        (empty($entity->getEndDate()) && empty($rate_plan->getEndDate()))
+        || $today < $entity->getEndDate()
+        || $today < $rate_plan->getEndDate()
+      )
     ) {
       $operations['cancel'] = [
         'title' => $this->t('Cancel'),
