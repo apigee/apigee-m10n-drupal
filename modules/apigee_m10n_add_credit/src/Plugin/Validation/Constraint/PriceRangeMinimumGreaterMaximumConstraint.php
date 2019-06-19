@@ -31,6 +31,11 @@ use Symfony\Component\Validator\Constraint;
  */
 class PriceRangeMinimumGreaterMaximumConstraint extends Constraint {
 
+  /**
+   * The validation message when minimum value is greater than maximum.
+   *
+   * @var string
+   */
   public $message = 'The minimum value is greater than the maximum value.';
 
 }

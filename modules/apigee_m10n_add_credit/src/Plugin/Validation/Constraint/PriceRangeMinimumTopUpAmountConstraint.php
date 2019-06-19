@@ -31,6 +31,11 @@ use Symfony\Component\Validator\Constraint;
  */
 class PriceRangeMinimumTopUpAmountConstraint extends Constraint {
 
+  /**
+   * The valiation message for the minimum top up amount.
+   *
+   * @var string
+   */
   public $message = 'The minimum top up amount for @currency_code is @amount.';
 
 }

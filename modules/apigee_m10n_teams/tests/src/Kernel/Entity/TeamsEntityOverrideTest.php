@@ -38,6 +38,9 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class TeamsEntityOverrideTest extends KernelTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'key',
     'user',

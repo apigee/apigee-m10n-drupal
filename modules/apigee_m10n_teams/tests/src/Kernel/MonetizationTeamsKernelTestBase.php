@@ -33,6 +33,9 @@ use Drupal\user\UserInterface;
  */
 class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'key',
     'user',
