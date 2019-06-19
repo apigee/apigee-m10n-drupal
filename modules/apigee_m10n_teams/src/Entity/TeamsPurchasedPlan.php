@@ -118,8 +118,8 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
    */
   public function getTeam() {
     // Returns an entity reference. If you need the monetization company
-    // reference, you can use `$purchased_plan->decorated()->getCompany()` but you
-    // have to check `$purchased_plan->isTeamPurchasedPlan()` first.
+    // reference, you can use `$purchased_plan->decorated()->getCompany()` but
+    // you have to check `$purchased_plan->isTeamPurchasedPlan()` first.
     return $this->isTeamPurchasedPlan() ? $this->getTeamReference() : NULL;
   }
 
