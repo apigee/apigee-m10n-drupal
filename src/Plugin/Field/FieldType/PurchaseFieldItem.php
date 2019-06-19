@@ -34,7 +34,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   default_formatter = "apigee_purchase_plan_link"
  * )
  */
-class SubscribeFieldItem extends FieldItemBase {
+class PurchaseFieldItem extends FieldItemBase {
 
   /**
    * {@inheritdoc}

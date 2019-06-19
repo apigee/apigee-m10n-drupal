@@ -24,8 +24,8 @@ entity.purchased_plan.team_collection:
 entity.rate_plan.team_subscribe:
   path: '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase'
   defaults:
-    _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamRatePlanSubscribeController::teamSubscribeForm'
-    _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamRatePlanSubscribeController::teamTitle'
+    _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamPurchaseForm'
+    _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamTitle'
   requirements:
     _entity_access: 'rate_plan.subscribe'
   options:

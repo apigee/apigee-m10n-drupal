@@ -17,25 +17,55 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_teams\Entity\Controller;
+namespace Drupal\apigee_m10n\Entity\Controller;
 
-use Apigee\Edge\Api\Monetization\Entity\Company;
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController;
+use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityFormBuilderInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\user\UserInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for subscribing to rate plans.
  */
-class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
+class PurchaseRatePlanController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
-   * Page callback to create a new team purchased_plan.
+   * Entity form builder.
    *
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The team purchasing the rate plan.
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
+   */
+  protected $entityFormBuilder;
+
+  /**
+   * BillingController constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entityFormBuilder
+   *   Entity form builder service.
+   */
+  public function __construct(EntityFormBuilderInterface $entityFormBuilder) {
+    $this->entityFormBuilder = $entityFormBuilder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity.form_builder')
+    );
+  }
+
+  /**
+   * Page callback to create a new purchased_plan.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user that will be purchasing the plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
    *   The rate plan.
    *
@@ -44,24 +74,23 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    *
    * @throws \Exception
    */
-  public function teamSubscribeForm(TeamInterface $team, RatePlanInterface $rate_plan) {
+  public function purchaseForm(UserInterface $user, RatePlanInterface $rate_plan) {
     // Create a purchased_plan to pass to the purchased_plan edit form.
     $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
-      'company' => new Company(['id' => $team->id()]),
+      'developer' => new Developer(['email' => $user->getEmail()]),
       'startDate' => new \DateTimeImmutable(),
     ]);
 
     // Get the save label from settings.
     $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_button_label');
-    $save_label = $save_label ?? 'Purchase';
+    $save_label = $save_label ?? 'Subscribe';
 
     // Return the purchase form with the label set.
     return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
       'save_label' => $this->t($save_label, [
         '@rate_plan' => $rate_plan->getDisplayName(),
-        '@team' => $team->label(),
-        '@username' => '',
+        '@username' => $user->label(),
       ]),
     ]);
   }
@@ -69,25 +98,24 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
   /**
    * Gets the title for the purchase page.
    *
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The team purchasing the rate plan.
-   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match.
+   * @param \Drupal\user\UserInterface|null $user
+   *   The user.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface|null $rate_plan
    *   The rate plan.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The title.
    */
-  public function teamTitle(TeamInterface $team, RatePlanInterface $rate_plan) {
+  public function title(RouteMatchInterface $route_match, UserInterface $user = NULL, RatePlanInterface $rate_plan = NULL) {
     $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_form_title');
     $title_template = $title_template ?? 'Purchase @rate_plan';
-    // TODO: Add information about the availability of `@teamname`.
     return $this->t($title_template, [
       '@rate_plan' => $rate_plan->getDisplayName(),
       '%rate_plan' => $rate_plan->getDisplayName(),
-      '@teamname' => $team->label(),
-      '%teamname' => $team->label(),
-      '@username' => '',
-      '%username' => '',
+      '@username' => $user->label(),
+      '%username' => $user->label(),
     ]);
   }
 

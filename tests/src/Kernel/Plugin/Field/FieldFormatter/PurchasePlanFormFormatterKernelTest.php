@@ -20,7 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
 use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanFormFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\SubscribeFieldItem;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\PurchaseFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
@@ -110,7 +110,7 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
 
     $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
-    static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
+    static::assertInstanceOf(PurchaseFieldItem::class, $item_list->get(0));
     static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanFormFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_purchase_plan_form', [
