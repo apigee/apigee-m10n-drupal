@@ -45,14 +45,14 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
         $group,
         $this->t('This allows a team member to purchase a plan.')
       ),
-      'update subscription' => new TeamPermission(
-        'update subscription',
+      'update purchased_plan' => new TeamPermission(
+        'update purchased_plan',
         $this->t('Update a purchased plan'),
         $group,
         $this->t('This allows a team member to cancel a purchased plan.')
       ),
-      'view subscription' => new TeamPermission(
-        'view subscription',
+      'view purchased_plan' => new TeamPermission(
+        'view purchased_plan',
         $this->t('View purchased plans'),
         $group,
         $this->t('This allows a team member to view purchased plans')

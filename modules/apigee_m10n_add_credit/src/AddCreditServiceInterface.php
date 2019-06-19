@@ -191,7 +191,7 @@ interface AddCreditServiceInterface {
    * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
    *   The original message.
    * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
-   *   The failed subscription.
+   *   The failed purchased_plan.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The altered message.

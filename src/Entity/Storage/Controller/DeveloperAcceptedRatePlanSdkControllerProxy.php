@@ -45,7 +45,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function doCreate(EntityInterface $entity, bool $suppress_warning = FALSE): void {
-    $this->getSubscriptionController($entity)
+    $this->getPurchasedPlanController($entity)
       ->acceptRatePlan(
         $entity->getRatePlan(),
         $entity->getStartDate(),
@@ -53,7 +53,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
         $entity->getQuotaTarget(),
         $suppress_warning
       );
-    // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
+    // TODO: Clear cache for "apigee_m10n:dev:purchased_plans:{$developer_id}".
   }
 
   /**
@@ -69,8 +69,8 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
-    $this->getSubscriptionController($entity)->updateSubscription($entity);
+    // TODO: Clear cache for "apigee_m10n:dev:purchased_plans:{$developer_id}".
+    $this->getPurchasedPlanController($entity)->updateSubscription($entity);
   }
 
   /**
@@ -111,8 +111,8 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    */
   public function loadByDeveloperId(string $developer_id): array {
     // Get all purchases for this developer.
-    // TODO: Cache subscription lists per developer.
-    return $this->getSubscriptionControllerByDeveloperId($developer_id)
+    // TODO: Cache purchased_plan lists per developer.
+    return $this->getPurchasedPlanControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }
 
@@ -120,11 +120,11 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function loadById(string $developer_id, string $id): ?EntityInterface {
-    return $this->getSubscriptionControllerByDeveloperId($developer_id)->load($id);
+    return $this->getPurchasedPlanControllerByDeveloperId($developer_id)->load($id);
   }
 
   /**
-   * Given an entity, gets the subscription controller.
+   * Given an entity, gets the purchased_plan controller.
    *
    * @param \Apigee\Edge\Entity\EntityInterface $entity
    *   The ID of the package the rate plan belongs to.
@@ -132,27 +132,27 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getSubscriptionController(EntityInterface $entity) {
+  protected function getPurchasedPlanController(EntityInterface $entity) {
     /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
     if (!($developer = $entity->getDeveloper())) {
       // If the developer ID is not set, we have no way to get the controller
       // since it depends on the developer id or email.
-      throw new RuntimeException('The Developer must be set to create a subscription controller.');
+      throw new RuntimeException('The Developer must be set to create a purchased plan controller.');
     }
     // Get the controller.
-    return $this->getSubscriptionControllerByDeveloperId($developer->getEmail());
+    return $this->getPurchasedPlanControllerByDeveloperId($developer->getEmail());
   }
 
   /**
-   * Gets the subscription controller by developer ID.
+   * Gets the purchased_plan controller by developer ID.
    *
    * @param string $developer_id
    *   The developer ID or email who has accepted the rate plan.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
-   *   The subscription controller.
+   *   The purchased_plan controller.
    */
-  protected function getSubscriptionControllerByDeveloperId($developer_id) {
+  protected function getPurchasedPlanControllerByDeveloperId($developer_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.

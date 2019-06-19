@@ -20,7 +20,7 @@ apigee_m10n.prepaid_balance.config:
       type: boolean
       label: 'Whether to enable insufficient funds workflow'
 
-apigee_m10n.subscription.config:
+apigee_m10n.purchased_plan.config:
   type: config_object
   label: 'Rate plan purchase settings'
   mapping:

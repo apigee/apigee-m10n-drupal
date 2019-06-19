@@ -65,7 +65,7 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
    * {@inheritdoc}
    */
   public function applies($definition, $name, Route $route) {
-    // This only applies to subscription entities.
+    // This only applies to purchased_plan entities.
     return (parent::applies($definition, $name, $route) && $definition['type'] === 'entity:rate_plan');
   }
 

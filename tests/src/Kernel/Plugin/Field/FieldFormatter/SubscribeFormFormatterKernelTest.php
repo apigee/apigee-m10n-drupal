@@ -86,7 +86,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     ]);
 
     $this->developer = $this->createAccount([
-      'view own subscription',
+      'view own purchased_plan',
     ]);
     $this->setCurrentUser($this->developer);
 

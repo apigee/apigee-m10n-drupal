@@ -149,8 +149,8 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
       'edit billing details',
       'view package',
       'subscribe rate_plan',
-      'update subscription',
-      'view subscription',
+      'update purchased_plan',
+      'view purchased_plan',
       'view rate_plan',
     ];
 

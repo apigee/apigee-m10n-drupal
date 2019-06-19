@@ -49,36 +49,36 @@ class PurchasedPlanConverter extends EntityConverter implements ParamConverterIn
     // Get the developer ID.
     $developer_id = $user instanceof UserInterface ? $user->getEmail() : FALSE;
     // `$developer_id` will be empty for the anonymous. Returning NULL = 404.
-    return empty($developer_id) ? NULL : $this->loadSubscriptionById($developer_id, $value);
+    return empty($developer_id) ? NULL : $this->loadPurchasedPlanById($developer_id, $value);
   }
 
   /**
    * {@inheritdoc}
    */
   public function applies($definition, $name, Route $route) {
-    // This only applies to subscription entities.
-    return (parent::applies($definition, $name, $route) && $definition['type'] === 'entity:subscription');
+    // This only applies to purchased_plan entities.
+    return (parent::applies($definition, $name, $route) && $definition['type'] === 'entity:purchased_plan');
   }
 
   /**
-   * Loads the subscription by developer/purchased plan ID.
+   * Loads the purchased_plan by developer/purchased plan ID.
    *
    * @param string $developer_id
-   *   The developer ID for the subscription.
+   *   The developer ID for the purchased_plan.
    * @param string $purchased_plan_id
    *   The purchased plan id.
    *
    * @return \Drupal\Core\Entity\EntityInterface
    *   The `purchased_plan` entity.
    */
-  protected function loadSubscriptionById($developer_id, $purchased_plan_id) {
+  protected function loadPurchasedPlanById($developer_id, $purchased_plan_id) {
     try {
       $purchased_plan = $this->entityManager
-        ->getStorage('subscription')
+        ->getStorage('purchased_plan')
         ->loadById($developer_id, $purchased_plan_id);
     }
     catch (\Exception $ex) {
-      throw new NotFoundHttpException('Subscription not found for developer', $ex);
+      throw new NotFoundHttpException('Purchased plan not found for developer', $ex);
     }
 
     return $purchased_plan;

@@ -44,7 +44,7 @@ class TeamPurchasedPlanConverter extends PurchasedPlanConverter {
     $team_id = $team instanceof TeamInterface ? $team->id() : $team;
 
     if (!empty($team_id)) {
-      $entity = $storage->loadTeamSubscriptionById($team_id, $value);
+      $entity = $storage->loadTeamPurchasedPlanById($team_id, $value);
     }
     else {
       // Get the developer ID.

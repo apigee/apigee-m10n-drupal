@@ -42,7 +42,7 @@ class SubscribeFieldItem extends FieldItemBase {
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
     $properties['value'] = DataDefinition::create('any')
       ->setLabel(new TranslatableMarkup('value'))
-      ->setDescription(new TranslatableMarkup('Rate plan subscription form.'))
+      ->setDescription(new TranslatableMarkup('Rate plan purchase form.'))
       ->setComputed(TRUE);
 
     return $properties;

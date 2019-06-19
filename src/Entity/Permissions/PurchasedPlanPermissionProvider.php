@@ -23,7 +23,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\entity\UncacheableEntityPermissionProvider;
 
 /**
- * Provides the permissions for the `subscription` entity.
+ * Provides the permissions for the `purchased_plan` entity.
  */
 class PurchasedPlanPermissionProvider extends UncacheableEntityPermissionProvider {
 
@@ -34,17 +34,17 @@ class PurchasedPlanPermissionProvider extends UncacheableEntityPermissionProvide
     $permissions = parent::buildPermissions($entity_type);
 
     // Change the titles for view and update actions.
-    $permissions['view own subscription']['title'] = $this->t('View own purchased plans');
-    $permissions['view any subscription']['title'] = $this->t('View any purchased plan');
-    $permissions['update own subscription']['title'] = $this->t('Cancel own purchased plans');
-    $permissions['update any subscription']['title'] = $this->t('Cancel any purchased plan');
+    $permissions['view own purchased_plan']['title'] = $this->t('View own purchased plans');
+    $permissions['view any purchased_plan']['title'] = $this->t('View any purchased plan');
+    $permissions['update own purchased_plan']['title'] = $this->t('Cancel own purchased plans');
+    $permissions['update any purchased_plan']['title'] = $this->t('Cancel any purchased plan');
 
-    // Filter out permissions that aren't useful to subscription entities.
+    // Filter out permissions that aren't useful to purchased_plan entities.
     return array_diff_key($permissions, [
-      'administer subscription' => NULL,
-      'create subscription' => NULL,
-      'delete any subscription' => NULL,
-      'delete own subscription' => NULL,
+      'administer purchased_plan' => NULL,
+      'create purchased_plan' => NULL,
+      'delete any purchased_plan' => NULL,
+      'delete own purchased_plan' => NULL,
     ]);
   }
 

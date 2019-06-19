@@ -10,9 +10,9 @@ apigee_m10n_teams.billing:
   parent_id: apigee_m10n_teams.balance_and_plans
   weight: -2
 
-apigee_m10n_teams.subscriptions:
+apigee_m10n_teams.purchased_plans:
   title: 'Purchased plans'
-  route_name: entity.subscription.team_collection
+  route_name: entity.purchased_plan.team_collection
   base_route: entity.team.canonical
   parent_id: apigee_m10n_teams.balance_and_plans
   weight: -1

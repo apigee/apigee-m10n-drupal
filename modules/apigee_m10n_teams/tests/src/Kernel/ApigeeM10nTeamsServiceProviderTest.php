@@ -50,9 +50,9 @@ class ApigeeM10nTeamsServiceProviderTest extends KernelTestBase {
    * Test modifications to the container.
    */
   public function testServiceAlter() {
-    static::assertSame(TeamAcceptedRatePlanSdkControllerProxy::class, $this->container->getDefinition('apigee_m10n.sdk_controller_proxy.subscription')->getClass());
+    static::assertSame(TeamAcceptedRatePlanSdkControllerProxy::class, $this->container->getDefinition('apigee_m10n.sdk_controller_proxy.purchased_plan')->getClass());
     static::assertSame(TeamSdkControllerFactory::class, $this->container->getDefinition('apigee_m10n.sdk_controller_factory')->getClass());
-    static::assertSame(TeamPurchasedPlanConverter::class, $this->container->getDefinition('paramconverter.entity.subscription')->getClass());
+    static::assertSame(TeamPurchasedPlanConverter::class, $this->container->getDefinition('paramconverter.entity.purchased_plan')->getClass());
   }
 
 }

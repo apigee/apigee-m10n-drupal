@@ -23,7 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\AcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 
 /**
- * Defines the interface for subscription entity objects.
+ * Defines the interface for purchased_plan entity objects.
  */
 interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
 
@@ -49,18 +49,18 @@ interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
    *   The email of a developer registered with apigee edge.
    *
    * @return \Drupal\apigee_m10n\Entity\PurchasedPlan[]
-   *   An array of subscription entities for a given developer (identified by
+   *   An array of purchased_plan entities for a given developer (identified by
    *   email).
    */
   public static function loadByDeveloperId(string $developer_id): array;
 
   /**
-   * Getter for the `isSubscriptionActive` call.
+   * Getter for the `isActive` call.
    *
    * @return bool
-   *   Whether or not this is an active subscription.
+   *   Whether or not this is an active purchased_plan.
    */
-  public function isSubscriptionActive(): bool;
+  public function isActive(): bool;
 
   /**
    * Getter for the `status` property.
@@ -81,7 +81,7 @@ interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
   /**
    * Get's the developer of a developer accepted rate plan.
    *
-   * Assuming this subscription decorates a developer accepted rate plan, the
+   * Assuming this purchased_plan decorates a developer accepted rate plan, the
    * developer will be returned, The developer can be null for a new developer
    * accepted rate plan.
    *
@@ -97,7 +97,7 @@ interface PurchasedPlanInterface extends AcceptedRatePlanInterface {
    *   Set to TRUE to suppress all warnings.
    *
    * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
-   *   The subscription entity.
+   *   The purchased_plan entity.
    */
   public function setSuppressWarning(bool $value): PurchasedPlanInterface;
 

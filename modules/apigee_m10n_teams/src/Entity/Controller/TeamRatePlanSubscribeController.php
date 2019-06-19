@@ -32,7 +32,7 @@ use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
 
   /**
-   * Page callback to create a new team subscription.
+   * Page callback to create a new team purchased_plan.
    *
    * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
    *   The team to subscribe.
@@ -45,7 +45,7 @@ class TeamRatePlanSubscribeController extends RatePlanSubscribeController {
    * @throws \Exception
    */
   public function teamSubscribeForm(TeamInterface $team, RatePlanInterface $rate_plan) {
-    // Create a subscription to pass to the subscription edit form.
+    // Create a purchased_plan to pass to the purchased_plan edit form.
     $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'company' => new Company(['id' => $team->id()]),

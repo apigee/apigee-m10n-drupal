@@ -33,13 +33,13 @@ use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
 
 /**
- * Defines the Subscription entity class.
+ * Defines the `purchased_plan` entity class.
  *
  * The label was changed to purchased plan after the entity was created because
  * it was decided it was a better match.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
- *   id             = "subscription",
+ *   id             = "purchased_plan",
  *   label          = @Translation("Purchased Plan"),
  *   label_singular = @Translation("Purchased Plan"),
  *   label_plural   = @Translation("Purchased Plans"),
@@ -74,7 +74,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
   }
   use StartDatePropertyAwareDecoratorTrait;
 
-  public const ENTITY_TYPE_ID = 'subscription';
+  public const ENTITY_TYPE_ID = 'purchased_plan';
 
   /**
    * Suppress errors if rate plan that overlaps another accepted rate plan.
@@ -84,7 +84,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
   protected $suppressWarning;
 
   /**
-   * The rate plan this subscription belongs to.
+   * The rate plan this purchased_plan belongs to.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
@@ -98,7 +98,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
   protected $owner;
 
   /**
-   * Constructs a `subscription` entity.
+   * Constructs a `purchased_plan` entity.
    *
    * @param array $values
    *   An array of values to set, keyed by property name.
@@ -224,7 +224,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
     // Add the user parameter to any routes that require it.
     if ($rel == 'developer_collection') {
       // Strip the `purchased_plan` parameter from the collection.
-      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['subscription' => NULL]));
+      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['purchased_plan' => NULL]));
       // Set the developer's user ID.
       $url->setRouteParameter('user', $this->getOwnerId());
     }
@@ -249,7 +249,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
   /**
    * {@inheritdoc}
    */
-  public function isSubscriptionActive(): bool {
+  public function isActive(): bool {
     return ($this->getStatus() === PurchasedPlanInterface::STATUS_ACTIVE
       || $this->getStatus() === PurchasedPlanInterface::STATUS_FUTURE);
   }

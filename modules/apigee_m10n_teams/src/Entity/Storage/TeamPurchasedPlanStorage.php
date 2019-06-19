@@ -26,7 +26,7 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
- * Overridden storage controller for the `subscription` entity for teams.
+ * Overridden storage controller for the `purchased_plan` entity for teams.
  */
 class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurchasedPlanStorageInterface {
 
@@ -48,7 +48,7 @@ class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurch
       $this->resetControllerCache([$entity->id()]);
       $this->resetCache([$entity->id()]);
       // Load the unchanged entity from the API.
-      $entity->original = $this->loadTeamSubscriptionById($team_id, $entity->id());
+      $entity->original = $this->loadTeamPurchasedPlanById($team_id, $entity->id());
     }
 
     return parent::doPreSave($entity);
@@ -82,7 +82,7 @@ class TeamPurchasedPlanStorage extends PurchasedPlanStorage implements TeamPurch
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamsPurchasedPlanInterface {
+  public function loadTeamPurchasedPlanById(string $team_id, string $id): ?TeamsPurchasedPlanInterface {
     // Load from cache.
     $ids = [$id];
     $purchased_plan = $this->getFromPersistentCache($ids);

@@ -3,9 +3,9 @@ status: true
 dependencies:
   module:
     - apigee_m10n
-id: subscription.subscription.default
-targetEntityType: subscription
-bundle: subscription
+id: purchased_plan.purchased_plan.default
+targetEntityType: purchased_plan
+bundle: purchased_plan
 mode: default
 content:
   developer:

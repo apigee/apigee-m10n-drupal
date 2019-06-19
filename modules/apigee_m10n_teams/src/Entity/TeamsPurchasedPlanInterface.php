@@ -20,20 +20,20 @@
 namespace Drupal\apigee_m10n_teams\Entity;
 
 /**
- * Team specific additions to the the subscription entity.
+ * Team specific additions to the the purchased_plan entity.
  */
 interface TeamsPurchasedPlanInterface {
 
-  const SUBSCRIPTION_TYPE_TEAM      = 'TEAM';
-  const SUBSCRIPTION_TYPE_DEVELOPER = 'DEVELOPER';
+  const PURCHASED_PLAN_TYPE_TEAM      = 'TEAM';
+  const PURCHASED_PLAN_TYPE_DEVELOPER = 'DEVELOPER';
 
   /**
-   * Get's the subscription type.
+   * Get's the purchased_plan type.
    *
    * @return string
-   *   The subscription type.
+   *   The purchased_plan type.
    */
-  public function subscriptionType();
+  public function purchasedPlanType();
 
   /**
    * {@inheritdoc}
@@ -41,12 +41,12 @@ interface TeamsPurchasedPlanInterface {
   public function getTeam();
 
   /**
-   * Get's whether or not this is a team subscription.
+   * Get's whether or not this is a team purchased_plan.
    *
    * @return bool
-   *   Whether this is a team subscription.
+   *   Whether this is a team purchased_plan.
    */
-  public function isTeamSubscription(): bool;
+  public function isTeamPurchasedPlan(): bool;
 
   /**
    * Loads purchased plans by team ID.
@@ -55,7 +55,7 @@ interface TeamsPurchasedPlanInterface {
    *   The `team` ID.
    *
    * @return array
-   *   An array of Subscription entities.
+   *   An array of purchased_plan entities.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException

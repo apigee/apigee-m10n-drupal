@@ -73,8 +73,8 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
     $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
-      $account->hasPermission('view any subscription') ||
-      ($account->hasPermission('view own subscription') && $account->id() === $user->id())
+      $account->hasPermission('view any purchased_plan') ||
+      ($account->hasPermission('view own purchased_plan') && $account->id() === $user->id())
     );
   }
 
@@ -89,9 +89,9 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
    * {@inheritdoc}
    */
   protected function cancelUrl(PurchasedPlanInterface $purchased_plan) {
-    return $this->ensureDestination(Url::fromRoute('entity.subscription.developer_cancel_form', [
+    return $this->ensureDestination(Url::fromRoute('entity.purchased_plan.developer_cancel_form', [
       'user' => $this->user->id(),
-      'subscription' => $purchased_plan->id(),
+      'purchased_plan' => $purchased_plan->id(),
     ]));
   }
 

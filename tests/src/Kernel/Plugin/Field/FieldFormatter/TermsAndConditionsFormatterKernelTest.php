@@ -82,9 +82,9 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
    */
   public function testView() {
 
-    // If the user doesn't have the "view own subscription" permission, they should
+    // If the user doesn't have the "view own purchased_plan" permission, they should
     // get access denied.
-    $this->account = $this->createAccount(['view own subscription']);
+    $this->account = $this->createAccount(['view own purchased_plan']);
 
     $this->setCurrentUser($this->account);
 
@@ -107,7 +107,7 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
     static::assertInstanceOf(TermsAndConditionsFieldItem::class, $item_list->get(0));
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\TermsAndConditionsFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_tnc_default', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('subscription')['termsAndConditions'],
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('purchased_plan')['termsAndConditions'],
       'settings' => [],
       'label' => TRUE,
       'view_mode' => 'default',

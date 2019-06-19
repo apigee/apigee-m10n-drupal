@@ -163,7 +163,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // Allow the package to be accessed as a field but not rendered because
     // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
-    // If the subscription label setting is available, use it.
+    // If the purchased plan label setting is available, use it.
     $subscribe_label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('subscribe_label');
     // `$subscribe_label` is not translated, use `config_translation` instead.
     $definitions['subscribe']->setLabel($subscribe_label ?? t('Purchase'));

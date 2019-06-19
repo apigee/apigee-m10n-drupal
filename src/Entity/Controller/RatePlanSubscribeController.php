@@ -62,7 +62,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
   }
 
   /**
-   * Page callback to create a new subscription.
+   * Page callback to create a new purchased_plan.
    *
    * @param \Drupal\user\UserInterface $user
    *   The user to subscribe.
@@ -75,7 +75,7 @@ class RatePlanSubscribeController extends ControllerBase implements ContainerInj
    * @throws \Exception
    */
   public function subscribeForm(UserInterface $user, RatePlanInterface $rate_plan) {
-    // Create a subscription to pass to the subscription edit form.
+    // Create a purchased_plan to pass to the purchased_plan edit form.
     $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer(['email' => $user->getEmail()]),

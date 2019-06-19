@@ -42,7 +42,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class PurchasedPlanListBuilder extends EntityListBuilder implements ContainerInjectionInterface {
 
   /**
-   * Subscription storage.
+   * Purchased plan storage.
    *
    * @var \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorageInterface
    */
@@ -111,7 +111,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $entityType = $container->get('entity_type.manager')->getDefinition('subscription');
+    $entityType = $container->get('entity_type.manager')->getDefinition('purchased_plan');
     return static::createInstance($container, $entityType);
   }
 
@@ -139,22 +139,22 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
     return [
       'plan' => [
         'data' => $this->t('Rate plan'),
-        'class' => ['subscription-rate-plan'],
+        'class' => ['purchased-rate-plan'],
         'field' => 'plan',
       ],
       'status' => [
         'data' => $this->t('Status'),
         'field' => 'status',
-        'class' => ['subscription-status'],
+        'class' => ['purchased-plan-status'],
       ],
       'start_date' => [
         'data' => $this->t('Start Date'),
-        'class' => ['subscription-start-date'],
+        'class' => ['purchased-plan-start-date'],
         'field' => 'start_date',
       ],
       'end_date' => [
         'data' => $this->t('End Date'),
-        'class' => ['subscription-end-date'],
+        'class' => ['purchased-plan-end-date'],
         'field' => 'end_date',
       ],
       'operations' => [
@@ -182,7 +182,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
       'data' => [
         'plan' => [
           'data' => Link::fromTextAndUrl($rate_plan->getDisplayName(), $this->ratePlanUrl($entity)),
-          'class' => ['subscription-rate-plan'],
+          'class' => ['purchased-plan-rate-plan'],
         ],
         'status' => [
           'data' => [
@@ -190,19 +190,19 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
             '#template' => '<span class="status status--{{ status|clean_class }}">{{ status }}</span>',
             '#context' => ['status' => $this->t('@status', ['@status' => $entity->getStatus()])],
           ],
-          'class' => ['subscription-status'],
+          'class' => ['purchased-plan-status'],
         ],
         'start_date' => [
           'data' => $entity->get('startDate')->view($date_display_settings),
-          'class' => ['subscription-start-date'],
+          'class' => ['purchased-plan-start-date'],
         ],
         'end_date' => [
           'data' => $entity->getEndDate() ? $entity->get('endDate')->view($date_display_settings) : NULL,
-          'class' => ['subscription-end-date'],
+          'class' => ['purchased-plan-end-date'],
         ],
         'operations'    => ['data' => $this->buildOperations($entity)],
       ],
-      'class' => ['subscription-row', Html::cleanCssIdentifier(strtolower($rate_plan->getDisplayName()))],
+      'class' => ['purchased-plan-row', Html::cleanCssIdentifier(strtolower($rate_plan->getDisplayName()))],
     ];
   }
 
@@ -281,7 +281,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
     $today = new \DateTime('today', $org_timezone);
 
     if ($entity->access('update')
-      && $entity->isSubscriptionActive()
+      && $entity->isActive()
       && (
         (empty($entity->getEndDate()) && empty($rate_plan->getEndDate()))
         || $today < $entity->getEndDate()
@@ -305,7 +305,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    * look up the drupal user ID in `toUrl()`.
    *
    * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
-   *   The subscription entity.
+   *   The purchased_plan entity.
    *
    * @return \Drupal\Core\Url
    *   The cancel purchased plan url.
@@ -316,7 +316,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    * Gets the rate plan URL for the subscribed rate plan.
    *
    * @param \Drupal\apigee_m10n\Entity\PurchasedPlanInterface $purchased_plan
-   *   The subscription entity.
+   *   The purchased_plan entity.
    *
    * @return \Drupal\Core\Url
    *   The rate plan canonical url.

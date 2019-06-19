@@ -66,13 +66,13 @@ class PurchasedPlanRenderTest extends MonetizationKernelTestBase {
       'system',
     ]);
     $this->installEntitySchema('user');
-    $this->developer = $this->createAccount(['view own subscription']);
+    $this->developer = $this->createAccount(['view own purchased_plan']);
     $this->setCurrentUser($this->developer);
 
     // Set the default timezone for formatting the start  date.
-    $purchased_plan_default_display = \Drupal::config('core.entity_view_display.subscription.subscription.default')->get('content');
+    $purchased_plan_default_display = \Drupal::config('core.entity_view_display.purchased_plan.purchased_plan.default')->get('content');
     $purchased_plan_default_display['startDate']['settings']['timezone'] = 'America/Los_Angeles';
-    \Drupal::configFactory()->getEditable('core.entity_view_display.subscription.subscription.default')->set('content', $purchased_plan_default_display)->save();
+    \Drupal::configFactory()->getEditable('core.entity_view_display.purchased_plan.purchased_plan.default')->set('content', $purchased_plan_default_display)->save();
 
     $this->rate_plan = $this->createPackageRatePlan($this->createPackage());
     $this->purchased_plan = $this->createPurchasedPlan($this->developer, $this->rate_plan);

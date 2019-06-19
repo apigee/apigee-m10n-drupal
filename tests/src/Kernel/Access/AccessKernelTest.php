@@ -161,14 +161,14 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Tests subscription entity route permissions.
+   * Tests purchased_plan entity route permissions.
    */
   public function assertPurchasedPlanRoutes() {
     // Cancel purchased plan route.
     $purchased_plan = $this->createPurchasedPlan(User::load($this->developer->id()), $this->rate_plan);
-    $cancel_url = Url::fromRoute('entity.subscription.developer_cancel_form', [
+    $cancel_url = Url::fromRoute('entity.purchased_plan.developer_cancel_form', [
       'user' => $this->developer->id(),
-      'subscription' => $purchased_plan->id(),
+      'purchased_plan' => $purchased_plan->id(),
     ]);
     static::assertTrue($cancel_url->access($this->administrator));
     static::assertTrue($cancel_url->access($this->developer));
@@ -176,16 +176,16 @@ class AccessKernelTest extends MonetizationKernelTestBase {
 
     // Cancel purchased plan route for testing `any` permission.
     $purchased_plan = $this->createPurchasedPlan(User::load($this->administrator->id()), $this->rate_plan);
-    $cancel_url = Url::fromRoute('entity.subscription.developer_cancel_form', [
+    $cancel_url = Url::fromRoute('entity.purchased_plan.developer_cancel_form', [
       'user' => $this->administrator->id(),
-      'subscription' => $purchased_plan->id(),
+      'purchased_plan' => $purchased_plan->id(),
     ]);
     static::assertTrue($cancel_url->access($this->administrator));
     static::assertFalse($cancel_url->access($this->developer));
     static::assertFalse($cancel_url->access($this->anonymous));
 
     // Purchased plan listing.
-    $collection_url = Url::fromRoute('entity.subscription.developer_collection', [
+    $collection_url = Url::fromRoute('entity.purchased_plan.developer_collection', [
       'user' => $this->developer->id(),
     ]);
     static::assertTrue($collection_url->access($this->administrator));
@@ -193,7 +193,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertFalse($collection_url->access($this->anonymous));
 
     // Purchased plan listing for `any` permission.
-    $collection_url = Url::fromRoute('entity.subscription.developer_collection', [
+    $collection_url = Url::fromRoute('entity.purchased_plan.developer_collection', [
       'user' => $this->administrator->id(),
     ]);
     static::assertTrue($collection_url->access($this->administrator));
@@ -325,10 +325,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       // Admin permission.
       'administer apigee monetization' => 'Administer Apigee Monetization',
       // Purchased plans.
-      'update any subscription' => 'Cancel any purchased plan',
-      'update own subscription' => 'Cancel own purchased plans',
-      'view any subscription' => 'View any purchased plan',
-      'view own subscription' => 'View own purchased plans',
+      'update any purchased_plan' => 'Cancel any purchased plan',
+      'update own purchased_plan' => 'Cancel own purchased plans',
+      'view any purchased_plan' => 'View any purchased plan',
+      'view own purchased_plan' => 'View own purchased plans',
       // Billing.
       'refresh any prepaid balance' => 'Refresh any prepaid balance',
       'refresh own prepaid balance' => 'Refresh own prepaid balance',

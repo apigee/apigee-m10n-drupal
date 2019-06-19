@@ -47,7 +47,7 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
-    // If the user doesn't have the "view own subscription" permission, they
+    // If the user doesn't have the "view own purchased_plan" permission, they
     // should get access denied.
     $this->developer = $this->createAccount([]);
 
@@ -68,7 +68,7 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
-    $this->drupalGet(Url::fromRoute('entity.subscription.developer_collection', [
+    $this->drupalGet(Url::fromRoute('entity.purchased_plan.developer_collection', [
       'user' => $this->developer->id(),
     ]));
 
@@ -77,10 +77,10 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Connection error');
 
     // Checking my purchased plans table columns.
-    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-status', 'Active');
-    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-rate-plan', $rate_plan->getDisplayName());
-    $this->assertCssElementText('.subscription-row:nth-child(1) td.subscription-start-date', $purchased_plan->getStartDate()->format('m/d/Y'));
-    static::assertSame($this->cssSelect('.subscription-row:nth-child(1) td.subscription-end-date')[0]->getText(), '');
+    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Active');
+    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-rate-plan', $rate_plan->getDisplayName());
+    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-start-date', $purchased_plan->getStartDate()->format('m/d/Y'));
+    static::assertSame($this->cssSelect('.purchased-plan-row:nth-child(1) td.purchased-plan-end-date')[0]->getText(), '');
 
   }
 

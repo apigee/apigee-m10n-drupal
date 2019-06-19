@@ -16,16 +16,16 @@ class ApigeeM10nTeamsServiceProvider implements ServiceModifierInterface {
    * {@inheritdoc}
    */
   public function alter(ContainerBuilder $container) {
-    if ($container->hasDefinition('apigee_m10n.sdk_controller_proxy.subscription')) {
-      $container->getDefinition('apigee_m10n.sdk_controller_proxy.subscription')
+    if ($container->hasDefinition('apigee_m10n.sdk_controller_proxy.purchased_plan')) {
+      $container->getDefinition('apigee_m10n.sdk_controller_proxy.purchased_plan')
         ->setClass(TeamAcceptedRatePlanSdkControllerProxy::class);
     }
     if ($container->hasDefinition('apigee_m10n.sdk_controller_factory')) {
       $container->getDefinition('apigee_m10n.sdk_controller_factory')
         ->setClass(TeamSdkControllerFactory::class);
     }
-    if ($container->hasDefinition('paramconverter.entity.subscription')) {
-      $container->getDefinition('paramconverter.entity.subscription')
+    if ($container->hasDefinition('paramconverter.entity.purchased_plan')) {
+      $container->getDefinition('paramconverter.entity.purchased_plan')
         ->setClass(TeamPurchasedPlanConverter::class);
     }
   }

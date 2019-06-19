@@ -28,8 +28,6 @@ use Drupal\apigee_m10n\Monetization;
  *
  * @group apigee_m10n
  * @group apigee_m10n_functional
- *
- * @coversDefaultClass \Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
  */
 class RouteValidateMonetizationEnabledFunctionalTest extends MonetizationFunctionalTestBase {
 

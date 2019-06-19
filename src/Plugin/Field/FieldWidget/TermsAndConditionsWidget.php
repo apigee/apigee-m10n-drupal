@@ -43,7 +43,7 @@ use Drupal\Core\Link;
 class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The subscription.
+   * The purchased_plan.
    *
    * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */

@@ -26,7 +26,7 @@ use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 
 /**
- * Team Subscription entity form.
+ * Team purchased plan entity form.
  */
 class TeamPurchasedPlanForm extends PurchasedPlanForm {
 
@@ -35,7 +35,7 @@ class TeamPurchasedPlanForm extends PurchasedPlanForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     try {
-      if ($this->entity instanceof TeamsPurchasedPlanInterface && $this->entity->isTeamSubscription()) {
+      if ($this->entity instanceof TeamsPurchasedPlanInterface && $this->entity->isTeamPurchasedPlan()) {
         // Auto assign legal name.
         $company_id = $this->entity->decorated()->getCompany()->id();
         $company = Team::load($company_id);
@@ -52,7 +52,7 @@ class TeamPurchasedPlanForm extends PurchasedPlanForm {
           $this->messenger->addStatus($this->t('You have purchased %label plan', [
             '%label' => $display_name,
           ]));
-          $form_state->setRedirect('entity.subscription.team_collection', ['team' => $company_id]);
+          $form_state->setRedirect('entity.purchased_plan.team_collection', ['team' => $company_id]);
         }
         else {
           $this->messenger->addWarning($this->t('Unable to purchase %label plan', [

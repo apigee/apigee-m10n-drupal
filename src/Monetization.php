@@ -427,9 +427,9 @@ class Monetization implements MonetizationInterface {
    */
   public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool {
     // Use cached result if available.
-    // TODO: Handle subscription caching per developer on the storage level.
+    // TODO: Handle purchased_plan caching per developer on the storage level.
     // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
-    $cid = "apigee_m10n:dev:subscriptions:{$developer_id}";
+    $cid = "apigee_m10n:dev:purchased_plans:{$developer_id}";
 
     if (!($cache = $this->cache->get($cid))) {
       if ($purchases = PurchasedPlan::loadByDeveloperId($developer_id)) {
@@ -438,7 +438,7 @@ class Monetization implements MonetizationInterface {
     }
     else {
       foreach ($cache->data as $purchased_plan) {
-        if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isSubscriptionActive()) {
+        if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isActive()) {
           return TRUE;
         }
       }
@@ -466,7 +466,7 @@ class Monetization implements MonetizationInterface {
       'administer package form display',
       'administer rate_plan fields',
       'administer rate_plan form display',
-      'administer subscription fields',
+      'administer purchased_plan fields',
     ];
     foreach ($unused_permissions as $unused_permission) {
       if (isset($form['permissions'][$unused_permission])) {

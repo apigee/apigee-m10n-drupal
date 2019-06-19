@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_teams\Entity\Storage;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 
 /**
- * Interface for the overridden `subscription` storage controller.
+ * Interface for the overridden `purchased_plan` storage controller.
  */
 interface TeamPurchasedPlanStorageInterface {
 
@@ -40,16 +40,16 @@ interface TeamPurchasedPlanStorageInterface {
   public function loadByTeamId(string $team_id): array;
 
   /**
-   * Loads a subscription by ID.
+   * Loads a purchased_plan by ID.
    *
    * @param string $team_id
    *   The team ID.
    * @param string $id
-   *   The subscription ID.
+   *   The purchased_plan ID.
    *
    * @return \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface
-   *   The subscription.
+   *   The purchased_plan.
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?TeamsPurchasedPlanInterface;
+  public function loadTeamPurchasedPlanById(string $team_id, string $id): ?TeamsPurchasedPlanInterface;
 
 }

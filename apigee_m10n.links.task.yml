@@ -27,9 +27,9 @@ apigee_m10n.billing:
   parent_id: apigee_m10n.balance_and_plans
   weight: -2
 
-apigee_m10n.subscriptions:
+apigee_m10n.purchased_plans:
   title: 'Purchased plans'
-  route_name: entity.subscription.developer_collection
+  route_name: entity.purchased_plan.developer_collection
   base_route: entity.user.canonical
   parent_id: apigee_m10n.balance_and_plans
   weight: -1

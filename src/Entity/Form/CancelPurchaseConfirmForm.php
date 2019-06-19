@@ -67,7 +67,7 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
     $this->routeMatch = $route_match;
-    $this->purchasedPlan = $route_match->getParameter('subscription');
+    $this->purchasedPlan = $route_match->getParameter('purchased_plan');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;
   }
@@ -167,7 +167,7 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
         Cache::invalidateTags([PurchasedPlanForm::MY_PURCHASES_CACHE_TAG]);
-        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->entity->getOwnerId()]);
+        $form_state->setRedirect('entity.purchased_plan.developer_collection', ['user' => $this->entity->getOwnerId()]);
       }
     }
     // TODO: Check to see if `EntityStorageException` is the only type of error

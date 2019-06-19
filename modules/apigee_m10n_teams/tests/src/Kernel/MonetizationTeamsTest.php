@@ -114,7 +114,7 @@ class MonetizationTeamsTest extends KernelTestBase {
       'id' => $this->randomMachineName(),
       'package' => $this->package,
     ]);
-    $this->purchased_plan = $this->entity_type_manager->getStorage('subscription')->create([
+    $this->purchased_plan = $this->entity_type_manager->getStorage('purchased_plan')->create([
       'id' => $this->randomMachineName(),
       'rate_plan' => $this->rate_plan,
     ]);
@@ -150,7 +150,7 @@ class MonetizationTeamsTest extends KernelTestBase {
 
     // Check storage overrides.
     static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
-    static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('subscription'));
+    static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('purchased_plan'));
   }
 
   /**
@@ -206,12 +206,12 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/subscribe", $this->rate_plan->toUrl('team-subscribe')->toString());
     // Team purchased plan URLs.
-    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.subscription.team_collection', ['team' => $this->team->id()])->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.subscription.team_cancel_form', [
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [
       'team' => $this->team->id(),
-      'subscription' => $this->purchased_plan->id(),
+      'purchased_plan' => $this->purchased_plan->id(),
     ])->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.subscription.team_collection', [
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', [
       'team' => $this->team->id(),
     ])->toString());
   }

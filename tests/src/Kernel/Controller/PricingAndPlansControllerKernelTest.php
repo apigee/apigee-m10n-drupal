@@ -103,7 +103,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     // Create user 2 as a developer.
     $this->accounts['developer'] = $this->createAccount([
       'view package',
-      'view own subscription',
+      'view own purchased_plan',
       'view rate_plan',
     ]);
     // Create user 3 as a user with no permissions.

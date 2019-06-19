@@ -133,16 +133,16 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
     }
 
-    // Overrides for the subscription entity.
-    if (isset($entity_types['subscription'])) {
+    // Overrides for the purchased_plan entity.
+    if (isset($entity_types['purchased_plan'])) {
       // Use our class to override the original entity class.
-      $entity_types['subscription']->setClass(TeamsPurchasedPlan::class);
+      $entity_types['purchased_plan']->setClass(TeamsPurchasedPlan::class);
       // Override the storage class.
-      $entity_types['subscription']->setStorageClass(TeamPurchasedPlanStorage::class);
+      $entity_types['purchased_plan']->setStorageClass(TeamPurchasedPlanStorage::class);
       // Override subscribe form.
-      $entity_types['subscription']->setFormClass('default', TeamPurchasedPlanForm::class);
+      $entity_types['purchased_plan']->setFormClass('default', TeamPurchasedPlanForm::class);
       // Create a link template for team purchased plan collection.
-      $entity_types['subscription']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-plans');
+      $entity_types['purchased_plan']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-plans');
     }
   }
 
@@ -166,10 +166,11 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function subscriptionAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($entity->isTeamSubscription() && ($team = $entity->get('team')->entity)) {
+  public function purchasedPlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface $entity */
+    if ($entity->isTeamPurchasedPlan() && ($team = $entity->get('team')->entity)) {
       // Gat the access result.
-      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} subscription"]);
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} purchased_plan"]);
       // Team permission results completely override user permissions.
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
@@ -178,7 +179,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function subscriptionCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
+  public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
     if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
       // Gat the access result.
       $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["subscribe rate_plan"]);
@@ -193,7 +194,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($team = $this->currentTeam()) {
       if ($operation === 'subscribe') {
-        return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+        return $this->purchasedPlanCreateAccess($account, ['team' => $team], 'purchased_plan');
       }
       else {
         return $this->entityAccess($entity, $operation, $account);

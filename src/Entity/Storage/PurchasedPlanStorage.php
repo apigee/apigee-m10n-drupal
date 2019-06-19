@@ -32,14 +32,14 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * The storage controller for the `subscription` entity.
+ * The storage controller for the `purchased_plan` entity.
  */
 class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPlanStorageInterface {
 
   /**
    * The controller proxy.
    *
-   * The subscription controller typically requires a developer ID in the
+   * The purchased_plan controller typically requires a developer ID in the
    * constructor so we use a proxy that can handle instantiating controllers as
    * needed.
    *
@@ -76,7 +76,7 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
       $container->get('cache.apigee_edge_entity'),
       $container->get('entity.memory_cache'),
       $container->get('datetime.time'),
-      $container->get('apigee_m10n.sdk_controller_proxy.subscription')
+      $container->get('apigee_m10n.sdk_controller_proxy.purchased_plan')
     );
   }
 

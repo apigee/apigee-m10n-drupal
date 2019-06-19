@@ -23,14 +23,13 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\Core\Entity\Entity;
 use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
- * Overrides the `subscription` entity class.
+ * Overrides the `purchased_plan` entity class.
  *
  * This is a class for purchased plans that is aware of teams.
  */
@@ -51,7 +50,7 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
   public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
     // The entity type is not passed from `EdgeEntityBase::createFrom`.
     $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
-    // Bypass the `Subscription` and `EdgeEntityBase` constructors.
+    // Bypass the `PurchasedPlan` and `EdgeEntityBase` constructors.
     Entity::__construct([], $entity_type);
     // Set the decorated value.
     if ($decorated) {
@@ -105,7 +104,7 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
    * {@inheritdoc}
    */
   public function getTermsAndConditions(): bool {
-    if ($this->isTeamSubscription()) {
+    if ($this->isTeamPurchasedPlan()) {
       $decorated = $this->decorated();
       return \Drupal::service('apigee_m10n.teams')->isLatestTermsAndConditionAccepted($decorated->getCompany()->id());
     }
@@ -120,8 +119,8 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
   public function getTeam() {
     // Returns an entity reference. If you need the monetization company
     // reference, you can use `$purchased_plan->decorated()->getCompany()` but you
-    // have to check `$purchased_plan->isTeamSubscription()` first.
-    return $this->isTeamSubscription() ? $this->getTeamReference() : NULL;
+    // have to check `$purchased_plan->isTeamPurchasedPlan()` first.
+    return $this->isTeamPurchasedPlan() ? $this->getTeamReference() : NULL;
   }
 
   /**
@@ -151,23 +150,23 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
    * {@inheritdoc}
    */
   public function getDeveloper(): ?DeveloperInterface {
-    return !$this->isTeamSubscription() ? parent::getDeveloper() : NULL;
+    return !$this->isTeamPurchasedPlan() ? parent::getDeveloper() : NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isTeamSubscription(): bool {
-    return ($this->subscriptionType() === static::SUBSCRIPTION_TYPE_TEAM);
+  public function isTeamPurchasedPlan(): bool {
+    return ($this->purchasedPlanType() === static::PURCHASED_PLAN_TYPE_TEAM);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function subscriptionType() {
+  public function purchasedPlanType() {
     return $this->decorated() instanceof CompanyAcceptedRatePlanInterface
-      ? static::SUBSCRIPTION_TYPE_TEAM
-      : static::SUBSCRIPTION_TYPE_DEVELOPER;
+      ? static::PURCHASED_PLAN_TYPE_TEAM
+      : static::PURCHASED_PLAN_TYPE_DEVELOPER;
   }
 
   /**
@@ -177,7 +176,7 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
    *   The `team` ID.
    *
    * @return array
-   *   An array of Subscription entities.
+   *   An array of purchased_plan entities.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -197,7 +196,7 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
       // Build the URL.
       $url = parent::toUrl('team_collection', $options);
       // Strip the `purchased_plan` parameter from the collection.
-      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['subscription' => NULL]));
+      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['purchased_plan' => NULL]));
       // Set the team ID.
       $url->setRouteParameter('team', $team_id);
 

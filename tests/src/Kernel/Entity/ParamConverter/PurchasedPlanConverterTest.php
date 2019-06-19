@@ -43,14 +43,14 @@ class PurchasedPlanConverterTest extends MonetizationKernelTestBase {
     /** @var \Drupal\Core\ParamConverter\ParamConverterManagerInterface $converter_manager */
     $converter_manager = \Drupal::service('paramconverter_manager');
 
-    $converter = $converter_manager->getConverter('paramconverter.entity.subscription');
+    $converter = $converter_manager->getConverter('paramconverter.entity.purchased_plan');
     static::assertInstanceOf(PurchasedPlanConverter::class, $converter);
 
     /** @var \Drupal\Core\Routing\RouteProviderInterface $route_provider */
     $route_provider = \Drupal::service('router.route_provider');
-    $route = $route_provider->getRouteByName('entity.subscription.developer_cancel_form');
+    $route = $route_provider->getRouteByName('entity.purchased_plan.developer_cancel_form');
 
-    static::assertTrue($converter->applies(['type' => 'entity:subscription'], 'subscription', $route));
+    static::assertTrue($converter->applies(['type' => 'entity:purchased_plan'], 'purchased_plan', $route));
   }
 
 }

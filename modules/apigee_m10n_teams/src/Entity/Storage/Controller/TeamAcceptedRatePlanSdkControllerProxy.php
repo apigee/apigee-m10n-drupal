@@ -55,19 +55,19 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
   public function update(EntityInterface $entity): void {
     $controller = $entity instanceof CompanyAcceptedRatePlanInterface
       ? $this->getPurchasedPlanControllerByTeamId($entity->getCompany()->id())
-      : $this->getSubscriptionController($entity);
+      : $this->getPurchasedPlanController($entity);
 
     $controller->updateSubscription($entity);
   }
 
   /**
-   * Gets the subscription controller by team ID.
+   * Gets the purchased_plan controller by team ID.
    *
    * @param string $team_id
    *   The name of the team who has accepted the rate plan.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
-   *   The subscription controller.
+   *   The purchased_plan controller.
    */
   protected function getPurchasedPlanControllerByTeamId($team_id) {
     // Cache the controllers here for privacy.
@@ -82,20 +82,20 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
   /**
    * {@inheritdoc}
    */
-  protected function getSubscriptionController(EntityInterface $entity) {
+  protected function getPurchasedPlanController(EntityInterface $entity) {
     if ($entity instanceof CompanyAcceptedRatePlanInterface) {
       /** @var \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface $entity */
       if (!($company = $entity->getCompany())) {
         // If the team ID is not set, we have no way to get the controller
         // since it depends on the team ID.
-        throw new RuntimeException('The Team must be set to create a subscription controller.');
+        throw new RuntimeException('The team must be set to create a purchased_plan controller.');
       }
       // Get the controller.
       return $this->getPurchasedPlanControllerByTeamId($company->id());
     }
     else {
       /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
-      return parent::getSubscriptionController($entity);
+      return parent::getPurchasedPlanController($entity);
     }
   }
 

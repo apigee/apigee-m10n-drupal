@@ -23,7 +23,7 @@ use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 
 /**
- * Some additional loaders for the subscription SDK storage controller proxy.
+ * Some additional loaders for the purchased_plan SDK storage controller proxy.
  */
 interface DeveloperAcceptedRatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterface {
 
@@ -39,15 +39,15 @@ interface DeveloperAcceptedRatePlanSdkControllerProxyInterface extends EdgeEntit
   public function loadByDeveloperId(string $developer_id): array;
 
   /**
-   * Loads a subscription by ID.
+   * Loads a purchased_plan by ID.
    *
    * @param string $developer_id
    *   The developer email or ID.
    * @param string $id
-   *   The subscription ID.
+   *   The purchased_plan ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface
-   *   The subscription.
+   *   The purchased_plan.
    */
   public function loadById(string $developer_id, string $id): ?EntityInterface;
 

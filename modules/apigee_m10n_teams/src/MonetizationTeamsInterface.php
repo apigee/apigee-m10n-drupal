@@ -60,7 +60,7 @@ interface MonetizationTeamsInterface {
    * Handles `hook_ENTITY_TYPE_access` for the `apigee_m10n_teams` module.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The `subscription` entity.
+   *   The `purchased_plan` entity.
    * @param string $operation
    *   The operation.
    * @param \Drupal\Core\Session\AccountInterface $account
@@ -80,10 +80,10 @@ interface MonetizationTeamsInterface {
   public function currentTeam(): ?TeamInterface;
 
   /**
-   * Handles `hook_subscription_access` for the `apigee_m10n_teams` module.
+   * Handles `hook_purchased_plan_access` for the `apigee_m10n_teams` module.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The `subscription` entity.
+   *   The `purchased_plan` entity.
    * @param string $operation
    *   The operation.
    * @param \Drupal\Core\Session\AccountInterface $account
@@ -92,22 +92,22 @@ interface MonetizationTeamsInterface {
    * @return \Drupal\Core\Access\AccessResultInterface|null
    *   The access result or null for non-team routes.
    */
-  public function subscriptionAccess(EntityInterface $entity, $operation, AccountInterface $account);
+  public function purchasedPlanAccess(EntityInterface $entity, $operation, AccountInterface $account);
 
   /**
-   * Handles `hook_subscription_create_access` for `apigee_m10n_teams`.
+   * Handles `hook_purchased_plan_create_access` for `apigee_m10n_teams`.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The account requesting access.
    * @param array $context
    *   An array of relevant context.
    * @param string $entity_bundle
-   *   This is always `subscription`.
+   *   This is always `purchased_plan`.
    *
    * @return \Drupal\Core\Access\AccessResultInterface|null
    *   The access result or null for non-team routes.
    */
-  public function subscriptionCreateAccess(AccountInterface $account, array $context, $entity_bundle);
+  public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle);
 
   /**
    * Handles `hook_rate_plan_access` for the `apigee_m10n_teams` module.

@@ -33,7 +33,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Subscription entity form.
+ * Purchased plan entity form.
  */
 class PurchasedPlanForm extends FieldableMonetizationEntityForm {
 
@@ -85,7 +85,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
   protected $moduleHandler;
 
   /**
-   * Constructs a SubscriptionEditForm object.
+   * Constructs a PurchasedPlanForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
@@ -204,7 +204,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
         $this->messenger->addStatus($this->t('You have purchased %label plan', [
           '%label' => $display_name,
         ]));
-        $form_state->setRedirect('entity.subscription.developer_collection', ['user' => $this->getEntity()->getOwnerId()]);
+        $form_state->setRedirect('entity.purchased_plan.developer_collection', ['user' => $this->getEntity()->getOwnerId()]);
       }
       else {
         $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
@@ -247,8 +247,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
   /**
    * Insufficient funds workflow.
    *
-   * Handles the "add credit" link and subscribe button status on subcription
-   * to rate plan forms.
+   * Handles the "add credit" link and purchase button status on purchase rate plan forms.
    *
    * @param array $form
    *   The form to alter.
@@ -277,7 +276,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       $developer = NULL;
     }
 
-    // If developer is prepaid, check for sufficient balance to subscribe to the
+    // If developer is prepaid, check for sufficient balance to purchase to the
     // rate plan.
     if ($developer && $developer->getBillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
       $prepaid_balances = [];

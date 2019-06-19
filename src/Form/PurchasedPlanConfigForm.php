@@ -22,7 +22,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class for managing `apigee_m10n.subscription.config` settings.
+ * Class for managing `apigee_m10n.purchased_plan.config` settings.
  *
  * @package Drupal\apigee_m10n\Form
  */
@@ -31,7 +31,7 @@ class PurchasedPlanConfigForm extends ConfigFormBase {
   /**
    * The config named used by this form.
    */
-  const CONFIG_NAME = 'apigee_m10n.subscription.config';
+  const CONFIG_NAME = 'apigee_m10n.purchased_plan.config';
 
   /**
    * {@inheritdoc}
