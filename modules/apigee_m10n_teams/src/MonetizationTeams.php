@@ -31,8 +31,8 @@ use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
@@ -151,8 +151,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function fieldFormatterInfoAlter(array &$info) {
     // Override the subscribe link and form formatters.
-    $info['apigee_subscribe_form']['class'] = TeamSubscribeFormFormatter::class;
-    $info['apigee_subscribe_link']['class'] = TeamSubscribeLinkFormatter::class;
+    $info['apigee_purchase_plan_form']['class'] = TeamPurchasePlanFormFormatter::class;
+    $info['apigee_purchase_plan_link']['class'] = TeamPurchasePlanLinkFormatter::class;
   }
 
   /**

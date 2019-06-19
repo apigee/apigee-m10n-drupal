@@ -27,8 +27,8 @@ use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
@@ -226,8 +226,8 @@ class MonetizationTeamsTest extends KernelTestBase {
     $widget_manager = \Drupal::service('plugin.manager.field.widget');
 
     // Confirm formatter overrides.
-    static::assertSame(TeamSubscribeFormFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_form')['class']);
-    static::assertSame(TeamSubscribeLinkFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_link')['class']);
+    static::assertSame(TeamPurchasePlanFormFormatter::class, $formatter_manager->getDefinition('apigee_purchase_plan_form')['class']);
+    static::assertSame(TeamPurchasePlanLinkFormatter::class, $formatter_manager->getDefinition('apigee_purchase_plan_link')['class']);
 
     // Confirm widget overrides.
     static::assertSame(CompanyTermsAndConditionsWidget::class, $widget_manager->getDefinition('apigee_tnc_widget')['class']);

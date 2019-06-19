@@ -19,14 +19,14 @@
 
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeLinkFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanLinkFormatter;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Link;
 
 /**
- * Class override for the `apigee_subscribe_link` field formatter.
+ * Class override for the `apigee_purchase_plan_link` field formatter.
  */
-class TeamSubscribeLinkFormatter extends SubscribeLinkFormatter {
+class TeamPurchasePlanLinkFormatter extends PurchasePlanLinkFormatter {
 
   /**
    * Renderable link element.

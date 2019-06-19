@@ -22,13 +22,13 @@ namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanFormFormatter;
 use Drupal\Core\Field\FieldItemInterface;
 
 /**
- * Override class for the `apigee_subscribe_form` field formatter.
+ * Override class for the `apigee_purchase_plan_form` field formatter.
  */
-class TeamSubscribeFormFormatter extends SubscribeFormFormatter {
+class TeamPurchasePlanFormFormatter extends PurchasePlanFormFormatter {
 
   /**
    * Renderable entity form that handles teams.

@@ -31,7 +31,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_subscribe",
  *   label = @Translation("Apigee Edge subscribe"),
  *   description = @Translation("Apigee Edge subscribe"),
- *   default_formatter = "apigee_subscribe_link"
+ *   default_formatter = "apigee_purchase_plan_link"
  * )
  */
 class SubscribeFieldItem extends FieldItemBase {

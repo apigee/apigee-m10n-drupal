@@ -19,18 +19,19 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanLinkFormatter;
 use Drupal\apigee_m10n\Plugin\Field\FieldType\SubscribeFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\user\Entity\User;
 
 /**
- * Test the `apigee_subscribe_link` field formatter.
+ * Test the `apigee_purchase_plan_link` field formatter.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
+class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
 
   /**
    * The formatter manager.
@@ -60,14 +61,6 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
    */
   protected $package_rate_plan;
 
-
-  /**
-   * Drupal user.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  protected $developer;
-
   /**
    * {@inheritdoc}
    *
@@ -77,18 +70,12 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
-    $this->installEntitySchema('date_format');
     $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
       'system',
     ]);
-
-    $this->developer = $this->createAccount([
-      'view own purchased_plan',
-    ]);
-    $this->setCurrentUser($this->developer);
 
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
@@ -98,22 +85,21 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Test viewing a subscribe form formatter.
+   * Test viewing a subscribe link formatter.
    *
    * @throws \Exception
    */
   public function testView() {
-    $this->stack->queueMockResponse([
-      'get_terms_conditions',
-      'get_developer_terms_conditions',
+    $user = $this->createAccount([
+      'view own purchased_plan',
     ]);
-
+    $this->setCurrentUser($user);
     $item_list = $this->package_rate_plan->get('subscribe');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SubscribeFieldItem::class, $item_list->get(0));
     static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());
-    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SubscribeFormFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_subscribe_form', [
+    /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanFormFormatter $instance */
+    $instance = $this->formatter_manager->createInstance('apigee_purchase_plan_link', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
       'settings' => [
         'label' => 'Subscribe',
@@ -122,7 +108,7 @@ class SubscribeFormFormatterKernelTest extends MonetizationKernelTestBase {
       'view_mode' => 'default',
       'third_party_settings' => [],
     ]);
-    static::assertInstanceOf(SubscribeFormFormatter::class, $instance);
+    static::assertInstanceOf(PurchasePlanLinkFormatter::class, $instance);
 
     // Render the field item.
     $build = $instance->view($item_list);

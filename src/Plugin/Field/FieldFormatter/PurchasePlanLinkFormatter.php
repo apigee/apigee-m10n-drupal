@@ -19,16 +19,14 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\Core\Entity\EntityFormBuilderInterface;
-use Drupal\Core\Field\FormatterBase;
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Link;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
@@ -36,21 +34,14 @@ use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
  * Plugin implementation of the 'apigee_subscription_form' formatter.
  *
  * @FieldFormatter(
- *   id = "apigee_subscribe_form",
- *   label = @Translation("Rendered form"),
+ *   id = "apigee_purchase_plan_link",
+ *   label = @Translation("Link to form"),
  *   field_types = {
  *     "apigee_subscribe"
  *   }
  * )
  */
-class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * Entity form builder.
-   *
-   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
-   */
-  protected $entityFormBuilder;
+class PurchasePlanLinkFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
 
   /**
    * The Cache backend.
@@ -60,7 +51,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
   private $monetization;
 
   /**
-   * SubscribeLinkFormatter constructor.
+   * Creates an instance of the plugin.
    *
    * @param string $plugin_id
    *   The plugin_id for the formatter.
@@ -75,15 +66,12 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
    * @param string $view_mode
    *   The view mode.
    * @param array $third_party_settings
-   *   Any third party settings.
-   * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entityFormBuilder
    *   Entity form builder service.
    * @param \Drupal\apigee_m10n\Monetization $monetization
    *   Monetization service.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityFormBuilderInterface $entityFormBuilder, Monetization $monetization) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, Monetization $monetization) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
-    $this->entityFormBuilder = $entityFormBuilder;
     $this->monetization = $monetization;
   }
 
@@ -99,7 +87,6 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('entity.form_builder'),
       $container->get('apigee_m10n.monetization')
     );
   }
@@ -119,7 +106,7 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['label'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Button label'),
+      '#title' => $this->t('Subscribe label'),
       '#default_value' => $this->getSetting('label'),
     ];
     return $form;
@@ -137,22 +124,19 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
   }
 
   /**
-   * Renderable entity form.
+   * Renderable link element.
    *
    * @param \Drupal\Core\Field\FieldItemInterface $item
    *   Field item variable.
    *
    * @return array
-   *   Renderable form elements.
-   *
-   * @throws \Exception
+   *   Renderable link element.
    */
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
-    if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
-      $developer_id = $value['user']->getEmail();
-      if ($this->monetization->isDeveloperAlreadySubscribed($developer_id, $rate_plan)) {
+    if ($value = $item->getValue()) {
+      if ($this->monetization->isDeveloperAlreadySubscribed($value['user']->getEmail(), $rate_plan)) {
         $label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('already_purchased_label');
         return [
           '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
@@ -160,19 +144,14 @@ class SubscribeFormFormatter extends FormatterBase implements ContainerFactoryPl
           ])
         ];
       }
-      $start_date = new \DateTimeImmutable();
-      $org_timezone = $rate_plan->getOrganization()->getTimezone();
-      $start_date->setTimezone($org_timezone);
-      $purchased_plan = PurchasedPlan::create([
-        'ratePlan' => $rate_plan,
-        // TODO: User a controller proxy that caches the developer entity.
-        // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
-        'developer' => new Developer(['email' => $developer_id]),
-        'startDate' => $start_date,
-      ]);
-      return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
-        'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
-      ]);
+
+      return Link::createFromRoute(
+        $this->getSetting('label'), 'entity.rate_plan.subscribe', [
+          'user'      => $value['user']->id(),
+          'package'   => $rate_plan->getPackage()->id(),
+          'rate_plan' => $rate_plan->id(),
+        ]
+      )->toRenderable();
     }
   }
 
