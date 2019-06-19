@@ -31,12 +31,32 @@ use Symfony\Component\Validator\Constraint;
  */
 class PriceRangeUnitPriceConstraint extends Constraint {
 
+  /**
+   * The validation message when out of range.
+   *
+   * @var string
+   */
   public $rangeMessage = 'The unit price value must be between @minimum and @maximum.';
 
+  /**
+   * The validation message when value is less than minimum price.
+   *
+   * @var string
+   */
   public $minMessage = 'This unit price cannot be less than @minimum.';
 
+  /**
+   * The validation message when value is greater than maximum price.
+   *
+   * @var string
+   */
   public $maxMessage = 'This unit price cannot be greater than @maximum.';
 
+  /**
+   * The validation message when currency is invalid.
+   *
+   * @var string
+   */
   public $currencyMessage = 'The selected currency is invalid.';
 
 }

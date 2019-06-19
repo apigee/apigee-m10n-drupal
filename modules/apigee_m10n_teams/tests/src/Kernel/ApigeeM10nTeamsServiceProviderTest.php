@@ -34,6 +34,9 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class ApigeeM10nTeamsServiceProviderTest extends KernelTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'key',
     'user',
