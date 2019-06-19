@@ -226,7 +226,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertFalse($plan_url->access($this->anonymous));
 
     // Rate plan purchase route.
-    $purchase_url = Url::fromRoute('entity.rate_plan.subscribe', [
+    $purchase_url = Url::fromRoute('entity.rate_plan.purchase', [
       'user' => $this->developer->id(),
       'package' => $this->package->id(),
       'rate_plan' => $this->rate_plan->id(),
@@ -236,7 +236,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertFalse($purchase_url->access($this->anonymous));
 
     // Rate plan purchase route for testing `any` permission.
-    $purchase_url = Url::fromRoute('entity.rate_plan.subscribe', [
+    $purchase_url = Url::fromRoute('entity.rate_plan.purchase', [
       'user' => $this->administrator->id(),
       'package' => $this->package->id(),
       'rate_plan' => $this->rate_plan->id(),
@@ -343,8 +343,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       // Rate plans.
       'view rate_plan' => 'View rate plans',
       'view rate_plan as anyone' => 'View rate plans as any developer',
-      'subscribe rate_plan' => 'Purchase a rate plan',
-      'subscribe rate_plan as anyone' => 'Purchase a rate plan as any developer',
+      'purchase rate_plan' => 'Purchase a rate plan',
+      'purchase rate_plan as anyone' => 'Purchase a rate plan as any developer',
     ];
 
     // Sort both for comparison.

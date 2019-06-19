@@ -39,12 +39,12 @@ class TeamsRatePlan extends RatePlan {
 
     // Check for team context.
     $rel = (($team_id = $this->getTeamId()) && $rel === 'canonical') ? 'team' : $rel;
-    $rel = (($team_id = $this->getTeamId()) && $rel === 'subscribe') ? 'team-subscribe' : $rel;
+    $rel = (($team_id = $this->getTeamId()) && $rel === 'purchase') ? 'team-purchase' : $rel;
 
     $url = parent::toUrl($rel, $options);
 
     // Add the team if this is a team URL.
-    if (in_array($rel, ['team', 'team-subscribe']) && !empty($team_id)) {
+    if (in_array($rel, ['team', 'team-purchase']) && !empty($team_id)) {
       // Removes the user route parameter.
       $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['user' => NULL]));
       $url->setRouteParameter('team', $team_id);
@@ -56,11 +56,11 @@ class TeamsRatePlan extends RatePlan {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribe():? array {
+  public function getPurchase():? array {
     // Return a team array if this is a team route.
     return (($team = $this->getTeam()) && $team instanceof TeamInterface)
       ? ['team' => $team]
-      : parent::getSubscribe();
+      : parent::getPurchase();
   }
 
   /**

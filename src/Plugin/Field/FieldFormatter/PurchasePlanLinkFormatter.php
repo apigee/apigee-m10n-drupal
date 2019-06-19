@@ -37,7 +37,7 @@ use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
  *   id = "apigee_purchase_plan_link",
  *   label = @Translation("Link to form"),
  *   field_types = {
- *     "apigee_subscribe"
+ *     "apigee_purchase"
  *   }
  * )
  */
@@ -146,7 +146,7 @@ class PurchasePlanLinkFormatter extends FormatterBase implements ContainerFactor
       }
 
       return Link::createFromRoute(
-        $this->getSetting('label'), 'entity.rate_plan.subscribe', [
+        $this->getSetting('label'), 'entity.rate_plan.purchase', [
           'user'      => $value['user']->id(),
           'package'   => $rate_plan->getPackage()->id(),
           'rate_plan' => $rate_plan->id(),

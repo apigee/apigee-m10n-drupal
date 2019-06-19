@@ -93,13 +93,13 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
       'view own purchased_plan',
     ]);
     $this->setCurrentUser($user);
-    $item_list = $this->package_rate_plan->get('subscribe');
+    $item_list = $this->package_rate_plan->get('purchase');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(PurchaseFieldItem::class, $item_list->get(0));
     static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanFormFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_purchase_plan_link', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['subscribe'],
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['purchase'],
       'settings' => [
         'label' => 'Purchase',
       ],

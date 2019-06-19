@@ -42,7 +42,7 @@ interface MonetizationInterface {
   const DEFAULT_AUTHENTICATED_PERMISSIONS = [
     'view package',
     'view rate_plan',
-    'subscribe rate_plan',
+    'purchase rate_plan',
     'view own purchased_plan',
     'update own purchased_plan',
     'view own prepaid balance',

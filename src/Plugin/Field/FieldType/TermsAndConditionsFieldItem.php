@@ -25,7 +25,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'apigee_subscribe' field type.
+ * Plugin implementation of the 'apigee_tnc' field type.
  *
  * @FieldType(
  *   id = "apigee_tnc",

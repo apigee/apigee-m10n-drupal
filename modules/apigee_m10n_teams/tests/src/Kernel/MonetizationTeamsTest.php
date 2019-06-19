@@ -166,7 +166,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     $team_handler->getDeveloperPermissionsByTeam($this->team, $account)->willReturn([
       'view package',
       'view rate_plan',
-      'subscribe rate_plan',
+      'purchase rate_plan',
     ]);
     $team_handler->getDeveloperPermissionsByTeam($this->team, $non_member)->willReturn([]);
     $this->container->set('apigee_edge_teams.team_permissions', $team_handler->reveal());
@@ -191,9 +191,9 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertFalse($this->rate_plan->access('view', $non_member));
 
     // Test view rate plan for a team member.
-    static::assertTrue($this->rate_plan->access('subscribe', $account));
+    static::assertTrue($this->rate_plan->access('purchase', $account));
     // Test view rate plan for a non team member.
-    static::assertFalse($this->rate_plan->access('subscribe', $non_member));
+    static::assertFalse($this->rate_plan->access('purchase', $non_member));
   }
 
   /**
@@ -204,7 +204,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
     // Rate plan team url.
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-subscribe')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
     // Team purchased plan URLs.
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [

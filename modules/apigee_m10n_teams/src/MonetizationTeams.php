@@ -125,7 +125,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Use our class to override the original entity class.
       $entity_types['rate_plan']->setClass(TeamsRatePlan::class);
       $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
-      $entity_types['rate_plan']->setLinkTemplate('team-subscribe', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase');
+      $entity_types['rate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase');
       // Get the entity route providers.
       $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
       // Override the `html` route provider.
@@ -182,7 +182,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
     if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
       // Gat the access result.
-      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["subscribe rate_plan"]);
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["purchase rate_plan"]);
       // Team permission results completely override user permissions.
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
@@ -193,7 +193,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($team = $this->currentTeam()) {
-      if ($operation === 'subscribe') {
+      if ($operation === 'purchase') {
         return $this->purchasedPlanCreateAccess($account, ['team' => $team], 'purchased_plan');
       }
       else {

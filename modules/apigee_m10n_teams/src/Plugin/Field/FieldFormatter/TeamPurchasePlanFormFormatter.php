@@ -43,7 +43,7 @@ class TeamPurchasePlanFormFormatter extends PurchasePlanFormFormatter {
    */
   protected function viewValue(FieldItemInterface $item) {
     if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
-      if ($item->getEntity()->access('subscribe')) {
+      if ($item->getEntity()->access('purchase')) {
         $purchased_plan = PurchasedPlan::create([
           'ratePlan' => $item->getEntity(),
           'company' => new Company(['id' => $value['team']->id()]),

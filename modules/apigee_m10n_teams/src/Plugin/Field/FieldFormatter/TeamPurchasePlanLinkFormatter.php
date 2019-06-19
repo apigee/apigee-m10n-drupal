@@ -44,7 +44,7 @@ class TeamPurchasePlanLinkFormatter extends PurchasePlanLinkFormatter {
     $rate_plan = $item->getEntity();
     $canonical_url = $rate_plan->toUrl();
     if ($canonical_url->getRouteName() === 'entity.rate_plan.team') {
-      return Link::createFromRoute($this->getSetting('label'), 'entity.rate_plan.team_subscribe', $canonical_url->getRouteParameters())->toRenderable();
+      return Link::createFromRoute($this->getSetting('label'), 'entity.rate_plan.team_purchase', $canonical_url->getRouteParameters())->toRenderable();
     }
     else {
       return parent::viewValue($item);

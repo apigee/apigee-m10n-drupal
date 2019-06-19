@@ -21,16 +21,16 @@ entity.purchased_plan.team_collection:
     _apigee_monetization_route: TRUE
     _apigee_developer_route: entity.purchased_plan.developer_collection
 
-entity.rate_plan.team_subscribe:
+entity.rate_plan.team_purchase:
   path: '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase'
   defaults:
     _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamPurchaseForm'
     _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamTitle'
   requirements:
-    _entity_access: 'rate_plan.subscribe'
+    _entity_access: 'rate_plan.purchase'
   options:
     _apigee_monetization_route: TRUE
-    _apigee_developer_route: entity.rate_plan.subscribe
+    _apigee_developer_route: entity.rate_plan.purchase
 
 entity.purchased_plan.team_cancel_form:
   path: '/teams/{team}/monetization/purchased-plan/{purchased_plan}/cancel'

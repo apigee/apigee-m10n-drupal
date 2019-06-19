@@ -84,7 +84,7 @@ class PurchaseRatePlanController extends ControllerBase implements ContainerInje
 
     // Get the save label from settings.
     $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_button_label');
-    $save_label = $save_label ?? 'Subscribe';
+    $save_label = $save_label ?? 'Purchase';
 
     // Return the purchase form with the label set.
     return $this->entityFormBuilder->getForm($purchased_plan, 'default', [

@@ -39,7 +39,7 @@ use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
  *   id = "apigee_purchase_plan_form",
  *   label = @Translation("Rendered form"),
  *   field_types = {
- *     "apigee_subscribe"
+ *     "apigee_purchase"
  *   }
  * )
  */
@@ -150,7 +150,7 @@ class PurchasePlanFormFormatter extends FormatterBase implements ContainerFactor
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
-    if (($value = $item->getValue()) && $item->getEntity()->access('subscribe')) {
+    if (($value = $item->getValue()) && $item->getEntity()->access('purchase')) {
       $developer_id = $value['user']->getEmail();
       if ($this->monetization->isDeveloperAlreadySubscribed($developer_id, $rate_plan)) {
         $label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('already_purchased_label');

@@ -361,7 +361,7 @@ trait ApigeeMonetizationTestTrait {
       'organization'          => $org,
       'currency'              => $currency,
       'package'               => $package->decorated(),
-      'subscribe'             => [],
+      'purchase'             => [],
     ]);
 
     $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);

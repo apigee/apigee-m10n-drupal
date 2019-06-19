@@ -148,7 +148,7 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
       'view prepaid balance report',
       'edit billing details',
       'view package',
-      'subscribe rate_plan',
+      'purchase rate_plan',
       'update purchased_plan',
       'view purchased_plan',
       'view rate_plan',

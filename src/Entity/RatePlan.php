@@ -59,7 +59,7 @@ use Drupal\user\Entity\User;
  *   },
  *   links = {
  *     "canonical" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}",
- *     "subscribe" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase",
+ *     "purchase" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase",
  *   },
  *   entity_keys = {
  *     "id" = "id",
@@ -146,7 +146,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   protected static function getProperties(): array {
     return [
-      'subscribe' => 'apigee_subscribe',
+      'purchase' => 'apigee_purchase',
       'packageEntity' => 'entity_reference',
       'packageProducts' => 'entity_reference',
     ] + parent::getProperties();
@@ -166,7 +166,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // If the purchased plan label setting is available, use it.
     $purchase_label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_label');
     // `$purchase_label` is not translated, use `config_translation` instead.
-    $definitions['subscribe']->setLabel($purchase_label ?? t('Purchase'));
+    $definitions['purchase']->setLabel($purchase_label ?? t('Purchase'));
 
     // The API products are many-to-one.
     $definitions['packageEntity']->setCardinality(1)
@@ -235,7 +235,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribe():? array {
+  public function getPurchase():? array {
     return [
       'user' => $this->getUser(),
     ];

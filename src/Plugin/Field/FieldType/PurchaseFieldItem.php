@@ -25,10 +25,10 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'apigee_subscribe' field type.
+ * Plugin implementation of the 'apigee_purchase' field type.
  *
  * @FieldType(
- *   id = "apigee_subscribe",
+ *   id = "apigee_purchase",
  *   label = @Translation("Purchase rate plan"),
  *   description = @Translation("Purchase rate plan computed item."),
  *   default_formatter = "apigee_purchase_plan_link"
