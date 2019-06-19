@@ -141,6 +141,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['subscription']->setStorageClass(TeamPurchasedPlanStorage::class);
       // Override subscribe form.
       $entity_types['subscription']->setFormClass('default', TeamPurchasedPlanForm::class);
+      // Create a link template for team purchased plan collection.
+      $entity_types['subscription']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-plans');
     }
   }
 

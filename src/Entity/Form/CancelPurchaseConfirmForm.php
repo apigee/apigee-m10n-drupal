@@ -66,6 +66,7 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
    *   SDK Controller factory.
    */
   public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
+    $this->routeMatch = $route_match;
     $this->purchasedPlan = $route_match->getParameter('subscription');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;
@@ -115,7 +116,7 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return Url::fromRoute('apigee_monetization.my_subscriptions');
+    return $this->entity->toUrl('collection');
   }
 
   /**

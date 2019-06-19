@@ -40,7 +40,7 @@ class TeamPurchasedPlanConverter extends PurchasedPlanConverter {
     $storage = $this->entityManager->getStorage($entity_type_id);
 
     // Get the team ID.
-    $team = $defaults['team'];
+    $team = $defaults['team'] ?? NULL;
     $team_id = $team instanceof TeamInterface ? $team->id() : $team;
 
     if (!empty($team_id)) {

@@ -57,7 +57,9 @@ use Drupal\user\UserInterface;
  *       "cancel"  = "Drupal\apigee_m10n\Entity\Form\CancelPurchaseConfirmForm",
  *     },
  *   },
- *   links = {},
+ *   links = {
+ *     "developer_collection" = "/user/{user}/monetization/purchased-plans",
+ *   },
  *   entity_keys = {
  *     "id" = "id",
  *   },
@@ -207,6 +209,27 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
       ->loadByDeveloperId($developer_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toUrl($rel = 'canonical', array $options = []) {
+    // The string formatter assumes entities are revisionable.
+    $rel = ($rel === 'revision') ? 'canonical' : $rel;
+    // Use the developer collection as the default collection.
+    $rel = ($rel === 'collection') ? 'developer_collection' : $rel;
+    // Build the URL.
+    $url = parent::toUrl($rel, $options);
+    // Add the user parameter to any routes that require it.
+    if ($rel == 'developer_collection') {
+      // Strip the `purchased_plan` parameter from the collection.
+      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['subscription' => NULL]));
+      // Set the developer's user ID.
+      $url->setRouteParameter('user', $this->getOwnerId());
+    }
+
+    return $url;
   }
 
   /**

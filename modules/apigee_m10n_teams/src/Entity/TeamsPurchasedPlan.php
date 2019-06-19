@@ -23,6 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\Core\Entity\Entity;
@@ -124,6 +125,17 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
   }
 
   /**
+   * Get the team from the team reference if it exists.
+   *
+   * @return string
+   *   Returns the team ID.
+   */
+  private function getTeamId(): ?string {
+
+    return ($team = $this->getTeam()) ? $team->id() : NULL;
+  }
+
+  /**
    * Gets an entity reference compatible array for the team.
    *
    * @return array
@@ -174,6 +186,26 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
       ->loadByTeamId($team_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toUrl($rel = 'canonical', array $options = []) {
+    // Get team collection for team URLs.
+    if (($team_id = $this->getTeamId()) && $rel === 'collection') {
+      // Build the URL.
+      $url = parent::toUrl('team_collection', $options);
+      // Strip the `purchased_plan` parameter from the collection.
+      $url->setRouteParameters(array_diff_key($url->getRouteParameters(), ['subscription' => NULL]));
+      // Set the team ID.
+      $url->setRouteParameter('team', $team_id);
+
+      return $url;
+    }
+    else {
+      return parent::toUrl($rel, $options);
+    }
   }
 
 }

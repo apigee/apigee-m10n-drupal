@@ -211,6 +211,9 @@ class MonetizationTeamsTest extends KernelTestBase {
       'team' => $this->team->id(),
       'subscription' => $this->purchased_plan->id(),
     ])->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.subscription.team_collection', [
+      'team' => $this->team->id(),
+    ])->toString());
   }
 
   /**
