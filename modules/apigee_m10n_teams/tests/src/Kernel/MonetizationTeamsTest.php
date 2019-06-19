@@ -83,6 +83,9 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   protected $entity_type_manager;
 
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'key',
     'user',
