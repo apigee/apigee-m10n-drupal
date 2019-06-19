@@ -122,18 +122,16 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
     // Rate plans as rendered.
-    static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect('.apigee-package-rate-plan > div > a')[0]));
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}", (string) $this->cssSelect('.apigee-package-rate-plan > div > a')[0]->attributes()['href']);
-    static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.apigee-package-rate-plan > div:nth-child(2) > div:nth-child(2)')[0]));
-    static::assertSame('Purchase Plan', trim($this->cssSelect('.apigee-package-rate-plan > div:nth-child(4) > div:nth-child(2) > a')[0]));
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/subscribe", (string) $this->cssSelect('.apigee-package-rate-plan > div:nth-child(4) > div:nth-child(2) > a')[0]->attributes()['href']);
+    static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.rate-plan > div > div:nth-child(1) > div:nth-child(2)')[0]));
+    static::assertSame('Purchase Plan', trim($this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]));
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/subscribe", (string) $this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]->attributes()['href']);
 
     // Plan details.
     $details = $rate_plan->getRatePlanDetails()[0];
-    static::assertSame(strtolower("{$details->getDuration()} {$details->getDurationType()}"), trim($this->cssSelect('.apigee-package-rate-plan .rate-plan-detail td:nth-child(2) > span')[0]));
-    static::assertSame($details->getOrganization()->getDescription(), trim($this->cssSelect('.apigee-package-rate-plan .rate-plan-detail td:nth-child(2) > span')[1]));
-    static::assertSame($details->getOrganization()->getCountry(), trim($this->cssSelect('.apigee-package-rate-plan .rate-plan-detail td:nth-child(2) > span')[2]));
-    static::assertSame($details->getCurrency()->getName(), trim($this->cssSelect('.apigee-package-rate-plan .rate-plan-detail td:nth-child(2) > span')[3]));
+    static::assertSame(strtolower("{$details->getDuration()} {$details->getDurationType()}"), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[0]));
+    static::assertSame($details->getOrganization()->getDescription(), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[1]));
+    static::assertSame($details->getOrganization()->getCountry(), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[2]));
+    static::assertSame($details->getCurrency()->getName(), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[3]));
   }
 
 }
