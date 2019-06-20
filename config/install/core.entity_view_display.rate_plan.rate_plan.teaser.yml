@@ -26,8 +26,8 @@ content:
     settings:
       link: false
     third_party_settings: {  }
-  subscribe:
-    type: apigee_subscribe_link
+  purchase:
+    type: apigee_purchase_plan_link
     weight: 2
     region: content
     label: visually_hidden

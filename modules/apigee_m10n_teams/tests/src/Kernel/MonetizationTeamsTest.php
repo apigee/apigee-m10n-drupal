@@ -23,12 +23,12 @@ use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorageInterface;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
-use Drupal\apigee_m10n_teams\Entity\TeamsSubscriptionInterface;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
@@ -70,11 +70,11 @@ class MonetizationTeamsTest extends KernelTestBase {
   protected $rate_plan;
 
   /**
-   * A test subscription.
+   * A test purchase plan.
    *
-   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */
-  protected $subscription;
+  protected $purchased_plan;
 
   /**
    * The entity type manager.
@@ -114,7 +114,7 @@ class MonetizationTeamsTest extends KernelTestBase {
       'id' => $this->randomMachineName(),
       'package' => $this->package,
     ]);
-    $this->subscription = $this->entity_type_manager->getStorage('subscription')->create([
+    $this->purchased_plan = $this->entity_type_manager->getStorage('purchased_plan')->create([
       'id' => $this->randomMachineName(),
       'rate_plan' => $this->rate_plan,
     ]);
@@ -146,11 +146,11 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Check class overrides.
     static::assertInstanceOf(TeamsPackageInterface::class, $this->package);
     static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
-    static::assertInstanceOf(TeamsSubscriptionInterface::class, $this->subscription);
+    static::assertInstanceOf(TeamsPurchasedPlanInterface::class, $this->purchased_plan);
 
     // Check storage overrides.
     static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
-    static::assertInstanceOf(TeamSubscriptionStorageInterface::class, $this->entity_type_manager->getStorage('subscription'));
+    static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('purchased_plan'));
   }
 
   /**
@@ -166,7 +166,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     $team_handler->getDeveloperPermissionsByTeam($this->team, $account)->willReturn([
       'view package',
       'view rate_plan',
-      'subscribe rate_plan',
+      'purchase rate_plan',
     ]);
     $team_handler->getDeveloperPermissionsByTeam($this->team, $non_member)->willReturn([]);
     $this->container->set('apigee_edge_teams.team_permissions', $team_handler->reveal());
@@ -191,9 +191,9 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertFalse($this->rate_plan->access('view', $non_member));
 
     // Test view rate plan for a team member.
-    static::assertTrue($this->rate_plan->access('subscribe', $account));
+    static::assertTrue($this->rate_plan->access('purchase', $account));
     // Test view rate plan for a non team member.
-    static::assertFalse($this->rate_plan->access('subscribe', $non_member));
+    static::assertFalse($this->rate_plan->access('purchase', $non_member));
   }
 
   /**
@@ -204,12 +204,15 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
     // Rate plan team url.
     static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/subscribe", $this->rate_plan->toUrl('team-subscribe')->toString());
-    // Team subscription URLs.
-    static::assertSame("/teams/{$this->team->id()}/monetization/subscriptions", Url::fromRoute('entity.subscription.team_collection', ['team' => $this->team->id()])->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/subscription/{$this->subscription->id()}/unsubscribe", Url::fromRoute('entity.subscription.team_unsubscribe_form', [
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
+    // Team purchased plan URLs.
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [
       'team' => $this->team->id(),
-      'subscription' => $this->subscription->id(),
+      'purchased_plan' => $this->purchased_plan->id(),
+    ])->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', [
+      'team' => $this->team->id(),
     ])->toString());
   }
 
@@ -223,8 +226,8 @@ class MonetizationTeamsTest extends KernelTestBase {
     $widget_manager = \Drupal::service('plugin.manager.field.widget');
 
     // Confirm formatter overrides.
-    static::assertSame(TeamSubscribeFormFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_form')['class']);
-    static::assertSame(TeamSubscribeLinkFormatter::class, $formatter_manager->getDefinition('apigee_subscribe_link')['class']);
+    static::assertSame(TeamPurchasePlanFormFormatter::class, $formatter_manager->getDefinition('apigee_purchase_plan_form')['class']);
+    static::assertSame(TeamPurchasePlanLinkFormatter::class, $formatter_manager->getDefinition('apigee_purchase_plan_link')['class']);
 
     // Confirm widget overrides.
     static::assertSame(CompanyTermsAndConditionsWidget::class, $widget_manager->getDefinition('apigee_tnc_widget')['class']);

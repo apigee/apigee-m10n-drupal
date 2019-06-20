@@ -124,7 +124,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Rate plans as rendered.
     static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.rate-plan > div > div:nth-child(1) > div:nth-child(2)')[0]));
     static::assertSame('Purchase Plan', trim($this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]));
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/subscribe", (string) $this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]->attributes()['href']);
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/purchase", (string) $this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]->attributes()['href']);
 
     // Plan details.
     $details = $rate_plan->getRatePlanDetails()[0];

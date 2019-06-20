@@ -1,0 +1,55 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: purchased_plan.purchased_plan.default
+targetEntityType: purchased_plan
+bundle: purchased_plan
+mode: default
+content:
+  developer:
+    type: apigee_monetization_developer
+    weight: 0
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  endDate:
+    type: apigee_datestamp
+    weight: 3
+    region: content
+    label: above
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+    third_party_settings: {  }
+  ratePlan:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  startDate:
+    type: apigee_datestamp
+    weight: 2
+    region: content
+    label: above
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  id: true
+  nextCycleStartDate: true
+  nextRecurringFeeDate: true
+  prevRecurringFeeDate: true
+  quotaTarget: true
+  renewalDate: true
+  updated: true
+  termsAndConditions: true

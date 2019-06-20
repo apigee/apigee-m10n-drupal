@@ -35,7 +35,6 @@ use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
-use Drupal\apigee_m10n\Form\SubscriptionConfigForm;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
@@ -59,7 +58,7 @@ use Drupal\user\Entity\User;
  *   },
  *   links = {
  *     "canonical" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}",
- *     "subscribe" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe",
+ *     "purchase" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase",
  *   },
  *   entity_keys = {
  *     "id" = "id",
@@ -146,7 +145,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   protected static function getProperties(): array {
     return [
-      'subscribe' => 'apigee_subscribe',
+      'purchase' => 'apigee_purchase',
       'packageEntity' => 'entity_reference',
       'packageProducts' => 'entity_reference',
     ] + parent::getProperties();
@@ -163,10 +162,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // Allow the package to be accessed as a field but not rendered because
     // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
-    // If the subscription label setting is available, use it.
-    $subscribe_label = \Drupal::config(SubscriptionConfigForm::CONFIG_NAME)->get('subscribe_label');
-    // `$subscribe_label` is not translated, use `config_translation` instead.
-    $definitions['subscribe']->setLabel($subscribe_label ?? t('Purchase'));
+    $definitions['purchase']->setLabel(t('Purchase'));
 
     // The API products are many-to-one.
     $definitions['packageEntity']->setCardinality(1)
@@ -235,7 +231,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getSubscribe():? array {
+  public function getPurchase():? array {
     return [
       'user' => $this->getUser(),
     ];

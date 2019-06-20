@@ -28,7 +28,7 @@ use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Symfony\Component\Routing\Route;
 
 /**
- * Parameter converter for up-casting subscriptions entity IDs to full objects.
+ * Parameter converter for up-casting purchased plan entity IDs to full objects.
  *
  * {@inheritdoc}
  */
@@ -65,7 +65,7 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
    * {@inheritdoc}
    */
   public function applies($definition, $name, Route $route) {
-    // This only applies to subscription entities.
+    // This only applies to purchased_plan entities.
     return (parent::applies($definition, $name, $route) && $definition['type'] === 'entity:rate_plan');
   }
 

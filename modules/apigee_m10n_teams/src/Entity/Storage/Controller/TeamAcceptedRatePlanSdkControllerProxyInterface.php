@@ -22,32 +22,32 @@ namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 use Apigee\Edge\Entity\EntityInterface;
 
 /**
- * Some additional loaders for the subscription SDK storage controller proxy.
+ * Some additional loaders for the purchased_plan SDK storage controller proxy.
  */
 interface TeamAcceptedRatePlanSdkControllerProxyInterface {
 
   /**
-   * Loads all subscriptions for a given team.
+   * Loads all purchased plans for a given team.
    *
    * @param string $team_id
    *   The team ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface[]
-   *   A list of subscriptions keyed by ID.
+   *   A list of purchased plans keyed by ID.
    */
   public function loadByTeamId(string $team_id): array;
 
   /**
-   * Loads a subscription by ID.
+   * Loads a purchased_plan by ID.
    *
    * @param string $team_id
    *   The team ID.
    * @param string $id
-   *   The subscription ID.
+   *   The purchased_plan ID.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface
-   *   The subscription.
+   *   The purchased_plan.
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?EntityInterface;
+  public function loadTeamPurchasedPlanById(string $team_id, string $id): ?EntityInterface;
 
 }

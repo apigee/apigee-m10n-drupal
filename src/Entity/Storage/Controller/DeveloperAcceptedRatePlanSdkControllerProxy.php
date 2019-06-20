@@ -45,7 +45,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function doCreate(EntityInterface $entity, bool $suppress_warning = FALSE): void {
-    $this->getSubscriptionController($entity)
+    $this->getPurchasedPlanController($entity)
       ->acceptRatePlan(
         $entity->getRatePlan(),
         $entity->getStartDate(),
@@ -53,7 +53,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
         $entity->getQuotaTarget(),
         $suppress_warning
       );
-    // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
+    // TODO: Clear cache for "apigee_m10n:dev:purchased_plans:{$developer_id}".
   }
 
   /**
@@ -69,15 +69,15 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    // TODO: Clear cache for "apigee_m10n:dev:subscriptions:{$developer_id}".
-    $this->getSubscriptionController($entity)->updateSubscription($entity);
+    // TODO: Clear cache for "apigee_m10n:dev:purchased_plans:{$developer_id}".
+    $this->getPurchasedPlanController($entity)->updateSubscription($entity);
   }
 
   /**
    * {@inheritdoc}
    */
   public function delete(string $id): void {
-    throw new RuntimeException('Unable to delete subscriptions. Update the end date to unsubscribe.');
+    throw new RuntimeException('Unable to delete purchase. Update the end date to cancel.');
   }
 
   /**
@@ -90,29 +90,29 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
     $select->condition('status', 1);
     $select->condition('uid', [0, 1], 'NOT IN');
 
-    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[] $subscriptions */
-    $subscriptions = [];
+    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface[] $purchased_plans */
+    $purchased_plans = [];
 
-    // Loops through all developer emails to get their subscriptions.
+    // Loops through all developer emails to get their purchased plans.
     foreach ($select->execute()->fetchCol() as $developer_email) {
-      // Get all subscriptions for this developer.
-      $developer_subscriptions = $this->loadByDeveloperId($developer_email);
-      foreach ($developer_subscriptions as $developer_subscription) {
-        // Subscriptions are keyed by their ID.
-        $subscriptions[$developer_subscription->id()] = $developer_subscription;
+      // Get all purchases for this developer.
+      $developer_purchases = $this->loadByDeveloperId($developer_email);
+      foreach ($developer_purchases as $purchased_plan) {
+        // Purchases are keyed by their ID.
+        $purchased_plans[$purchased_plan->id()] = $purchased_plan;
       }
     }
 
-    return $subscriptions;
+    return $purchased_plans;
   }
 
   /**
    * {@inheritdoc}
    */
   public function loadByDeveloperId(string $developer_id): array {
-    // Get all subscriptions for this developer.
-    // TODO: Cache subscription lists per developer.
-    return $this->getSubscriptionControllerByDeveloperId($developer_id)
+    // Get all purchases for this developer.
+    // TODO: Cache purchased_plan lists per developer.
+    return $this->getPurchasedPlanControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }
 
@@ -120,11 +120,11 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function loadById(string $developer_id, string $id): ?EntityInterface {
-    return $this->getSubscriptionControllerByDeveloperId($developer_id)->load($id);
+    return $this->getPurchasedPlanControllerByDeveloperId($developer_id)->load($id);
   }
 
   /**
-   * Given an entity, gets the subscription controller.
+   * Given an entity, gets the purchased_plan controller.
    *
    * @param \Apigee\Edge\Entity\EntityInterface $entity
    *   The ID of the package the rate plan belongs to.
@@ -132,27 +132,27 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getSubscriptionController(EntityInterface $entity) {
+  protected function getPurchasedPlanController(EntityInterface $entity) {
     /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
     if (!($developer = $entity->getDeveloper())) {
       // If the developer ID is not set, we have no way to get the controller
       // since it depends on the developer id or email.
-      throw new RuntimeException('The Developer must be set to create a subscription controller.');
+      throw new RuntimeException('The Developer must be set to create a purchased plan controller.');
     }
     // Get the controller.
-    return $this->getSubscriptionControllerByDeveloperId($developer->getEmail());
+    return $this->getPurchasedPlanControllerByDeveloperId($developer->getEmail());
   }
 
   /**
-   * Gets the subscription controller by developer ID.
+   * Gets the purchased_plan controller by developer ID.
    *
    * @param string $developer_id
    *   The developer ID or email who has accepted the rate plan.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
-   *   The subscription controller.
+   *   The purchased_plan controller.
    */
-  protected function getSubscriptionControllerByDeveloperId($developer_id) {
+  protected function getPurchasedPlanControllerByDeveloperId($developer_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.

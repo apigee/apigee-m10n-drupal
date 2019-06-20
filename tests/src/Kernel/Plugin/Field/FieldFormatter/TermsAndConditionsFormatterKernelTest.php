@@ -24,7 +24,7 @@ use Drupal\apigee_m10n\Plugin\Field\FieldType\TermsAndConditionsFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\Subscription;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
 
 /**
  * Test the `apigee_tnc_default` field formatter.
@@ -82,16 +82,16 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
    */
   public function testView() {
 
-    // If the user doesn't have the "view own subscription" permission, they should
+    // If the user doesn't have the "view own purchased_plan" permission, they should
     // get access denied.
-    $this->account = $this->createAccount(['view own subscription']);
+    $this->account = $this->createAccount(['view own purchased_plan']);
 
     $this->setCurrentUser($this->account);
 
     $package = $this->createPackage();
     $rate_plan = $this->createPackageRatePlan($package);
 
-    $subscription = Subscription::create([
+    $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer(['email' => $this->account->getEmail()]),
       'startDate' => new \DateTimeImmutable(),
@@ -102,12 +102,12 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
       'get_developer_terms_conditions',
     ]);
 
-    $item_list = $subscription->get('termsAndConditions');
+    $item_list = $purchased_plan->get('termsAndConditions');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(TermsAndConditionsFieldItem::class, $item_list->get(0));
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\TermsAndConditionsFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_tnc_default', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('subscription')['termsAndConditions'],
+      'field_definition' => $this->field_manager->getBaseFieldDefinitions('purchased_plan')['termsAndConditions'],
       'settings' => [],
       'label' => TRUE,
       'view_mode' => 'default',

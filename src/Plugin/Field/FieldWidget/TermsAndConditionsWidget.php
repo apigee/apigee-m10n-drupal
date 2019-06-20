@@ -43,9 +43,9 @@ use Drupal\Core\Link;
 class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The subscription.
+   * The purchased_plan.
    *
-   * @var \Drupal\apigee_m10n\Entity\SubscriptionInterface
+   * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */
   protected $entity;
 
@@ -57,7 +57,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   protected $monetization;
 
   /**
-   * SubscribeLinkFormatter constructor.
+   * TermsAndConditionsWidget constructor.
    *
    * @param string $plugin_id
    *   The plugin_id for the widget.

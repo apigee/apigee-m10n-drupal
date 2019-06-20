@@ -17,7 +17,7 @@ services:
   apigee_m10n.sdk_controller_proxy.rate_plan:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxy
 
-  apigee_m10n.sdk_controller_proxy.subscription:
+  apigee_m10n.sdk_controller_proxy.purchased_plan:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy
 
   apigee_m10n.validate_monetization_enabled:
@@ -37,8 +37,8 @@ services:
       - { name: paramconverter }
     arguments: ['@entity.manager', '@language_manager']
 
-  paramconverter.entity.subscription:
-    class: Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter
+  paramconverter.entity.purchased_plan:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter
     tags:
       - { name: paramconverter }
     arguments: ['@entity.manager', '@language_manager']

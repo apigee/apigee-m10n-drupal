@@ -36,17 +36,17 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    * {@inheritdoc}
    */
   public function loadByTeamId(string $team_id): array {
-    // Get all subscriptions for this team.
-    return $this->getSubscriptionControllerByTeamId($team_id)
+    // Get all purchases for this team.
+    return $this->getPurchasedPlanControllerByTeamId($team_id)
       ->getAllAcceptedRatePlans();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadTeamSubscriptionById(string $team_id, string $id): ?EntityInterface {
-    // Get all subscriptions for this team.
-    return $this->getSubscriptionControllerByTeamId($team_id)->load($id);
+  public function loadTeamPurchasedPlanById(string $team_id, string $id): ?EntityInterface {
+    // Get all purchases for this team.
+    return $this->getPurchasedPlanControllerByTeamId($team_id)->load($id);
   }
 
   /**
@@ -54,22 +54,22 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
    */
   public function update(EntityInterface $entity): void {
     $controller = $entity instanceof CompanyAcceptedRatePlanInterface
-      ? $this->getSubscriptionControllerByTeamId($entity->getCompany()->id())
-      : $this->getSubscriptionController($entity);
+      ? $this->getPurchasedPlanControllerByTeamId($entity->getCompany()->id())
+      : $this->getPurchasedPlanController($entity);
 
     $controller->updateSubscription($entity);
   }
 
   /**
-   * Gets the subscription controller by team ID.
+   * Gets the purchased_plan controller by team ID.
    *
    * @param string $team_id
    *   The name of the team who has accepted the rate plan.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
-   *   The subscription controller.
+   *   The purchased_plan controller.
    */
-  protected function getSubscriptionControllerByTeamId($team_id) {
+  protected function getPurchasedPlanControllerByTeamId($team_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.
@@ -82,20 +82,20 @@ class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSd
   /**
    * {@inheritdoc}
    */
-  protected function getSubscriptionController(EntityInterface $entity) {
+  protected function getPurchasedPlanController(EntityInterface $entity) {
     if ($entity instanceof CompanyAcceptedRatePlanInterface) {
       /** @var \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface $entity */
       if (!($company = $entity->getCompany())) {
         // If the team ID is not set, we have no way to get the controller
         // since it depends on the team ID.
-        throw new RuntimeException('The Team must be set to create a subscription controller.');
+        throw new RuntimeException('The team must be set to create a purchased_plan controller.');
       }
       // Get the controller.
-      return $this->getSubscriptionControllerByTeamId($company->id());
+      return $this->getPurchasedPlanControllerByTeamId($company->id());
     }
     else {
       /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
-      return parent::getSubscriptionController($entity);
+      return parent::getPurchasedPlanController($entity);
     }
   }
 

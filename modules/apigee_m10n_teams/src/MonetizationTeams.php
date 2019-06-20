@@ -27,14 +27,14 @@ use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
-use Drupal\apigee_m10n_teams\Entity\TeamsSubscription;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeFormFormatter;
-use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamSubscribeLinkFormatter;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
-use Drupal\apigee_m10n_teams\Entity\Form\TeamSubscriptionForm;
+use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
@@ -125,7 +125,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Use our class to override the original entity class.
       $entity_types['rate_plan']->setClass(TeamsRatePlan::class);
       $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
-      $entity_types['rate_plan']->setLinkTemplate('team-subscribe', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/subscribe');
+      $entity_types['rate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase');
       // Get the entity route providers.
       $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
       // Override the `html` route provider.
@@ -133,14 +133,16 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
     }
 
-    // Overrides for the subscription entity.
-    if (isset($entity_types['subscription'])) {
+    // Overrides for the purchased_plan entity.
+    if (isset($entity_types['purchased_plan'])) {
       // Use our class to override the original entity class.
-      $entity_types['subscription']->setClass(TeamsSubscription::class);
+      $entity_types['purchased_plan']->setClass(TeamsPurchasedPlan::class);
       // Override the storage class.
-      $entity_types['subscription']->setStorageClass(TeamSubscriptionStorage::class);
-      // Override subscribe form.
-      $entity_types['subscription']->setFormClass('default', TeamSubscriptionForm::class);
+      $entity_types['purchased_plan']->setStorageClass(TeamPurchasedPlanStorage::class);
+      // Override purchase form.
+      $entity_types['purchased_plan']->setFormClass('default', TeamPurchasedPlanForm::class);
+      // Create a link template for team purchased plan collection.
+      $entity_types['purchased_plan']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-plans');
     }
   }
 
@@ -148,9 +150,9 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    * {@inheritdoc}
    */
   public function fieldFormatterInfoAlter(array &$info) {
-    // Override the subscribe link and form formatters.
-    $info['apigee_subscribe_form']['class'] = TeamSubscribeFormFormatter::class;
-    $info['apigee_subscribe_link']['class'] = TeamSubscribeLinkFormatter::class;
+    // Override the purchase link and form formatters.
+    $info['apigee_purchase_plan_form']['class'] = TeamPurchasePlanFormFormatter::class;
+    $info['apigee_purchase_plan_link']['class'] = TeamPurchasePlanLinkFormatter::class;
   }
 
   /**
@@ -164,10 +166,11 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function subscriptionAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($entity->isTeamSubscription() && ($team = $entity->get('team')->entity)) {
+  public function purchasedPlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface $entity */
+    if ($entity->isTeamPurchasedPlan() && ($team = $entity->get('team')->entity)) {
       // Gat the access result.
-      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} subscription"]);
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} purchased_plan"]);
       // Team permission results completely override user permissions.
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
@@ -176,10 +179,10 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function subscriptionCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
+  public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
     if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
       // Gat the access result.
-      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["subscribe rate_plan"]);
+      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["purchase rate_plan"]);
       // Team permission results completely override user permissions.
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
     }
@@ -190,8 +193,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($team = $this->currentTeam()) {
-      if ($operation === 'subscribe') {
-        return $this->subscriptionCreateAccess($account, ['team' => $team], 'subscription');
+      if ($operation === 'purchase') {
+        return $this->purchasedPlanCreateAccess($account, ['team' => $team], 'purchased_plan');
       }
       else {
         return $this->entityAccess($entity, $operation, $account);

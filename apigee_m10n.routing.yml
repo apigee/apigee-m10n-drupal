@@ -40,10 +40,10 @@ apigee_m10n.settings.prepaid_balance:
   options:
     _apigee_monetization_route: TRUE
 
-apigee_m10n.settings.subscription:
-  path: /admin/config/apigee-edge/monetization/subscription-settings
+apigee_m10n.settings.purchased_plan:
+  path: /admin/config/apigee-edge/monetization/purchased-plan-settings
   defaults:
-    _form: \Drupal\apigee_m10n\Form\SubscriptionConfigForm
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Rate plan purchase settings
   requirements:
     _permission: administer apigee monetization
@@ -110,14 +110,14 @@ apigee_monetization.profile:
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.developer_collection:
-  path: /user/{user}/monetization/subscriptions
+entity.purchased_plan.developer_collection:
+  path: /user/{user}/monetization/purchased-plans
   defaults:
-    _controller: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::render
-    _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::getPageTitle
+    _controller: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilderForDeveloper::render
+    _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilderForDeveloper::getPageTitle
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\SubscriptionListBuilderForDeveloper::access
+    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilderForDeveloper::access
   options:
     _apigee_monetization_route: TRUE
 
@@ -138,30 +138,30 @@ entity.rate_plan.canonical:
         type: entity:rate_plan
         converter: paramconverter.entity.rate_plan
 
-entity.rate_plan.subscribe:
-  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/subscribe
+entity.rate_plan.purchase:
+  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase
   defaults:
-    _controller: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::subscribeForm
-    _title_callback: \Drupal\apigee_m10n\Entity\Controller\RatePlanSubscribeController::title
+    _controller: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::purchaseForm
+    _title: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _entity_developer_access: rate_plan.subscribe
+    _entity_developer_access: rate_plan.purchase
   options:
     _apigee_monetization_route: TRUE
 
-entity.subscription.developer_unsubscribe_form:
-  path: /user/{user}/monetization/subscription/{subscription}/unsubscribe
+entity.purchased_plan.developer_cancel_form:
+  path: /user/{user}/monetization/purchased-plan/{purchased_plan}/cancel
   defaults:
-    _entity_form: subscription.unsubscribe
+    _entity_form: purchased_plan.cancel
     _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
-    _entity_access: subscription.update
+    _entity_access: purchased_plan.update
   options:
     _apigee_monetization_route: TRUE
     parameters:
       user:
         type: entity:user
-      subscription:
-        type: entity:subscription
-        converter: paramconverter.entity.subscription
+      purchased_plan:
+        type: entity:purchased_plan
+        converter: paramconverter.entity.purchased_plan

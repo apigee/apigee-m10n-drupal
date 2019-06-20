@@ -22,9 +22,9 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 use Drupal\apigee_edge\Entity\EdgeEntityType;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamSubscriptionStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
-use Drupal\apigee_m10n_teams\Entity\TeamsSubscription;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\KernelTests\KernelTestBase;
 
@@ -94,14 +94,14 @@ class TeamsEntityOverrideTest extends KernelTestBase {
    *
    * @throws \Exception
    */
-  public function testSubscriptionEntityOverrides() {
-    $entity_type = $this->container->get('entity_type.manager')->getDefinition('subscription');
+  public function testPurchasedPlanEntityOverrides() {
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('purchased_plan');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
     // Make sure our entity class has taken over.
-    static::assertSame(TeamsSubscription::class, $entity_type->getClass());
+    static::assertSame(TeamsPurchasedPlan::class, $entity_type->getClass());
     // Make sure our entity storage class has taken over.
-    static::assertSame(TeamSubscriptionStorage::class, $entity_type->getStorageClass());
+    static::assertSame(TeamPurchasedPlanStorage::class, $entity_type->getStorageClass());
   }
 
 }

@@ -97,13 +97,13 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
 
     $this->accounts['anon'] = User::load(0);
     $this->accounts['admin'] = User::load(1);
-    // Assume admin has no subscriptions initially.
-    $this->warmSubscriptionsCache($this->accounts['admin']);
+    // Assume admin has no purchased plans initially.
+    $this->warmPurchasedPlanCache($this->accounts['admin']);
 
     // Create user 2 as a developer.
     $this->accounts['developer'] = $this->createAccount([
       'view package',
-      'view own subscription',
+      'view own purchased_plan',
       'view rate_plan',
     ]);
     // Create user 3 as a user with no permissions.

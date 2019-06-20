@@ -61,7 +61,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->developer = $this->createAccount([
       'view own prepaid balance',
       'view package',
-      'view own subscription',
+      'view own purchased_plan',
     ]);
 
     $this->drupalLogin($this->developer);

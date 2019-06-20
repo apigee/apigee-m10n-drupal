@@ -34,8 +34,8 @@ view rate_plan:
 view rate_plan as anyone:
   title: 'View rate plans as any developer'
 
-subscribe rate_plan:
+purchase rate_plan:
   title: 'Purchase a rate plan'
 
-subscribe rate_plan as anyone:
+purchase rate_plan as anyone:
   title: 'Purchase a rate plan as any developer'

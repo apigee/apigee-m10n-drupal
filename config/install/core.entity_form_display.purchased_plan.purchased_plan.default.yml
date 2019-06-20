@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: purchased_plan.purchased_plan.default
+targetEntityType: purchased_plan
+bundle: purchased_plan
+mode: default
+content:
+  startDate:
+    type: datetime_timestamp
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  termsAndConditions:
+    type: apigee_tnc_widget
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  endDate: true
+  ratePlan: true

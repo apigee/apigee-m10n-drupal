@@ -20,8 +20,8 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal;
-use Drupal\apigee_m10n\Entity\Form\SubscriptionForm;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
@@ -297,12 +297,12 @@ class AddCreditService implements AddCreditServiceInterface {
     }
     // Add links to add credit to the account.
     if (($form_object = $form_state->getFormObject())
-      && $form_object instanceof SubscriptionForm
+      && $form_object instanceof PurchasedPlanForm
       && !empty($form["insufficient_balance"])
     ) {
       foreach (Element::children($form["insufficient_balance"]) as $currency_id) {
-        $subscription = $form_object->getEntity();
-        if ($add_credit_url = $this->getAddCreditUrl($currency_id, $subscription->getOwner())) {
+        $purchased_plan = $form_object->getEntity();
+        if ($add_credit_url = $this->getAddCreditUrl($currency_id, $purchased_plan->getOwner())) {
           $form["insufficient_balance"][$currency_id]['add_credit_link'] = [
             '#type' => 'link',
             '#title' => $this->t('Add credit'),
@@ -395,13 +395,13 @@ class AddCreditService implements AddCreditServiceInterface {
   /**
    * {@inheritdoc}
    */
-  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, SubscriptionInterface $subscription) {
+  public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan) {
     $arguments = $message->getArguments();
     $options = $message->getOptions();
     $original_message = $message->getUntranslatedString();
 
     // Add the "Add credit" link.
-    $arguments['@link'] = Link::fromTextAndUrl('Add credit', $this->getAddCreditUrl($subscription->getRatePlan()->getCurrency()->id(), user_load_by_mail($subscription->getDeveloper()->getEmail())))->toString();
+    $arguments['@link'] = Link::fromTextAndUrl('Add credit', $this->getAddCreditUrl($purchased_plan->getRatePlan()->getCurrency()->id(), user_load_by_mail($purchased_plan->getDeveloper()->getEmail())))->toString();
     $message = $this->t("{$original_message} @link", $arguments, $options);
   }
 
