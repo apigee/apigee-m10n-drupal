@@ -30,7 +30,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
 /**
  * Plugin implementation of the 'apigee_purchase_plan_form' formatter.
@@ -153,12 +152,7 @@ class PurchasePlanFormFormatter extends FormatterBase implements ContainerFactor
     if (($value = $item->getValue()) && $item->getEntity()->access('purchase')) {
       $developer_id = $value['user']->getEmail();
       if ($this->monetization->isDeveloperAlreadySubscribed($developer_id, $rate_plan)) {
-        $label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('already_purchased_label');
-        return [
-          '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
-            '%rate_plan' => $rate_plan->getDisplayName()
-          ])
-        ];
+        return ['#markup' => $this->t('Already purchased %rate_plan', ['%rate_plan' => $rate_plan->getDisplayName()])];
       }
       $start_date = new \DateTimeImmutable();
       $org_timezone = $rate_plan->getOrganization()->getTimezone();

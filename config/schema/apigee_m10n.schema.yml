@@ -20,32 +20,6 @@ apigee_m10n.prepaid_balance.config:
       type: boolean
       label: 'Whether to enable insufficient funds workflow'
 
-apigee_m10n.purchased_plan.config:
-  type: config_object
-  label: 'Rate plan purchase settings'
-  mapping:
-    purchase_label:
-      type: label
-      label: 'The purchase label.'
-    purchase_form_title:
-      type: label
-      label: 'Purchase form page title.'
-    purchase_button_label:
-      type: label
-      label: 'Purchase button label.'
-    cancel_question:
-      type: label
-      label: 'Cancel purchased plan form page title.'
-    cancel_description:
-      type: label
-      label: 'Cancel purchased plan form description.'
-    cancel_button_label:
-      type: label
-      label: 'Cancel purchased plan button label.'
-    already_purchased_label:
-      type: label
-      label: 'Already purchased title.'
-
 field.formatter.settings.apigee_purchase_plan_link:
   type: mapping
   label: 'Purchase plan link'

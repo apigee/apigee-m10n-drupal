@@ -27,8 +27,8 @@ apigee_m10n.settings.prepaid_balance:
 
 apigee_m10n.settings.purchased_plan:
   title: 'Rate plan purchases'
-  route_name: apigee_m10n.settings.purchased_plan
-  description: 'Configure rate plan purchases.'
+  route_name: entity.entity_view_display.purchased_plan.default
+  description: 'Configure rate plan view display.'
   parent: system.admin_apigee_m10n
   weight: 100
 

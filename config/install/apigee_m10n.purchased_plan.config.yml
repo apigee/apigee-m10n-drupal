@@ -1,6 +1,0 @@
-purchase_label: "Purchase"
-purchase_form_title: "Purchase @rate_plan"
-purchase_button_label: "Purchase"
-cancel_question: "Cancel %rate_plan"
-cancel_description: "Are you sure you want to cancel this plan?"
-cancel_button_label: "Confirm"

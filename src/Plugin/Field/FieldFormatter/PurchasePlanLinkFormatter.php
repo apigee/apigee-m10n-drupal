@@ -28,7 +28,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Link;
 use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 
 /**
  * Plugin implementation of the 'apigee_purchase_plan_link' formatter.
@@ -137,12 +136,7 @@ class PurchasePlanLinkFormatter extends FormatterBase implements ContainerFactor
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
       if ($this->monetization->isDeveloperAlreadySubscribed($value['user']->getEmail(), $rate_plan)) {
-        $label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('already_purchased_label');
-        return [
-          '#markup' => $this->t($label ?? 'Already purchased %rate_plan', [
-            '%rate_plan' => $rate_plan->getDisplayName()
-          ])
-        ];
+        return ['#markup' => $this->t('Already purchased %rate_plan', ['%rate_plan' => $rate_plan->getDisplayName()])];
       }
 
       return Link::createFromRoute(

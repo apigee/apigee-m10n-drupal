@@ -35,7 +35,6 @@ use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
-use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
@@ -163,10 +162,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // Allow the package to be accessed as a field but not rendered because
     // rendering the package within a rate plan would cause recursion.
     $definitions['package']->setDisplayConfigurable('view', FALSE);
-    // If the purchased plan label setting is available, use it.
-    $purchase_label = \Drupal::config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_label');
-    // `$purchase_label` is not translated, use `config_translation` instead.
-    $definitions['purchase']->setLabel($purchase_label ?? t('Purchase'));
+    $definitions['purchase']->setLabel(t('Purchase'));
 
     // The API products are many-to-one.
     $definitions['packageEntity']->setCardinality(1)

@@ -9,12 +9,6 @@ entity.package.collection:
   route_name: entity.package.collection
   base_route: apigee_m10n.settings.package
 
-apigee_m10n.settings.purchased_plan:
-  route_name: apigee_m10n.settings.purchased_plan
-  title: 'Rate plan purchase settings'
-  base_route: apigee_m10n.settings.purchased_plan
-  weight: -10
-
 apigee_m10n.balance_and_plans:
   route_name: apigee_monetization.billing
   title: 'Balance and plans'

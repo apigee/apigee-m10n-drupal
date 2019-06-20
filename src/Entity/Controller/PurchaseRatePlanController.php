@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n\Entity\Controller;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Form\PurchasedPlanConfigForm;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
@@ -82,16 +81,9 @@ class PurchaseRatePlanController extends ControllerBase implements ContainerInje
       'startDate' => new \DateTimeImmutable(),
     ]);
 
-    // Get the save label from settings.
-    $save_label = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_button_label');
-    $save_label = $save_label ?? 'Purchase';
-
     // Return the purchase form with the label set.
     return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
-      'save_label' => $this->t($save_label, [
-        '@rate_plan' => $rate_plan->getDisplayName(),
-        '@username' => $user->label(),
-      ]),
+      'save_label' => $this->t('Purchase'),
     ]);
   }
 
@@ -109,14 +101,7 @@ class PurchaseRatePlanController extends ControllerBase implements ContainerInje
    *   The title.
    */
   public function title(RouteMatchInterface $route_match, UserInterface $user = NULL, RatePlanInterface $rate_plan = NULL) {
-    $title_template = $this->config(PurchasedPlanConfigForm::CONFIG_NAME)->get('purchase_form_title');
-    $title_template = $title_template ?? 'Purchase @rate_plan';
-    return $this->t($title_template, [
-      '@rate_plan' => $rate_plan->getDisplayName(),
-      '%rate_plan' => $rate_plan->getDisplayName(),
-      '@username' => $user->label(),
-      '%username' => $user->label(),
-    ]);
+    return $this->t('Purchase @rate_plan', ['@rate_plan' => $rate_plan->getDisplayName()]);
   }
 
 }
