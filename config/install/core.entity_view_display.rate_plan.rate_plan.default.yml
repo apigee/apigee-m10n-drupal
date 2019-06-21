@@ -53,14 +53,15 @@ content:
       target: ''
     third_party_settings: {  }
   futurePlanStartDate:
-    type: timestamp
-    weight: 1
+    type: apigee_date_and_text_formatter
+    weight: 2
     region: content
-    label: inline
+    label: hidden
     settings:
       date_format: custom
       custom_date_format: m/d/Y
       timezone: ''
+      text: 'This plan has a new version effective @date. Toggle below to see the future rate plan.'
     third_party_settings: {  }
   purchase:
     type: apigee_purchase_plan_link
