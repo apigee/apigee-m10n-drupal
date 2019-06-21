@@ -292,8 +292,14 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   public function getCurrentPlanLink() {
     if ($this->isFutureRatePlan() && ($current = $this->getCurrentRatePlan())) {
       return [
-        'title' => t('Current'),
-        'uri' => $current->toUrl()->toUriString(),
+        [
+          'title' => t('Current rate plan'),
+          'uri' => $current->toUrl()->toUriString(),
+        ],
+        [
+          'title' => t('Future rate plan'),
+          'uri' => $this->toUrl()->toUriString(),
+        ],
       ];
     }
 
@@ -304,11 +310,19 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getFuturePlanLink() {
-    return ($future_plan = $this->getFutureRatePlan())
-      ? [
-        'title' => t('Future'),
-        'uri' => $future_plan->toUrl()->toUriString(),
-      ] : NULL;
+    if ($future_plan = $this->getFutureRatePlan()) {
+      return [
+        [
+          'title' => t('Current rate plan'),
+          'uri' => $this->toUrl()->toUriString(),
+        ],
+        [
+          'title' => t('Future rate plan'),
+          'uri' => $future_plan->toUrl()->toUriString(),
+        ],
+      ];
+    }
+    return NULL;
   }
 
   /**
