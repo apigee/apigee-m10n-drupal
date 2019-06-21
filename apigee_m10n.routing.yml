@@ -142,7 +142,7 @@ entity.rate_plan.purchase:
   path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase
   defaults:
     _controller: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::purchaseForm
-    _title: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::title
+    _title_callback: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::title
   requirements:
     user: '^[1-9]+[0-9]*$'
     _entity_developer_access: rate_plan.purchase
