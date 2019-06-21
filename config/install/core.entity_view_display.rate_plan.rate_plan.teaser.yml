@@ -10,17 +10,9 @@ targetEntityType: rate_plan
 bundle: rate_plan
 mode: teaser
 content:
-  description:
-    type: string
-    weight: 0
-    region: content
-    label: visually_hidden
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
   packageProducts:
     type: entity_reference_label
-    weight: 1
+    weight: 0
     region: content
     label: above
     settings:
@@ -28,7 +20,7 @@ content:
     third_party_settings: {  }
   purchase:
     type: apigee_purchase_plan_link
-    weight: 2
+    weight: 1
     region: content
     label: visually_hidden
     settings:
@@ -40,6 +32,7 @@ hidden:
   contractDurationType: true
   currency: true
   currentPlanLink: true
+  description: true
   displayName: true
   earlyTerminationFee: true
   endDate: true
