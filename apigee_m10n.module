@@ -52,7 +52,11 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'variables' => ['api_product' => NULL],
     ],
     'rate_plan_detail' => [
-      'variables' => ['detail' => NULL],
+      'variables' => [
+        'detail' => NULL,
+        'org' => NULL,
+        'currency' => NULL,
+      ],
       'template' => 'rate-plan-detail',
     ],
     'conflicting_products' => [

@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -71,13 +72,26 @@ class RatePlanDetailsFormatter extends FormatterBase {
     $elements = [];
 
     foreach ($items as $delta => $item) {
-      $elements[$delta] = [
-        '#theme' => 'rate_plan_detail',
-        '#detail' => $item->value,
-      ];
+      $elements[$delta] = $this->viewValue($item);
     }
 
     return $elements;
+  }
+
+  /**
+   * Build a renderable value.
+   *
+   * @param \Drupal\Core\Field\FieldItemInterface $item
+   *   The field item.
+   *
+   * @return array
+   *   A render array.
+   */
+  protected function viewValue(FieldItemInterface $item) {
+    return [
+      '#theme' => 'rate_plan_detail',
+      '#detail' => $item->value,
+    ];
   }
 
 }
