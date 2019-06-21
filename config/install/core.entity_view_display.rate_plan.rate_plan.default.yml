@@ -29,6 +29,17 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
+  earlyTerminationFee:
+    type: number_decimal
+    weight: 6
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
   futurePlanLink:
     type: link
     weight: 3
@@ -53,7 +64,7 @@ content:
     third_party_settings: {  }
   purchase:
     type: apigee_purchase_plan_link
-    weight: 5
+    weight: 8
     region: content
     label: visually_hidden
     settings:
@@ -61,10 +72,32 @@ content:
     third_party_settings: {  }
   ratePlanDetails:
     type: apigee_rate_plan_details
-    weight: 4
+    weight: 7
     region: content
     label: above
     settings: {  }
+    third_party_settings: {  }
+  recurringFee:
+    type: number_decimal
+    weight: 5
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+  setUpFee:
+    type: number_decimal
+    weight: 4
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
     third_party_settings: {  }
 hidden:
   advance: true
@@ -72,7 +105,6 @@ hidden:
   contractDurationType: true
   currency: true
   displayName: true
-  earlyTerminationFee: true
   endDate: true
   freemiumDuration: true
   freemiumDurationType: true
@@ -88,8 +120,6 @@ hidden:
   private: true
   prorate: true
   published: true
-  recurringFee: true
   recurringStartUnit: true
   recurringType: true
-  setUpFee: true
   startDate: true
