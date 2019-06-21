@@ -11,7 +11,7 @@ mode: default
 content:
   currentPlanLink:
     type: link
-    weight: 2
+    weight: 3
     region: content
     label: visually_hidden
     settings:
@@ -31,7 +31,7 @@ content:
     third_party_settings: {  }
   earlyTerminationFee:
     type: number_decimal
-    weight: 6
+    weight: 7
     region: content
     label: inline
     settings:
@@ -42,7 +42,7 @@ content:
     third_party_settings: {  }
   futurePlanLink:
     type: link
-    weight: 3
+    weight: 4
     region: content
     label: visually_hidden
     settings:
@@ -63,9 +63,17 @@ content:
       timezone: ''
       text: 'This plan has a new version effective @date. Toggle below to see the future rate plan.'
     third_party_settings: {  }
+  packageProducts:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
   purchase:
-    type: apigee_purchase_plan_link
-    weight: 8
+    type: apigee_purchase_plan_form
+    weight: 9
     region: content
     label: visually_hidden
     settings:
@@ -73,14 +81,14 @@ content:
     third_party_settings: {  }
   ratePlanDetails:
     type: apigee_rate_plan_details
-    weight: 7
+    weight: 8
     region: content
-    label: above
+    label: hidden
     settings: {  }
     third_party_settings: {  }
   recurringFee:
     type: number_decimal
-    weight: 5
+    weight: 6
     region: content
     label: inline
     settings:
@@ -91,7 +99,7 @@ content:
     third_party_settings: {  }
   setUpFee:
     type: number_decimal
-    weight: 4
+    weight: 5
     region: content
     label: inline
     settings:
@@ -116,7 +124,6 @@ hidden:
   name: true
   organization: true
   packageEntity: true
-  packageProducts: true
   paymentDueDays: true
   private: true
   prorate: true
