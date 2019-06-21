@@ -39,6 +39,7 @@ hidden:
   contractDuration: true
   contractDurationType: true
   currency: true
+  currentPlanLink: true
   displayName: true
   earlyTerminationFee: true
   endDate: true
@@ -47,6 +48,8 @@ hidden:
   freemiumUnit: true
   frequencyDuration: true
   frequencyDurationType: true
+  futurePlanLink: true
+  futurePlanStartDate: true
   id: true
   name: true
   organization: true

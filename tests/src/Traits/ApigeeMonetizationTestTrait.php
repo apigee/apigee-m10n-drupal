@@ -371,6 +371,10 @@ trait ApigeeMonetizationTestTrait {
     $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
     $rate_plan = RatePlan::loadById($package->id(), $rate_plan->id());
 
+    // Warm the future plan cache.
+    $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan]]]);
+    $rate_plan->getFuturePlanStartDate();
+
     // Make sure the dates loaded the same as they were originally set.
     static::assertEquals($start_date, $rate_plan->getStartDate());
     static::assertEquals($end_date, $rate_plan->getEndDate());

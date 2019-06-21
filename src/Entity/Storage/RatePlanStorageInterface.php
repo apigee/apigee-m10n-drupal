@@ -31,11 +31,13 @@ interface RatePlanStorageInterface {
    *
    * @param string $package_name
    *   The name of the API package.
+   * @param bool $include_future_plans
+   *   Whether to include future plans in the list.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
    *   An array of rate plans for a given package.
    */
-  public function loadPackageRatePlans(string $package_name): array;
+  public function loadPackageRatePlans(string $package_name, $include_future_plans = FALSE): array;
 
   /**
    * Load an individual package rate plan by package_id and rate plan ID.
@@ -52,5 +54,16 @@ interface RatePlanStorageInterface {
    *   Thrown if the rate plan doesn't exist.
    */
   public function loadById(string $package_name, string $id): RatePlanInterface;
+
+  /**
+   * Gets the future rate plan of a rate plan.
+   *
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $ratePlan
+   *   The "current" rate plan.
+   *
+   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface|null
+   *   The future rate plan or NULL if none were found.
+   */
+  public function loadFutureRatePlan(RatePlanInterface $ratePlan): ?RatePlanInterface;
 
 }

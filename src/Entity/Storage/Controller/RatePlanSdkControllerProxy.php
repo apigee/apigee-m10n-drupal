@@ -95,10 +95,10 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
   /**
    * {@inheritdoc}
    */
-  public function loadPackageRatePlans($package_id): array {
+  public function loadPackageRatePlans($package_id, $include_future_plans = FALSE): array {
     // Get all plans for this package.
     return $this->getRatePlanControllerByPackageId($package_id)
-      ->getEntities(TRUE, FALSE);
+      ->getEntities(!$include_future_plans, FALSE);
   }
 
   /**

@@ -3,11 +3,24 @@ status: true
 dependencies:
   module:
     - apigee_m10n
+    - link
 id: rate_plan.rate_plan.default
 targetEntityType: rate_plan
 bundle: rate_plan
 mode: default
 content:
+  currentPlanLink:
+    type: link
+    weight: 2
+    region: content
+    label: visually_hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
   description:
     type: string
     weight: 0
@@ -16,20 +29,42 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-  ratePlanDetails:
-    type: apigee_rate_plan_details
+  futurePlanLink:
+    type: link
+    weight: 3
+    region: content
+    label: visually_hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+  futurePlanStartDate:
+    type: timestamp
     weight: 1
     region: content
-    label: above
-    settings: {  }
+    label: inline
+    settings:
+      date_format: custom
+      custom_date_format: m/d/Y
+      timezone: ''
     third_party_settings: {  }
   purchase:
     type: apigee_purchase_plan_link
-    weight: 2
+    weight: 5
     region: content
     label: visually_hidden
     settings:
       label: 'Purchase Plan'
+    third_party_settings: {  }
+  ratePlanDetails:
+    type: apigee_rate_plan_details
+    weight: 4
+    region: content
+    label: above
+    settings: {  }
     third_party_settings: {  }
 hidden:
   advance: true
