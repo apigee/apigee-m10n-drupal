@@ -57,3 +57,20 @@ field.formatter.settings.apigee_tnc_default:
     default_description:
       type: string
       label: 'Terms and Conditions'
+
+field.formatter.settings.apigee_date_and_text_formatter:
+  type: mapping
+  label: 'Apigee date and text formatter'
+  mapping:
+    date_format:
+      type: string
+      label: 'Date format'
+    custom_date_format:
+      type: string
+      label: 'Custom date format'
+    timezone:
+      type: string
+      label: 'Timezone'
+    text:
+      type: string
+      label: 'Text'
