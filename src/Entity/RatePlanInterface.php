@@ -68,19 +68,11 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
   public function getFuturePlanStartDate(): ?\DateTimeImmutable;
 
   /**
-   * Gets the current link if this is a future plan.
-   *
-   * @return \Drupal\link\LinkItemInterface|null
-   *   A link to the current plan.
-   */
-  public function getCurrentPlanLink();
-
-  /**
    * Gets a link to the future plan if a future plan exists.
    *
    * @return \Drupal\link\LinkItemInterface|null
    *   A link to the future plan.
    */
-  public function getFuturePlanLink();
+  public function getFuturePlanLinks();
 
 }

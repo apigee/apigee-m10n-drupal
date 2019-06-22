@@ -14,6 +14,11 @@ rate_plan.entity_list:
     theme:
       css/apigee_m10n.plan-list.css: {}
 
+rate_plan.link_fields:
+  css:
+    theme:
+      css/apigee_m10n.plan-link-fields.css: {}
+
 prepaid_balance:
   css:
     theme:

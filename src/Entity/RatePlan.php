@@ -169,8 +169,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   protected static function getProperties(): array {
     return [
       'purchase'            => 'apigee_purchase',
-      'currentPlanLink'     => 'link',
-      'futurePlanLink'      => 'link',
+      'futurePlanLinks'     => 'link',
       'futurePlanStartDate' => 'timestamp',
       'packageEntity'       => 'entity_reference',
       'packageProducts'     => 'entity_reference',
@@ -289,39 +288,38 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCurrentPlanLink() {
+  public function getFuturePlanLinks() {
+    // Display the current plan link if this is a future rate plan.
     if ($this->isFutureRatePlan() && ($current = $this->getCurrentRatePlan())) {
       return [
         [
           'title' => t('Current rate plan'),
           'uri' => $current->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['rate-plan-current-link']]],
         ],
         [
           'title' => t('Future rate plan'),
           'uri' => $this->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['is-active', 'rate-plan-future-link']]],
         ],
       ];
     }
-
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFuturePlanLink() {
+    // Display the future plan link if one exists.
     if ($future_plan = $this->getFutureRatePlan()) {
       return [
         [
           'title' => t('Current rate plan'),
           'uri' => $this->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['is-active', 'rate-plan-current-link']]],
         ],
         [
           'title' => t('Future rate plan'),
           'uri' => $future_plan->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['rate-plan-future-link']]],
         ],
       ];
     }
+
     return NULL;
   }
 
