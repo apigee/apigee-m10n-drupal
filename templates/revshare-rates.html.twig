@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a apigee rate plan detail.
+ *
+ * Variables:
+ * - detail:      See: "rate-plan-detail.html.twig"
+ * - rates:  See: 'rate-plan-rate.html.twig'
+ * - rates:
+ *   - id:                          The unique ID of the rate plan rate.
+ *   - startUnit:                   The number the rate starts at.
+ *   - endUnit:                     The rate is good until this nuber of units.
+ *   - revshare:                    The revenue share percentage.
+ */
+#}
+
+<div class="rate_plan__detail-card__revshare-rates rate-list-wrapper">
+    <div class="row ratecard-rate__header row">
+        <div class="column"><strong>{{ "Volume bands"|t }}</strong></div>
+        <div class="column"><strong>{{ "Revenue share %"|t }}</strong></div>
+    </div>
+    {% for rate in rates %}
+        <div class="row revshare-rate">
+            <div class="column">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
+            <div class="column">{{ rate.revshare }}</div>
+        </div>
+    {% endfor %}
+</div>

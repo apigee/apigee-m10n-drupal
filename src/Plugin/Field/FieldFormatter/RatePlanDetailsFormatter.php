@@ -19,6 +19,8 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
+use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
+use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRevShare;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
@@ -88,9 +90,19 @@ class RatePlanDetailsFormatter extends FormatterBase {
    *   A render array.
    */
   protected function viewValue(FieldItemInterface $item) {
+    $all_rates = $item->value->getRatePlanRates();
+    $ratecard_rates = array_filter($all_rates, function ($rate) {
+      return ($rate instanceof RatePlanRateRateCard);
+    });
+    $revshare_rates = array_filter($all_rates, function ($rate) {
+      return ($rate instanceof RatePlanRateRevShare);
+    });
     return [
       '#theme' => 'rate_plan_detail',
       '#detail' => $item->value,
+      '#ratecard_rates' => $ratecard_rates,
+      '#revshare_rates' => $revshare_rates,
+      '#attached' => ['library' => ['apigee_m10n/rate_plan.details_field']],
     ];
   }
 

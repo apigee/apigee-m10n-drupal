@@ -54,10 +54,20 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'rate_plan_detail' => [
       'variables' => [
         'detail' => NULL,
-        'org' => NULL,
-        'currency' => NULL,
+        'ratecard_rates' => NULL,
+        'revshare_rates' => NULL,
       ],
       'template' => 'rate-plan-detail',
+    ],
+    'ratecard_rates' => [
+      'variables' => [
+        'rates' => NULL,
+      ],
+    ],
+    'revshare_rates' => [
+      'variables' => [
+        'rates' => NULL,
+      ],
     ],
     'conflicting_products' => [
       'variables' => ['items' => NULL],
@@ -86,6 +96,6 @@ function apigee_m10n_user_role_presave(EntityInterface $entity) {
 function apigee_m10n_preprocess_field(&$variables) {
   // Add a library to the rate plan `futurePlanLinks` field.
   if ($variables['field_name'] === 'futurePlanLinks') {
-    $variables['#attached']['library'][] = 'apigee_m10n/rate_plan.link_fields';
+    $variables['#attached']['library'][] = 'apigee_m10n/rate_plan.future_links_field';
   }
 }
