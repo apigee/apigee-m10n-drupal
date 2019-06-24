@@ -28,6 +28,7 @@ use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\CurrencyPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DescriptionPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DisplayNamePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\EarlyTerminationFeePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\FreemiumPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\IdPropertyAwareDecoratorTrait;
@@ -35,6 +36,8 @@ use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\RecurringFeePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\SetUpFeePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -73,6 +76,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use CurrencyPropertyAwareDecoratorTrait;
   use DescriptionPropertyAwareDecoratorTrait;
   use DisplayNamePropertyAwareDecoratorTrait;
+  use EarlyTerminationFeePropertyAwareDecoratorTrait;
   use EndDatePropertyAwareDecoratorTrait;
   use FreemiumPropertyAwareDecoratorTrait;
   use IdPropertyAwareDecoratorTrait;
@@ -80,6 +84,8 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use OrganizationPropertyAwareDecoratorTrait;
   use PackagePropertyAwareDecoratorTrait;
   use PaymentDueDaysPropertyAwareDecoratorTrait;
+  use RecurringFeePropertyAwareDecoratorTrait;
+  use SetUpFeePropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
 
   public const ENTITY_TYPE_ID = 'rate_plan';
@@ -147,7 +153,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       'endDate'               => 'timestamp',
       'contractDuration'      => 'integer',
       'currency'              => 'apigee_currency',
-      'earlyTerminationFee'   => 'decimal',
+      'earlyTerminationFee'   => 'apigee_price',
       'freemiumDuration'      => 'integer',
       'freemiumDurationType'  => 'string',
       'freemiumUnit'          => 'integer',
@@ -157,9 +163,9 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       'package'               => 'apigee_api_package',
       'paymentDueDays'        => 'integer',
       'ratePlanDetails'       => 'apigee_rate_plan_details',
-      'recurringFee'          => 'decimal',
+      'recurringFee'          => 'apigee_price',
       'recurringStartUnit'    => 'integer',
-      'setUpFee'              => 'decimal',
+      'setUpFee'              => 'apigee_price',
     ];
   }
 
@@ -251,6 +257,20 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     $url->setRouteParameter('package', $this->getPackage()->id());
 
     return $url;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFieldValue(string $field_name) {
+    // Add Use the price value to the field name for price items.
+    $field_name = in_array($field_name, [
+      'earlyTerminationFee',
+      'recurringFee',
+      'setUpFee',
+    ]) ? "{$field_name}PriceValue" : $field_name;
+
+    return parent::getFieldValue($field_name);
   }
 
   /**
@@ -444,20 +464,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEarlyTerminationFee(): ?float {
-    return $this->decorated->getEarlyTerminationFee();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setEarlyTerminationFee(float $earlyTerminationFee): void {
-    $this->decorated->setEarlyTerminationFee($earlyTerminationFee);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getFrequencyDuration(): ?int {
     return $this->decorated->getFrequencyDuration();
   }
@@ -542,20 +548,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRecurringFee(): ?float {
-    return $this->decorated->getRecurringFee();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setRecurringFee(float $recurringFee): void {
-    $this->decorated->setRecurringFee($recurringFee);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getRecurringStartUnit(): ?int {
     return $this->decorated->getRecurringStartUnit();
   }
@@ -579,20 +571,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function setRecurringType(string $recurringType): void {
     $this->decorated->setRecurringType($recurringType);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getSetUpFee(): float {
-    return $this->decorated->getSetUpFee();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setSetUpFee(float $setUpFee): void {
-    $this->decorated->setSetUpFee($setUpFee);
   }
 
   /**

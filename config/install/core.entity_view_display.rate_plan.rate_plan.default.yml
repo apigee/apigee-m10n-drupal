@@ -10,19 +10,17 @@ bundle: rate_plan
 mode: default
 content:
   earlyTerminationFee:
-    type: number_decimal
-    weight: 6
+    type: apigee_price
+    weight: 5
     region: content
     label: inline
     settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
+      strip_trailing_zeroes: false
+      currency_display: symbol
     third_party_settings: {  }
   futurePlanLinks:
     type: link
-    weight: 3
+    weight: 2
     region: content
     label: visually_hidden
     settings:
@@ -53,7 +51,7 @@ content:
     third_party_settings: {  }
   purchase:
     type: apigee_purchase_plan_form
-    weight: 8
+    weight: 7
     region: content
     label: visually_hidden
     settings:
@@ -61,32 +59,28 @@ content:
     third_party_settings: {  }
   ratePlanDetails:
     type: apigee_rate_plan_details
-    weight: 7
+    weight: 6
     region: content
     label: hidden
     settings: {  }
     third_party_settings: {  }
   recurringFee:
-    type: number_decimal
-    weight: 5
-    region: content
-    label: inline
-    settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
-    third_party_settings: {  }
-  setUpFee:
-    type: number_decimal
+    type: apigee_price
     weight: 4
     region: content
     label: inline
     settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
+      strip_trailing_zeroes: false
+      currency_display: symbol
+    third_party_settings: {  }
+  setUpFee:
+    type: apigee_price
+    weight: 3
+    region: content
+    label: inline
+    settings:
+      strip_trailing_zeroes: false
+      currency_display: symbol
     third_party_settings: {  }
 hidden:
   advance: true
