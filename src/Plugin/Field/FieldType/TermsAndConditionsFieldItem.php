@@ -31,6 +31,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_tnc",
  *   label = @Translation("Apigee terms and conditions"),
  *   description = @Translation("Apigee terms and conditions"),
+ *   category = @Translation("Apigee"),
  *   default_formatter = "apigee_tnc_default"
  * )
  */
