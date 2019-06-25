@@ -1,9 +1,10 @@
 .field--name-rateplandetails {
-  padding: 25px;
+  padding: 25px 25px 5px;
   background-color: #f9f9f9;
+  margin-bottom: 25px;
 }
 
-.field--name-rateplandetails .rate_plan__detail-card__title {
+.field--name-rateplandetails .rate-plan-detail__title {
   margin-bottom: 25px;
 }
 
@@ -23,19 +24,13 @@
   display: inline-block
 }
 
-.field--name-rateplandetails .rate_plan__detail-card__overview {
+.field--name-rateplandetails .rate-plan-detail__list-wrapper {
   background-color: #fff;
   padding: 25px 25px 0;
   margin-bottom: 25px;
 }
 
-.field--name-rateplandetails .rate-list-wrapper {
-  background-color: #fff;
-  padding: 25px 25px 0;
-  margin-bottom: 25px;
-}
-
-.field--name-rateplandetails .rate-list-wrapper .row {
+.field--name-rateplandetails .rate-plan-rates__row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -43,7 +38,7 @@
   padding-bottom: 20px;
 }
 
-.field--name-rateplandetails .rate-list-wrapper .row .column {
+.field--name-rateplandetails .rate-plan-rates__row .rate-plan-rates__column {
   display: flex;
   flex-direction: column;
   flex-basis: 100%;
