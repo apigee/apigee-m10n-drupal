@@ -151,9 +151,6 @@ class PurchasePlanFormFormatter extends FormatterBase implements ContainerFactor
     $rate_plan = $item->getEntity();
     if (($value = $item->getValue()) && $item->getEntity()->access('purchase')) {
       $developer_id = $value['user']->getEmail();
-      if ($this->monetization->isDeveloperAlreadySubscribed($developer_id, $rate_plan)) {
-        return ['#markup' => $this->t('Already purchased %rate_plan', ['%rate_plan' => $rate_plan->getDisplayName()])];
-      }
       $start_date = new \DateTimeImmutable();
       $org_timezone = $rate_plan->getOrganization()->getTimezone();
       $start_date->setTimezone($org_timezone);
