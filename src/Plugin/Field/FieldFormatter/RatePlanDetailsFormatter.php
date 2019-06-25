@@ -102,6 +102,7 @@ class RatePlanDetailsFormatter extends FormatterBase {
       '#detail' => $item->value,
       '#ratecard_rates' => $ratecard_rates,
       '#revshare_rates' => $revshare_rates,
+      '#entity' => $item->getEntity(),
       '#attached' => ['library' => ['apigee_m10n/rate_plan.details_field']],
     ];
   }
