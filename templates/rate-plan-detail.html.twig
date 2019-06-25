@@ -70,6 +70,21 @@
   <div>{{ detail.duration }} {{ detail.durationType|lower }}</div>
 </div>
 
+{% if entity.freemiumUnit or entity.freemiumDuration %}
+  <div class="field field--inline">
+    <div class="field__label">{{ "Free quantity"|t }}</div>
+    <div>
+      {% if entity.freemiumUnit and entity.freemiumDuration and entity.freemiumDurationType %}
+        {{ "Up to"|t }} {{ entity.freemiumUnit }} {{ (entity.freemiumUnit == 1 ? "transaction for" : "transactions for")|t }} {{ entity.freemiumDuration }} {{ (entity.freemiumDuration == 1 ? entity.freemiumDurationType : entity.freemiumDurationType ~ 's')|lower|t }}.
+      {% elseif entity.freemiumUnit and not entity.freemiumDuration and not entity.freemiumDurationType %}
+        {{ "Up to"|t }} {{ entity.freemiumUnit }} {{ (entity.freemiumUnit == 1 ? "transaction" : "transactions")|t }}.
+      {% elseif entity.freemiumUnit is empty and entity.freemiumDuration is not empty and entity.freemiumDurationType is not empty %}
+        For {{ entity.freemiumDuration }} {{ (entity.freemiumDuration == 1 ? entity.freemiumDurationType : entity.freemiumDurationType ~ 's')|lower|t }}.
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
 <div class="rate_plan__detail-card__overview">
   {% for detail_field in detail_fields %}
     {% if detail_field.value %}
