@@ -29,8 +29,16 @@
  *   - ratingParameterUnit:         Unit that applies to the ratingParameter.
  *   - revenueType:                 Basis of the revenue share in a revenue share plan. Valid values include: GROSS (based on percentage of the gross price of a transaction) and NET (based on a percentage of the net price of a transaction).
  *   - type:                        Revenue model for the plan. Valid values include: REVSHARE, RATECARD, REVSHARE_RATECARD, USAGE_TARGET (adjustable notifications).
- * - ratecard_rates:             Only rate card rates. See: detail.ratePlanRates
- * - revshare_rates:             Only revenue share rates. See: detail.ratePlanRates
+ * - ratecard_rates:             The RATECARD rates.
+ *   - id:                          The unique ID of the rate plan rate.
+ *   - startUnit:                   The number the rate starts at.
+ *   - endUnit:                     The rate is good until this nuber of units.
+ *   - rate:                        The rate that is applies within this range.
+ * - revshare_rates:             The REVSHARE rates.
+ *   - id:                          The unique ID of the rate plan rate.
+ *   - startUnit:                   The number the rate starts at.
+ *   - endUnit:                     The rate is good until this nuber of units.
+ *   - revshare:                    The revenue share percentage.
  * - entity:                     The rate plan entity.
  */
 #}
@@ -98,10 +106,32 @@
   {% endfor %}
 </div>
 
-{% if (ratecard_rates) %}
-  {% include 'ratecard-rates.html.twig' with {'rates': ratecard_rates} %}
+{% if ratecard_rates %}
+  <div class="rate_plan__detail-card__ratecard-rates rate-list-wrapper">
+    <div class="row ratecard-rate__header row">
+      <div class="column"><strong>{{ "Volume bands"|t }}</strong></div>
+      <div class="column"><strong>{{ "Cost per API call"|t }}</strong></div>
+    </div>
+    {% for rate in rates %}
+      <div class="row ratecard-rate">
+        <div class="column">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
+        <div class="column">{{ rate.rate }}</div>
+      </div>
+    {% endfor %}
+  </div>
 {% endif %}
 
-{% if (revshare_rates) %}
-  {% include 'revshare-rates.html.twig' with {'rates': revshare_rates} %}
+{% if revshare_rates %}
+  <div class="rate_plan__detail-card__revshare-rates rate-list-wrapper">
+    <div class="row ratecard-rate__header row">
+      <div class="column"><strong>{{ "Volume bands"|t }}</strong></div>
+      <div class="column"><strong>{{ "Revenue share %"|t }}</strong></div>
+    </div>
+    {% for rate in rates %}
+      <div class="row revshare-rate">
+        <div class="column">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
+        <div class="column">{{ rate.revshare }}</div>
+      </div>
+    {% endfor %}
+  </div>
 {% endif %}
