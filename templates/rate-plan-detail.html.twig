@@ -4,8 +4,8 @@
  * Default theme implementation to display a apigee rate plan detail.
  *
  * Variables:
- * - detail
- *   - id:
+ * - detail                       The rate plan detail object.
+ *   - id:                          The unique ID for the rate plan detail.
  *   - ratePlanRates:               All rate plan rate details, such as the type of rate plan (REVSHARE or RATECARD), the rate for a rate card plan, the revenue share for a revenue share plan, and the range (starting unit and ending unit for which the rate plan rate applies).
  *     - id:                          The unique ID of the rate plan rate.
  *     - startUnit:                   The number the rate starts at.
@@ -14,7 +14,6 @@
  *     - revshare:                    The revenue share percentage.
  *   - aggregateFreemiumCounters:   Flag that specifies whether or not aggregate counters are enabled to determine if usage of an API product is in the free range. Aggregate counters must be enabled to set up a freemium plan for a product.
  *   - aggregateStandardCounters:   Flag that specifies whether or not aggregate counters are used to determine the band of usage (such as a volume band for a rate card plan).
- *   - aggregateTransactions:
  *   - currency:                    The rate plan currency.
  *   - customPaymentTerm:           Flag that specifies whether or not there is a custom payment term.
  *   - duration:                    Period of time for the aggregation basis, together with durationType. For example, set duration to 30 and durationType to DAY to specify an aggregation basis of 30 days.
