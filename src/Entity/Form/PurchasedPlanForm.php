@@ -29,7 +29,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -60,7 +60,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
   /**
    * The current_route_match service.
    *
-   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $currentRouteMatch;
 
@@ -97,7 +97,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
-   * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
+   * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
    *   The current_route_match service.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   Apigee Monetization utility service.
@@ -108,7 +108,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    */
-  public function __construct(MessengerInterface $messenger, CurrentRouteMatch $current_route_match, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
+  public function __construct(MessengerInterface $messenger, RouteMatchInterface $current_route_match, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
     $this->messenger = $messenger;
     $this->currentRouteMatch = $current_route_match;
     $this->monetization = $monetization;
