@@ -9,47 +9,25 @@ bundle: package
 mode: default
 content:
   apiProducts:
-    type: entity_reference_entity_view
-    weight: 4
-    region: content
-    label: above
-    settings:
-      link: true
-      view_mode: default
-    third_party_settings: {  }
-  description:
-    type: string
-    weight: 2
-    region: content
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-  displayName:
-    type: string
-    weight: 1
-    region: content
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-  id:
-    type: string
+    type: entity_reference_label
     weight: 0
     region: content
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
-  status:
-    type: string
-    weight: 3
+  ratePlans:
+    type: entity_reference_label
+    weight: 1
     region: content
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
 hidden:
+  description: true
+  displayName: true
+  id: true
   name: true
   organization: true
-  ratePlans: true
+  status: true
