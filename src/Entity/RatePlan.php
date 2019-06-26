@@ -263,7 +263,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   protected function getFieldValue(string $field_name) {
-    // Add Use the price value to the field name for price items.
+    // Add the price value to the field name for price items.
     $field_name = in_array($field_name, [
       'earlyTerminationFee',
       'recurringFee',
