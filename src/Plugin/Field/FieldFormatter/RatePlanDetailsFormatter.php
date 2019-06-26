@@ -102,7 +102,7 @@ class RatePlanDetailsFormatter extends FormatterBase {
       return ($rate instanceof RatePlanRateRevShare);
     });
 
-    // The logic for the free quanity is a little complicated for the template.
+    // The logic for the free quantity is a little complicated for the template.
     $free_quantity_template = '';
     $freemium_unit = $item->getEntity()->getFreemiumUnit();
     $freemium_duration = $item->getEntity()->getFreemiumDuration();
