@@ -52,8 +52,24 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
       'variables' => ['api_product' => NULL],
     ],
     'rate_plan_detail' => [
-      'variables' => ['detail' => NULL],
+      'variables' => [
+        'detail' => NULL,
+        'ratecard_rates' => NULL,
+        'revshare_rates' => NULL,
+        'free_quantity' => NULL,
+        'entity' => NULL,
+      ],
       'template' => 'rate-plan-detail',
+    ],
+    'ratecard_rates' => [
+      'variables' => [
+        'rates' => NULL,
+      ],
+    ],
+    'revshare_rates' => [
+      'variables' => [
+        'rates' => NULL,
+      ],
     ],
     'conflicting_products' => [
       'variables' => ['items' => NULL],
@@ -74,4 +90,14 @@ function apigee_m10n_form_user_admin_permissions_alter(&$form, FormStateInterfac
  */
 function apigee_m10n_user_role_presave(EntityInterface $entity) {
   \Drupal::service('apigee_m10n.monetization')->userRolePresave($entity);
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function apigee_m10n_preprocess_field(&$variables) {
+  // Add a library to the rate plan `futurePlanLinks` field.
+  if ($variables['field_name'] === 'futurePlanLinks') {
+    $variables['#attached']['library'][] = 'apigee_m10n/rate_plan.future_links_field';
+  }
 }

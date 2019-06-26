@@ -5,7 +5,19 @@ services:
 
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
-    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n', '@user.permissions']
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n', '@user.permissions', '@apigee_m10n.price_formatter']
+
+  apigee_m10n.price_formatter.format_repository:
+    class: CommerceGuys\Intl\NumberFormat\NumberFormatRepository
+    public: false
+
+  apigee_m10n.price_formatter.currency_repository:
+    class: CommerceGuys\Intl\Currency\CurrencyRepository
+    public: false
+
+  apigee_m10n.price_formatter:
+    class: CommerceGuys\Intl\Formatter\CurrencyFormatter
+    arguments: ['@apigee_m10n.price_formatter.format_repository', '@apigee_m10n.price_formatter.currency_repository']
 
   apigee_m10n.sdk_controller_factory:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory

@@ -39,6 +39,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
   protected static $modules = [
     'key',
     'file',
+    'link',
     'entity',
     'apigee_edge',
     'apigee_m10n',

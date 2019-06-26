@@ -1,0 +1,21 @@
+.field--name-futureplanlinks {
+  margin: 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #bbb;
+}
+
+.field--name-futureplanlinks .field__item {
+  display: inline-block;
+}
+
+.field--name-futureplanlinks .field__item a {
+  padding: 10px 20px;
+  background-color: #eee;
+  border: 1px solid #bbb;
+}
+
+.field--name-futureplanlinks a.is-active {
+  color: #999;
+  background-color: #fff;
+  border-bottom: 2px solid #fff;
+}

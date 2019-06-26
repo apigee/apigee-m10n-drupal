@@ -96,6 +96,8 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
    */
   public function testPackageEntity() {
     $this->setCurrentTeamRoute($this->team);
+    $this->warmTnsCache();
+    $this->warmTeamTnsCache($this->team);
 
     // Check team access.
     static::assertTrue($this->package->access('view', $this->developer));
@@ -145,9 +147,7 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
       /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
       static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}", (string) $this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]->attributes()['href']);
       static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]));
-      static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(1) > div:nth-child(2)')[$index]));
-      static::assertSame('Purchase Plan', trim($this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[$index]));
-      static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/purchase", (string) $this->cssSelect('.apigee-entity.package .rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[$index]->attributes()['href']);
+      // TODO: add tests for the purchase plan form.
     }
   }
 

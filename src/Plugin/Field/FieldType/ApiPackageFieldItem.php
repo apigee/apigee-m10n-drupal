@@ -36,6 +36,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_api_package",
  *   label = @Translation("Apigee API package field item"),
  *   description = @Translation("Apigee API package."),
+ *   category = @Translation("Apigee"),
  *   default_formatter = "apigee_api_package"
  * )
  */

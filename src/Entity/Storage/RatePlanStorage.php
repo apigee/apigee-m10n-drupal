@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage;
 
+use Apigee\Edge\Api\Monetization\Entity\RatePlanRevisionInterface;
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
@@ -43,6 +44,18 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface
    */
   protected $controller_proxy;
+
+  /**
+   * Static cache for future rate plans.
+   *
+   * Loading future rate plans for a given rate plan is expensive as it
+   * retrieves all rate plans for the current plan's package and loops through
+   * them to determine which one is a future revision. For that reason, we cache
+   * the results here.
+   *
+   * @var array
+   */
+  protected $future_rate_plans = [];
 
   /**
    * Constructs an RatePlanStorage instance.
@@ -82,12 +95,12 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadPackageRatePlans(string $package_id): array {
+  public function loadPackageRatePlans(string $package_id, $include_future_plans = FALSE): array {
     $entities = [];
 
-    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, &$entities) {
+    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $include_future_plans, &$entities) {
       // Load the  rate plans for this package.
-      $sdk_entities = $controller->loadPackageRatePlans($package_id);
+      $sdk_entities = $controller->loadPackageRatePlans($package_id, $include_future_plans);
       // Convert the SDK entities to drupal entities.
       foreach ($sdk_entities as $id => $entity) {
         $drupal_entity = $this->createNewInstance($entity);
@@ -130,6 +143,35 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     });
 
     return $entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadFutureRatePlan(RatePlanInterface $ratePlan): ?RatePlanInterface {
+    if (!isset($this->future_rate_plans[$ratePlan->id()])) {
+      // Future plans haven't started as of today.
+      $today = new \DateTimeImmutable('today', $ratePlan->getStartDate()->getTimezone());
+      // Load all plans for this package.
+      $all_plans = $this->loadPackageRatePlans($ratePlan->getPackage()->id(), TRUE);
+      // Loop through to see if any future previous revisions are the given
+      // plan.
+      foreach ($all_plans as $future_candidate) {
+        if ($future_candidate->getStartDate() > $today
+          && ($decorated = $future_candidate->decorated())
+          && $decorated instanceof RatePlanRevisionInterface
+          && $decorated->getPreviousRatePlanRevision()->id() === $ratePlan->id()
+        ) {
+          $future_rate_plan = $future_candidate;
+          continue;
+        }
+      }
+      // Set the static cache value to FALSE if no future plan has been found.
+      $this->future_rate_plans[$ratePlan->id()] = $future_rate_plan ?? FALSE;
+    }
+
+    // Returns NULL if the cached value is false.
+    return ($plan = $this->future_rate_plans[$ratePlan->id()]) ? $plan : NULL;
   }
 
   /**

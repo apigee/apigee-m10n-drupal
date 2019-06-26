@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlan as MonetizationRatePlan;
+use Apigee\Edge\Api\Monetization\Entity\RatePlanRevisionInterface;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
@@ -27,6 +28,7 @@ use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\CurrencyPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DescriptionPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DisplayNamePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\EarlyTerminationFeePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\FreemiumPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\IdPropertyAwareDecoratorTrait;
@@ -34,6 +36,8 @@ use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PackagePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\RecurringFeePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\SetUpFeePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -72,6 +76,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use CurrencyPropertyAwareDecoratorTrait;
   use DescriptionPropertyAwareDecoratorTrait;
   use DisplayNamePropertyAwareDecoratorTrait;
+  use EarlyTerminationFeePropertyAwareDecoratorTrait;
   use EndDatePropertyAwareDecoratorTrait;
   use FreemiumPropertyAwareDecoratorTrait;
   use IdPropertyAwareDecoratorTrait;
@@ -79,9 +84,32 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   use OrganizationPropertyAwareDecoratorTrait;
   use PackagePropertyAwareDecoratorTrait;
   use PaymentDueDaysPropertyAwareDecoratorTrait;
+  use RecurringFeePropertyAwareDecoratorTrait;
+  use SetUpFeePropertyAwareDecoratorTrait;
   use StartDatePropertyAwareDecoratorTrait;
 
   public const ENTITY_TYPE_ID = 'rate_plan';
+
+  /**
+   * The future rate plan of this rate plan.
+   *
+   * If this is set to FALSE, we've already checked for a future plan and there
+   * isn't one.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface|false
+   */
+  protected $futureRatePlan;
+
+
+  /**
+   * The current rate plan if this is a future rate plan.
+   *
+   * If this is set to FALSE, this is not a future plan or we've already tried
+   * to locate a previous revision that is currently available and failed.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface|false
+   */
+  protected $currentRatePlan;
 
   /**
    * Constructs a `rate_plan` entity.
@@ -125,18 +153,19 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       'endDate'               => 'timestamp',
       'contractDuration'      => 'integer',
       'currency'              => 'apigee_currency',
-      'earlyTerminationFee'   => 'decimal',
+      'earlyTerminationFee'   => 'apigee_price',
       'freemiumDuration'      => 'integer',
       'freemiumDurationType'  => 'string',
       'freemiumUnit'          => 'integer',
       'frequencyDuration'     => 'integer',
+      'futurePlanStartDate'   => 'timestamp',
       'organization'          => 'apigee_organization',
       'package'               => 'apigee_api_package',
       'paymentDueDays'        => 'integer',
       'ratePlanDetails'       => 'apigee_rate_plan_details',
-      'recurringFee'          => 'decimal',
+      'recurringFee'          => 'apigee_price',
       'recurringStartUnit'    => 'integer',
-      'setUpFee'              => 'decimal',
+      'setUpFee'              => 'apigee_price',
     ];
   }
 
@@ -145,9 +174,11 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   protected static function getProperties(): array {
     return [
-      'purchase' => 'apigee_purchase',
-      'packageEntity' => 'entity_reference',
-      'packageProducts' => 'entity_reference',
+      'purchase'            => 'apigee_purchase',
+      'futurePlanLinks'     => 'link',
+      'futurePlanStartDate' => 'timestamp',
+      'packageEntity'       => 'entity_reference',
+      'packageProducts'     => 'entity_reference',
     ] + parent::getProperties();
   }
 
@@ -231,6 +262,20 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
+  protected function getFieldValue(string $field_name) {
+    // Add the price value to the field name for price items.
+    $field_name = in_array($field_name, [
+      'earlyTerminationFee',
+      'recurringFee',
+      'setUpFee',
+    ]) ? "{$field_name}PriceValue" : $field_name;
+
+    return parent::getFieldValue($field_name);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPurchase():? array {
     return [
       'user' => $this->getUser(),
@@ -251,6 +296,113 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       $route_user = User::load($route_user);
     }
     return $route_user ?: \Drupal::currentUser();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFuturePlanStartDate(): ?\DateTimeImmutable {
+    return ($future_plan = $this->getFutureRatePlan()) ? $future_plan->getStartDate() : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFuturePlanLinks() {
+    // Display the current plan link if this is a future rate plan.
+    if ($this->isFutureRatePlan() && ($current = $this->getCurrentRatePlan())) {
+      return [
+        [
+          'title' => t('Current rate plan'),
+          'uri' => $current->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['rate-plan-current-link']]],
+        ],
+        [
+          'title' => t('Future rate plan'),
+          'uri' => $this->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['is-active', 'rate-plan-future-link']]],
+        ],
+      ];
+    }
+    // Display the future plan link if one exists.
+    if ($future_plan = $this->getFutureRatePlan()) {
+      return [
+        [
+          'title' => t('Current rate plan'),
+          'uri' => $this->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['is-active', 'rate-plan-current-link']]],
+        ],
+        [
+          'title' => t('Future rate plan'),
+          'uri' => $future_plan->toUrl()->toUriString(),
+          'options' => ['attributes' => ['class' => ['rate-plan-future-link']]],
+        ],
+      ];
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Gets whether or not this is a future plan.
+   *
+   * @return bool
+   *   Whether or not this is a future plan.
+   */
+  protected function isFutureRatePlan(): bool {
+    $start_date = $this->getStartDate();
+    $today = new \DateTime('today', $start_date->getTimezone());
+    // This is a future rate plan if it is a revision and the start date is in
+    // the future.
+    return $this->decorated() instanceof RatePlanRevisionInterface && $today < $start_date;
+  }
+
+  /**
+   * Gets the future plan for this rate plan if one exists.
+   *
+   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface|null
+   *   The future rate plan or null.
+   */
+  protected function getFutureRatePlan(): ?RatePlanInterface {
+    if (!isset($this->futureRatePlan)) {
+      // Use the entity storage to load the future rate plan.
+      $this->futureRatePlan = ($future_plan = \Drupal::entityTypeManager()->getStorage($this->entityTypeId)->loadFutureRatePlan($this)) ? $future_plan : FALSE;
+    }
+
+    return $this->futureRatePlan ?: NULL;
+  }
+
+  /**
+   * Gets the current plan if this is a future plan.
+   *
+   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface|null
+   *   The current rate plan or null.
+   */
+  protected function getCurrentRatePlan(): ?RatePlanInterface {
+    if (!isset($this->currentRatePlan)) {
+      // Check whether or not this plan has a parent plan.
+      if (($decorated = $this->decorated()) && $decorated instanceof RatePlanRevisionInterface) {
+        // Create a date to compare whether a plan is current. Current means the
+        // plan has already started and is a parent revision of this plan.
+        $today = new \DateTimeImmutable('today', $this->getStartDate()->getTimezone());
+        // The previous revision is our starting point.
+        $parent_plan = $decorated->getPreviousRatePlanRevision();
+        // Loop through parents until the current plan is found.
+        while ($parent_plan && ($today < $parent_plan->getStartDate() || $today > $parent_plan->getEndDate())) {
+          // Get the next parent if it exists.
+          $parent_plan = $parent_plan instanceof RatePlanRevisionInterface ? $parent_plan->getPreviousRatePlanRevision() : NULL;
+        }
+        // If the $parent_plan is currently available, it is our current plan.
+        $this->currentRatePlan = ($parent_plan->getStartDate() < $today && $parent_plan->getEndDate() > $today)
+          ? RatePlan::createFrom($parent_plan)
+          : FALSE;
+      }
+      else {
+        $this->currentRatePlan = FALSE;
+      }
+    }
+
+    return $this->currentRatePlan ?: NULL;
   }
 
   /**
@@ -307,20 +459,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function setContractDurationType(string $contractDurationType): void {
     $this->decorated->setContractDurationType($contractDurationType);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEarlyTerminationFee(): ?float {
-    return $this->decorated->getEarlyTerminationFee();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setEarlyTerminationFee(float $earlyTerminationFee): void {
-    $this->decorated->setEarlyTerminationFee($earlyTerminationFee);
   }
 
   /**
@@ -410,20 +548,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRecurringFee(): ?float {
-    return $this->decorated->getRecurringFee();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setRecurringFee(float $recurringFee): void {
-    $this->decorated->setRecurringFee($recurringFee);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getRecurringStartUnit(): ?int {
     return $this->decorated->getRecurringStartUnit();
   }
@@ -447,20 +571,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    */
   public function setRecurringType(string $recurringType): void {
     $this->decorated->setRecurringType($recurringType);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getSetUpFee(): float {
-    return $this->decorated->getSetUpFee();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setSetUpFee(float $setUpFee): void {
-    $this->decorated->setSetUpFee($setUpFee);
   }
 
   /**

@@ -27,6 +27,7 @@ use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\Formatter\CurrencyFormatter;
+use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
@@ -138,6 +139,8 @@ class Monetization implements MonetizationInterface {
    *   The logger.
    * @param \Drupal\user\PermissionHandlerInterface $permission_handler
    *   The permission handler.
+   * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
+   *   A currency formatter.
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
@@ -145,7 +148,8 @@ class Monetization implements MonetizationInterface {
     MessengerInterface $messenger,
     CacheBackendInterface $cache,
     LoggerInterface $logger,
-    PermissionHandlerInterface $permission_handler
+    PermissionHandlerInterface $permission_handler,
+    CurrencyFormatterInterface $currency_formatter
   ) {
     $this->sdk_connector          = $sdk_connector;
     $this->sdk_controller_factory = $sdk_controller_factory;
@@ -153,11 +157,7 @@ class Monetization implements MonetizationInterface {
     $this->cache                  = $cache;
     $this->logger                 = $logger;
     $this->permission_handler     = $permission_handler;
-
-    $numberFormatRepository = new NumberFormatRepository();
-    $currencyRepository = new CurrencyRepository();
-
-    $this->currencyFormatter = new CurrencyFormatter($numberFormatRepository, $currencyRepository);
+    $this->currencyFormatter      = $currency_formatter;
   }
 
   /**

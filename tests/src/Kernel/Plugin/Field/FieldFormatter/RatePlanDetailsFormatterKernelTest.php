@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\RatePlanDetailsFormatter;
 use Drupal\apigee_m10n\Plugin\Field\FieldType\RatePlanDetailsFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\Tests\apigee_m10n\Traits\RatePlanDetailsKernelTestAssertionTrait;
 
 /**
  * Test the `apigee_rate_plan_details` field formatter.
@@ -31,6 +32,8 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n_kernel
  */
 class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
+
+  use RatePlanDetailsKernelTestAssertionTrait;
 
   /**
    * The formatter manager.
@@ -106,11 +109,9 @@ class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
 
     /** @var \Apigee\Edge\Api\Monetization\Structure\RatePlanDetail $details */
     $details = $this->package_rate_plan->getRatePlanDetails()[0];
-    $this->render($build);
-    $this->assertText('Renewal Period 1 month');
-    $this->assertText('Operator ' . $details->getOrganization()->getDescription());
-    $this->assertText('Country ' . $details->getOrganization()->getCountry());
-    $this->assertText('Currency ' . $details->getCurrency()->getName());
+    $content = $this->render($build);
+
+    $this->assertRatePlanDetails($details);
   }
 
 }

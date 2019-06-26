@@ -20,6 +20,28 @@ apigee_m10n.prepaid_balance.config:
       type: boolean
       label: 'Whether to enable insufficient funds workflow'
 
+field.value.apigee_price:
+  type: mapping
+  label: 'Price'
+  mapping:
+    amount:
+      type: decimal
+      label: 'Amount'
+    currency_code:
+      type: string
+      label: 'Currency code'
+
+field.formatter.settings.apigee_price:
+  type: mapping
+  label: 'Default price formatter settings'
+  mapping:
+    strip_trailing_zeroes:
+      type: boolean
+      label: 'Strip trailing zeroes after the decimal point'
+    currency_display:
+      type: string
+      label: 'Currency display'
+
 field.formatter.settings.apigee_purchase_plan_link:
   type: mapping
   label: 'Purchase plan link'
@@ -57,3 +79,20 @@ field.formatter.settings.apigee_tnc_default:
     default_description:
       type: string
       label: 'Terms and Conditions'
+
+field.formatter.settings.apigee_date_and_text_formatter:
+  type: mapping
+  label: 'Apigee date and text formatter'
+  mapping:
+    date_format:
+      type: string
+      label: 'Date format'
+    custom_date_format:
+      type: string
+      label: 'Custom date format'
+    timezone:
+      type: string
+      label: 'Timezone'
+    text:
+      type: string
+      label: 'Text'

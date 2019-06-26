@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\Render;
 
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\Tests\apigee_m10n\Traits\RatePlanDetailsKernelTestAssertionTrait;
 
 /**
  * Performs functional tests on drupal_render().
@@ -28,6 +29,8 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * @group apigee_m10n_kernel
  */
 class RatePlanRenderTest extends MonetizationKernelTestBase {
+
+  use RatePlanDetailsKernelTestAssertionTrait;
 
   /**
    * Test package rate plan.
@@ -63,26 +66,55 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->setCurrentUser($this->developer);
 
     $this->package_rate_plan = $this->createPackageRatePlan($this->createPackage());
+
+    // Enable the Classy theme.
+    \Drupal::service('theme_handler')->install(['classy']);
+    $this->config('system.theme')->set('default', 'classy')->save();
   }
 
   /**
    * Tests theme preprocess functions being able to attach assets.
    */
   public function testRenderRatePlan() {
+    $this->warmTnsCache();
+    $this->warmDeveloperTnsCache($this->developer);
 
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($this->package_rate_plan->getEntityTypeId());
+    $price_formatter = \Drupal::service('apigee_m10n.price_formatter');
+
+    $rate_plan = $this->package_rate_plan;
+
+    $view_builder = \Drupal::entityTypeManager()->getViewBuilder($rate_plan->getEntityTypeId());
 
     $this->warmPurchasedPlanCache($this->developer);
 
-    $build = $view_builder->view($this->package_rate_plan, 'default');
+    $build = $view_builder->view($rate_plan, 'default');
 
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
-    $this->assertText($this->package_rate_plan->getDisplayName(), 'The plan name is displayed in the rendered rate plan');
-    $this->assertText($this->package_rate_plan->getDescription(), 'The plan description is displayed in the rendered rate plan');
-    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/package/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}", 0, 'The display name links to the rate plan.');
-    // Make sure the purchase link is displayed.
-    $this->assertLinkByHref("/user/{$this->developer->id()}/monetization/package/{$this->package_rate_plan->getPackage()->id()}/plan/{$this->package_rate_plan->id()}/purchase", 0, 'The link to the purchase form exists.');
+    // Check the entity label.
+    $this->assertCssElementText('.rate-plan > h2 > a', $rate_plan->label());
+    $this->assertLink($rate_plan->label());
+    $this->assertLinkByHref($rate_plan->toUrl()->toString(), 0, 'The display name links to the rate plan.');
+
+    // Test product names.
+    foreach ($rate_plan->get('packageProducts') as $index => $product_field) {
+      $css_index = $index + 1;
+      $this->assertCssElementText(".rate-plan .field--name-packageproducts .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
+    }
+
+    // Test fees.
+    $this->assertCssElementText(".rate-plan .field--name-setupfee .field__label", 'Set Up Fee');
+    $this->assertCssElementText(".rate-plan .field--name-setupfee .field__item", $price_formatter->format($rate_plan->get('setUpFee')->first()->get('amount')->getValue(), $rate_plan->get('setUpFee')->first()->get('currency_code')->getValue()));
+    $this->assertCssElementText(".rate-plan .field--name-recurringfee .field__label", 'Recurring Fee');
+    $this->assertCssElementText(".rate-plan .field--name-recurringfee .field__item", $price_formatter->format($rate_plan->get('recurringFee')->first()->get('amount')->getValue(), $rate_plan->get('recurringFee')->first()->get('currency_code')->getValue()));
+    $this->assertCssElementText(".rate-plan .field--name-earlyterminationfee .field__label", 'Early Termination Fee');
+    $this->assertCssElementText(".rate-plan .field--name-earlyterminationfee .field__item", $price_formatter->format($rate_plan->get('earlyTerminationFee')->first()->get('amount')->getValue(), $rate_plan->get('earlyTerminationFee')->first()->get('currency_code')->getValue()));
+
+    // Plan details.
+    $details = $rate_plan->getRatePlanDetails()[0];
+    $this->assertRatePlanDetails($details);
+
+    // TODO: test the purchase form.
   }
 
 }

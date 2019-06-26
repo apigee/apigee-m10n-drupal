@@ -19,55 +19,77 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldType;
 
-use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\Component\Utility\Random;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'apigee_monetization_developer' field type.
+ * Plugin implementation of the 'apigee_price' field type.
  *
  * @FieldType(
- *   id = "apigee_monetization_developer",
- *   label = @Translation("Apigee developer"),
- *   description = @Translation("Apigee monetization developer"),
+ *   id = "apigee_price",
+ *   label = @Translation("Price"),
+ *   description = @Translation("Stores a decimal number and a three letter currency code."),
+ *   no_ui = TRUE,
  *   category = @Translation("Apigee"),
- *   default_formatter = "apigee_monetization_developer"
+ *   default_formatter = "apigee_price",
  * )
  */
-class MonetizationDeveloperFieldItem extends FieldItemBase {
+class PriceItem extends FieldItemBase {
 
   /**
    * {@inheritdoc}
    */
   public static function propertyDefinitions(FieldStorageDefinitionInterface $field_definition) {
-    $properties['value'] = DataDefinition::create('any')
-      ->setLabel(new TranslatableMarkup('value'))
-      ->setDescription(new TranslatableMarkup('The Apigee monetization developer.'))
-      ->setComputed(TRUE);
-
-    return $properties;
+    return [
+      'amount' => DataDefinition::create('string')
+        ->setLabel(t('Amount'))
+        ->setRequired(FALSE),
+      'currency_code' => DataDefinition::create('string')
+        ->setLabel(t('Currency code'))
+        ->setRequired(FALSE),
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
-    return [];
+    return [
+      'columns' => [
+        'amount' => [
+          'description' => 'The price amount.',
+          'type' => 'numeric',
+          'precision' => 19,
+          'scale' => 6,
+        ],
+        'currency_code' => [
+          'description' => 'The currency code.',
+          'type' => 'varchar',
+          'length' => 3,
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isEmpty() {
+    return $this->amount === NULL || $this->amount === '' || empty($this->currency_code);
   }
 
   /**
    * {@inheritdoc}
    */
   public static function generateSampleValue(FieldDefinitionInterface $field_definition) {
-    $random = new Random();
-    $values['value'] = new Developer([
-      'email' => strtolower($random->name()) . '@example.com',
-    ]);
-    return $values;
+    return [
+      'value' => [
+        'amount' => rand(0, 100) + (rand(0, 99) * .01),
+        'currency_code' => 'usd',
+      ],
+    ];
   }
 
 }
