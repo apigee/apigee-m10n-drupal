@@ -56,6 +56,7 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
         'detail' => NULL,
         'ratecard_rates' => NULL,
         'revshare_rates' => NULL,
+        'free_quantity' => NULL,
         'entity' => NULL,
       ],
       'template' => 'rate-plan-detail',

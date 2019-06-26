@@ -90,18 +90,48 @@ class RatePlanDetailsFormatter extends FormatterBase {
    *   A render array.
    */
   protected function viewValue(FieldItemInterface $item) {
-    $all_rates = $item->value->getRatePlanRates();
+    /** @var \Apigee\Edge\Api\Monetization\Structure\RatePlanDetail $detail */
+    $detail = $item->value;
+    $all_rates = $detail->getRatePlanRates();
+    // Get only rate card entries.
     $ratecard_rates = array_filter($all_rates, function ($rate) {
       return ($rate instanceof RatePlanRateRateCard);
     });
+    // Get only revshare entries.
     $revshare_rates = array_filter($all_rates, function ($rate) {
       return ($rate instanceof RatePlanRateRevShare);
     });
+
+    // The logic for the free quanity is a little complicated for the template.
+    $free_quantity_template = '';
+    $freemium_unit = $item->getEntity()->getFreemiumUnit();
+    $freemium_duration = $item->getEntity()->getFreemiumDuration();
+    $freemium_type = $item->getEntity()->getFreemiumDurationType();
+
+    if (!empty($freemium_unit) && !empty($freemium_duration) && !empty($freemium_type)) {
+      $free_quantity_template = 'Up to @unit @transactions for @duration @duration_type';
+    }
+    elseif (!empty($freemium_unit) && empty($freemium_duration) && empty($freemium_type)) {
+      $free_quantity_template = 'Up to @unit @transactions';
+    }
+    elseif (empty($freemium_unit) && !empty($freemium_duration) && !empty($freemium_type)) {
+      $free_quantity_template = 'For @duration @duration_type';
+    }
+
+    // Build the "Free quantity" text.
+    $free_quantity = $this->t($free_quantity_template, [
+      '@unit' => $freemium_unit,
+      '@transactions' => $freemium_unit === 1 ? 'transaction' : 'transactions',
+      '@duration' => $freemium_duration,
+      '@duration_type' => strtolower($freemium_duration === 1 ? $freemium_type : $freemium_type . 's'),
+    ]);
+
     return [
       '#theme' => 'rate_plan_detail',
-      '#detail' => $item->value,
+      '#detail' => $detail,
       '#ratecard_rates' => $ratecard_rates,
       '#revshare_rates' => $revshare_rates,
+      '#free_quantity' => !empty((string) $free_quantity) ? $free_quantity : NULL,
       '#entity' => $item->getEntity(),
       '#attached' => ['library' => ['apigee_m10n/rate_plan.details_field']],
     ];
