@@ -30,6 +30,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -85,6 +86,13 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
   protected $moduleHandler;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * Constructs a PurchasedPlanForm object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
@@ -97,13 +105,16 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
    *   The config factory.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
    */
-  public function __construct(MessengerInterface $messenger, CurrentRouteMatch $current_route_match, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
+  public function __construct(MessengerInterface $messenger, CurrentRouteMatch $current_route_match, MonetizationInterface $monetization, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler, AccountInterface $current_user) {
     $this->messenger = $messenger;
     $this->currentRouteMatch = $current_route_match;
     $this->monetization = $monetization;
     $this->config = $config_factory;
     $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -115,7 +126,8 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       $container->get('current_route_match'),
       $container->get('apigee_m10n.monetization'),
       $container->get('config.factory'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('current_user')
     );
   }
 
@@ -144,6 +156,16 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // If the user has already purchased this plan, show a message instead.
+    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+    if (($rate_plan = $this->getEntity()->getRatePlan()) && ($this->monetization->isDeveloperAlreadySubscribed($this->currentUser->getEmail(), $rate_plan))) {
+      return [
+        '#markup' => $this->t('You have already purchased %rate_plan.', [
+          '%rate_plan' => $rate_plan->getDisplayName(),
+        ]),
+      ];
+    }
+
     $form = parent::buildForm($form, $form_state);
 
     // We can't alter the form in the form() method because the actions buttons
