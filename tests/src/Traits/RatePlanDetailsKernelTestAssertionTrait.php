@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
-
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRevShare;
