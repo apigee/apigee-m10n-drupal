@@ -159,8 +159,6 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
         $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .rate-plan";
         // Check the plan name.
         $this->assertCssElementText("{$prefix} h2 a", $rate_plan->getDisplayName());
-        // Check the plan description.
-        $this->assertCssElementText("{$prefix} .field--name-description .field__item", $rate_plan->getDescription());
         // Check the package products.
         foreach ($rate_plan->get('packageProducts') as $index => $product) {
           $css_index = $index + 1;

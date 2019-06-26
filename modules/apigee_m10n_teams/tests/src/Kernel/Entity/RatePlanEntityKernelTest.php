@@ -21,6 +21,7 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
+use Drupal\Tests\apigee_m10n\Traits\RatePlanDetailsKernelTestAssertionTrait;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
@@ -35,6 +36,7 @@ use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
   use TeamProphecyTrait;
+  use RatePlanDetailsKernelTestAssertionTrait;
 
   /**
    * Drupal user.
@@ -79,6 +81,11 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
       'user',
       'system',
     ]);
+
+    // Enable the Classy theme.
+    \Drupal::service('theme_handler')->install(['classy']);
+    $this->config('system.theme')->set('default', 'classy')->save();
+
     // Makes sure the new user isn't root.
     $this->createAccount();
     $this->developer = $this->createAccount();
@@ -98,6 +105,10 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
    */
   public function testRatePlanEntity() {
     $this->setCurrentTeamRoute($this->team);
+    $this->warmTnsCache();
+    $this->warmTeamTnsCache($this->team);
+
+    $price_formatter = \Drupal::service('apigee_m10n.price_formatter');
 
     // Check team access.
     static::assertTrue($this->rate_plan->access('view', $this->developer));
@@ -117,21 +128,36 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Render the package.
     $build = \Drupal::entityTypeManager()
       ->getViewBuilder('rate_plan')
-      ->view($this->rate_plan);
-
-    $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
+      ->view($rate_plan, 'default');
 
     // Rate plans as rendered.
-    static::assertSame($rate_plan->getDescription(), trim($this->cssSelect('.rate-plan > div > div:nth-child(1) > div:nth-child(2)')[0]));
-    static::assertSame('Purchase Plan', trim($this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]));
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}/purchase", (string) $this->cssSelect('.rate-plan > div > div:nth-child(3) > div:nth-child(2) > a')[0]->attributes()['href']);
+    $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
+
+    // Check the entity label.
+    $this->assertCssElementText('.rate-plan > h2 > a', $rate_plan->label());
+    $this->assertLink($rate_plan->label());
+    $this->assertLinkByHref($rate_plan->toUrl()->toString());
+
+    // Test product names.
+    foreach ($rate_plan->get('packageProducts') as $index => $product_field) {
+      $css_index = $index + 1;
+      $this->assertCssElementText(".rate-plan .field--name-packageproducts .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
+    }
+
+    // Test fees.
+    $this->assertCssElementText(".rate-plan .field--name-setupfee .field__label", 'Set Up Fee');
+    $this->assertCssElementText(".rate-plan .field--name-setupfee .field__item", $price_formatter->format($rate_plan->get('setUpFee')->first()->get('amount')->getValue(), $rate_plan->get('setUpFee')->first()->get('currency_code')->getValue()));
+    $this->assertCssElementText(".rate-plan .field--name-recurringfee .field__label", 'Recurring Fee');
+    $this->assertCssElementText(".rate-plan .field--name-recurringfee .field__item", $price_formatter->format($rate_plan->get('recurringFee')->first()->get('amount')->getValue(), $rate_plan->get('recurringFee')->first()->get('currency_code')->getValue()));
+    $this->assertCssElementText(".rate-plan .field--name-earlyterminationfee .field__label", 'Early Termination Fee');
+    $this->assertCssElementText(".rate-plan .field--name-earlyterminationfee .field__item", $price_formatter->format($rate_plan->get('earlyTerminationFee')->first()->get('amount')->getValue(), $rate_plan->get('earlyTerminationFee')->first()->get('currency_code')->getValue()));
 
     // Plan details.
     $details = $rate_plan->getRatePlanDetails()[0];
-    static::assertSame(strtolower("{$details->getDuration()} {$details->getDurationType()}"), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[0]));
-    static::assertSame($details->getOrganization()->getDescription(), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[1]));
-    static::assertSame($details->getOrganization()->getCountry(), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[2]));
-    static::assertSame($details->getCurrency()->getName(), trim($this->cssSelect('.rate-plan .rate-plan-detail td:nth-child(2) > span')[3]));
+    $this->assertRatePlanDetails($details);
+
+    // Test rate plan rate card.
+    // TODO: Test the rate plan render form.
   }
 
 }

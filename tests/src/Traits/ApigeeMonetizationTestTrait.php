@@ -224,6 +224,8 @@ trait ApigeeMonetizationTestTrait {
     // Need to queue the management spi product.
     $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
     $product->save();
+    // Warm the entity static cache.
+    \Drupal::service('entity.memory_cache')->set("values:api_product:{$product->id()}", $product);
 
     // Remove the product in the cleanup queue.
     $this->cleanup_queue[] = [
@@ -610,6 +612,31 @@ trait ApigeeMonetizationTestTrait {
     catch (UnsupportedDriverActionException $exception) {
       $this->markTestSkipped($exception->getMessage());
     }
+  }
+
+  /**
+   * Warm the terms and services cache.
+   */
+  protected function warmTnsCache() {
+    $this->stack->queueMockResponse([
+      'get_terms_conditions',
+    ]);
+
+    \Drupal::service('apigee_m10n.monetization')->getLatestTermsAndConditions();
+  }
+
+  /**
+   * Warm the terms and services cache accepted cache for a developer.
+   *
+   * @param \Drupal\user\UserInterface $developer
+   *   The developer.
+   */
+  protected function warmDeveloperTnsCache(UserInterface $developer) {
+    $this->stack->queueMockResponse([
+      'get_developer_terms_conditions',
+    ]);
+
+    \Drupal::service('apigee_m10n.monetization')->isLatestTermsAndConditionAccepted($developer->getEmail());
   }
 
 }

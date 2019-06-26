@@ -161,4 +161,18 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
     $role->save();
   }
 
+  /**
+   * Warm the terms and services cache accepted cache for a team.
+   *
+   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
+   *   The developer.
+   */
+  protected function warmTeamTnsCache($team) {
+    $this->stack->queueMockResponse([
+      'get_developer_terms_conditions',
+    ]);
+
+    \Drupal::service('apigee_m10n.teams')->isLatestTermsAndConditionAccepted($team->id());
+  }
+
 }
