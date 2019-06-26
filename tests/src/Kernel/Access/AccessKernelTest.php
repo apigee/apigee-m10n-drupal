@@ -256,7 +256,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Developer route as developer.
     $package_route = Url::fromRoute('entity.package.developer', ['user' => $this->developer->id(), 'package' => $package->id()]);
     static::assertTrue($package_route->access($this->administrator));
-    static::assertTrue($package_route->access($this->developer));
+    static::assertFalse($package_route->access($this->developer));
     static::assertFalse($package_route->access($this->anonymous));
 
     // Developer route as developer.
