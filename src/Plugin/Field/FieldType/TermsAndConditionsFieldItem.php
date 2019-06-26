@@ -32,6 +32,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = @Translation("Apigee terms and conditions"),
  *   description = @Translation("Apigee terms and conditions"),
  *   category = @Translation("Apigee"),
+ *   no_ui = TRUE,
  *   default_formatter = "apigee_tnc_default"
  * )
  */

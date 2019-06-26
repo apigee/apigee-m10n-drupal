@@ -35,6 +35,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = @Translation("Apigee organization"),
  *   description = @Translation("Apigee organization"),
  *   category = @Translation("Apigee"),
+ *   no_ui = TRUE,
  *   default_formatter = "apigee_organization"
  * )
  */
