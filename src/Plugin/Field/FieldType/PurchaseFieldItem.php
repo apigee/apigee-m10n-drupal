@@ -32,6 +32,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = @Translation("Purchase rate plan"),
  *   description = @Translation("Purchase rate plan computed item."),
  *   category = @Translation("Apigee"),
+ *   no_ui = TRUE,
  *   default_formatter = "apigee_purchase_plan_link"
  * )
  */
