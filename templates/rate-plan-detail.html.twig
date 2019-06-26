@@ -81,7 +81,7 @@
       <div class="rate-plan-rates__column">
         <div class="field field--inline rate-plan-detail__overview__currency">
           <div class="field__label">{{ "Currency"|t }}</div>
-          <div class="field__item">{{ detail.currency.name }}</div>
+          <div class="field__item">{{ detail.currency.displayName }}</div>
         </div>
       </div>
     </div>
@@ -94,8 +94,8 @@
         </div>
       </div>
       <div class="rate-plan-rates__column">
-        <div class="field field--inline rate-plan-detail__overview__pricing-type}">
-          <div class="field__label">{{ "Pricing Type"|t }}</div>
+        <div class="field field--inline rate-plan-detail__overview__pricing-type">
+          <div class="field__label">{{ "Pricing type"|t }}</div>
           <div class="field__item">{{ detail.revenueType|lower|capitalize }}</div>
         </div>
       </div>
@@ -110,8 +110,8 @@
       </div>
       {% for rate in ratecard_rates %}
         <div class="ratecard-rate rate-plan-rates__row">
-          <div class="rate-plan-rates__column">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
-          <div class="rate-plan-rates__column">{{ rate.rate }}</div>
+          <div class="rate-plan-rates__column field__label">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
+          <div class="rate-plan-rates__column field__item">{{ rate.rate }}</div>
         </div>
       {% endfor %}
     </div>
@@ -119,14 +119,14 @@
 
   {% if revshare_rates %}
     <div class="rate-plan-detail__revshare rate-plan-detail__list-wrapper">
-      <div class="ratecard-rate__header rate-plan-rates__row">
+      <div class="revshare-rate__header rate-plan-rates__row">
         <div class="rate-plan-rates__column"><strong>{{ "Volume bands"|t }}</strong></div>
         <div class="rate-plan-rates__column"><strong>{{ "Revenue share %"|t }}</strong></div>
       </div>
       {% for rate in revshare_rates %}
         <div class="revshare-rate rate-plan-rates__row">
-          <div class="rate-plan-rates__column">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
-          <div class="rate-plan-rates__column">{{ rate.revshare }}</div>
+          <div class="rate-plan-rates__column field__label">{{ "Greater than"|t }} {{ rate.startUnit }} {% if rate.endUnit %}{{ "up to"|t }} {{ rate.endUnit }}{% endif %}</div>
+          <div class="rate-plan-rates__column field__item">{{ rate.revshare }}</div>
         </div>
       {% endfor %}
     </div>
