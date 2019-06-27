@@ -74,7 +74,8 @@ class MonetizationKernelTestBase extends KernelTestBase {
    */
   protected function assertCssElementText($selector, $text) {
     $element = $this->cssSelect($selector);
-    static::assertSame((string) $element[0], $text);
+    static::assertArrayHasKey(0, $element, "No match found for `{$selector}`.");
+    static::assertSame(trim($element[0]), $text);
   }
 
   /**

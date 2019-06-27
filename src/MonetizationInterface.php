@@ -40,7 +40,6 @@ interface MonetizationInterface {
    * A list of permissions that will be given to authenticated users on install.
    */
   const DEFAULT_AUTHENTICATED_PERMISSIONS = [
-    'view package',
     'view rate_plan',
     'purchase rate_plan',
     'view own purchased_plan',

@@ -75,6 +75,11 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
       'system',
       'apigee_m10n',
     ]);
+
+    // Enable the Classy theme.
+    \Drupal::service('theme_handler')->install(['classy']);
+    $this->config('system.theme')->set('default', 'classy')->save();
+
     // Makes sure the new user isn't root.
     $this->createAccount();
     $this->developer = $this->createAccount();
@@ -84,9 +89,6 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->createCurrentUserSession($this->developer);
 
     $this->package = $this->createPackage();
-
-    // Enable the `ratePlans` field.
-    $this->enableRatePlansForViewDisplay();
   }
 
   /**
@@ -120,7 +122,7 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Render the package.
     $build = \Drupal::entityTypeManager()
       ->getViewBuilder('package')
-      ->view($this->package);
+      ->view($this->package, 'default');
 
     $rate_plan_1 = $this->createPackageRatePlan($this->package);
     $rate_plan_2 = $this->createPackageRatePlan($this->package);
@@ -130,24 +132,23 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     $this->setRawContent((string) $content);
 
+    $css_prefix = '.apigee-entity.package';
     // Package detail as rendered.
-    static::assertSame($package->id(), trim($this->cssSelect('.apigee-entity.package > div > div > div')[1]));
-    static::assertSame($package->getDisplayName(), trim($this->cssSelect('.apigee-entity.package > div > div > div')[3]));
-    static::assertSame($package->getDescription(), trim($this->cssSelect('.apigee-entity.package > div > div > div')[5]));
+    $this->assertCssElementText("{$css_prefix} > h2", $package->label());
 
     // API Products.
+    $this->assertCssElementText("{$css_prefix} .field--name-apiproducts .field__label", 'Included products');
     foreach ($this->package->get('apiProducts') as $index => $apiProduct) {
-      static::assertSame($apiProduct->entity->getName(), trim($this->cssSelect('.apigee-entity.package .apigee-sdk-product .apigee-product-details .apigee-product-id')[$index]));
-      static::assertSame($apiProduct->entity->getDisplayName(), trim($this->cssSelect('.apigee-entity.package .apigee-sdk-product .apigee-product-details .apigee-product-display-name .label')[$index]));
-      static::assertSame($apiProduct->entity->getDescription(), trim($this->cssSelect('.apigee-entity.package .apigee-sdk-product .apigee-product-details .apigee-product-description')[$index]));
+      // CSS indexes start at 1.
+      $css_index = $index + 1;
+      $this->assertCssElementText("{$css_prefix} .field--name-apiproducts .field__item:nth-child({$css_index})", $apiProduct->entity->label());
     }
 
     // Rate plans as rendered.
     foreach ([$rate_plan_1, $rate_plan_2] as $index => $rate_plan) {
       /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-      static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$rate_plan->id()}", (string) $this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]->attributes()['href']);
-      static::assertSame($rate_plan->getDisplayName(), trim($this->cssSelect('.apigee-entity.package .rate-plan > h2 > a')[$index]));
-      // TODO: add tests for the purchase plan form.
+      $this->assertLink($rate_plan->label());
+      $this->assertLinkByHref($rate_plan->toUrl()->toString());
     }
   }
 
