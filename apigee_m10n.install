@@ -53,6 +53,16 @@ function apigee_m10n_requirements($phase) {
     }
   }
 
+  if ($phase == 'install' || $phase == 'runtime') {
+    if (!extension_loaded('bcmath')) {
+      $requirements['apigee_monetization_bcmath'] = [
+        'title' => t('BC Math'),
+        'description' => t('Apigee Monetization requires the BC Math PHP extension in order to format prices.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+  }
+
   return $requirements;
 }
 

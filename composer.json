@@ -5,6 +5,7 @@
     "description": "Apigee Edge Monetization for Drupal",
     "require": {
         "php": ">=7.1",
+        "ext-bcmath": "*",
         "cweagans/composer-patches": "~1.6",
         "commerceguys/intl": "~1.0",
         "drupal/apigee_edge": "~1.0",
