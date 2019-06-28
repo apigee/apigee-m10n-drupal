@@ -95,12 +95,12 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadPackageRatePlans(string $package_id, $include_future_plans = FALSE): array {
+  public function loadRatePlansByProductBundle(string $package_id, $include_future_plans = FALSE): array {
     $entities = [];
 
     $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $include_future_plans, &$entities) {
       // Load the  rate plans for this package.
-      $sdk_entities = $controller->loadPackageRatePlans($package_id, $include_future_plans);
+      $sdk_entities = $controller->loadRatePlansByProductBundle($package_id, $include_future_plans);
       // Convert the SDK entities to drupal entities.
       foreach ($sdk_entities as $id => $entity) {
         $drupal_entity = $this->createNewInstance($entity);
@@ -153,7 +153,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
       // Future plans haven't started as of today.
       $today = new \DateTimeImmutable('today', $ratePlan->getStartDate()->getTimezone());
       // Load all plans for this package.
-      $all_plans = $this->loadPackageRatePlans($ratePlan->getPackage()->id(), TRUE);
+      $all_plans = $this->loadRatePlansByProductBundle($ratePlan->getPackage()->id(), TRUE);
       // Loop through to see if any future previous revisions are the given
       // plan.
       foreach ($all_plans as $future_candidate) {

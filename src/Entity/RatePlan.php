@@ -44,7 +44,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 
 /**
- * Defines the Package Rate Plan entity class.
+ * Defines the rate plan entity class.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
  *   id = "rate_plan",
@@ -218,10 +218,10 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *   Thrown if the storage handler couldn't be loaded.
    */
-  public static function loadPackageRatePlans(string $package_name): array {
+  public static function loadRatePlansByProductBundle(string $product_bundle): array {
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
-      ->loadPackageRatePlans($package_name);
+      ->loadRatePlansByProductBundle($product_bundle);
   }
 
   /**

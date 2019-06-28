@@ -30,7 +30,7 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 class PurchasedPlanRenderTest extends MonetizationKernelTestBase {
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
@@ -74,7 +74,7 @@ class PurchasedPlanRenderTest extends MonetizationKernelTestBase {
     $purchased_plan_default_display['startDate']['settings']['timezone'] = 'America/Los_Angeles';
     \Drupal::configFactory()->getEditable('core.entity_view_display.purchased_plan.purchased_plan.default')->set('content', $purchased_plan_default_display)->save();
 
-    $this->rate_plan = $this->createPackageRatePlan($this->createPackage());
+    $this->rate_plan = $this->createRatePlan($this->createPackage());
     $this->purchased_plan = $this->createPurchasedPlan($this->developer, $this->rate_plan);
   }
 

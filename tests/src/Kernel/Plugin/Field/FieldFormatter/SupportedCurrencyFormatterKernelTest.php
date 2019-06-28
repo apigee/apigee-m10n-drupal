@@ -54,11 +54,11 @@ class SupportedCurrencyFormatterKernelTest extends MonetizationKernelTestBase {
   protected $api_package;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
   /**
    * {@inheritdoc}
@@ -72,7 +72,7 @@ class SupportedCurrencyFormatterKernelTest extends MonetizationKernelTestBase {
     $this->field_manager = $this->container->get('entity_field.manager');
 
     $this->api_package = $this->createPackage();
-    $this->package_rate_plan = $this->createPackageRatePlan($this->api_package);
+    $this->rate_plan = $this->createRatePlan($this->api_package);
   }
 
   /**
@@ -82,10 +82,10 @@ class SupportedCurrencyFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->package_rate_plan->get('currency');
+    $item_list = $this->rate_plan->get('currency');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(SupportedCurrencylFieldItem::class, $item_list->get(0));
-    static::assertSame($this->package_rate_plan->getCurrency()->id(), $item_list->get(0)->value->id());
+    static::assertSame($this->rate_plan->getCurrency()->id(), $item_list->get(0)->value->id());
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SupportedCurrencyFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_currency', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['currency'],
@@ -101,10 +101,10 @@ class SupportedCurrencyFormatterKernelTest extends MonetizationKernelTestBase {
 
     static::assertSame('Currency', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
-    static::assertSame($this->package_rate_plan->getCurrency()->getName(), (string) $build[0]['#markup']);
+    static::assertSame($this->rate_plan->getCurrency()->getName(), (string) $build[0]['#markup']);
 
     $this->render($build);
-    $this->assertText($this->package_rate_plan->getCurrency()->getName());
+    $this->assertText($this->rate_plan->getCurrency()->getName());
 
   }
 

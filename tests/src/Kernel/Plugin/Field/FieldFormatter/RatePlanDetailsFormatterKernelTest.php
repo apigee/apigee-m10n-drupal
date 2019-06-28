@@ -57,11 +57,11 @@ class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
   protected $api_package;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
   /**
    * {@inheritdoc}
@@ -75,7 +75,7 @@ class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
     $this->field_manager = $this->container->get('entity_field.manager');
 
     $this->api_package = $this->createPackage();
-    $this->package_rate_plan = $this->createPackageRatePlan($this->api_package);
+    $this->rate_plan = $this->createRatePlan($this->api_package);
   }
 
   /**
@@ -85,10 +85,10 @@ class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->package_rate_plan->get('ratePlanDetails');
+    $item_list = $this->rate_plan->get('ratePlanDetails');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(RatePlanDetailsFieldItem::class, $item_list->get(0));
-    static::assertSame($this->package_rate_plan->getRatePlanDetails()[0]->getId(), $item_list->get(0)->value->getId());
+    static::assertSame($this->rate_plan->getRatePlanDetails()[0]->getId(), $item_list->get(0)->value->getId());
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SupportedCurrencyFormatter $instance */
     $instance = $this->formatter_manager->createInstance('apigee_rate_plan_details', [
       'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['ratePlanDetails'],
@@ -105,10 +105,10 @@ class RatePlanDetailsFormatterKernelTest extends MonetizationKernelTestBase {
     static::assertSame('Rate Plan Details', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
     static::assertSame($build[0]['#theme'], 'rate_plan_detail');
-    static::assertSame($this->package_rate_plan->getRatePlanDetails()[0]->getId(), $build[0]['#detail']->getId());
+    static::assertSame($this->rate_plan->getRatePlanDetails()[0]->getId(), $build[0]['#detail']->getId());
 
     /** @var \Apigee\Edge\Api\Monetization\Structure\RatePlanDetail $details */
-    $details = $this->package_rate_plan->getRatePlanDetails()[0];
+    $details = $this->rate_plan->getRatePlanDetails()[0];
     $content = $this->render($build);
 
     $this->assertRatePlanDetails($details);

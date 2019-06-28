@@ -124,8 +124,8 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
       ->getViewBuilder('package')
       ->view($this->package, 'default');
 
-    $rate_plan_1 = $this->createPackageRatePlan($this->package);
-    $rate_plan_2 = $this->createPackageRatePlan($this->package);
+    $rate_plan_1 = $this->createRatePlan($this->package);
+    $rate_plan_2 = $this->createRatePlan($this->package);
 
     $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan_1, $rate_plan_2]]]);
     $content = \Drupal::service('renderer')->renderRoot($build);

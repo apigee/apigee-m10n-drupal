@@ -61,7 +61,7 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
    */
   public function testPurchasedPlanListView() {
     $package = $this->createPackage();
-    $rate_plan = $this->createPackageRatePlan($package);
+    $rate_plan = $this->createRatePlan($package);
     $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
 
     $this->queueOrg();

@@ -213,16 +213,16 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
       $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
       $admin_access = \Drupal::currentUser()->hasPermission('administer apigee monetization');
 
-      $package_rate_plans = RatePlan::loadPackageRatePlans($this->id());
+      $rate_plans = RatePlan::loadRatePlansByProductBundle($this->id());
       // Load plans for each package.
       if (!$admin_access) {
         // Check access for each rate plan since the user is not an admin.
-        $package_rate_plans = array_filter($package_rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
+        $rate_plans = array_filter($rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
           return $rate_plan_access_handler->access($rate_plan, 'view');
         });
       }
 
-      $this->ratePlans = array_values($package_rate_plans);
+      $this->ratePlans = array_values($rate_plans);
     }
 
     return $this->ratePlans;

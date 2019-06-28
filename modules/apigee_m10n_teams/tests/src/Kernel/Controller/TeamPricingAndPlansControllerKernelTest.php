@@ -131,7 +131,7 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
       }
       $rate_plans[$package->id()] = [];
       for ($i = rand(1, 3); $i > 0; $i--) {
-        $rate_plans[$package->id()][] = $this->createPackageRatePlan($package);
+        $rate_plans[$package->id()][] = $this->createRatePlan($package);
       }
     }
 

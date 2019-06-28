@@ -26,9 +26,9 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
  *
- * Responsible for proxying calls to the appropriate package rate plan
- * controllers. Rate plan controllers require a package ID for instantiation so
- * we sometimes need to get a controller at runtime for a given rate plan.
+ * Responsible for proxying calls to the appropriate rate plan controllers. Rate
+ * plan controllers require a package ID for instantiation so we sometimes need
+ * to get a controller at runtime for a given rate plan.
  */
 class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface {
 
@@ -82,7 +82,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
     // Loops through all packages to get the package plans.
     foreach ($all_packages as $package) {
       // Get all plans for this package.
-      $plans = $this->loadPackageRatePlans($package->id());
+      $plans = $this->loadRatePlansByProductBundle($package->id());
       foreach ($plans as $plan) {
         // Key rate plans by their ID.
         $rate_plans[$plan->id()] = $plan;
@@ -95,7 +95,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
   /**
    * {@inheritdoc}
    */
-  public function loadPackageRatePlans($package_id, $include_future_plans = FALSE): array {
+  public function loadRatePlansByProductBundle($package_id, $include_future_plans = FALSE): array {
     // Get all plans for this package.
     return $this->getRatePlanControllerByPackageId($package_id)
       ->getEntities(!$include_future_plans, FALSE);

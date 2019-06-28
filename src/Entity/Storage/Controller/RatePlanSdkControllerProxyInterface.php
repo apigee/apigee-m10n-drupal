@@ -28,7 +28,7 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterface {
 
   /**
-   * Loads all package rate plans for a given package.
+   * Loads all rate plans for a given package.
    *
    * @param string $package_id
    *   The package ID.
@@ -36,12 +36,12 @@ interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterf
    *   Whether to include future plans in the list.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[]
-   *   A list of package rate plans keyed by ID.
+   *   A list of rate plans keyed by ID.
    */
-  public function loadPackageRatePlans($package_id, $include_future_plans = FALSE): array;
+  public function loadRatePlansByProductBundle($package_id, $include_future_plans = FALSE): array;
 
   /**
-   * Loads a package rate plan by ID.
+   * Loads a rate plan by ID.
    *
    * @param string $package_id
    *   The package ID.

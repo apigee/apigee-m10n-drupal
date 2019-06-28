@@ -33,11 +33,11 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
   use RatePlanDetailsKernelTestAssertionTrait;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
   /**
    * The developer drupal user.
@@ -65,7 +65,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->developer = $this->createAccount(['view rate_plan']);
     $this->setCurrentUser($this->developer);
 
-    $this->package_rate_plan = $this->createPackageRatePlan($this->createPackage());
+    $this->rate_plan = $this->createRatePlan($this->createPackage());
 
     // Enable the Classy theme.
     \Drupal::service('theme_handler')->install(['classy']);
@@ -81,7 +81,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $price_formatter = \Drupal::service('apigee_m10n.price_formatter');
 
-    $rate_plan = $this->package_rate_plan;
+    $rate_plan = $this->rate_plan;
 
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($rate_plan->getEntityTypeId());
 

@@ -105,7 +105,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->anonymous = new AnonymousUserSession();
 
     $this->package = $this->createPackage();
-    $this->rate_plan = $this->createPackageRatePlan($this->package);
+    $this->rate_plan = $this->createRatePlan($this->package);
 
     $this->prophesizeCurrentUser([]);
   }

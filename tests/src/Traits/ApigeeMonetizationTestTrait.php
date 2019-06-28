@@ -284,7 +284,7 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Create a package rate plan for a given package.
+   * Create a rate plan for a given package.
    *
    * @param \Drupal\apigee_m10n\Entity\PackageInterface $package
    *   The rate plan package.
@@ -294,7 +294,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function createPackageRatePlan(PackageInterface $package): RatePlanInterface {
+  protected function createRatePlan(PackageInterface $package): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 

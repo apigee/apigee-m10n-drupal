@@ -54,11 +54,11 @@ class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
   protected $api_package;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
   /**
    * {@inheritdoc}
@@ -72,7 +72,7 @@ class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
     $this->field_manager = $this->container->get('entity_field.manager');
 
     $this->api_package = $this->createPackage();
-    $this->package_rate_plan = $this->createPackageRatePlan($this->api_package);
+    $this->rate_plan = $this->createRatePlan($this->api_package);
   }
 
   /**
@@ -83,7 +83,7 @@ class ApiPackageFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->package_rate_plan->get('package');
+    $item_list = $this->rate_plan->get('package');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(ApiPackageFieldItem::class, $item_list->get(0));
     static::assertSame($this->api_package->id(), $item_list->get(0)->value->id());

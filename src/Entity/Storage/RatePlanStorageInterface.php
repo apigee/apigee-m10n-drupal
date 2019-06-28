@@ -37,10 +37,10 @@ interface RatePlanStorageInterface {
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
    *   An array of rate plans for a given package.
    */
-  public function loadPackageRatePlans(string $package_name, $include_future_plans = FALSE): array;
+  public function loadRatePlansByProductBundle(string $package_name, $include_future_plans = FALSE): array;
 
   /**
-   * Load an individual package rate plan by package_id and rate plan ID.
+   * Load an individual rate plan by package_id and rate plan ID.
    *
    * @param string $package_name
    *   The package the rate plan belongs to.

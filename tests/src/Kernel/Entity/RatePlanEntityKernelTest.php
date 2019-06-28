@@ -47,7 +47,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     $package = $this->createPackage();
 
     // Create a rate plan.
-    $this->rate_plan = $this->createPackageRatePlan($package);
+    $this->rate_plan = $this->createRatePlan($package);
   }
 
   /**

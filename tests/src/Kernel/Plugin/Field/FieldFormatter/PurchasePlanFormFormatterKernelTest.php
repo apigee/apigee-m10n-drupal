@@ -54,11 +54,11 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
   protected $api_package;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
 
   /**
@@ -94,7 +94,7 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
     $this->field_manager = $this->container->get('entity_field.manager');
 
     $this->api_package = $this->createPackage();
-    $this->package_rate_plan = $this->createPackageRatePlan($this->api_package);
+    $this->rate_plan = $this->createRatePlan($this->api_package);
   }
 
   /**
@@ -108,7 +108,7 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
       'get_developer_terms_conditions',
     ]);
 
-    $item_list = $this->package_rate_plan->get('purchase');
+    $item_list = $this->rate_plan->get('purchase');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(PurchaseFieldItem::class, $item_list->get(0));
     static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());
