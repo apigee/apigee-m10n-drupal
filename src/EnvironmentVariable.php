@@ -21,8 +21,6 @@ namespace Drupal\apigee_m10n;
 
 /**
  * Environment variable keys.
- *
- * @package Drupal\apigee_m10n
  */
 abstract class EnvironmentVariable {
   const APIGEE_EDGE_AUTH_TYPE = 'APIGEE_EDGE_AUTH_TYPE';

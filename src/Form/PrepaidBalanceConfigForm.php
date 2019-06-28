@@ -28,8 +28,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Config form for prepaid balance.
- *
- * @package Drupal\apigee_m10n
  */
 class PrepaidBalanceConfigForm extends ConfigFormBase {
 

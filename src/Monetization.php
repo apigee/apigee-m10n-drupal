@@ -47,8 +47,6 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Apigee Monetization base service.
- *
- * @package Drupal\apigee_m10n
  */
 class Monetization implements MonetizationInterface {
 

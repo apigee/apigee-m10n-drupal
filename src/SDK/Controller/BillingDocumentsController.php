@@ -27,8 +27,6 @@ use Psr\Http\Message\UriInterface;
  * TODO: Extract this to the apigee-client-php package.
  *
  * Class BillingDocumentsController.
- *
- * @package Drupal\apigee_m10n\Controller
  */
 class BillingDocumentsController extends AbstractController implements BillingDocumentsControllerInterface {
 

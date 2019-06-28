@@ -37,8 +37,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Generates the packages page.
- *
- * @package Drupal\apigee_m10n\Controller
  */
 class PricingAndPlansController extends ControllerBase {
 

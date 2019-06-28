@@ -22,8 +22,6 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 /**
  * Functional test for navigation.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */

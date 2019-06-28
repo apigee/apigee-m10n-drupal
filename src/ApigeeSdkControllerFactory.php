@@ -48,8 +48,6 @@ use Drupal\user\UserInterface;
 
 /**
  * The `apigee_m10n.sdk_controller_factory` service class.
- *
- * @package Drupal\apigee_m10n
  */
 class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface {
 
