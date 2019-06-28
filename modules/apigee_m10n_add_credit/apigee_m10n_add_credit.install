@@ -20,6 +20,8 @@
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface;
 use Drupal\Core\Link;
+use Drupal\user\RoleInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditServiceInterface;
 
 /**
  * @file
@@ -51,4 +53,14 @@ function apigee_m10n_add_credit_requirements($phase) {
   }
 
   return $requirements;
+}
+
+/**
+ * Implements hook_install().
+ */
+function apigee_m10n_add_credit_install() {
+  // Populate the default permissions for the authenticated user.
+  if (Drupal::moduleHandler()->moduleExists('user')) {
+    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, AddCreditServiceInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
+  }
 }
