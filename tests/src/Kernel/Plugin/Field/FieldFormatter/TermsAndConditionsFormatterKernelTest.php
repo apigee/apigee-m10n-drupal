@@ -88,8 +88,8 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
 
     $this->setCurrentUser($this->account);
 
-    $package = $this->createPackage();
-    $rate_plan = $this->createRatePlan($package);
+    $product_bundle = $this->createProductBundle();
+    $rate_plan = $this->createRatePlan($product_bundle);
 
     $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,

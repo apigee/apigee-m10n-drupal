@@ -53,11 +53,11 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
   protected $team;
 
   /**
-   * A test package.
+   * A test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\PackageInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A test rate plan.
@@ -94,8 +94,8 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     $this->createCurrentUserSession($this->developer);
 
-    $this->package = $this->createPackage();
-    $this->rate_plan = $this->createRatePlan($this->package);
+    $this->product_bundle = $this->createProductBundle();
+    $this->rate_plan = $this->createRatePlan($this->product_bundle);
   }
 
   /**
@@ -115,11 +115,11 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     // Make sure we get a team context when getting a package url.
     $url = $this->rate_plan->toUrl('team');
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $url->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $url->toString());
     static::assertSame('entity.rate_plan.team', $url->getRouteName());
 
     // Load the cached rate plan.
-    $rate_plan = RatePlan::loadById($this->package->id(), $this->rate_plan->id());
+    $rate_plan = RatePlan::loadById($this->product_bundle->id(), $this->rate_plan->id());
 
     static::assertInstanceOf(TeamsRatePlan::class, $rate_plan);
     // Compare the loaded rate plan with the object comparator.

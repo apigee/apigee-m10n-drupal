@@ -79,7 +79,7 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
 
-    $this->api_package = $this->createPackage();
+    $this->api_package = $this->createProductBundle();
     $this->rate_plan = $this->createRatePlan($this->api_package);
   }
 

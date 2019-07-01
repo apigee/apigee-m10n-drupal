@@ -53,11 +53,11 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
   protected $team;
 
   /**
-   * A test package.
+   * A test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\PackageInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * {@inheritdoc}
@@ -88,7 +88,7 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     $this->createCurrentUserSession($this->developer);
 
-    $this->package = $this->createPackage();
+    $this->product_bundle = $this->createProductBundle();
   }
 
   /**
@@ -102,30 +102,30 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->warmTeamTnsCache($this->team);
 
     // Check team access.
-    static::assertTrue($this->package->access('view', $this->developer));
+    static::assertTrue($this->product_bundle->access('view', $this->developer));
 
     // Make sure we get a team context when getting a package url.
-    $url = $this->package->toUrl('team');
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $url->toString());
+    $url = $this->product_bundle->toUrl('team');
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}", $url->toString());
     static::assertSame('entity.package.team', $url->getRouteName());
 
     // Load the cached package.
-    $package = Package::load($this->package->id());
+    $product_bundle = Package::load($this->product_bundle->id());
 
-    static::assertInstanceOf(TeamsPackageInterface::class, $package);
+    static::assertInstanceOf(TeamsPackageInterface::class, $product_bundle);
     // Use the object comparator to compare the loaded package.
-    static::assertEquals($this->package, $package);
+    static::assertEquals($this->product_bundle, $product_bundle);
 
     // Get the package products.
-    static::assertGreaterThan(0, $this->count($package->getApiProducts()));
+    static::assertGreaterThan(0, $this->count($product_bundle->getApiProducts()));
 
     // Render the package.
     $build = \Drupal::entityTypeManager()
       ->getViewBuilder('package')
-      ->view($this->package, 'default');
+      ->view($this->product_bundle, 'default');
 
-    $rate_plan_1 = $this->createRatePlan($this->package);
-    $rate_plan_2 = $this->createRatePlan($this->package);
+    $rate_plan_1 = $this->createRatePlan($this->product_bundle);
+    $rate_plan_2 = $this->createRatePlan($this->product_bundle);
 
     $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan_1, $rate_plan_2]]]);
     $content = \Drupal::service('renderer')->renderRoot($build);
@@ -134,11 +134,11 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     $css_prefix = '.apigee-entity.package';
     // Package detail as rendered.
-    $this->assertCssElementText("{$css_prefix} > h2", $package->label());
+    $this->assertCssElementText("{$css_prefix} > h2", $product_bundle->label());
 
     // API Products.
     $this->assertCssElementText("{$css_prefix} .field--name-apiproducts .field__label", 'Included products');
-    foreach ($this->package->get('apiProducts') as $index => $apiProduct) {
+    foreach ($this->product_bundle->get('apiProducts') as $index => $apiProduct) {
       // CSS indexes start at 1.
       $css_index = $index + 1;
       $this->assertCssElementText("{$css_prefix} .field--name-apiproducts .field__item:nth-child({$css_index})", $apiProduct->entity->label());

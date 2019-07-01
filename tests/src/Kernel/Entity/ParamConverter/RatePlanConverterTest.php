@@ -56,7 +56,7 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
     // Create an admin user.
     $developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
     $this->setCurrentUser($developer);
-    $api_package = $this->createPackage();
+    $api_package = $this->createProductBundle();
     $rate_plan = $this->createRatePlan($api_package);
 
     $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [

@@ -69,20 +69,20 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    */
   public function loadAll(): array {
     // Cache the package controller.
-    static $package_controller;
-    $package_controller = $package_controller
+    static $product_bundle_controller;
+    $product_bundle_controller = $product_bundle_controller
       ?: $this->controllerFactory()->apiPackageController();
 
     // TODO: Replace this with entity load once packages become drupal entities.
-    $all_packages = $package_controller->getEntities();
+    $all_product_bundles = $product_bundle_controller->getEntities();
 
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[] $rate_plans */
     $rate_plans = [];
 
     // Loops through all packages to get the package plans.
-    foreach ($all_packages as $package) {
+    foreach ($all_product_bundles as $product_bundle) {
       // Get all plans for this package.
-      $plans = $this->loadRatePlansByProductBundle($package->id());
+      $plans = $this->loadRatePlansByProductBundle($product_bundle->id());
       foreach ($plans as $plan) {
         // Key rate plans by their ID.
         $rate_plans[$plan->id()] = $plan;
@@ -95,17 +95,17 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
   /**
    * {@inheritdoc}
    */
-  public function loadRatePlansByProductBundle($package_id, $include_future_plans = FALSE): array {
+  public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE): array {
     // Get all plans for this package.
-    return $this->getRatePlanControllerByPackageId($package_id)
+    return $this->getRatePlanControllerByPackageId($product_bundle_id)
       ->getEntities(!$include_future_plans, FALSE);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadById(string $package_id, string $id): EntityInterface {
-    return $this->getRatePlanControllerByPackageId($package_id)->load($id);
+  public function loadById(string $product_bundle_id, string $id): EntityInterface {
+    return $this->getRatePlanControllerByPackageId($product_bundle_id)->load($id);
   }
 
   /**
@@ -119,32 +119,32 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    */
   protected function getRatePlanController(EntityInterface $entity) {
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $entity */
-    if (!($package = $entity->getPackage())) {
+    if (!($product_bundle = $entity->getPackage())) {
       // If the package is not set, we have no way to get the controller since
       // it depends on the package ID.
       throw new RuntimeException('The API package must be set to create a rate plan.');
     }
     // Get the controller.
-    return $this->getRatePlanControllerByPackageId($package->id());
+    return $this->getRatePlanControllerByPackageId($product_bundle->id());
   }
 
   /**
    * Gets the rate plan controller by package ID.
    *
-   * @param string $package_id
+   * @param string $product_bundle_id
    *   The ID of the package the rate plan belongs to.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getRatePlanControllerByPackageId($package_id) {
+  protected function getRatePlanControllerByPackageId($product_bundle_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.
-    $controller_cache[$package_id] = $controller_cache[$package_id]
-      ?? $this->controllerFactory()->ratePlanController($package_id);
+    $controller_cache[$product_bundle_id] = $controller_cache[$product_bundle_id]
+      ?? $this->controllerFactory()->ratePlanController($product_bundle_id);
 
-    return $controller_cache[$package_id];
+    return $controller_cache[$product_bundle_id];
   }
 
 }

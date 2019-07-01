@@ -39,11 +39,11 @@ use Symfony\Component\HttpFoundation\Response;
 class PackageEntityKernelTest extends MonetizationKernelTestBase {
 
   /**
-   * A test package.
+   * A test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\PackageInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A test user.
@@ -58,8 +58,8 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->package = $this->createPackage();
-    static::assertInstanceOf(Package::class, $this->package);
+    $this->product_bundle = $this->createProductBundle();
+    static::assertInstanceOf(Package::class, $this->product_bundle);
 
     // Prepare to create a user.
     $this->installEntitySchema('user');
@@ -89,34 +89,34 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
     // Test that package canonical urls are redirecting to developer urls.
-    $request = Request::create(Url::fromRoute('entity.package.canonical', ['package' => $this->package->id()])->toString(), 'GET');
+    $request = Request::create(Url::fromRoute('entity.package.canonical', ['package' => $this->product_bundle->id()])->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/package/{$this->package->id()}", $response->headers->get('location'));
+    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/package/{$this->product_bundle->id()}", $response->headers->get('location'));
 
     // Make sure we get a team context when getting a package url.
-    $url = $this->package->toUrl('canonical');
-    static::assertSame("/user/1/monetization/package/{$this->package->id()}", $url->toString());
+    $url = $this->product_bundle->toUrl('canonical');
+    static::assertSame("/user/1/monetization/package/{$this->product_bundle->id()}", $url->toString());
     static::assertSame('entity.package.developer', $url->getRouteName());
 
     // Load the cached package.
-    $package = Package::load($this->package->id());
+    $product_bundle = Package::load($this->product_bundle->id());
 
-    static::assertInstanceOf(PackageInterface::class, $package);
-    static::assertSame(gettype($package), gettype($this->package));
+    static::assertInstanceOf(PackageInterface::class, $product_bundle);
+    static::assertSame(gettype($product_bundle), gettype($this->product_bundle));
 
     // Check properties.
-    static::assertSame($this->package->id(), $package->id());
-    static::assertSame($this->package->getDisplayName(), $package->getDisplayName());
-    static::assertSame($this->package->getName(), $package->getName());
-    static::assertSame($this->package->getDescription(), $package->getDescription());
-    static::assertSame($this->package->getStatus(), $package->getStatus());
+    static::assertSame($this->product_bundle->id(), $product_bundle->id());
+    static::assertSame($this->product_bundle->getDisplayName(), $product_bundle->getDisplayName());
+    static::assertSame($this->product_bundle->getName(), $product_bundle->getName());
+    static::assertSame($this->product_bundle->getDescription(), $product_bundle->getDescription());
+    static::assertSame($this->product_bundle->getStatus(), $product_bundle->getStatus());
     // Get the package products.
-    $products = $package->getApiProducts();
+    $products = $product_bundle->getApiProducts();
     static::assertGreaterThan(0, $this->count($products));
-    static::assertCount(count($this->package->getApiProducts()), $products);
+    static::assertCount(count($this->product_bundle->getApiProducts()), $products);
 
-    foreach ($this->package->getApiProducts() as $product_id => $product) {
+    foreach ($this->product_bundle->getApiProducts() as $product_id => $product) {
       static::assertArrayHasKey($product_id, $products);
     }
   }

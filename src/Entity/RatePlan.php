@@ -232,10 +232,10 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *   Thrown if the storage handler couldn't be loaded.
    */
-  public static function loadById(string $package_name, string $id): RatePlanInterface {
+  public static function loadById(string $product_bundle_id, string $id): RatePlanInterface {
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
-      ->loadById($package_name, $id);
+      ->loadById($product_bundle_id, $id);
   }
 
   /**

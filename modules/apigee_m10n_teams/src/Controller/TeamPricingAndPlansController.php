@@ -41,10 +41,10 @@ class TeamPricingAndPlansController extends PricingAndPlansController {
     $rate_plans = [];
 
     // Load rate plans for each package.
-    foreach (TeamsPackage::getAvailableApiPackagesByTeam($team->id()) as $package) {
-      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $package */
-      foreach ($package->get('ratePlans') as $rate_plan) {
-        $rate_plans["{$package->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+    foreach (TeamsPackage::getAvailableApiPackagesByTeam($team->id()) as $product_bundle) {
+      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $product_bundle */
+      foreach ($product_bundle->get('ratePlans') as $rate_plan) {
+        $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
       };
     }
 

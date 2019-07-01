@@ -41,7 +41,7 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
   /**
    * Load an individual rate plan by package_id and rate plan ID.
    *
-   * @param string $package_name
+   * @param string $product_bundle_id
    *   The package the rate plan belongs to.
    * @param string $id
    *   The rate plan ID.
@@ -49,7 +49,7 @@ interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdge
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   The rate plan.
    */
-  public static function loadById(string $package_name, string $id): RatePlanInterface;
+  public static function loadById(string $product_bundle_id, string $id): RatePlanInterface;
 
   /**
    * Get's data for the `apigee_purchase` field formatter.

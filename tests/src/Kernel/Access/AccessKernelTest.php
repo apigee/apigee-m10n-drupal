@@ -60,7 +60,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Drupal\apigee_m10n\Entity\PackageInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A rate plan.
@@ -104,8 +104,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Anonymous.
     $this->anonymous = new AnonymousUserSession();
 
-    $this->package = $this->createPackage();
-    $this->rate_plan = $this->createRatePlan($this->package);
+    $this->product_bundle = $this->createProductBundle();
+    $this->rate_plan = $this->createRatePlan($this->product_bundle);
 
     $this->prophesizeCurrentUser([]);
   }
@@ -208,7 +208,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan canonical route.
     $plan_url = Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->developer->id(),
-      'package' => $this->package->id(),
+      'package' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($plan_url->access($this->administrator));
@@ -218,7 +218,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan canonical route for testing `any` permission.
     $plan_url = Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->administrator->id(),
-      'package' => $this->package->id(),
+      'package' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($plan_url->access($this->administrator));
@@ -228,7 +228,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan purchase route.
     $purchase_url = Url::fromRoute('entity.rate_plan.purchase', [
       'user' => $this->developer->id(),
-      'package' => $this->package->id(),
+      'package' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($purchase_url->access($this->administrator));
@@ -238,7 +238,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan purchase route for testing `any` permission.
     $purchase_url = Url::fromRoute('entity.rate_plan.purchase', [
       'user' => $this->administrator->id(),
-      'package' => $this->package->id(),
+      'package' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($purchase_url->access($this->administrator));
@@ -251,19 +251,19 @@ class AccessKernelTest extends MonetizationKernelTestBase {
    */
   public function assertPackageRoutes() {
     // Create a package.
-    $package = $this->createPackage();
+    $product_bundle = $this->createProductBundle();
 
     // Developer route as developer.
-    $package_route = Url::fromRoute('entity.package.developer', ['user' => $this->developer->id(), 'package' => $package->id()]);
-    static::assertTrue($package_route->access($this->administrator));
-    static::assertFalse($package_route->access($this->developer));
-    static::assertFalse($package_route->access($this->anonymous));
+    $product_bundle_route = Url::fromRoute('entity.package.developer', ['user' => $this->developer->id(), 'package' => $product_bundle->id()]);
+    static::assertTrue($product_bundle_route->access($this->administrator));
+    static::assertFalse($product_bundle_route->access($this->developer));
+    static::assertFalse($product_bundle_route->access($this->anonymous));
 
     // Developer route as developer.
-    $package_route = Url::fromRoute('entity.package.developer', ['user' => $this->administrator->id(), 'package' => $package->id()]);
-    static::assertTrue($package_route->access($this->administrator));
-    static::assertFalse($package_route->access($this->developer));
-    static::assertFalse($package_route->access($this->anonymous));
+    $product_bundle_route = Url::fromRoute('entity.package.developer', ['user' => $this->administrator->id(), 'package' => $product_bundle->id()]);
+    static::assertTrue($product_bundle_route->access($this->administrator));
+    static::assertFalse($product_bundle_route->access($this->developer));
+    static::assertFalse($product_bundle_route->access($this->anonymous));
   }
 
   /**

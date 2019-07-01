@@ -65,7 +65,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->developer = $this->createAccount(['view rate_plan']);
     $this->setCurrentUser($this->developer);
 
-    $this->rate_plan = $this->createRatePlan($this->createPackage());
+    $this->rate_plan = $this->createRatePlan($this->createProductBundle());
 
     // Enable the Classy theme.
     \Drupal::service('theme_handler')->install(['classy']);

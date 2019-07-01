@@ -30,7 +30,7 @@ interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterf
   /**
    * Loads all rate plans for a given package.
    *
-   * @param string $package_id
+   * @param string $product_bundle_id
    *   The package ID.
    * @param bool $include_future_plans
    *   Whether to include future plans in the list.
@@ -38,12 +38,12 @@ interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterf
    * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[]
    *   A list of rate plans keyed by ID.
    */
-  public function loadRatePlansByProductBundle($package_id, $include_future_plans = FALSE): array;
+  public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE): array;
 
   /**
    * Loads a rate plan by ID.
    *
-   * @param string $package_id
+   * @param string $product_bundle_id
    *   The package ID.
    * @param string $id
    *   The rate plan ID.
@@ -51,6 +51,6 @@ interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterf
    * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface
    *   The rate plan.
    */
-  public function loadById(string $package_id, string $id): EntityInterface;
+  public function loadById(string $product_bundle_id, string $id): EntityInterface;
 
 }

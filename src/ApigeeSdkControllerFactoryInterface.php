@@ -111,7 +111,7 @@ interface ApigeeSdkControllerFactoryInterface {
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The controller.
    */
-  public function ratePlanController($package_id): RatePlanControllerInterface;
+  public function ratePlanController($product_bundle_id): RatePlanControllerInterface;
 
   /**
    * Creates a developer accepted rate plan controller.

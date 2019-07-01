@@ -67,7 +67,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
     $this->container->set('current_route_match', $route_match->reveal());
 
     // Create a package entity.
-    $package = Package::create([
+    $product_bundle = Package::create([
       'id' => strtolower($random->word(8) . '-' . $random->word(4)),
       'displayName' => $random->name(12),
       'description' => $random->sentences(12),
@@ -84,8 +84,8 @@ class TeamsEntityOverrideTest extends KernelTestBase {
     static::assertSame(MonetizationTeamsEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
     // Make sure we get a team context when getting a package url.
-    $url = $package->toUrl('canonical');
-    static::assertSame("/teams/{$team_id}/monetization/package/{$package->id()}", $url->toString());
+    $url = $product_bundle->toUrl('canonical');
+    static::assertSame("/teams/{$team_id}/monetization/package/{$product_bundle->id()}", $url->toString());
     static::assertSame('entity.package.team', $url->getRouteName());
   }
 

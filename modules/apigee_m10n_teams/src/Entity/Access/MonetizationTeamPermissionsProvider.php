@@ -37,7 +37,7 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
   public function permissions(): array {
     $group = $this->t('Purchased plans');
     $plan_group = $this->t('Rate plan');
-    $package_group = $this->t('Package');
+    $product_bundle_group = $this->t('Product bundle');
     return [
       'purchase rate_plan' => new TeamPermission(
         'purchase rate_plan',
@@ -63,11 +63,11 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
         $this->t('View rate plans'),
         $plan_group
       ),
-      // Packages.
+      // Product bundles.
       'view package' => new TeamPermission(
         'view package',
-        $this->t('View package'),
-        $package_group
+        $this->t('View product bundle'),
+        $product_bundle_group
       ),
       'edit billing details' => new TeamPermission(
         'edit billing details',

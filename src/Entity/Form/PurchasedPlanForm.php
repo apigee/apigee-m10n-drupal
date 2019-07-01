@@ -386,11 +386,11 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       return $values;
     }, $overlaps);
 
-    $package = $this->getEntity()->getRatePlan()->getPackage();
+    $product_bundle = $this->getEntity()->getRatePlan()->getPackage();
 
     // Process products in attempted purchased plan.
     $products = [];
-    foreach ($package->getApiProducts() as $product) {
+    foreach ($product_bundle->getApiProducts() as $product) {
       $products[$product->id()] = $product;
     }
 

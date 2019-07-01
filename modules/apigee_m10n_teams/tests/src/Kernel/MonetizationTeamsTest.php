@@ -56,11 +56,11 @@ class MonetizationTeamsTest extends KernelTestBase {
   protected $team;
 
   /**
-   * A test package.
+   * A test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\PackageInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A test rate plan.
@@ -107,12 +107,12 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create a team Entity.
     $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
 
-    $this->package = $this->entity_type_manager->getStorage('package')->create([
+    $this->product_bundle = $this->entity_type_manager->getStorage('package')->create([
       'id' => $this->randomMachineName(),
     ]);
     $this->rate_plan = $this->entity_type_manager->getStorage('rate_plan')->create([
       'id' => $this->randomMachineName(),
-      'package' => $this->package,
+      'package' => $this->product_bundle,
     ]);
     $this->purchased_plan = $this->entity_type_manager->getStorage('purchased_plan')->create([
       'id' => $this->randomMachineName(),
@@ -144,7 +144,7 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   public function assertEntityAlter() {
     // Check class overrides.
-    static::assertInstanceOf(TeamsPackageInterface::class, $this->package);
+    static::assertInstanceOf(TeamsPackageInterface::class, $this->product_bundle);
     static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
     static::assertInstanceOf(TeamsPurchasedPlanInterface::class, $this->purchased_plan);
 
@@ -174,16 +174,16 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create an entity we can test against `entityAccess`.
     $entity_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
     // We are only using package here because it's easy.
-    $package = Package::create(['id' => $entity_id]);
+    $product_bundle = Package::create(['id' => $entity_id]);
 
     // Test view package for a team member.
-    static::assertTrue($package->access('view', $account));
+    static::assertTrue($product_bundle->access('view', $account));
     // Test view package for a non team member.
-    static::assertFalse($package->access('view', $non_member));
+    static::assertFalse($product_bundle->access('view', $non_member));
 
     // Populate the entity cache with the rate plan's API package because it
     // will be loaded when the rate plan cache tags are loaded.
-    \Drupal::service('entity.memory_cache')->set("values:package:{$this->package->id()}", $this->package);
+    \Drupal::service('entity.memory_cache')->set("values:package:{$this->product_bundle->id()}", $this->product_bundle);
 
     // Test view rate plan for a team member.
     static::assertTrue($this->rate_plan->access('view', $account));
@@ -201,10 +201,10 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   public function assertEntityLinks() {
     // Package team url.
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}", $this->product_bundle->toUrl('team')->toString());
     // Rate plan team url.
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
     // Team purchased plan URLs.
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [

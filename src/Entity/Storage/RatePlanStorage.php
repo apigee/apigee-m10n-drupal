@@ -95,12 +95,12 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadRatePlansByProductBundle(string $package_id, $include_future_plans = FALSE): array {
+  public function loadRatePlansByProductBundle(string $product_bundle_id, $include_future_plans = FALSE): array {
     $entities = [];
 
-    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $include_future_plans, &$entities) {
+    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $include_future_plans, &$entities) {
       // Load the  rate plans for this package.
-      $sdk_entities = $controller->loadRatePlansByProductBundle($package_id, $include_future_plans);
+      $sdk_entities = $controller->loadRatePlansByProductBundle($product_bundle_id, $include_future_plans);
       // Convert the SDK entities to drupal entities.
       foreach ($sdk_entities as $id => $entity) {
         $drupal_entity = $this->createNewInstance($entity);
@@ -118,7 +118,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadById(string $package_id, string $id): RatePlanInterface {
+  public function loadById(string $product_bundle_id, string $id): RatePlanInterface {
     // Load from cache.
     $ids = [$id];
     $rate_plans = $this->getFromPersistentCache($ids);
@@ -128,8 +128,8 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     }
 
     $entity = NULL;
-    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $id, &$entity) {
-      $drupal_entity = ($sdk_entity = $controller->loadById($package_id, $id))
+    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $id, &$entity) {
+      $drupal_entity = ($sdk_entity = $controller->loadById($product_bundle_id, $id))
         ? $this->createNewInstance($sdk_entity)
         : FALSE;
 

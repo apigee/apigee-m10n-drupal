@@ -212,20 +212,20 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
 
     // Set up packages and plans for the developer.
     $rate_plans = [];
-    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiPackage[] $packages */
-    $packages = [
-      $this->createPackage(),
-      $this->createPackage(),
+    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiPackage[] $product_bundles */
+    $product_bundles = [
+      $this->createProductBundle(),
+      $this->createProductBundle(),
     ];
     // Some of the entities referenced will be loaded from the API unless we
     // warm the static cache with them.
     $entity_static_cache = \Drupal::service('entity.memory_cache');
     // Create a random number of rate plans for each package.
-    foreach ($packages as $package) {
+    foreach ($product_bundles as $product_bundle) {
       // Warm the static cache for each package.
-      $entity_static_cache->set("values:package:{$package->id()}", $package);
+      $entity_static_cache->set("values:package:{$product_bundle->id()}", $product_bundle);
       // Warm the static cache for each package product.
-      foreach ($package->decorated()->getApiProducts() as $product) {
+      foreach ($product_bundle->decorated()->getApiProducts() as $product) {
         $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::create([
           'id' => $product->id(),
           'name' => $product->getName(),
@@ -233,15 +233,15 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
           'description' => $product->getDescription(),
         ]));
       }
-      $rate_plans[$package->id()] = [];
+      $rate_plans[$product_bundle->id()] = [];
       for ($i = rand(1, 3); $i > 0; $i--) {
-        $rate_plans[$package->id()][] = $this->createRatePlan($package);
+        $rate_plans[$product_bundle->id()][] = $this->createRatePlan($product_bundle);
       }
     }
 
     // Queue the package response.
-    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $packages]]);
-    foreach ($rate_plans as $package_id => $plans) {
+    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
+    foreach ($rate_plans as $product_bundle_id => $plans) {
       $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans]]);
     }
 
@@ -257,7 +257,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
     $this->assertTitle('Pricing and Plans | ');
     $rate_plan_css_index = 1;
-    foreach ($rate_plans as $package_id => $plan_list) {
+    foreach ($rate_plans as $product_bundle_id => $plan_list) {
       foreach ($plan_list as $rate_plan) {
         $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .rate-plan";
         // Check the plan name.

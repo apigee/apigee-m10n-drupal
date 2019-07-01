@@ -44,10 +44,10 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $package = $this->createPackage();
+    $product_bundle = $this->createProductBundle();
 
     // Create a rate plan.
-    $this->rate_plan = $this->createRatePlan($package);
+    $this->rate_plan = $this->createRatePlan($product_bundle);
   }
 
   /**
