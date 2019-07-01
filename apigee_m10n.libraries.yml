@@ -1,14 +1,3 @@
-package:
-  css:
-    theme:
-      css/package.css: {}
-  js:
-    js/package.js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.once
-    - core/drupal
-
 rate_plan.entity_list:
   css:
     theme:
