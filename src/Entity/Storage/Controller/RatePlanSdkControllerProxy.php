@@ -22,13 +22,14 @@ namespace Drupal\apigee_m10n\Entity\Storage\Controller;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_edge\Exception\RuntimeException;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
+use Drupal\apigee_m10n\Entity\ProductBundle;
 
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
  *
  * Responsible for proxying calls to the appropriate rate plan controllers. Rate
- * plan controllers require a package ID for instantiation so we sometimes need
- * to get a controller at runtime for a given rate plan.
+ * plan controllers require a product bundle ID for instantiation so we
+ * sometimes need to get a controller at runtime for a given rate plan.
  */
 class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface {
 
@@ -45,9 +46,9 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function load(string $id): EntityInterface {
-    // A little secret is that the real package ID is not required for loading
-    // a rate plan.
-    return $this->getRatePlanControllerByPackageId('default')->load($id);
+    // A little secret is that the real product bundle ID is not required for
+    // loading a rate plan.
+    return $this->getRatePlanControllerByProductBundleId('default')->load($id);
   }
 
   /**
@@ -61,7 +62,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function delete(string $id): void {
-    $this->getRatePlanControllerByPackageId('default')->delete($id);
+    $this->getRatePlanControllerByProductBundleId('default')->delete($id);
   }
 
   /**
@@ -79,9 +80,10 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[] $rate_plans */
     $rate_plans = [];
 
-    // Loops through all packages to get the package plans.
+    // Loops through all product bundles to get the rate plans.
     foreach ($all_product_bundles as $product_bundle) {
-      // Get all plans for this package.
+      /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle */
+      // Get all plans for this product bundle.
       $plans = $this->loadRatePlansByProductBundle($product_bundle->id());
       foreach ($plans as $plan) {
         // Key rate plans by their ID.
@@ -96,8 +98,8 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE): array {
-    // Get all plans for this package.
-    return $this->getRatePlanControllerByPackageId($product_bundle_id)
+    // Get all plans for this product bundle.
+    return $this->getRatePlanControllerByProductBundleId($product_bundle_id)
       ->getEntities(!$include_future_plans, FALSE);
   }
 
@@ -105,14 +107,14 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function loadById(string $product_bundle_id, string $id): EntityInterface {
-    return $this->getRatePlanControllerByPackageId($product_bundle_id)->load($id);
+    return $this->getRatePlanControllerByProductBundleId($product_bundle_id)->load($id);
   }
 
   /**
    * Given an entity, gets the rate plan controller.
    *
    * @param \Apigee\Edge\Entity\EntityInterface $entity
-   *   The ID of the package the rate plan belongs to.
+   *   The ID of the product bundle  the rate plan belongs to.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The real rate plan controller.
@@ -120,24 +122,24 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
   protected function getRatePlanController(EntityInterface $entity) {
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $entity */
     if (!($product_bundle = $entity->getPackage())) {
-      // If the package is not set, we have no way to get the controller since
-      // it depends on the package ID.
-      throw new RuntimeException('The API package must be set to create a rate plan.');
+      // If the product bundle is not set, we have no way to get the controller
+      // since it depends on the product bundle ID.
+      throw new RuntimeException('The product bundle must be set to create a rate plan.');
     }
     // Get the controller.
-    return $this->getRatePlanControllerByPackageId($product_bundle->id());
+    return $this->getRatePlanControllerByProductBundleId($product_bundle->id());
   }
 
   /**
-   * Gets the rate plan controller by package ID.
+   * Gets the rate plan controller by product bundle ID.
    *
    * @param string $product_bundle_id
-   *   The ID of the package the rate plan belongs to.
+   *   The ID of the product bundle the rate plan belongs to.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getRatePlanControllerByPackageId($product_bundle_id) {
+  protected function getRatePlanControllerByProductBundleId($product_bundle_id) {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.

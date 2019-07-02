@@ -55,7 +55,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
   /**
    * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 

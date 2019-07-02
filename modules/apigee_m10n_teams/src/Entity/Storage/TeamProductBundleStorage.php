@@ -20,30 +20,48 @@
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
-use Drupal\apigee_m10n\Entity\Storage\PackageStorage;
+use Drupal\apigee_m10n\Entity\Storage\ProductBundleStorage;
 
 /**
  * Overridden storage controller for the `package` entity.
  */
-class TeamPackageStorage extends PackageStorage implements TeamPackageStorageInterface {
+class TeamProductBundleStorage extends ProductBundleStorage implements TeamProductBundleStorageInterface {
+
+  /**
+   * Static cache for product bundles by team.
+   *
+   * @var array
+   */
+  protected $product_bundles_by_team = [];
 
   /**
    * {@inheritdoc}
    */
-  public function getAvailableApiPackagesByTeam($team_id) {
+  public function getAvailableProductBundlesByTeam($team_id) {
     $entities = [];
 
+    // Check for a cached list.
+    if (isset($this->product_bundles_by_team[$team_id])) {
+      return $this->loadMultiple($this->product_bundles_by_team[$team_id]);
+    }
+
     $this->withController(function (EdgeEntityControllerInterface $controller) use ($team_id, &$entities) {
-      $sdk_packages = $controller->getAvailableApiPackagesByCompany($team_id, TRUE, TRUE);
+      $sdk_product_bundles = $controller->getAvailableProductBundlesByTeam($team_id, TRUE, TRUE);
 
       // Returned entities are SDK entities and not Drupal entities,
       // what if the id is used in Drupal is different than what
       // SDK uses? (ex.: developer)
-      foreach ($sdk_packages as $id => $entity) {
+      foreach ($sdk_product_bundles as $id => $entity) {
         $entities[$id] = $this->createNewInstance($entity);
       }
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
+
+      // TODO: Consider caching this list in the DB.
+      // Set static cache.
+      $this->product_bundles_by_team[$team_id] = array_map(function ($entity) {
+        return $entity->id();
+      }, $entities);
     });
 
     return $entities;

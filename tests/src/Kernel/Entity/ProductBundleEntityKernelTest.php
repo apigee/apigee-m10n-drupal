@@ -20,8 +20,8 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity;
 
 use Drupal\apigee_edge\Entity\EdgeEntityType;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Entity\PackageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
@@ -31,17 +31,17 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Test the `package` entity.
+ * Test the `product_bundle` entity.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class PackageEntityKernelTest extends MonetizationKernelTestBase {
+class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
 
   /**
    * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 
@@ -59,7 +59,7 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
     parent::setUp();
 
     $this->product_bundle = $this->createProductBundle();
-    static::assertInstanceOf(Package::class, $this->product_bundle);
+    static::assertInstanceOf(ProductBundle::class, $this->product_bundle);
 
     // Prepare to create a user.
     $this->installEntitySchema('user');
@@ -83,7 +83,7 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
     // Check that the entity class remains unchanged.
-    static::assertSame(Package::class, $entity_type->getClass());
+    static::assertSame(ProductBundle::class, $entity_type->getClass());
 
     // Make sure we are using our custom route provider.
     static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
@@ -100,9 +100,9 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame('entity.package.developer', $url->getRouteName());
 
     // Load the cached package.
-    $product_bundle = Package::load($this->product_bundle->id());
+    $product_bundle = ProductBundle::load($this->product_bundle->id());
 
-    static::assertInstanceOf(PackageInterface::class, $product_bundle);
+    static::assertInstanceOf(ProductBundleInterface::class, $product_bundle);
     static::assertSame(gettype($product_bundle), gettype($this->product_bundle));
 
     // Check properties.

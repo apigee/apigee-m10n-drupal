@@ -30,11 +30,10 @@ use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StatusPropertyAwareDecoratorTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
 /**
- * Defines the `package` entity class.
+ * Defines the `product_bundle` entity class.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
  *   id = "package",
@@ -46,9 +45,9 @@ use Drupal\user\UserInterface;
  *     plural = "@count Packages",
  *   ),
  *   handlers = {
- *     "storage" = "Drupal\apigee_m10n\Entity\Storage\PackageStorage",
+ *     "storage" = "Drupal\apigee_m10n\Entity\Storage\ProductBundleStorage",
  *     "access" = "Drupal\entity\EntityAccessControlHandlerBase",
- *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\PackageListBuilder",
+ *     "list_builder" = "Drupal\apigee_m10n\Entity\ListBuilder\ProductBundleListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider",
  *     }
@@ -64,7 +63,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "apigee_m10n.settings.package",
  * )
  */
-class Package extends FieldableEdgeEntityBase implements PackageInterface {
+class ProductBundle extends FieldableEdgeEntityBase implements ProductBundleInterface {
 
   use ApiProductsPropertyAwareDecoratorTrait;
   use DisplayNamePropertyAwareDecoratorTrait;
@@ -77,14 +76,14 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   public const ENTITY_TYPE_ID = 'package';
 
   /**
-   * Rate plans available for this package.
+   * Rate plans available for this product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface[]
    */
   protected $ratePlans;
 
   /**
-   * Constructs a `package` entity.
+   * Constructs a `product_bundle` entity.
    *
    * @param array $values
    *   An array of values to set, keyed by property name.
@@ -183,23 +182,23 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getAvailableApiPackagesByDeveloper($developer_id) {
+  public static function getAvailableProductBundlesByDeveloper($developer_id) {
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
-      ->getAvailableApiPackagesByDeveloper($developer_id);
+      ->getAvailableProductBundlesByDeveloper($developer_id);
   }
 
   /**
    * {@inheritdoc}
    */
   public function setApiProducts($api_products) {
-    // Modifying packages isn't actually allowed but the `setPropertyValue()`
+    // Modifying product bundles isn't actually allowed but `setPropertyValue()`
     // from `\Drupal\apigee_edge\Entity\FieldableEdgeEntityBase` will try to set
     // the property on the `obChange` TypedData event.
   }
 
   /**
-   * Gets the rate plans for this package.
+   * Gets the rate plans for this product bundle.
    *
    * @return array
    *   An array of rate plan entities.
@@ -214,7 +213,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
       $admin_access = \Drupal::currentUser()->hasPermission('administer apigee monetization');
 
       $rate_plans = RatePlan::loadRatePlansByProductBundle($this->id());
-      // Load plans for each package.
+      // Load plans for each product bundle.
       if (!$admin_access) {
         // Check access for each rate plan since the user is not an admin.
         $rate_plans = array_filter($rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
@@ -236,7 +235,7 @@ class Package extends FieldableEdgeEntityBase implements PackageInterface {
    * get them with this method.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\ApiProduct[]
-   *   The native monetization API Products associated with this package.
+   *   The native monetization API Products associated with this product bundle.
    */
   public function getMonetizationApiProducts(): array {
     return $this->decorated()->getApiProducts();

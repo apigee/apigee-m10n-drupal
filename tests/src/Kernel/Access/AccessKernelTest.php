@@ -58,7 +58,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   /**
    * A package.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 
@@ -338,8 +338,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view own billing details' => 'View own billing details',
       'view own prepaid balance' => 'View own prepaid balance',
       // Packages.
-      'view package' => 'View packages',
-      'view package as anyone' => 'View packages as any developer',
+      'view package' => 'View product bundles',
+      'view package as anyone' => 'View product bundles as any developer',
       // Rate plans.
       'view rate_plan' => 'View rate plans',
       'view rate_plan as anyone' => 'View rate plans as any developer',

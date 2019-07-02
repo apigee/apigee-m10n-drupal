@@ -29,8 +29,8 @@ use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Entity\PackageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -244,11 +244,11 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Create an API package.
+   * Create a product bundle.
    *
    * @throws \Exception
    */
-  protected function createProductBundle(): PackageInterface {
+  protected function createProductBundle(): ProductBundleInterface {
     $products = [];
     for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
@@ -262,13 +262,13 @@ trait ApigeeMonetizationTestTrait {
       // CREATED, ACTIVE, INACTIVE.
       'status'      => 'CREATED',
     ]);
-    // Get a package controller from the package controller factory.
+    // Get a product bundle controller from the controller factory.
     $product_bundle_controller = $this->controller_factory->apiPackageController();
     $this->stack
       ->queueMockResponse(['get_monetization_package' => ['package' => $product_bundle]]);
     $product_bundle_controller->create($product_bundle);
 
-    // Remove the packages in the cleanup queue.
+    // Remove the product bundle in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 10,
       'callback' => function () use ($product_bundle, $product_bundle_controller) {
@@ -279,22 +279,22 @@ trait ApigeeMonetizationTestTrait {
     ];
 
     $this->stack->queueMockResponse(['package' => ['package' => $product_bundle]]);
-    // Load the package drupal entity and warm the cache.
-    return Package::load($product_bundle->id());
+    // Load the product_bundle drupal entity and warm the cache.
+    return ProductBundle::load($product_bundle->id());
   }
 
   /**
-   * Create a rate plan for a given package.
+   * Create a rate plan for a given product bundle.
    *
-   * @param \Drupal\apigee_m10n\Entity\PackageInterface $product_bundle
-   *   The rate plan package.
+   * @param \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle
+   *   The rate plan product bundle.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createRatePlan(PackageInterface $product_bundle): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 

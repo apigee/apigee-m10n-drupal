@@ -21,10 +21,10 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorageInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundleInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
@@ -58,7 +58,7 @@ class MonetizationTeamsTest extends KernelTestBase {
   /**
    * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 
@@ -144,12 +144,12 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   public function assertEntityAlter() {
     // Check class overrides.
-    static::assertInstanceOf(TeamsPackageInterface::class, $this->product_bundle);
+    static::assertInstanceOf(TeamProductBundleInterface::class, $this->product_bundle);
     static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
     static::assertInstanceOf(TeamsPurchasedPlanInterface::class, $this->purchased_plan);
 
     // Check storage overrides.
-    static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
+    static::assertInstanceOf(TeamProductBundleStorageInterface::class, $this->entity_type_manager->getStorage('package'));
     static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('purchased_plan'));
   }
 
@@ -174,7 +174,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create an entity we can test against `entityAccess`.
     $entity_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
     // We are only using package here because it's easy.
-    $product_bundle = Package::create(['id' => $entity_id]);
+    $product_bundle = ProductBundle::create(['id' => $entity_id]);
 
     // Test view package for a team member.
     static::assertTrue($product_bundle->access('view', $account));

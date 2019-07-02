@@ -24,7 +24,7 @@ apigee_m10n.settings.package:
   path: /admin/config/apigee-monetization/package
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
-    _title: Package settings
+    _title: Product bundle settings
   requirements:
     _permission: administer apigee monetization
   options:
@@ -54,7 +54,7 @@ entity.package.collection:
   path: /admin/config/apigee-monetization/package/list
   defaults:
     _entity_list: package
-    _title: Packages
+    _title: Product bundles
   requirements:
     _permission: administer apigee monetization
   options:

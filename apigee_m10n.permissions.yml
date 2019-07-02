@@ -23,10 +23,10 @@ view any billing details:
   title: 'View any billing details'
 
 view package:
-  title: 'View packages'
+  title: 'View product bundles'
 
 view package as anyone:
-  title: 'View packages as any developer'
+  title: 'View product bundles as any developer'
 
 view rate_plan:
   title: 'View rate plans'

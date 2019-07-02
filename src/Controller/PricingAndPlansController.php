@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n\Controller;
 
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
-use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n\Form\RatePlanConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Access\AccessResult;
@@ -118,8 +118,8 @@ class PricingAndPlansController extends ControllerBase {
     $rate_plans = [];
 
     // Load rate plans for each package.
-    foreach (Package::getAvailableApiPackagesByDeveloper($user->getEmail()) as $product_bundle) {
-      /** @var \Drupal\apigee_m10n\Entity\PackageInterface $product_bundle */
+    foreach (ProductBundle::getAvailableProductBundlesByDeveloper($user->getEmail()) as $product_bundle) {
+      /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle */
       foreach ($product_bundle->get('ratePlans') as $rate_plan) {
         $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
       };

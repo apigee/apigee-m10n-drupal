@@ -25,20 +25,21 @@ use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 /**
  * Defines the interface for the `package` entity objects.
  */
-interface PackageInterface extends ApiPackageInterface, FieldableEdgeEntityInterface {
+interface ProductBundleInterface extends ApiPackageInterface, FieldableEdgeEntityInterface {
 
   /**
-   * Gets a list of package entities for a developer.
+   * Gets a list of product bundle entities for a developer.
    *
    * @param string $developer_id
    *   The SDK developer ID.
    *
    * @return array
-   *   A list of package entities that would have be available to a developer.
+   *   A list of product bundle entities that would have be available to the
+   *   developer.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public static function getAvailableApiPackagesByDeveloper($developer_id);
+  public static function getAvailableProductBundlesByDeveloper($developer_id);
 
 }

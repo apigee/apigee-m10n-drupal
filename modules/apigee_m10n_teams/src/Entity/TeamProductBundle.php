@@ -19,15 +19,15 @@
 
 namespace Drupal\apigee_m10n_teams\Entity;
 
-use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n_teams\Entity\Traits\TeamRouteAwarePropertyTrait;
 
 /**
- * Overrides the `package` entity class.
+ * Overrides the `product_bundle` entity class.
  *
- * This is a class for packages that is aware of teams.
+ * This is a class for product bundles that are aware of teams.
  */
-class TeamsPackage extends Package implements TeamsPackageInterface {
+class TeamProductBundle extends ProductBundle implements TeamProductBundleInterface {
 
   use TeamRouteAwarePropertyTrait;
 
@@ -54,10 +54,10 @@ class TeamsPackage extends Package implements TeamsPackageInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getAvailableApiPackagesByTeam($team_id) {
+  public static function getAvailableProductBundlesByTeam($team_id) {
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
-      ->getAvailableApiPackagesByTeam($team_id);
+      ->getAvailableProductBundlesByTeam($team_id);
   }
 
   /**

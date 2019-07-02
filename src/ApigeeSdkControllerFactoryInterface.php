@@ -98,10 +98,10 @@ interface ApigeeSdkControllerFactoryInterface {
   public function apiProductController(): ApiProductControllerInterface;
 
   /**
-   * Creates a package controller.
+   * Creates an API package SDK controller.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface
-   *   The controller.
+   *   The SDK controller.
    */
   public function apiPackageController(): ApiPackageControllerInterface;
 

@@ -21,44 +21,44 @@
 namespace Drupal\apigee_m10n\Entity\Storage\Controller;
 
 /**
- * Api Package storage controller proxy interface.
+ * Api product bundle storage controller proxy interface.
  */
-interface ApiPackageEntityControllerProxyInterface {
+interface ProductBundleEntityControllerProxyInterface {
 
   /**
-   * Gets all available API packages for a developer.
+   * Gets all available product bundles for a developer.
    *
    * @param string $developerId
    *   Id or email address of the developer.
    * @param bool $active
-   *   Whether to show only API packages with active rate plans or not.
+   *   Whether to show only API bundles with active rate plans or not.
    * @param bool $allAvailable
-   *   Whether to show all available packages or only packages with developer
+   *   Whether to show all available bundles or only bundles with developer
    *   specific rate plans.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface[]
    *   An array of ApiPackage monetization SDK entities.
    *
-   * @see https://apidocs.apigee.com/monetize/apis/get/organizations/%7Borg_name%7D/developers/%7Bdeveloper_id%7D/monetization-packages
+   * @see https://docs.apigee.com/api-platform/monetization/api-product-bundles
    */
-  public function getAvailableApiPackagesByDeveloper(string $developerId, bool $active = FALSE, bool $allAvailable = TRUE): array;
+  public function getAvailableProductBundlesByDeveloper(string $developerId, bool $active = FALSE, bool $allAvailable = TRUE): array;
 
   /**
-   * Gets all available API packages for a company.
+   * Gets all available product bundles for a company.
    *
    * @param string $company
    *   Name of a company.
    * @param bool $active
-   *   Whether to show only API packages with active rate plans or not.
+   *   Whether to show only bundles with active rate plans or not.
    * @param bool $allAvailable
-   *   Whether to show all available packages or only packages with company
+   *   Whether to show all available bundles or only bundles with company
    *   specific rate plans.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface[]
    *   An array of ApiPackage monetization SDK entities.
    *
-   * @see https://apidocs.apigee.com/monetize/apis/get/organizations/%7Borg_name%7D/companies/%7Bdeveloper_id%7D/monetization-packages
+   * @see https://docs.apigee.com/api-platform/monetization/api-product-bundles
    */
-  public function getAvailableApiPackagesByCompany(string $company, bool $active = FALSE, bool $allAvailable = TRUE): array;
+  public function getAvailableProductBundlesByTeam(string $company, bool $active = FALSE, bool $allAvailable = TRUE): array;
 
 }

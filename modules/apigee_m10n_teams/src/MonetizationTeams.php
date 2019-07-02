@@ -26,10 +26,10 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
-use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
@@ -108,7 +108,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
     if (isset($entity_types['package'])) {
       // Use our class to override the original entity class.
-      $entity_types['package']->setClass(TeamsPackage::class);
+      $entity_types['package']->setClass(TeamProductBundle::class);
       // Create a link template for team packages.
       $entity_types['package']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}');
       // Get the entity route providers.
@@ -117,7 +117,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
       $entity_types['package']->setHandlerClass('route_provider', $route_providers);
       // Override the storage class.
-      $entity_types['package']->setStorageClass(TeamPackageStorage::class);
+      $entity_types['package']->setStorageClass(TeamProductBundleStorage::class);
     }
 
     // Overrides for the `rate_plan` entity.

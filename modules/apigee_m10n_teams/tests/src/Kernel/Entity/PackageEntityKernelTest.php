@@ -19,8 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundleInterface;
 use Drupal\Tests\apigee_m10n\Traits\RatePlansPropertyEnablerTrait;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
@@ -55,7 +55,7 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
   /**
    * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 
@@ -110,9 +110,9 @@ class PackageEntityKernelTest extends MonetizationTeamsKernelTestBase {
     static::assertSame('entity.package.team', $url->getRouteName());
 
     // Load the cached package.
-    $product_bundle = Package::load($this->product_bundle->id());
+    $product_bundle = ProductBundle::load($this->product_bundle->id());
 
-    static::assertInstanceOf(TeamsPackageInterface::class, $product_bundle);
+    static::assertInstanceOf(TeamProductBundleInterface::class, $product_bundle);
     // Use the object comparator to compare the loaded package.
     static::assertEquals($this->product_bundle, $product_bundle);
 
