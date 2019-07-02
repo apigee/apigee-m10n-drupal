@@ -36,8 +36,8 @@ use Drupal\Core\TypedData\DataDefinition;
  *   default_widget = "price_range_default",
  *   default_formatter = "price_range_default",
  *   constraints = {
- *     "PriceRangeMinimumGreaterMaximum" = {},
  *     "PriceRangeDefaultOutOfRange" = {},
+ *     "PriceRangeMinimumGreaterMaximum" = {},
  *     "PriceRangeMinimumTopUpAmount" = {}
  *   }
  * )

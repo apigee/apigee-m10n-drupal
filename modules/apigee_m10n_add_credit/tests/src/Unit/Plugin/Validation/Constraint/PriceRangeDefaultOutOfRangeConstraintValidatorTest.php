@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_m10n_add_credit\Element\PriceRange;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraintValidator;
@@ -100,6 +101,36 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
           'currency_code' => 'USD',
         ],
         'message' => $constraint->minMessage,
+        'valid' => FALSE,
+      ],
+      [
+        'range' => [
+          'minimum' => '5,00',
+          'maximum' => NULL,
+          'default' => 13.00,
+          'currency_code' => 'USD',
+        ],
+        'message' => $constraint->formatMessage,
+        'valid' => FALSE,
+      ],
+      [
+        'range' => [
+          'minimum' => 5.00,
+          'maximum' => '13,00',
+          'default' => 13.00,
+          'currency_code' => 'USD',
+        ],
+        'message' => $constraint->formatMessage,
+        'valid' => FALSE,
+      ],
+      [
+        'range' => [
+          'minimum' => 5.00,
+          'maximum' => 35.00,
+          'default' => 'Word',
+          'currency_code' => 'USD',
+        ],
+        'message' => $constraint->formatMessage,
         'valid' => FALSE,
       ],
     ];
