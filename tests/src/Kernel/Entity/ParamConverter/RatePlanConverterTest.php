@@ -70,7 +70,7 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
 
     $this->assertEquals($rate_plan->id(), $request->get('rate_plan')->id());
 
-    // Tests an invalid package.
+    // Tests an invalid product bundle.
     $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $developer->id(),
       'product_bundle' => 0,

@@ -27,23 +27,23 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface;
 interface RatePlanStorageInterface {
 
   /**
-   * Loads rate plans by package name.
+   * Loads rate plans by product bundle id.
    *
-   * @param string $productBundle_name
-   *   The name of the API package.
+   * @param string $product_bundle_id
+   *   The product bundle ID.
    * @param bool $include_future_plans
    *   Whether to include future plans in the list.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
-   *   An array of rate plans for a given package.
+   *   An array of rate plans for a given product bundle.
    */
   public function loadRatePlansByProductBundle(string $product_bundle_id, $include_future_plans = FALSE): array;
 
   /**
-   * Load an individual rate plan by package_id and rate plan ID.
+   * Load an individual rate plan by product bundle id and rate plan ID.
    *
-   * @param string $productbundle_name
-   *   The package the rate plan belongs to.
+   * @param string $product_bundle_id
+   *   The product bundle the rate plan belongs to.
    * @param string $id
    *   The rate plan ID.
    *

@@ -210,9 +210,9 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
    */
   protected function assertPlansPage(UserInterface $user) {
 
-    // Set up packages and plans for the developer.
+    // Set up product bundles and plans for the developer.
     $rate_plans = [];
-    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiPackage[] $product_bundles */
+    /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface[] $product_bundles */
     $product_bundles = [
       $this->createProductBundle(),
       $this->createProductBundle(),
@@ -220,11 +220,11 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     // Some of the entities referenced will be loaded from the API unless we
     // warm the static cache with them.
     $entity_static_cache = \Drupal::service('entity.memory_cache');
-    // Create a random number of rate plans for each package.
+    // Create a random number of rate plans for each product bundle.
     foreach ($product_bundles as $product_bundle) {
-      // Warm the static cache for each package.
-      // Warm the static cache for each package product.
+      // Warm the static cache for each product bundle.
       $entity_static_cache->set("values:product_bundle:{$product_bundle->id()}", $product_bundle);
+      // Warm the static cache for each product bundle product.
       foreach ($product_bundle->decorated()->getApiProducts() as $product) {
         $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::create([
           'id' => $product->id(),
@@ -239,7 +239,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
       }
     }
 
-    // Queue the package response.
+    // Queue the product bundle response.
     $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
     foreach ($rate_plans as $product_bundle_id => $plans) {
       $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans]]);
@@ -262,7 +262,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
         $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .rate-plan";
         // Check the plan name.
         $this->assertCssElementText("{$prefix} h2 a", $rate_plan->getDisplayName());
-        // Check the package products.
+        // Check the product bundle products.
         foreach ($rate_plan->get('products') as $index => $product) {
           $css_index = $index + 1;
           $this->assertCssElementText("{$prefix} .field--name-products .field__item:nth-child({$css_index})", $product->entity->getDisplayName());

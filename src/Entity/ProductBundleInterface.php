@@ -23,7 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 
 /**
- * Defines the interface for the `package` entity objects.
+ * Defines the interface for the `product_bundle` entity objects.
  */
 interface ProductBundleInterface extends ApiPackageInterface, FieldableEdgeEntityInterface {
 

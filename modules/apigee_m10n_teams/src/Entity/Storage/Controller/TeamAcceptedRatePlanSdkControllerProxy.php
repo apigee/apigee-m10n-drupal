@@ -27,8 +27,8 @@ use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkCon
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
  *
  * Responsible for proxying calls to the appropriate rate plan controllers. Rate
- * plan controllers require a package ID for instantiation so we sometimes need
- * to get a controller at runtime for a given rate plan.
+ * plan controllers require a product bundle ID for instantiation so we
+ * sometimes need to get a controller at runtime for a given rate plan.
  */
 class TeamAcceptedRatePlanSdkControllerProxy extends DeveloperAcceptedRatePlanSdkControllerProxy implements TeamAcceptedRatePlanSdkControllerProxyInterface {
 

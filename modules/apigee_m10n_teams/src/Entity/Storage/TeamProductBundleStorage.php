@@ -23,7 +23,7 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_m10n\Entity\Storage\ProductBundleStorage;
 
 /**
- * Overridden storage controller for the `package` entity.
+ * Overridden storage controller for the `product_bundle` entity.
  */
 class TeamProductBundleStorage extends ProductBundleStorage implements TeamProductBundleStorageInterface {
 

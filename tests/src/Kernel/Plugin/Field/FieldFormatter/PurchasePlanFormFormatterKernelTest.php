@@ -47,9 +47,9 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
   protected $field_manager;
 
   /**
-   * Test API Package.
+   * Test product bundle.
    *
-   * @var \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 

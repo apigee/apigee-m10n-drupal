@@ -254,7 +254,8 @@ trait ApigeeMonetizationTestTrait {
       $products[] = $this->createProduct();
     }
 
-    $product_bundle = new ApiPackage([
+    $api_package = new ApiPackage([
+      'id'          => $this->randomMachineName(),
       'name'        => $this->randomMachineName(),
       'description' => $this->getRandomGenerator()->sentences(3),
       'displayName' => $this->getRandomGenerator()->word(16),
@@ -262,25 +263,21 @@ trait ApigeeMonetizationTestTrait {
       // CREATED, ACTIVE, INACTIVE.
       'status'      => 'CREATED',
     ]);
-    // Get a product bundle controller from the controller factory.
-    $product_bundle_controller = $this->controller_factory->apiPackageController();
-    $this->stack
-      ->queueMockResponse(['get_monetization_package' => ['package' => $product_bundle]]);
-    $product_bundle_controller->create($product_bundle);
 
+    $this->stack->queueMockResponse(['package' => ['package' => $api_package]]);
+    // Load the product_bundle drupal entity and warm the entity cache.
+    $product_bundle = ProductBundle::load($api_package->id());
     // Remove the product bundle in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 10,
-      'callback' => function () use ($product_bundle, $product_bundle_controller) {
+      'callback' => function () use ($product_bundle) {
         $this->stack
           ->queueMockResponse(['get_monetization_package' => ['package' => $product_bundle]]);
-        $product_bundle_controller->delete($product_bundle->id());
+        $product_bundle->delete();
       },
     ];
 
-    $this->stack->queueMockResponse(['package' => ['package' => $product_bundle]]);
-    // Load the product_bundle drupal entity and warm the cache.
-    return ProductBundle::load($product_bundle->id());
+    return $product_bundle;
   }
 
   /**

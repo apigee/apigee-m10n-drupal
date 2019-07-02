@@ -173,16 +173,16 @@ class MonetizationTeamsTest extends KernelTestBase {
 
     // Create an entity we can test against `entityAccess`.
     $entity_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
-    // We are only using package here because it's easy.
+    // We are only using product bundle here because it's easy.
     $product_bundle = ProductBundle::create(['id' => $entity_id]);
 
-    // Test view package for a team member.
+    // Test view product bundle for a team member.
     static::assertTrue($product_bundle->access('view', $account));
-    // Test view package for a non team member.
+    // Test view product bundle for a non team member.
     static::assertFalse($product_bundle->access('view', $non_member));
 
-    // Populate the entity cache with the rate plan's API package because it
-    // will be loaded when the rate plan cache tags are loaded.
+    // Populate the entity cache with the rate plan's API product bundle because
+    // it will be loaded when the rate plan cache tags are loaded.
     \Drupal::service('entity.memory_cache')->set("values:product_bundle:{$this->product_bundle->id()}", $this->product_bundle);
 
     // Test view rate plan for a team member.
@@ -200,7 +200,7 @@ class MonetizationTeamsTest extends KernelTestBase {
    * Make sure the monetization service returns the current team.
    */
   public function assertEntityLinks() {
-    // Package team url.
+    // Product bundle team url.
     static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}", $this->product_bundle->toUrl('team')->toString());
     // Rate plan team url.
     static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());

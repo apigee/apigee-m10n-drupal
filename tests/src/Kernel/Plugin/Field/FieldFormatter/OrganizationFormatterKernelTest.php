@@ -47,9 +47,9 @@ class OrganizationFormatterKernelTest extends MonetizationKernelTestBase {
   protected $field_manager;
 
   /**
-   * Test API Package.
+   * Test product bundle.
    *
-   * @var \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
   protected $product_bundle;
 
@@ -76,7 +76,7 @@ class OrganizationFormatterKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Test viewing an API Package.
+   * Test viewing a product bundle.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException

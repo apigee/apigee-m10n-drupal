@@ -38,7 +38,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
   /**
    * The controller proxy.
    *
-   * The rate plan controller typically requires a package ID in the constructor
+   * The rate plan controller requires a product bundle ID in the constructor
    * so we use a proxy that can handle instantiating controllers as needed.
    *
    * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface
@@ -49,9 +49,9 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    * Static cache for future rate plans.
    *
    * Loading future rate plans for a given rate plan is expensive as it
-   * retrieves all rate plans for the current plan's package and loops through
-   * them to determine which one is a future revision. For that reason, we cache
-   * the results here.
+   * retrieves all rate plans for the current plan's product bundle and loops
+   * through them to determine which one is a future revision. For that reason,
+   * we cache the results here.
    *
    * @var array
    */
@@ -99,7 +99,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     $entities = [];
 
     $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $include_future_plans, &$entities) {
-      // Load the  rate plans for this package.
+      // Load the  rate plans for this product bundle.
       $sdk_entities = $controller->loadRatePlansByProductBundle($product_bundle_id, $include_future_plans);
       // Convert the SDK entities to drupal entities.
       foreach ($sdk_entities as $id => $entity) {
@@ -152,7 +152,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     if (!isset($this->future_rate_plans[$ratePlan->id()])) {
       // Future plans haven't started as of today.
       $today = new \DateTimeImmutable('today', $ratePlan->getStartDate()->getTimezone());
-      // Load all plans for this package.
+      // Load all plans for this product bundle.
       $all_plans = $this->loadRatePlansByProductBundle($ratePlan->getPackage()->id(), TRUE);
       // Loop through to see if any future previous revisions are the given
       // plan.

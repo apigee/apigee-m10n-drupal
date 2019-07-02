@@ -56,7 +56,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   protected $anonymous;
 
   /**
-   * A package.
+   * A product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
@@ -247,10 +247,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Tests package entity route permissions.
+   * Tests product bundle entity route permissions.
    */
-    // Create a package.
   public function assertProductBundleRoutes() {
+    // Create a product bundle.
     $product_bundle = $this->createProductBundle();
 
     // Developer route as developer.
@@ -337,7 +337,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view any prepaid balance' => 'View any prepaid balance',
       'view own billing details' => 'View own billing details',
       'view own prepaid balance' => 'View own prepaid balance',
-      // Packages.
+      // Product bundles.
       'view product_bundle' => 'View product bundles',
       'view product_bundle as anyone' => 'View product bundles as any developer',
       // Rate plans.

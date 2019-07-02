@@ -36,7 +36,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Generates the packages page.
+ * Generates the pricing and plans page.
  */
 class PricingAndPlansController extends ControllerBase {
 
@@ -87,7 +87,7 @@ class PricingAndPlansController extends ControllerBase {
    * Redirect to the users catalog page.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   A redirect to the current user's packages page.
+   *   A redirect to the current user's product bundles page.
    */
   public function myPlans(): RedirectResponse {
     return $this->redirect(
@@ -98,7 +98,7 @@ class PricingAndPlansController extends ControllerBase {
   }
 
   /**
-   * Gets a list of available packages for this user.
+   * Gets a list of available product bundles for this user.
    *
    * @param \Drupal\user\UserInterface $user
    *   The drupal user/developer.
@@ -117,7 +117,7 @@ class PricingAndPlansController extends ControllerBase {
 
     $rate_plans = [];
 
-    // Load rate plans for each package.
+    // Load rate plans for each product bundle.
     foreach (ProductBundle::getAvailableProductBundlesByDeveloper($user->getEmail()) as $product_bundle) {
       /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle */
       foreach ($product_bundle->get('ratePlans') as $rate_plan) {
@@ -153,7 +153,7 @@ class PricingAndPlansController extends ControllerBase {
       '#attached' => ['library' => ['apigee_m10n/rate_plan.entity_list']],
     ];
 
-    // Get the view mode from package config.
+    // Get the view mode from product bundle config.
     $view_mode = ($view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode')) ? $view_mode : 'default';
     $view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
 

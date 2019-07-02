@@ -201,7 +201,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // The API products are many-to-one.
     $definitions['productBundle']->setCardinality(1)
       ->setSetting('target_type', 'product_bundle')
-      ->setLabel(t('Package'))
+      ->setLabel(t('Product bundle'))
       ->setDescription(t('The API product bundle the rate plan belongs to.'));
 
     // The API products are many-to-one.

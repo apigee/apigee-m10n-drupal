@@ -47,7 +47,7 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
       "entity.field_config.purchased_plan_field_delete_form",
       "entity.purchased_plan.field_ui_fields",
       "field_ui.field_storage_config_add_purchased_plan",
-      // Packages.
+      // Product bundles.
       "entity.field_config.product_bundle_field_edit_form",
       "entity.field_config.product_bundle_storage_edit_form",
       "entity.field_config.product_bundle_field_delete_form",

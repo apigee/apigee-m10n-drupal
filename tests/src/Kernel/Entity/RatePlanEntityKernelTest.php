@@ -65,7 +65,8 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testLoadRatePlan() {
-    // Set the current user to a mock. Anon can no longer access packages.
+    // Set the current user to a mock. Anon can no longer access product
+    // bundles.
     $account = $this->prophesizeCurrentUser();
 
     $this->stack
@@ -97,8 +98,8 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getRecurringStartUnit(), $this->rate_plan->getRecurringStartUnit());
     static::assertSame($rate_plan->getRecurringType(), $this->rate_plan->getRecurringType());
     static::assertSame($rate_plan->getSetUpFee(), $this->rate_plan->getSetUpFee());
-    // Check package API products.
     static::assertSame("/user/{$account->id()}/monetization/product-bundle/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
+    // Check bundled products.
     $product_ids = array_map(function ($product) {
       return ['target_id' => $product->id()];
     }, $rate_plan->getPackage()->getApiProducts());

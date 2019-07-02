@@ -44,7 +44,7 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
   public function convert($value, $definition, $name, array $defaults) {
     if (!($product_bundle_id = $defaults['product_bundle']) || empty($product_bundle_id)) {
       $cache_metadata = new CacheableMetadata();
-      // If there is no package set the URL is invalid.
+      // If there is no product bundle set the URL is invalid.
       throw new CacheableNotFoundHttpException($cache_metadata->setCacheContexts(['url']), 'Invalid product bundle.');
     }
 

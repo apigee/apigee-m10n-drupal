@@ -75,10 +75,10 @@ class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
    *
    * @throws \Exception
    */
-  public function testPackageEntity() {
+  public function testProductBundleEntity() {
     $this->setCurrentRouteMatch();
 
-    // Get the package entity definition.
+    // Get the `product_bundle` entity definition.
     $entity_type = $this->container->get('entity_type.manager')->getDefinition('product_bundle');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
@@ -88,7 +88,8 @@ class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
     // Make sure we are using our custom route provider.
     static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
-    // Test that package canonical urls are redirecting to developer urls.
+    // Test that product_bundle canonical urls are redirecting to the developer
+    // specific product bundle url.
     $request = Request::create(Url::fromRoute('entity.product_bundle.canonical', ['product_bundle' => $this->product_bundle->id()])->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
@@ -99,7 +100,7 @@ class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame("/user/1/monetization/product-bundle/{$this->product_bundle->id()}", $url->toString());
     static::assertSame('entity.product_bundle.developer', $url->getRouteName());
 
-    // Load the cached package.
+    // Load the cached product bundle.
     $product_bundle = ProductBundle::load($this->product_bundle->id());
 
     static::assertInstanceOf(ProductBundleInterface::class, $product_bundle);
@@ -111,7 +112,7 @@ class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($this->product_bundle->getName(), $product_bundle->getName());
     static::assertSame($this->product_bundle->getDescription(), $product_bundle->getDescription());
     static::assertSame($this->product_bundle->getStatus(), $product_bundle->getStatus());
-    // Get the package products.
+    // Get the product bundle products.
     $products = $product_bundle->getApiProducts();
     static::assertGreaterThan(0, $this->count($products));
     static::assertCount(count($this->product_bundle->getApiProducts()), $products);

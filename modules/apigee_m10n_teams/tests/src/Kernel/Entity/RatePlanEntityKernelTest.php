@@ -113,7 +113,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Check team access.
     static::assertTrue($this->rate_plan->access('view', $this->developer));
 
-    // Make sure we get a team context when getting a package url.
+    // Make sure we get a team context when getting a product bundle url.
     $url = $this->rate_plan->toUrl('team');
     static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $url->toString());
     static::assertSame('entity.rate_plan.team', $url->getRouteName());
@@ -125,7 +125,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Compare the loaded rate plan with the object comparator.
     static::assertEquals($rate_plan->decorated(), $this->rate_plan->decorated());
 
-    // Render the package.
+    // Render the product bundle.
     $build = \Drupal::entityTypeManager()
       ->getViewBuilder('rate_plan')
       ->view($rate_plan, 'default');

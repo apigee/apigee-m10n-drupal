@@ -80,7 +80,7 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
   }
 
   /**
-   * Tests the rendered package response.
+   * Tests the rendered product bundle response.
    */
   public function testTeamPricingAndPlansController() {
     $this->assertNonMemberAccessDenied();
@@ -106,9 +106,9 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
     // Check access for a team member.
     static::assertTrue(Url::fromRoute('apigee_monetization.team_plans', ['team' => $this->team->id()])->access());
 
-    // Set up packages and plans for the developer.
+    // Set up product bundles and plans for the developer.
     $rate_plans = [];
-    /** @var \Apigee\Edge\Api\Monetization\Entity\ApiPackage[] $product_bundles */
+    /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface[] $product_bundles */
     $product_bundles = [
       $this->createProductBundle(),
       $this->createProductBundle(),
@@ -116,11 +116,11 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
     // Some of the entities referenced will be loaded from the API unless we
     // warm the static cache with them.
     $entity_static_cache = \Drupal::service('entity.memory_cache');
-    // Create a random number of rate plans for each package.
+    // Create a random number of rate plans for each product bundle.
     foreach ($product_bundles as $product_bundle) {
-      // Warm the static cache for each package.
-      // Warm the static cache for each package product.
+      // Warm the static cache for each product bundle.
       $entity_static_cache->set("values:product_bundle:{$product_bundle->id()}", $product_bundle);
+      // Warm the static cache for each product bundle product.
       foreach ($product_bundle->decorated()->getApiProducts() as $product) {
         $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::create([
           'id' => $product->id(),
@@ -138,7 +138,7 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
     // Queue up a monetized org response.
     $this->stack->queueMockResponse('get_monetized_org');
 
-    // Queue the package response.
+    // Queue the product bundle response.
     $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
     foreach ($rate_plans as $product_bundle_id => $plans) {
       $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans]]);
@@ -159,7 +159,7 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
         $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .rate-plan";
         // Check the plan name.
         $this->assertCssElementText("{$prefix} h2 a", $rate_plan->getDisplayName());
-        // Check the package products.
+        // Check the product bundle products.
         foreach ($rate_plan->get('products') as $index => $product) {
           $css_index = $index + 1;
           $this->assertCssElementText("{$prefix} .field--name-products .field__item:nth-child({$css_index})", $product->entity->getDisplayName());
