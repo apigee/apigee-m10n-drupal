@@ -61,4 +61,14 @@ interface ProductBundleEntityControllerProxyInterface {
    */
   public function getAvailableProductBundlesByTeam(string $company, bool $active = FALSE, bool $allAvailable = TRUE): array;
 
+  /**
+   * Gets all product bundles.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface[]
+   *   An array of ApiPackage monetization SDK entities.
+   *
+   * @see https://docs.apigee.com/api-platform/monetization/api-product-bundles
+   */
+  public function getEntities();
+
 }

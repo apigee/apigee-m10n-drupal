@@ -69,13 +69,8 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function loadAll(): array {
-    // Cache the package controller.
-    static $product_bundle_controller;
-    $product_bundle_controller = $product_bundle_controller
-      ?: $this->controllerFactory()->apiPackageController();
-
-    // TODO: Replace this with entity load once packages become drupal entities.
-    $all_product_bundles = $product_bundle_controller->getEntities();
+    // TODO: Cache this list.
+    $all_product_bundles = ProductBundle::loadAll();
 
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[] $rate_plans */
     $rate_plans = [];

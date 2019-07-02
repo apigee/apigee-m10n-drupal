@@ -191,6 +191,15 @@ class ProductBundle extends FieldableEdgeEntityBase implements ProductBundleInte
   /**
    * {@inheritdoc}
    */
+  public static function loadAll() {
+    return \Drupal::entityTypeManager()
+      ->getStorage(static::ENTITY_TYPE_ID)
+      ->loadAll();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function setApiProducts($api_products) {
     // Modifying product bundles isn't actually allowed but `setPropertyValue()`
     // from `\Drupal\apigee_edge\Entity\FieldableEdgeEntityBase` will try to set

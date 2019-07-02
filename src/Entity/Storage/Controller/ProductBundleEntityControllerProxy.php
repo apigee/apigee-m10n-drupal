@@ -59,4 +59,11 @@ class ProductBundleEntityControllerProxy extends MonetizationEntityControllerPro
     return $this->controller()->getAvailableApiPackagesByCompany($company, $active, $allAvailable);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntities() {
+    return $this->controller()->getEntities();
+  }
+
 }

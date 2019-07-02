@@ -38,4 +38,14 @@ interface ProductBundleStorageInterface {
    */
   public function getAvailableProductBundlesByDeveloper($developer_id);
 
+  /**
+   * Gets all product bundle entities.
+   *
+   * @return array
+   *   A list of all product bundle entities.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function loadAll();
+
 }
