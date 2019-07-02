@@ -119,8 +119,8 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
     // Create a random number of rate plans for each package.
     foreach ($product_bundles as $product_bundle) {
       // Warm the static cache for each package.
-      $entity_static_cache->set("values:package:{$product_bundle->id()}", $product_bundle);
       // Warm the static cache for each package product.
+      $entity_static_cache->set("values:product_bundle:{$product_bundle->id()}", $product_bundle);
       foreach ($product_bundle->decorated()->getApiProducts() as $product) {
         $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::create([
           'id' => $product->id(),
@@ -160,15 +160,15 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
         // Check the plan name.
         $this->assertCssElementText("{$prefix} h2 a", $rate_plan->getDisplayName());
         // Check the package products.
-        foreach ($rate_plan->get('packageProducts') as $index => $product) {
+        foreach ($rate_plan->get('products') as $index => $product) {
           $css_index = $index + 1;
-          $this->assertCssElementText("{$prefix} .field--name-packageproducts .field__item:nth-child({$css_index})", $product->entity->getDisplayName());
+          $this->assertCssElementText("{$prefix} .field--name-products .field__item:nth-child({$css_index})", $product->entity->getDisplayName());
         }
         // Check the purchase link.
         $this->assertLink('Purchase Plan', $rate_plan_css_index - 1);
 
         // Make sure undesired field are not shown.
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-package"));
+        static::assertEmpty($this->cssSelect("{$prefix} .field--name-productbundle"));
         static::assertEmpty($this->cssSelect("{$prefix} .field--name-name"));
         static::assertEmpty($this->cssSelect("{$prefix} .field--name-currency"));
         static::assertEmpty($this->cssSelect("{$prefix} .field--name-id"));

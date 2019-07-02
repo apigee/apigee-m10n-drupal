@@ -31,7 +31,7 @@ trait RatePlansPropertyEnablerTrait {
    *   The display view mode.
    */
   protected function enableRatePlansForViewDisplay($display_mode = 'default') {
-    $config = "core.entity_view_display.package.package.{$display_mode}";
+    $config = "core.entity_view_display.product_bundle.product_bundle.{$display_mode}";
 
     $product_bundle_view_mode = $this->config($config);
     $bundle_content = $product_bundle_view_mode->get('content');

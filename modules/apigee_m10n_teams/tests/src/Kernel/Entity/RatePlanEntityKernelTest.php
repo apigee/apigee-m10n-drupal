@@ -115,7 +115,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     // Make sure we get a team context when getting a package url.
     $url = $this->rate_plan->toUrl('team');
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $url->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $url->toString());
     static::assertSame('entity.rate_plan.team', $url->getRouteName());
 
     // Load the cached rate plan.
@@ -139,9 +139,9 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->assertLinkByHref($rate_plan->toUrl()->toString());
 
     // Test product names.
-    foreach ($rate_plan->get('packageProducts') as $index => $product_field) {
+    foreach ($rate_plan->get('products') as $index => $product_field) {
       $css_index = $index + 1;
-      $this->assertCssElementText(".rate-plan .field--name-packageproducts .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
+      $this->assertCssElementText(".rate-plan .field--name-products .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
     }
 
     // Test fees.

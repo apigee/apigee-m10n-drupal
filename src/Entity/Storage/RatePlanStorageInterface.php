@@ -37,7 +37,7 @@ interface RatePlanStorageInterface {
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
    *   An array of rate plans for a given package.
    */
-  public function loadRatePlansByProductBundle(string $productBundle_name, $include_future_plans = FALSE): array;
+  public function loadRatePlansByProductBundle(string $product_bundle_id, $include_future_plans = FALSE): array;
 
   /**
    * Load an individual rate plan by package_id and rate plan ID.
@@ -53,7 +53,7 @@ interface RatePlanStorageInterface {
    * @throws \Drupal\Core\Entity\EntityStorageException
    *   Thrown if the rate plan doesn't exist.
    */
-  public function loadById(string $productbundle_name, string $id): RatePlanInterface;
+  public function loadById(string $product_bundle_id, string $id): RatePlanInterface;
 
   /**
    * Gets the future rate plan of a rate plan.

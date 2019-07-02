@@ -51,7 +51,7 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface
    */
-  protected $api_package;
+  protected $product_bundle;
 
   /**
    * Test rate plan.
@@ -93,8 +93,8 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
 
-    $this->api_package = $this->createProductBundle();
-    $this->rate_plan = $this->createRatePlan($this->api_package);
+    $this->product_bundle = $this->createProductBundle();
+    $this->rate_plan = $this->createRatePlan($this->product_bundle);
   }
 
   /**

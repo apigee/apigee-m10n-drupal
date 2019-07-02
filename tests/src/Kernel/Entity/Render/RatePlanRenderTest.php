@@ -97,9 +97,9 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->assertLinkByHref($rate_plan->toUrl()->toString(), 0, 'The display name links to the rate plan.');
 
     // Test product names.
-    foreach ($rate_plan->get('packageProducts') as $index => $product_field) {
+    foreach ($rate_plan->get('products') as $index => $product_field) {
       $css_index = $index + 1;
-      $this->assertCssElementText(".rate-plan .field--name-packageproducts .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
+      $this->assertCssElementText(".rate-plan .field--name-products .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
     }
 
     // Test fees.

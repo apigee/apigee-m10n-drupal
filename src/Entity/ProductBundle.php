@@ -36,13 +36,13 @@ use Drupal\user\UserInterface;
  * Defines the `product_bundle` entity class.
  *
  * @\Drupal\apigee_edge\Annotation\EdgeEntityType(
- *   id = "package",
- *   label = @Translation("Package"),
- *   label_singular = @Translation("Package"),
- *   label_plural = @Translation("Packages"),
+ *   id = "product_bundle",
+ *   label = @Translation("Product bundle"),
+ *   label_singular = @Translation("Product bundles"),
+ *   label_plural = @Translation("Product bundles"),
  *   label_count = @PluralTranslation(
- *     singular = "@count Package",
- *     plural = "@count Packages",
+ *     singular = "@count Product bundle",
+ *     plural = "@count Product bundles",
  *   ),
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\ProductBundleStorage",
@@ -53,14 +53,14 @@ use Drupal\user\UserInterface;
  *     }
  *   },
  *   links = {
- *     "canonical" = "/monetization/package/{package}",
- *     "developer" = "/user/{user}/monetization/package/{package}",
+ *     "canonical" = "/monetization/product-bundle/{product_bundle}",
+ *     "developer" = "/user/{user}/monetization/product-bundle/{product_bundle}",
  *   },
  *   entity_keys = {
  *     "id" = "id",
  *   },
  *   admin_permission = "administer apigee monetization",
- *   field_ui_base_route = "apigee_m10n.settings.package",
+ *   field_ui_base_route = "apigee_m10n.settings.product_bundle",
  * )
  */
 class ProductBundle extends FieldableEdgeEntityBase implements ProductBundleInterface {
@@ -73,7 +73,7 @@ class ProductBundle extends FieldableEdgeEntityBase implements ProductBundleInte
   use OrganizationPropertyAwareDecoratorTrait;
   use StatusPropertyAwareDecoratorTrait;
 
-  public const ENTITY_TYPE_ID = 'package';
+  public const ENTITY_TYPE_ID = 'product_bundle';
 
   /**
    * Rate plans available for this product bundle.
@@ -153,7 +153,7 @@ class ProductBundle extends FieldableEdgeEntityBase implements ProductBundleInte
 
     // Fix some labels because these show up in the UI.
     $definitions['id']->setLabel(t('ID'));
-    $definitions['displayName']->setLabel(t('Package name'));
+    $definitions['displayName']->setLabel(t('Product bundle name'));
 
     return $definitions;
   }

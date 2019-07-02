@@ -3,10 +3,10 @@ system.admin_apigee_m10n:
   parent: system.admin_config
   route_name: apigee_m10n.settings
 
-entity.package.collection:
+entity.product_bundle.collection:
   title: 'Packages'
-  route_name: entity.package.collection
-  description: 'Manage packages.'
+  route_name: entity.product_bundle.collection
+  description: 'Manage product bundles.'
   parent: system.admin_apigee_m10n
   weight: 99
 

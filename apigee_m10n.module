@@ -45,7 +45,7 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'apigee_entity__rate_plan' => [
       'base hook' => 'apigee_entity',
     ],
-    'apigee_entity__package' => [
+    'apigee_entity__product_bundle' => [
       'base hook' => 'apigee_entity',
     ],
     'api_product' => [

@@ -106,26 +106,26 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function entityTypeAlter(array &$entity_types) {
     /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
-    if (isset($entity_types['package'])) {
+    if (isset($entity_types['product_bundle'])) {
       // Use our class to override the original entity class.
-      $entity_types['package']->setClass(TeamProductBundle::class);
-      // Create a link template for team packages.
-      $entity_types['package']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}');
+      $entity_types['product_bundle']->setClass(TeamProductBundle::class);
+      // Create a link template for team product bundles.
+      $entity_types['product_bundle']->setLinkTemplate('team', '/teams/{team}/monetization/product-bundle/{product_bundle}');
       // Get the entity route providers.
-      $route_providers = $entity_types['package']->getRouteProviderClasses();
+      $route_providers = $entity_types['product_bundle']->getRouteProviderClasses();
       // Override the `html` route provider.
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
-      $entity_types['package']->setHandlerClass('route_provider', $route_providers);
+      $entity_types['product_bundle']->setHandlerClass('route_provider', $route_providers);
       // Override the storage class.
-      $entity_types['package']->setStorageClass(TeamProductBundleStorage::class);
+      $entity_types['product_bundle']->setStorageClass(TeamProductBundleStorage::class);
     }
 
     // Overrides for the `rate_plan` entity.
     if (isset($entity_types['rate_plan'])) {
       // Use our class to override the original entity class.
       $entity_types['rate_plan']->setClass(TeamsRatePlan::class);
-      $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
-      $entity_types['rate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase');
+      $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}');
+      $entity_types['rate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase');
       // Get the entity route providers.
       $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
       // Override the `html` route provider.

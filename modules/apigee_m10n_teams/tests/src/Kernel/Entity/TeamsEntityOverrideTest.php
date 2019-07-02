@@ -55,7 +55,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
    *
    * @throws \Exception
    */
-  public function testPackageEntityOverrides() {
+  public function testProductBundleEntityOverrides() {
     $random = $this->getRandomGenerator();
     $team_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
 
@@ -73,7 +73,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
       'description' => $random->sentences(12),
     ]);
 
-    $entity_type = $this->container->get('entity_type.manager')->getDefinition('package');
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('product_bundle');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
     // Make sure our entity class has taken over.
@@ -85,8 +85,8 @@ class TeamsEntityOverrideTest extends KernelTestBase {
 
     // Make sure we get a team context when getting a package url.
     $url = $product_bundle->toUrl('canonical');
-    static::assertSame("/teams/{$team_id}/monetization/package/{$product_bundle->id()}", $url->toString());
-    static::assertSame('entity.package.team', $url->getRouteName());
+    static::assertSame("/teams/{$team_id}/monetization/product-bundle/{$product_bundle->id()}", $url->toString());
+    static::assertSame('entity.product_bundle.team', $url->getRouteName());
   }
 
   /**

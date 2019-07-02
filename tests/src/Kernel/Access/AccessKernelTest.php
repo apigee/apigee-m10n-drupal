@@ -117,7 +117,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->assertPermissionList();
     $this->assertAdminRoutes();
     $this->assertPricingAndPlanRoutes();
-    $this->assertPackageRoutes();
+    $this->assertProductBundleRoutes();
     $this->assertRatePlanRoutes();
     $this->assertPurchasedPlanRoutes();
     $this->assertBillingRoutes();
@@ -208,7 +208,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan canonical route.
     $plan_url = Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->developer->id(),
-      'package' => $this->product_bundle->id(),
+      'product_bundle' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($plan_url->access($this->administrator));
@@ -218,7 +218,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan canonical route for testing `any` permission.
     $plan_url = Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->administrator->id(),
-      'package' => $this->product_bundle->id(),
+      'product_bundle' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($plan_url->access($this->administrator));
@@ -228,7 +228,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan purchase route.
     $purchase_url = Url::fromRoute('entity.rate_plan.purchase', [
       'user' => $this->developer->id(),
-      'package' => $this->product_bundle->id(),
+      'product_bundle' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($purchase_url->access($this->administrator));
@@ -238,7 +238,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     // Rate plan purchase route for testing `any` permission.
     $purchase_url = Url::fromRoute('entity.rate_plan.purchase', [
       'user' => $this->administrator->id(),
-      'package' => $this->product_bundle->id(),
+      'product_bundle' => $this->product_bundle->id(),
       'rate_plan' => $this->rate_plan->id(),
     ]);
     static::assertTrue($purchase_url->access($this->administrator));
@@ -249,18 +249,18 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   /**
    * Tests package entity route permissions.
    */
-  public function assertPackageRoutes() {
     // Create a package.
+  public function assertProductBundleRoutes() {
     $product_bundle = $this->createProductBundle();
 
     // Developer route as developer.
-    $product_bundle_route = Url::fromRoute('entity.package.developer', ['user' => $this->developer->id(), 'package' => $product_bundle->id()]);
+    $product_bundle_route = Url::fromRoute('entity.product_bundle.developer', ['user' => $this->developer->id(), 'product_bundle' => $product_bundle->id()]);
     static::assertTrue($product_bundle_route->access($this->administrator));
     static::assertFalse($product_bundle_route->access($this->developer));
     static::assertFalse($product_bundle_route->access($this->anonymous));
 
     // Developer route as developer.
-    $product_bundle_route = Url::fromRoute('entity.package.developer', ['user' => $this->administrator->id(), 'package' => $product_bundle->id()]);
+    $product_bundle_route = Url::fromRoute('entity.product_bundle.developer', ['user' => $this->administrator->id(), 'product_bundle' => $product_bundle->id()]);
     static::assertTrue($product_bundle_route->access($this->administrator));
     static::assertFalse($product_bundle_route->access($this->developer));
     static::assertFalse($product_bundle_route->access($this->anonymous));
@@ -291,10 +291,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $admin_routes = [
       Url::fromRoute('apigee_m10n.settings'),
       Url::fromRoute('apigee_m10n.settings.rate_plan'),
-      Url::fromRoute('apigee_m10n.settings.package'),
+      Url::fromRoute('apigee_m10n.settings.product_bundle'),
       Url::fromRoute('apigee_m10n.settings.prepaid_balance'),
       Url::fromRoute('apigee_m10n.settings.purchased_plan'),
-      Url::fromRoute('entity.package.collection'),
+      Url::fromRoute('entity.product_bundle.collection'),
     ];
 
     // Make sure only the admin account has access to all admin routes.
@@ -338,8 +338,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view own billing details' => 'View own billing details',
       'view own prepaid balance' => 'View own prepaid balance',
       // Packages.
-      'view package' => 'View product bundles',
-      'view package as anyone' => 'View product bundles as any developer',
+      'view product_bundle' => 'View product bundles',
+      'view product_bundle as anyone' => 'View product bundles as any developer',
       // Rate plans.
       'view rate_plan' => 'View rate plans',
       'view rate_plan as anyone' => 'View rate plans as any developer',

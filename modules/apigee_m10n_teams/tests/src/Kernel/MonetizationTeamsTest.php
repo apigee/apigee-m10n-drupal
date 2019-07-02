@@ -107,12 +107,12 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create a team Entity.
     $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
 
-    $this->product_bundle = $this->entity_type_manager->getStorage('package')->create([
+    $this->product_bundle = $this->entity_type_manager->getStorage('product_bundle')->create([
       'id' => $this->randomMachineName(),
     ]);
     $this->rate_plan = $this->entity_type_manager->getStorage('rate_plan')->create([
       'id' => $this->randomMachineName(),
-      'package' => $this->product_bundle,
+      'package' => $this->product_bundle->decorated(),
     ]);
     $this->purchased_plan = $this->entity_type_manager->getStorage('purchased_plan')->create([
       'id' => $this->randomMachineName(),
@@ -149,7 +149,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     static::assertInstanceOf(TeamsPurchasedPlanInterface::class, $this->purchased_plan);
 
     // Check storage overrides.
-    static::assertInstanceOf(TeamProductBundleStorageInterface::class, $this->entity_type_manager->getStorage('package'));
+    static::assertInstanceOf(TeamProductBundleStorageInterface::class, $this->entity_type_manager->getStorage('product_bundle'));
     static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('purchased_plan'));
   }
 
@@ -164,7 +164,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Prophesize the `apigee_edge_teams.team_permissions` service.
     $team_handler = $this->prophesize(TeamPermissionHandlerInterface::class);
     $team_handler->getDeveloperPermissionsByTeam($this->team, $account)->willReturn([
-      'view package',
+      'view product_bundle',
       'view rate_plan',
       'purchase rate_plan',
     ]);
@@ -183,7 +183,7 @@ class MonetizationTeamsTest extends KernelTestBase {
 
     // Populate the entity cache with the rate plan's API package because it
     // will be loaded when the rate plan cache tags are loaded.
-    \Drupal::service('entity.memory_cache')->set("values:package:{$this->product_bundle->id()}", $this->product_bundle);
+    \Drupal::service('entity.memory_cache')->set("values:product_bundle:{$this->product_bundle->id()}", $this->product_bundle);
 
     // Test view rate plan for a team member.
     static::assertTrue($this->rate_plan->access('view', $account));
@@ -201,10 +201,10 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   public function assertEntityLinks() {
     // Package team url.
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}", $this->product_bundle->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}", $this->product_bundle->toUrl('team')->toString());
     // Rate plan team url.
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
     // Team purchased plan URLs.
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [

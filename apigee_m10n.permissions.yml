@@ -22,10 +22,10 @@ view own billing details:
 view any billing details:
   title: 'View any billing details'
 
-view package:
+view product_bundle:
   title: 'View product bundles'
 
-view package as anyone:
+view product_bundle as anyone:
   title: 'View product bundles as any developer'
 
 view rate_plan:

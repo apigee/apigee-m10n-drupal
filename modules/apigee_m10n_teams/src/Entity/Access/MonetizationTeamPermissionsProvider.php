@@ -64,8 +64,8 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
         $plan_group
       ),
       // Product bundles.
-      'view package' => new TeamPermission(
-        'view package',
+      'view product_bundle' => new TeamPermission(
+        'view product_bundle',
         $this->t('View product bundle'),
         $product_bundle_group
       ),

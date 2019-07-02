@@ -73,7 +73,7 @@ class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
   protected function ratePlanUrl(PurchasedPlanInterface $purchased_plan) {
     return $this->ensureDestination(Url::fromRoute('entity.rate_plan.team', [
       'team' => $this->team->id(),
-      'package' => $purchased_plan->getRatePlan()->getPackage()->id(),
+      'product_bundle' => $purchased_plan->getRatePlan()->getPackage()->id(),
       'rate_plan' => $purchased_plan->getRatePlan()->id(),
     ]));
   }

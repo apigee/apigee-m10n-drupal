@@ -119,7 +119,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
     if (!($product_bundle = $entity->getPackage())) {
       // If the product bundle is not set, we have no way to get the controller
       // since it depends on the product bundle ID.
-      throw new RuntimeException('The product bundle must be set to create a rate plan.');
+      throw new RuntimeException('The product bundle must be set to create a rate plan controller.');
     }
     // Get the controller.
     return $this->getRatePlanControllerByProductBundleId($product_bundle->id());

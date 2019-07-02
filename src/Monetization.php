@@ -460,8 +460,8 @@ class Monetization implements MonetizationInterface {
     // Since there is no hook_permissions_alter, we can at least remove them
     // from the admin form.
     $unused_permissions = [
-      'administer package fields',
-      'administer package form display',
+      'administer product_bundle fields',
+      'administer product_bundle form display',
       'administer rate_plan fields',
       'administer rate_plan form display',
       'administer purchased_plan fields',

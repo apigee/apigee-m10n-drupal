@@ -56,12 +56,12 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
     // Create an admin user.
     $developer = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
     $this->setCurrentUser($developer);
-    $api_package = $this->createProductBundle();
-    $rate_plan = $this->createRatePlan($api_package);
+    $product_bundle = $this->createProductBundle();
+    $rate_plan = $this->createRatePlan($product_bundle);
 
     $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $developer->id(),
-      'package' => $api_package->id(),
+      'product_bundle' => $product_bundle->id(),
       'rate_plan' => $rate_plan->id(),
     ])->toString());
 
@@ -73,7 +73,7 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
     // Tests an invalid package.
     $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $developer->id(),
-      'package' => 0,
+      'product_bundle' => 0,
       'rate_plan' => $rate_plan->id(),
     ])->toString());
     // Match the request.
@@ -87,7 +87,7 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
     $plan_id = $this->randomMachineName();
     $request = Request::create(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $developer->id(),
-      'package' => $this->randomMachineName(),
+      'product_bundle' => $this->randomMachineName(),
       'rate_plan' => $plan_id,
     ])->toString());
     // Queue a not found response.

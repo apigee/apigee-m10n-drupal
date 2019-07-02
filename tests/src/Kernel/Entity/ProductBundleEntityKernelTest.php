@@ -79,7 +79,7 @@ class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
     $this->setCurrentRouteMatch();
 
     // Get the package entity definition.
-    $entity_type = $this->container->get('entity_type.manager')->getDefinition('package');
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('product_bundle');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
     // Check that the entity class remains unchanged.
@@ -89,15 +89,15 @@ class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
     // Test that package canonical urls are redirecting to developer urls.
-    $request = Request::create(Url::fromRoute('entity.package.canonical', ['package' => $this->product_bundle->id()])->toString(), 'GET');
+    $request = Request::create(Url::fromRoute('entity.product_bundle.canonical', ['product_bundle' => $this->product_bundle->id()])->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/package/{$this->product_bundle->id()}", $response->headers->get('location'));
+    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/product-bundle/{$this->product_bundle->id()}", $response->headers->get('location'));
 
-    // Make sure we get a team context when getting a package url.
+    // Make sure we get a team context when getting a product bundle url.
     $url = $this->product_bundle->toUrl('canonical');
-    static::assertSame("/user/1/monetization/package/{$this->product_bundle->id()}", $url->toString());
-    static::assertSame('entity.package.developer', $url->getRouteName());
+    static::assertSame("/user/1/monetization/product-bundle/{$this->product_bundle->id()}", $url->toString());
+    static::assertSame('entity.product_bundle.developer', $url->getRouteName());
 
     // Load the cached package.
     $product_bundle = ProductBundle::load($this->product_bundle->id());

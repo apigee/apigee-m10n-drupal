@@ -61,8 +61,8 @@ use Drupal\user\Entity\User;
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
- *     "canonical" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}",
- *     "purchase" = "/user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase",
+ *     "canonical" = "/user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}",
+ *     "purchase" = "/user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase",
  *   },
  *   entity_keys = {
  *     "id" = "id",
@@ -147,6 +147,13 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
+  protected static function propertyToBaseFieldBlackList(): array {
+    return array_merge(parent::propertyToBaseFieldBlackList(), ['package']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected static function propertyToBaseFieldTypeMap(): array {
     return [
       'startDate'             => 'timestamp',
@@ -160,7 +167,6 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       'frequencyDuration'     => 'integer',
       'futurePlanStartDate'   => 'timestamp',
       'organization'          => 'apigee_organization',
-      'package'               => 'apigee_api_package',
       'paymentDueDays'        => 'integer',
       'ratePlanDetails'       => 'apigee_rate_plan_details',
       'recurringFee'          => 'apigee_price',
@@ -177,8 +183,8 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       'purchase'            => 'apigee_purchase',
       'futurePlanLinks'     => 'link',
       'futurePlanStartDate' => 'timestamp',
-      'packageEntity'       => 'entity_reference',
-      'packageProducts'     => 'entity_reference',
+      'productBundle'       => 'entity_reference',
+      'products'            => 'entity_reference',
     ] + parent::getProperties();
   }
 
@@ -190,22 +196,19 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     $definitions = parent::baseFieldDefinitions($entity_type);
     // The rate plan details are many-to-one.
     $definitions['ratePlanDetails']->setCardinality(-1);
-    // Allow the package to be accessed as a field but not rendered because
-    // rendering the package within a rate plan would cause recursion.
-    $definitions['package']->setDisplayConfigurable('view', FALSE);
     $definitions['purchase']->setLabel(t('Purchase'));
 
     // The API products are many-to-one.
-    $definitions['packageEntity']->setCardinality(1)
-      ->setSetting('target_type', 'package')
+    $definitions['productBundle']->setCardinality(1)
+      ->setSetting('target_type', 'product_bundle')
       ->setLabel(t('Package'))
-      ->setDescription(t('The API package the rate plan belongs to.'));
+      ->setDescription(t('The API product bundle the rate plan belongs to.'));
 
     // The API products are many-to-one.
-    $definitions['packageProducts']->setCardinality(-1)
+    $definitions['products']->setCardinality(-1)
       ->setSetting('target_type', 'api_product')
       ->setLabel(t('Products'))
-      ->setDescription(t('Products included in the API package.'));
+      ->setDescription(t('Products included in the product bundle.'));
 
     return $definitions;
   }
@@ -254,7 +257,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // Build the URL.
     $url = parent::toUrl($rel, $options);
     $url->setRouteParameter('user', $this->getUser()->id());
-    $url->setRouteParameter('package', $this->getPackage()->id());
+    $url->setRouteParameter('product_bundle', $this->getPackage()->id());
 
     return $url;
   }
@@ -416,7 +419,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getCacheTags() {
-    return Cache::mergeTags(parent::getCacheTags(), $this->get('packageEntity')->entity->getCacheTags());
+    return Cache::mergeTags(parent::getCacheTags(), $this->get('productBundle')->entity->getCacheTags());
   }
 
   /**
@@ -576,16 +579,16 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPackageEntity() {
+  public function getProductBundle() {
     return ['target_id' => $this->getPackage()->id()];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPackageProducts() {
+  public function getProducts() {
     return $this
-      ->get('packageEntity')
+      ->get('productBundle')
       ->first()
       ->get('entity')
       ->getValue()

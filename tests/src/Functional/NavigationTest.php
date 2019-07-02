@@ -58,7 +58,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   public function testNavigation() {
     $this->developer = $this->createAccount([
       'view own prepaid balance',
-      'view package',
+      'view product_bundle',
       'view own purchased_plan',
     ]);
 
