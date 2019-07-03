@@ -88,7 +88,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->id(), $this->rate_plan->id());
     static::assertSame($rate_plan->isPrivate(), $this->rate_plan->isPrivate());
     // What about `keepOriginalStartDate`?
-    static::assertSame($rate_plan->getPackage()->id(), $this->rate_plan->getPackage()->id());
+    static::assertSame($rate_plan->getProductBundleId(), $this->rate_plan->getProductBundleId());
     static::assertSame($rate_plan->getName(), $this->rate_plan->getName());
     static::assertSame($rate_plan->getOrganization()->getName(), $this->rate_plan->getOrganization()->getName());
     static::assertSame($rate_plan->getPaymentDueDays(), $this->rate_plan->getPaymentDueDays());
@@ -98,7 +98,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getRecurringStartUnit(), $this->rate_plan->getRecurringStartUnit());
     static::assertSame($rate_plan->getRecurringType(), $this->rate_plan->getRecurringType());
     static::assertSame($rate_plan->getSetUpFee(), $this->rate_plan->getSetUpFee());
-    static::assertSame("/user/{$account->id()}/monetization/product-bundle/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
+    static::assertSame("/user/{$account->id()}/monetization/product-bundle/{$rate_plan->getProductBundleId()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
     // Check bundled products.
     $product_ids = array_map(function ($product) {
       return ['target_id' => $product->id()];

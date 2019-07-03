@@ -257,7 +257,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
     // Build the URL.
     $url = parent::toUrl($rel, $options);
     $url->setRouteParameter('user', $this->getUser()->id());
-    $url->setRouteParameter('product_bundle', $this->getPackage()->id());
+    $url->setRouteParameter('product_bundle', $this->getProductBundleId());
 
     return $url;
   }
@@ -580,7 +580,14 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getProductBundle() {
-    return ['target_id' => $this->getPackage()->id()];
+    return ['target_id' => $this->getProductBundleId()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getProductBundleId() {
+    return $this->decorated()->getPackage()->id();
   }
 
   /**

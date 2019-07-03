@@ -153,7 +153,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
       // Future plans haven't started as of today.
       $today = new \DateTimeImmutable('today', $ratePlan->getStartDate()->getTimezone());
       // Load all plans for this product bundle.
-      $all_plans = $this->loadRatePlansByProductBundle($ratePlan->getPackage()->id(), TRUE);
+      $all_plans = $this->loadRatePlansByProductBundle($ratePlan->getProductBundleId(), TRUE);
       // Loop through to see if any future previous revisions are the given
       // plan.
       foreach ($all_plans as $future_candidate) {

@@ -101,7 +101,7 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
   protected function ratePlanUrl(PurchasedPlanInterface $purchased_plan) {
     return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
       'user' => $this->user->id(),
-      'product_bundle' => $purchased_plan->getRatePlan()->getPackage()->id(),
+      'product_bundle' => $purchased_plan->getRatePlan()->getProductBundleId(),
       'rate_plan' => $purchased_plan->getRatePlan()->id(),
     ]));
   }

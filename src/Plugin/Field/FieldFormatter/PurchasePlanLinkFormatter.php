@@ -142,7 +142,7 @@ class PurchasePlanLinkFormatter extends FormatterBase implements ContainerFactor
       return Link::createFromRoute(
         $this->getSetting('label'), 'entity.rate_plan.purchase', [
           'user'           => $value['user']->id(),
-          'product_bundle' => $rate_plan->getPackage()->id(),
+          'product_bundle' => $rate_plan->getProductBundleId(),
           'rate_plan'      => $rate_plan->id(),
         ]
       )->toRenderable();

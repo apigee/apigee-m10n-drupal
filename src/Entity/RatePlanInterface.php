@@ -28,6 +28,14 @@ use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdgeEntityInterface {
 
   /**
+   * Gets the ID of the product bundle this rate plan belongs to.
+   *
+   * @return string
+   *   The product bundle ID.
+   */
+  public function getProductBundleId();
+
+  /**
    * Loads rate plans by product bundle id.
    *
    * @param string $product_bundle
