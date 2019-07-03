@@ -32,6 +32,13 @@ use Symfony\Component\Validator\Constraint;
 class PriceRangeDefaultOutOfRangeConstraint extends Constraint {
 
   /**
+   * The validation message when value is not in right format.
+   *
+   * @var string
+   */
+  public $formatMessage = '@field must be a number.';
+
+  /**
    * The validation message when out of range.
    *
    * @var string
