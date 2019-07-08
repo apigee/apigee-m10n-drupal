@@ -288,7 +288,6 @@ trait ApigeeMonetizationTestTrait {
    *
    * @param \Drupal\apigee_m10n\Entity\PackageInterface $package
    *   The rate plan package.
-   *
    * @param string $type
    *   The type of plan.
    *

@@ -237,7 +237,11 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
       $rate_plans[$package->id()] = [];
       for ($i = rand(1, 3); $i > 0; $i--) {
         // Create plans of random types.
-        $rate_plans[$package->id()][] = $this->createPackageRatePlan($package, array_rand([RatePlanInterface::TYPE_STANDARD, RatePlanInterface::TYPE_DEVELOPER, RatePlanInterface::TYPE_DEVELOPER_CATEGORY]));
+        $rate_plans[$package->id()][] = $this->createPackageRatePlan($package, array_rand([
+          RatePlanInterface::TYPE_STANDARD,
+          RatePlanInterface::TYPE_DEVELOPER,
+          RatePlanInterface::TYPE_DEVELOPER_CATEGORY,
+        ]));
       }
     }
 
