@@ -34,11 +34,13 @@ interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterf
    *   The package ID.
    * @param bool $include_future_plans
    *   Whether to include future plans in the list.
+   * @param bool $standard_only
+   *   Whether to show standard plans only.
    *
    * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[]
    *   A list of package rate plans keyed by ID.
    */
-  public function loadPackageRatePlans($package_id, $include_future_plans = FALSE): array;
+  public function loadPackageRatePlans($package_id, $include_future_plans = FALSE, $standard_only = FALSE): array;
 
   /**
    * Loads a package rate plan by ID.

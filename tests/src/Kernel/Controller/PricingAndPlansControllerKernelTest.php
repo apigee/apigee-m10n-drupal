@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
@@ -235,7 +236,8 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
       }
       $rate_plans[$package->id()] = [];
       for ($i = rand(1, 3); $i > 0; $i--) {
-        $rate_plans[$package->id()][] = $this->createPackageRatePlan($package);
+        // Create plans of random types.
+        $rate_plans[$package->id()][] = $this->createPackageRatePlan($package, array_rand([RatePlanInterface::TYPE_STANDARD, RatePlanInterface::TYPE_DEVELOPER, RatePlanInterface::TYPE_DEVELOPER_CATEGORY]));
       }
     }
 

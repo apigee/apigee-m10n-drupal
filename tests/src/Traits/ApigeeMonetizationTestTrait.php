@@ -289,12 +289,15 @@ trait ApigeeMonetizationTestTrait {
    * @param \Drupal\apigee_m10n\Entity\PackageInterface $package
    *   The rate plan package.
    *
+   * @param string $type
+   *   The type of plan.
+   *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createPackageRatePlan(PackageInterface $package): RatePlanInterface {
+  protected function createPackageRatePlan(PackageInterface $package, $type = RatePlanInterface::TYPE_STANDARD): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 
@@ -359,7 +362,7 @@ trait ApigeeMonetizationTestTrait {
       'recurringType'         => 'CALENDAR',
       'setUpFee'              => '1.0000',
       'startDate'             => $start_date,
-      'type'                  => 'STANDARD',
+      'type'                  => $type,
       'organization'          => $org,
       'currency'              => $currency,
       'package'               => $package->decorated(),
