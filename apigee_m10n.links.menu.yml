@@ -1,6 +1,6 @@
 system.admin_apigee_m10n:
-  title: 'Monetization'
-  parent: system.admin_config_edge
+  title: 'Apigee monetization'
+  parent: system.admin_config
   route_name: apigee_m10n.settings
 
 entity.package.collection:
