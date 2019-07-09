@@ -424,9 +424,8 @@ class AddCreditService implements AddCreditServiceInterface {
     // Add the "Add credit" link.
     if ($url = $this->getAddCreditUrl($purchased_plan->getRatePlan()->getCurrency()->id(), user_load_by_mail($purchased_plan->getDeveloper()->getEmail()))) {
       $arguments['@link'] = Link::fromTextAndUrl('Add credit', $url)->toString();
+      $message = $this->t("{$original_message} @link", $arguments, $options);
     }
-
-    $message = $this->t("{$original_message} @link", $arguments, $options);
   }
 
   /**
