@@ -5,7 +5,7 @@ apigee_m10n.settings.rate_plan:
   weight: -10
 
 entity.product_bundle.collection:
-  title: 'List product bundles'
+  title: 'List'
   route_name: entity.product_bundle.collection
   base_route: apigee_m10n.settings.product_bundle
 

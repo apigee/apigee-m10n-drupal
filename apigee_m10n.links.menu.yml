@@ -4,7 +4,7 @@ system.admin_apigee_m10n:
   route_name: apigee_m10n.settings
 
 entity.product_bundle.collection:
-  title: 'Product Bundles'
+  title: 'Product bundles'
   route_name: entity.product_bundle.collection
   description: 'Manage product bundles.'
   parent: system.admin_apigee_m10n
