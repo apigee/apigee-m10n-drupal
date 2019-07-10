@@ -213,7 +213,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    *   A CSV string of prepaid balances.
    */
   public function getReport(EntityInterface $entity, \DateTimeImmutable $billing_date, $currency) {
-    return $this->monetization->getPrepaidBalanceReports($entity->getEmail(), $billing_date, $currency);
+    return $this->monetization->getPrepaidBalanceReport($entity->getEmail(), $billing_date, $currency);
   }
 
 }
