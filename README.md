@@ -44,6 +44,10 @@ to get you started quickly.
 5. Configure the [site to connect to Apigee Edge](https://www.drupal.org/docs/8/modules/apigee-edge/configure-the-connection-to-apigee-edge) 
    under **Configuration** > **Apigee Edge** > **General** in the administration toolbar.
    
+## Known Issues
+
+1. Rate plans can be purchased with insufficient funds when 'start date' is a future date. See [#158](https://github.com/apigee/apigee-m10n-drupal/issues/158) for details.
+2. Early termination fees are not reflected in current balance when cancelling future plans. See [#163](https://github.com/apigee/apigee-m10n-drupal/issues/163) for details.
 
 ## Development
 
