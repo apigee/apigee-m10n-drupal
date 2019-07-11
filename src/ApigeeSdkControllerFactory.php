@@ -32,6 +32,8 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionController;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
@@ -42,8 +44,6 @@ use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterfac
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
-use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsController;
-use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -251,16 +251,15 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface {
-    if (empty($this->controllers[__FUNCTION__])) {
-      // Create a new org controller.
-      $this->controllers[__FUNCTION__] = new PrepaidBalanceReportsController(
+  public function developerReportDefinitionController(string $developer_id): DeveloperReportDefinitionControllerInterface {
+    if (empty($this->controllers[__FUNCTION__][$developer_id])) {
+      $this->controllers[__FUNCTION__][$developer_id] = new DeveloperReportDefinitionController(
         $developer_id,
         $this->getOrganization(),
         $this->getClient()
       );
     }
-    return $this->controllers[__FUNCTION__];
+    return $this->controllers[__FUNCTION__][$developer_id];
   }
 
   /**

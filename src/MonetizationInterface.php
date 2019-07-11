@@ -144,7 +144,7 @@ interface MonetizationInterface {
    *
    * @param string $developer_id
    *   The developer id.
-   * @param \DateTimeImmutable $month
+   * @param \DateTimeImmutable $date
    *   The month for the prepaid balances.
    * @param string $currency
    *   The currency id. Example: usd.
@@ -152,7 +152,7 @@ interface MonetizationInterface {
    * @return null|string
    *   A CSV string of prepaid balances.
    */
-  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
+  public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string;
 
   /**
    * Check if developer accepted latest terms and conditions.

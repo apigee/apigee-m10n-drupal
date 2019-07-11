@@ -27,12 +27,12 @@ use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInter
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
 use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
-use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -154,9 +154,9 @@ interface ApigeeSdkControllerFactoryInterface {
    * @param string $developer_id
    *   UUID or email address of a developer.
    *
-   * @return \Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface
+   * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface
    *   The controller.
    */
-  public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface;
+  public function developerReportDefinitionController(string $developer_id): DeveloperReportDefinitionControllerInterface;
 
 }
