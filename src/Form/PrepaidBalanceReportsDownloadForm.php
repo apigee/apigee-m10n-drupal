@@ -41,23 +41,13 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   protected $monetization;
 
   /**
-   * The Apigee SDK controller factory.
-   *
-   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
-   */
-  protected $sdkControllerFactory;
-
-  /**
    * PrepaidBalancesDownloadForm constructor.
    *
-   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
-   *   The SDK controller factory.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   The Apigee Monetization base service.
    */
-  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization) {
+  public function __construct(MonetizationInterface $monetization) {
     $this->monetization = $monetization;
-    $this->sdkControllerFactory = $sdk_controller_factory;
   }
 
   /**
@@ -65,7 +55,6 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('apigee_m10n.sdk_controller_factory'),
       $container->get('apigee_m10n.monetization')
     );
   }
@@ -80,7 +69,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, EntityInterface $entity = NULL, array $supported_currencies = [], array $billing_documents = []) {
+  public function buildForm(array $form, FormStateInterface $form_state, EntityInterface $entity = NULL, array $supported_currencies = []) {
     $form['heading'] = [
       '#type' => 'html_tag',
       '#tag' => 'h3',
@@ -92,14 +81,6 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
     if (!count($supported_currencies)) {
       $form['currency'] = [
         '#markup' => $this->t('There are no supported currencies for your account.'),
-      ];
-
-      return $form;
-    }
-
-    if (!count($billing_documents)) {
-      $form['year'] = [
-        '#markup' => $this->t('There are no billing documents for your account.'),
       ];
 
       return $form;
@@ -121,10 +102,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
     ];
 
     // Build date options.
-    $date_options = [];
-    array_map(function ($document) use (&$date_options) {
-      $date_options[$document->year][$document->year . '-' . $document->month] = ucwords(strtolower($document->monthEnum));
-    }, $billing_documents);
+    $date_options = $this->dateOptions();
 
     // Save this to form state to be available in submit callback.
     $form_state->set('entity', $entity);
@@ -214,6 +192,39 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
    */
   public function getReport(EntityInterface $entity, \DateTimeImmutable $billing_date, $currency) {
     return $this->monetization->getPrepaidBalanceReport($entity->getEmail(), $billing_date, $currency);
+  }
+
+  /**
+   * Builds the date options based on how many past months are allowed.
+   *
+   * @return array[]
+   *   An array of available months keyed by the year.
+   */
+  protected function dateOptions() {
+    // The maximum past months to allow a report.
+    $allowed_months = $this->config(PrepaidBalanceConfigForm::CONFIG_NAME)->get('max_statement_history_months');
+    $allowed_months = $allowed_months ?? 12;
+    // We don't want reports to be generated before the org was created.
+    $org_start_date = $this->monetization->getOrganization()->getCreatedAt();
+    $org_start_month = ($org_start_date instanceof \DateTimeImmutable)
+      ? new \DateTimeImmutable($org_start_date->format('Y-m-01 00:00:00'))
+      : new \DateTimeImmutable("first day of this month 00:00:00 - {$allowed_months} months");
+
+    // Build the options array.
+    $date_options = [];
+    for ($i = $allowed_months - 1; $i >= 0; $i--) {
+      // Midnight on the first day of the month.
+      $date = new \DateTimeImmutable("first day of this month 00:00:00 - {$i} months");
+      // Make sure the org existed back then.
+      if ($date >= $org_start_month) {
+        $year = $date->format('Y');
+        $month = $date->format('F');
+        // Add the month to the year.
+        $date_options[$year][$year . '-' . strtolower($month)] = $month;
+      }
+    }
+
+    return $date_options;
   }
 
 }

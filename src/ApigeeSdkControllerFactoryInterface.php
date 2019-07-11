@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
@@ -32,21 +31,12 @@ use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
-use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
  * Interface for the `apigee_m10n.sdk_controller_factory` service.
  */
 interface ApigeeSdkControllerFactoryInterface {
-
-  /**
-   * Gets and org controller.
-   *
-   * @return \Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface
-   *   The organization controller.
-   */
-  public function organizationController(): OrganizationControllerInterface;
 
   /**
    * Creates a monetization developer controller.
@@ -139,14 +129,6 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The controller.
    */
   public function supportedCurrencyController(): SupportedCurrencyControllerInterface;
-
-  /**
-   * Creates a billing documents controller.
-   *
-   * @return \Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface
-   *   The controller.
-   */
-  public function billingDocumentsController(): BillingDocumentsControllerInterface;
 
   /**
    * Creates a prepaid balance reports controller.

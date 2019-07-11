@@ -19,6 +19,9 @@ apigee_m10n.prepaid_balance.config:
     enable_insufficient_funds_workflow:
       type: boolean
       label: 'Whether to enable insufficient funds workflow'
+    max_statement_history_months:
+      type: int
+      label: 'How many months in the past to allow billing statements to be generated.'
 
 field.value.apigee_price:
   type: mapping

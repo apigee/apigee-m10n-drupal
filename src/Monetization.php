@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Management\Controller\OrganizationController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
@@ -27,6 +26,7 @@ use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -121,6 +121,20 @@ class Monetization implements MonetizationInterface {
   protected $permission_handler;
 
   /**
+   * The management organization controller.
+   *
+   * @var \Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface
+   */
+  protected $organizationController;
+
+  /**
+   * The management organization entity.
+   *
+   * @var \Apigee\Edge\Api\Management\Entity\OrganizationInterface
+   */
+  protected $organization;
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -137,6 +151,8 @@ class Monetization implements MonetizationInterface {
    *   The permission handler.
    * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
    *   A currency formatter.
+   * @param \Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface $organization_controller
+   *   The management organization controller.
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
@@ -145,7 +161,8 @@ class Monetization implements MonetizationInterface {
     CacheBackendInterface $cache,
     LoggerInterface $logger,
     PermissionHandlerInterface $permission_handler,
-    CurrencyFormatterInterface $currency_formatter
+    CurrencyFormatterInterface $currency_formatter,
+    OrganizationControllerInterface $organization_controller
   ) {
     $this->sdk_connector          = $sdk_connector;
     $this->sdk_controller_factory = $sdk_controller_factory;
@@ -154,6 +171,7 @@ class Monetization implements MonetizationInterface {
     $this->logger                 = $logger;
     $this->permission_handler     = $permission_handler;
     $this->currencyFormatter      = $currency_formatter;
+    $this->organizationController = $organization_controller;
   }
 
   /**
@@ -168,12 +186,8 @@ class Monetization implements MonetizationInterface {
     $monetization_status             = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : NULL;
 
     if (!$monetization_status) {
-
-      // Load organization and populate cache.
-      $org_controller = new OrganizationController($this->sdk_connector->getClient());
-
       try {
-        $org = $org_controller->load($org_id);
+        $org = $this->getOrganization();
       }
       catch (\Exception $e) {
         $this->messenger->addError($e->getMessage());
@@ -406,13 +420,6 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getBillingDocumentsMonths(): ?array {
-    return $this->sdk_controller_factory->billingDocumentsController()->getEntities();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string {
     $controller = $this->sdk_controller_factory->developerReportDefinitionController($developer_id);
     $criteria = new PrepaidBalanceReportCriteria(strtoupper($date->format('F')), (int) $date->format('Y'));
@@ -491,6 +498,16 @@ class Monetization implements MonetizationInterface {
       }
     }
 
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOrganization() {
+    // Make sure the org is loaded.
+    $this->organization = $this->organization ?? $this->organizationController->load($this->sdk_connector->getOrganization());
+
+    return $this->organization;
   }
 
   /**
