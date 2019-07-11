@@ -27,8 +27,6 @@ use GuzzleHttp\HandlerStack;
 
 /**
  * Class MockHttpClientFactory.
- *
- * @package Drupal\apigee_mock_client
  */
 class MockHttpClientFactory extends ClientFactory {
 

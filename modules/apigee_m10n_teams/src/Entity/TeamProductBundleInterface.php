@@ -20,19 +20,19 @@
 namespace Drupal\apigee_m10n_teams\Entity;
 
 /**
- * Interface for the `package` entity override class.
+ * Interface for the `product_bundle` entity override class.
  */
-interface TeamsPackageInterface {
+interface TeamProductBundleInterface {
 
   /**
-   * Get's a list of API packages that are available to a team.
+   * Get's a list of product bundles that are available to a team.
    *
    * @param string $team_id
    *   The team ID.
    *
    * @return array
-   *   A list of packages available to the team.
+   *   A list of product bundles available to the team.
    */
-  public static function getAvailableApiPackagesByTeam($team_id);
+  public static function getAvailableProductBundlesByTeam($team_id);
 
 }

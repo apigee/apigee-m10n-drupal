@@ -48,8 +48,6 @@ use Drupal\user\UserInterface;
 
 /**
  * The `apigee_m10n.sdk_controller_factory` service class.
- *
- * @package Drupal\apigee_m10n
  */
 class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface {
 
@@ -191,18 +189,18 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
-  public function ratePlanController($package_id): RatePlanControllerInterface {
-    if (empty($this->controllers[__FUNCTION__][$package_id])) {
+  public function ratePlanController($product_bundle_id): RatePlanControllerInterface {
+    if (empty($this->controllers[__FUNCTION__][$product_bundle_id])) {
       // Don't assume the bucket has been initialized.
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
       // Create a new rate plan controller.
-      $this->controllers[__FUNCTION__][$package_id] = new RatePlanController(
-        $package_id,
+      $this->controllers[__FUNCTION__][$product_bundle_id] = new RatePlanController(
+        $product_bundle_id,
         $this->getOrganization(),
         $this->getClient()
       );
     }
-    return $this->controllers[__FUNCTION__][$package_id];
+    return $this->controllers[__FUNCTION__][$product_bundle_id];
   }
 
   /**

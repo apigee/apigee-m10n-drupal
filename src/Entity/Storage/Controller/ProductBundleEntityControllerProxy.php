@@ -25,9 +25,9 @@ use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Exception\InvalidOperationException;
 
 /**
- * Api Package storage controller proxy.
+ * Product bundle storage controller proxy.
  */
-class ApiPackageEntityControllerProxy extends MonetizationEntityControllerProxy implements ApiPackageEntityControllerProxyInterface {
+class ProductBundleEntityControllerProxy extends MonetizationEntityControllerProxy implements ProductBundleEntityControllerProxyInterface {
 
   /**
    * {@inheritdoc}
@@ -40,21 +40,30 @@ class ApiPackageEntityControllerProxy extends MonetizationEntityControllerProxy 
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    throw new InvalidOperationException('Api packages can\'t be updated directly. See: <https://docs.apigee.com/api-platform/monetization/create-api-packages#createpackapi>.');
+    throw new InvalidOperationException('Product bundles can\'t be updated directly. See: <https://docs.apigee.com/api-platform/monetization/create-api-packages#createpackapi>.');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAvailableApiPackagesByDeveloper(string $developerId, bool $active = FALSE, bool $allAvailable = TRUE): array {
+  public function getAvailableProductBundlesByDeveloper(string $developerId, bool $active = FALSE, bool $allAvailable = TRUE): array {
+    // Product bundles are called packages in the PHP API client.
     return $this->controller()->getAvailableApiPackagesByDeveloper($developerId, $active, $allAvailable);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAvailableApiPackagesByCompany(string $company, bool $active = FALSE, bool $allAvailable = TRUE): array {
+  public function getAvailableProductBundlesByTeam(string $company, bool $active = FALSE, bool $allAvailable = TRUE): array {
+    // Product bundles are called packages in the PHP API client.
     return $this->controller()->getAvailableApiPackagesByCompany($company, $active, $allAvailable);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntities() {
+    return $this->controller()->getEntities();
   }
 
 }

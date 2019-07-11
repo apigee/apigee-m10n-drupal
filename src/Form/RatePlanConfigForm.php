@@ -26,8 +26,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class for managing `apigee_m10n.rate_plan.config` settings.
- *
- * @package Drupal\apigee_m10n\Form
  */
 class RatePlanConfigForm extends ConfigFormBase {
 

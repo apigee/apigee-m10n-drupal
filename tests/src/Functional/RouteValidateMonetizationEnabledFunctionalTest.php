@@ -24,8 +24,6 @@ use Drupal\apigee_m10n\Monetization;
 /**
  * Tests the monetization enable check on routes.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */

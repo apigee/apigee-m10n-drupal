@@ -45,8 +45,6 @@ use Drupal\Core\Url;
 
 /**
  * Helper service to handle basic module tasks.
- *
- * @package Drupal\apigee_m10n_add_credit
  */
 class AddCreditService implements AddCreditServiceInterface {
 

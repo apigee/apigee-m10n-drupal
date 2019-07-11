@@ -25,8 +25,6 @@ use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a form to to refresh prepaid balance.
- *
- * @package Drupal\apigee_m10n\Form
  */
 class PrepaidBalanceRefreshForm extends FormBase {
 

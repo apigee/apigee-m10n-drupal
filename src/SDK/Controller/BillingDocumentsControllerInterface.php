@@ -22,8 +22,6 @@ namespace Drupal\apigee_m10n\SDK\Controller;
  * TODO: Extract this to the apigee-client-php package.
  *
  * Interface BillingDocumentsControllerInterface.
- *
- * @package Drupal\apigee_m10n\Controller
  */
 interface BillingDocumentsControllerInterface {
 

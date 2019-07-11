@@ -3,9 +3,9 @@ status: true
 dependencies:
   module:
     - apigee_m10n
-id: package.package.default
-targetEntityType: package
-bundle: package
+id: product_bundle.product_bundle.default
+targetEntityType: product_bundle
+bundle: product_bundle
 mode: default
 content:
   apiProducts:

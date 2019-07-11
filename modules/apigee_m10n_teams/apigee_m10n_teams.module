@@ -67,6 +67,6 @@ function apigee_m10n_teams_purchased_plan_create_access(AccountInterface $accoun
 /**
  * Implements hook_ENTITY_TYPE_access().
  */
-function apigee_m10n_teams_package_access(EntityInterface $entity, $operation, AccountInterface $account) {
+function apigee_m10n_teams_product_bundle_access(EntityInterface $entity, $operation, AccountInterface $account) {
   return Drupal::service('apigee_m10n.teams')->entityAccess($entity, $operation, $account);
 }

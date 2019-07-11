@@ -27,8 +27,6 @@ use Psr\Http\Message\UriInterface;
  * TODO: Extract this to the apigee-client-php package.
  *
  * Class PrepaidBalanceReportsController.
- *
- * @package Drupal\apigee_m10n\Controller
  */
 class PrepaidBalanceReportsController extends AbstractController implements PrepaidBalanceReportsControllerInterface {
 

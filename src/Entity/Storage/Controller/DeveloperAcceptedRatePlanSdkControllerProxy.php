@@ -26,9 +26,9 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
 /**
  * The `apigee_m10n.sdk_controller_proxy.rate_plan` service class.
  *
- * Responsible for proxying calls to the appropriate package rate plan
- * controllers. Rate plan controllers require a package ID for instantiation so
- * we sometimes need to get a controller at runtime for a given rate plan.
+ * Responsible for proxying calls to the appropriate rate plan controllers. Rate
+ * plan controllers require a product bundle ID for instantiation so we
+ * sometimes need to get a controller at runtime for a given rate plan.
  */
 class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRatePlanSdkControllerProxyInterface {
 
@@ -60,8 +60,8 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function load(string $id): EntityInterface {
-    // A little secret is that the real package ID is not required for loading
-    // a rate plan but may be required for saving it.
+    // A little secret is that the real product bundle ID is not required for
+    // loading a rate plan but may be required for saving it.
     return $this->loadById('default', $id);
   }
 
@@ -127,7 +127,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * Given an entity, gets the purchased_plan controller.
    *
    * @param \Apigee\Edge\Entity\EntityInterface $entity
-   *   The ID of the package the rate plan belongs to.
+   *   The ID of the product bundle the rate plan belongs to.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
    *   The real rate plan controller.
