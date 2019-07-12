@@ -287,6 +287,7 @@ trait ApigeeMonetizationTestTrait {
    *   The rate plan product bundle.
    * @param string $type
    *   The type of plan.
+   *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
