@@ -57,7 +57,7 @@ use Drupal\user\Entity\User;
  *   ),
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\RatePlanStorage",
- *     "access" = "Drupal\entity\EntityAccessControlHandlerBase",
+ *     "access" = "Drupal\apigee_m10n\Entity\Access\RatePlanAccessControlHandler",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
