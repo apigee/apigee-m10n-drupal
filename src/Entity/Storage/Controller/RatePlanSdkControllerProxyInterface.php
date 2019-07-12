@@ -40,7 +40,7 @@ interface RatePlanSdkControllerProxyInterface extends EdgeEntityControllerInterf
    * @return \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[]
    *   A list of rate plans keyed by ID.
    */
-  public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE): array;
+  public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE, $standard_only = FALSE): array;
 
   /**
    * Loads a rate plan by ID.

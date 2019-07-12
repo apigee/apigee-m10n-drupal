@@ -285,13 +285,14 @@ trait ApigeeMonetizationTestTrait {
    *
    * @param \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle
    *   The rate plan product bundle.
-   *
+   * @param string $type
+   *   The type of plan.
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createRatePlan(ProductBundleInterface $product_bundle): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 

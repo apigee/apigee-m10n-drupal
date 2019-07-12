@@ -92,10 +92,10 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
   /**
    * {@inheritdoc}
    */
-  public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE): array {
+  public function loadRatePlansByProductBundle($product_bundle_id, $include_future_plans = FALSE, $standard_only = FALSE): array {
     // Get all plans for this product bundle.
     return $this->getRatePlanControllerByProductBundleId($product_bundle_id)
-      ->getEntities(!$include_future_plans, FALSE);
+      ->getEntities(!$include_future_plans, FALSE, $standard_only);
   }
 
   /**
