@@ -218,9 +218,8 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
       // Make sure the org existed back then.
       if ($date >= $org_start_month) {
         $year = $date->format('Y');
-        $month = $date->format('F');
         // Add the month to the year.
-        $date_options[$year][$year . '-' . strtolower($month)] = $month;
+        $date_options[$year][$year . '-' . $date->format('m')] = $date->format('F');
       }
     }
 
