@@ -166,6 +166,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
         }
       }
       catch (ClientErrorException $exception) {
+        $form_state->setRebuild(TRUE);
         $currency_options = $form_state->get('currency_options');
         $date_options = $form_state->get('date_options');
         $this->messenger()->addError($this->t('There are no prepaid balance reports for account @account for @month @year.', [
