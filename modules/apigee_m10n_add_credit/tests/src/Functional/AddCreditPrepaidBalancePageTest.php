@@ -73,7 +73,7 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
    * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::apigeeM10nPrepaidBalanceListAlter
    */
   public function testAddCreditButtonForCurrency() {
-    $this->queueOrg();
+    $this->warmOrganizationCache();
 
     // Configure an add credit product for USD.
     // There should be an add credit button for usd but NOT for aud.
@@ -81,7 +81,6 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -95,7 +94,6 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -109,7 +107,6 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -125,7 +122,6 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),

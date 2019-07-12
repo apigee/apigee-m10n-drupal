@@ -56,7 +56,7 @@ class RouteValidateMonetizationEnabledFunctionalTest extends MonetizationFunctio
     $route_provider = \Drupal::service('router.route_provider');
 
     if ($route = $route_provider->getRouteByName($route_name)) {
-      $this->queueOrg();
+      $this->warmOrganizationCache();
 
       $this->assertTrue($this->container->get('apigee_m10n.monetization')->isMonetizationEnabled());
 

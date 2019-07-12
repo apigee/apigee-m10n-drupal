@@ -89,7 +89,7 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testStatusReport() {
-    $this->queueOrg();
+    $this->warmOrganizationCache();
 
     // TODO: Figure out why this line is needed otherwise monetization fails.
     \Drupal::service('apigee_m10n.monetization')->isMonetizationEnabled();

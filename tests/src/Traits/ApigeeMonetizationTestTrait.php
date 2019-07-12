@@ -477,7 +477,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function queueOrg($monetized = TRUE) {
+  protected function warmOrganizationCache($monetized = TRUE) {
     $this->stack
       ->queueMockResponse([
         'get_organization' => [
@@ -485,6 +485,7 @@ trait ApigeeMonetizationTestTrait {
           'timezone' => $this->org_default_timezone,
         ],
       ]);
+    \Drupal::service('apigee_m10n.monetization')->getOrganization();
   }
 
   /**

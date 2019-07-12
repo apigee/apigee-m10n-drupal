@@ -19,8 +19,6 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Management\Controller\OrganizationController;
-use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
@@ -42,8 +40,6 @@ use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsController;
-use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -87,17 +83,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
    */
   public function __construct(SDKConnectorInterface $sdk_connector) {
     $this->sdk_connector = $sdk_connector;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function organizationController(): OrganizationControllerInterface {
-    if (empty($this->controllers[__FUNCTION__])) {
-      // Create a new org controller.
-      $this->controllers[__FUNCTION__] = new OrganizationController($this->client);
-    }
-    return $this->controllers[__FUNCTION__];
   }
 
   /**
@@ -227,20 +212,6 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
     if (empty($this->controllers[__FUNCTION__])) {
       // Create a new org controller.
       $this->controllers[__FUNCTION__] = new SupportedCurrencyController(
-        $this->getOrganization(),
-        $this->getClient()
-      );
-    }
-    return $this->controllers[__FUNCTION__];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function billingDocumentsController(): BillingDocumentsControllerInterface {
-    if (empty($this->controllers[__FUNCTION__])) {
-      // Create a new org controller.
-      $this->controllers[__FUNCTION__] = new BillingDocumentsController(
         $this->getOrganization(),
         $this->getClient()
       );
