@@ -119,6 +119,9 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
       '#description' => $this->t('The maximum number of months to allow generating as prepaid statement.'),
       '#default_value' => $config->get('max_statement_history_months'),
       '#required' => TRUE,
+      '#min' => 1,
+      '#max' => 1200,
+      '#field_suffix' => t('months'),
     ];
 
     return parent::buildForm($form, $form_state);
