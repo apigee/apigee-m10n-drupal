@@ -52,7 +52,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
 
     $this->drupalLogin($this->developer);
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,
@@ -67,7 +67,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
       ],
     ]);
 
-    $this->stack->queueMockResponse(['get-supported-currencies', 'get-billing-documents-months']);
+    $this->stack->queueMockResponse(['get-supported-currencies']);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),

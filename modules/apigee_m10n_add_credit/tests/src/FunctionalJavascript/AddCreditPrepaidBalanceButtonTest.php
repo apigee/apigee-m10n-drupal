@@ -86,11 +86,10 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
   public function testAddCreditButton() {
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [

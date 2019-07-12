@@ -76,7 +76,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & plans');
     $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,
@@ -93,7 +93,6 @@ class NavigationTest extends MonetizationFunctionalTestBase {
 
     $this->stack->queueMockResponse([
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     // Check the manage Balance and plans link.

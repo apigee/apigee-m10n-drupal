@@ -43,6 +43,13 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
   protected $account;
 
   /**
+   * The datetime for the 1st of last month.
+   *
+   * @var \DateTimeImmutable
+   */
+  protected $lastMonth;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
@@ -54,6 +61,8 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     ]);
 
     $this->drupalLogin($this->account);
+
+    $this->lastMonth = new \DateTimeImmutable('first day of last month 00:00:00');
   }
 
   /**
@@ -62,11 +71,14 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
    * @throws \Behat\Mink\Exception\ResponseTextException
    */
   public function testAccountWithNoReports() {
-    $this->queueOrg();
+    $year = $this->lastMonth->format('Y');
+    $month = $this->lastMonth->format('F');
+    $month_numeric = $this->lastMonth->format('m');
+
+    $this->warmOrganizationCache();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
@@ -76,15 +88,18 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
       'post-prepaid-balance-reports-empty',
     ]);
 
-    $edit = ['currency' => 'test', 'year' => '2018', 'month_2018' => '2018-9'];
+    $edit = [
+      'currency' => 'test',
+      'year' => $year,
+      "month_{$year}" => "{$year}-{$month_numeric}",
+    ];
     $this->submitForm($edit, 'Download CSV');
 
     $this->assertSession()
-      ->pageTextContains('There are no prepaid balance reports for account TEST (Test) for September 2018.');
+      ->pageTextContains("There are no prepaid balance reports for account TEST (Test) for {$month} {$year}.");
   }
 
   /**
@@ -93,11 +108,14 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
    * @throws \Exception
    */
   public function testDateWithNoReport() {
-    $this->queueOrg();
+    $year = $this->lastMonth->format('Y');
+    $month = $this->lastMonth->format('F');
+    $month_numeric = $this->lastMonth->format('m');
+
+    $this->warmOrganizationCache();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
@@ -107,15 +125,18 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
       'post-prepaid-balance-reports-empty',
     ]);
 
-    $edit = ['currency' => 'usd', 'year' => '2018', 'month_2018' => '2018-8'];
+    $edit = [
+      'currency' => 'usd',
+      'year' => $year,
+      "month_{$year}" => "{$year}-{$month_numeric}",
+    ];
     $this->submitForm($edit, 'Download CSV');
 
     $this->assertSession()
-      ->pageTextContains('There are no prepaid balance reports for account USD (United States Dollars) for August 2018.');
+      ->pageTextContains("There are no prepaid balance reports for account USD (United States Dollars) for {$month} {$year}.");
   }
 
   /**
@@ -124,11 +145,13 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
    * @throws \Exception
    */
   public function testValidAccountAndDate() {
-    $this->queueOrg();
+    $year = $this->lastMonth->format('Y');
+    $month_numeric = $this->lastMonth->format('m');
+
+    $this->warmOrganizationCache();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
@@ -138,14 +161,17 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
       'post-prepaid-balance-reports',
     ]);
 
-    $edit = ['currency' => 'usd', 'year' => '2018', 'month_2018' => '2018-9'];
+    $edit = [
+      'currency' => 'usd',
+      'year' => $year,
+      "month_{$year}" => "{$year}-{$month_numeric}",
+    ];
     $this->submitForm($edit, 'Download CSV');
 
-    $filename = "prepaid-balance-report-2018-9.csv";
+    $filename = "prepaid-balance-report-{$year}-{$month_numeric}.csv";
     $this->assertStatusCodeEquals(Response::HTTP_OK);
     $this->assertHeaderEquals('text/csv; charset=UTF-8', $this->drupalGetHeader('Content-Type'));
     $this->assertHeaderEquals("attachment; filename=$filename", $this->drupalGetHeader('Content-Disposition'));

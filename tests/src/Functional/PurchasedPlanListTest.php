@@ -64,7 +64,7 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
     $rate_plan = $this->createRatePlan($product_bundle);
     $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
