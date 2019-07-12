@@ -167,8 +167,7 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
       $build['download_form'] = $this->formBuilder->getForm(
         $this->getDownloadFormClass(),
         $this->entity,
-        $this->getDataFromCache($this->entity, 'supported_currencies', [$this->monetization, 'getSupportedCurrencies']),
-        $this->getDataFromCache($this->entity, 'billing_documents', [$this->monetization, 'getBillingDocumentsMonths'])
+        $this->getDataFromCache($this->entity, 'supported_currencies', [$this->monetization, 'getSupportedCurrencies'])
       );
       $build['download_form']['#cache']['keys'] = [static::getCacheId($this->entity, 'download_form')];
     }

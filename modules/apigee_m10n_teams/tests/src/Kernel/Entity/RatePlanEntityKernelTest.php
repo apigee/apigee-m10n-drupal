@@ -53,11 +53,11 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
   protected $team;
 
   /**
-   * A test package.
+   * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A test rate plan.
@@ -94,8 +94,8 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
 
     $this->createCurrentUserSession($this->developer);
 
-    $this->package = $this->createPackage();
-    $this->rate_plan = $this->createPackageRatePlan($this->package);
+    $this->product_bundle = $this->createProductBundle();
+    $this->rate_plan = $this->createRatePlan($this->product_bundle);
   }
 
   /**
@@ -113,19 +113,19 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     // Check team access.
     static::assertTrue($this->rate_plan->access('view', $this->developer));
 
-    // Make sure we get a team context when getting a package url.
+    // Make sure we get a team context when getting a product bundle url.
     $url = $this->rate_plan->toUrl('team');
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $url->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $url->toString());
     static::assertSame('entity.rate_plan.team', $url->getRouteName());
 
     // Load the cached rate plan.
-    $rate_plan = RatePlan::loadById($this->package->id(), $this->rate_plan->id());
+    $rate_plan = RatePlan::loadById($this->product_bundle->id(), $this->rate_plan->id());
 
     static::assertInstanceOf(TeamsRatePlan::class, $rate_plan);
     // Compare the loaded rate plan with the object comparator.
     static::assertEquals($rate_plan->decorated(), $this->rate_plan->decorated());
 
-    // Render the package.
+    // Render the product bundle.
     $build = \Drupal::entityTypeManager()
       ->getViewBuilder('rate_plan')
       ->view($rate_plan, 'default');
@@ -139,9 +139,9 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->assertLinkByHref($rate_plan->toUrl()->toString());
 
     // Test product names.
-    foreach ($rate_plan->get('packageProducts') as $index => $product_field) {
+    foreach ($rate_plan->get('products') as $index => $product_field) {
       $css_index = $index + 1;
-      $this->assertCssElementText(".rate-plan .field--name-packageproducts .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
+      $this->assertCssElementText(".rate-plan .field--name-products .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
     }
 
     // Test fees.

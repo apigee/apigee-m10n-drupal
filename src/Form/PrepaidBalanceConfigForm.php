@@ -28,8 +28,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Config form for prepaid balance.
- *
- * @package Drupal\apigee_m10n
  */
 class PrepaidBalanceConfigForm extends ConfigFormBase {
 
@@ -115,6 +113,17 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('enable_insufficient_funds_workflow'),
     ];
 
+    $form['general']['max_statement_history_months'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Billing history limit.'),
+      '#description' => $this->t('The maximum number of months to allow generating as prepaid statement.'),
+      '#default_value' => $config->get('max_statement_history_months'),
+      '#required' => TRUE,
+      '#min' => 1,
+      '#max' => 1200,
+      '#field_suffix' => t('months'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -125,6 +134,7 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
     $this->config(static::CONFIG_NAME)
       ->set('cache.max_age', $form_state->getValue('max_age'))
       ->set('enable_insufficient_funds_workflow', $form_state->getValue('enable_insufficient_funds_workflow'))
+      ->set('max_statement_history_months', $form_state->getValue('max_statement_history_months'))
       ->save();
 
     // Clear caches.

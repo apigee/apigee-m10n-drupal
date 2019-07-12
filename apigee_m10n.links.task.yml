@@ -4,10 +4,10 @@ apigee_m10n.settings.rate_plan:
   base_route: apigee_m10n.settings.rate_plan
   weight: -10
 
-entity.package.collection:
-  title: 'List packages'
-  route_name: entity.package.collection
-  base_route: apigee_m10n.settings.package
+entity.product_bundle.collection:
+  title: 'List'
+  route_name: entity.product_bundle.collection
+  base_route: apigee_m10n.settings.product_bundle
 
 apigee_m10n.balance_and_plans:
   route_name: apigee_monetization.billing

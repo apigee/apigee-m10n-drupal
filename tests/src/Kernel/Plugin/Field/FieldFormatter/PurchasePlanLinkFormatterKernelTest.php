@@ -47,18 +47,18 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
   protected $field_manager;
 
   /**
-   * Test API Package.
+   * Test product bundle.
    *
-   * @var \Apigee\Edge\Api\Monetization\Entity\ApiPackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $api_package;
+  protected $product_bundle;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
   /**
    * {@inheritdoc}
@@ -79,8 +79,8 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');
 
-    $this->api_package = $this->createPackage();
-    $this->package_rate_plan = $this->createPackageRatePlan($this->api_package);
+    $this->product_bundle = $this->createProductBundle();
+    $this->rate_plan = $this->createRatePlan($this->product_bundle);
   }
 
   /**
@@ -93,7 +93,7 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
       'view own purchased_plan',
     ]);
     $this->setCurrentUser($user);
-    $item_list = $this->package_rate_plan->get('purchase');
+    $item_list = $this->rate_plan->get('purchase');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(PurchaseFieldItem::class, $item_list->get(0));
     static::assertSame(\Drupal::currentUser()->id(), $item_list->get(0)->user->id());

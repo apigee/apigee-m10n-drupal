@@ -4,17 +4,17 @@
   margin-bottom: 1rem;
 }
 
-.rate-plan .field--name-packageproducts > .field__label {
+.rate-plan .field--name-products > .field__label {
   font-size: inherit;
   font-weight: bold;
 }
 
-.rate-plan .field--name-packageproducts .field__items {
+.rate-plan .field--name-products .field__items {
   display: flex;
   flex-flow: row wrap;
 }
 
-.rate-plan .field--name-packageproducts .field__item:not(:last-child)::after {
+.rate-plan .field--name-products .field__item:not(:last-child)::after {
   content: ',';
   margin-right: 1ch;
 }

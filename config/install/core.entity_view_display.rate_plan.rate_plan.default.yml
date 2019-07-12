@@ -41,7 +41,7 @@ content:
       timezone: ''
       text: 'This plan has a new version effective @date. Toggle below to see the future rate plan.'
     third_party_settings: {  }
-  packageProducts:
+  products:
     type: entity_reference_label
     weight: 0
     region: content
@@ -98,7 +98,7 @@ hidden:
   id: true
   name: true
   organization: true
-  packageEntity: true
+  productBundle: true
   paymentDueDays: true
   private: true
   prorate: true

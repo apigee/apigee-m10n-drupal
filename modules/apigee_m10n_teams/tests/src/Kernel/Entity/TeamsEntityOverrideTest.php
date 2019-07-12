@@ -20,10 +20,10 @@
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
 use Drupal\apigee_edge\Entity\EdgeEntityType;
-use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
-use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\KernelTests\KernelTestBase;
@@ -51,11 +51,11 @@ class TeamsEntityOverrideTest extends KernelTestBase {
   ];
 
   /**
-   * Tests the package entity overrides.
+   * Tests the product bundle entity overrides.
    *
    * @throws \Exception
    */
-  public function testPackageEntityOverrides() {
+  public function testProductBundleEntityOverrides() {
     $random = $this->getRandomGenerator();
     $team_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
 
@@ -66,31 +66,31 @@ class TeamsEntityOverrideTest extends KernelTestBase {
     $route_match->getParameter('team')->willReturn($team_id);
     $this->container->set('current_route_match', $route_match->reveal());
 
-    // Create a package entity.
-    $package = Package::create([
+    // Create a product bundle entity.
+    $product_bundle = ProductBundle::create([
       'id' => strtolower($random->word(8) . '-' . $random->word(4)),
       'displayName' => $random->name(12),
       'description' => $random->sentences(12),
     ]);
 
-    $entity_type = $this->container->get('entity_type.manager')->getDefinition('package');
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('product_bundle');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
     // Make sure our entity class has taken over.
-    static::assertSame(TeamsPackage::class, $entity_type->getClass());
+    static::assertSame(TeamProductBundle::class, $entity_type->getClass());
     // Check for the `team` link template.
     static::assertNotEmpty($entity_type->getLinkTemplate('team'));
     // Make sure we are overriding the route provider.
     static::assertSame(MonetizationTeamsEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
-    // Make sure we get a team context when getting a package url.
-    $url = $package->toUrl('canonical');
-    static::assertSame("/teams/{$team_id}/monetization/package/{$package->id()}", $url->toString());
-    static::assertSame('entity.package.team', $url->getRouteName());
+    // Make sure we get a team context when getting a product bundle url.
+    $url = $product_bundle->toUrl('canonical');
+    static::assertSame("/teams/{$team_id}/monetization/product-bundle/{$product_bundle->id()}", $url->toString());
+    static::assertSame('entity.product_bundle.team', $url->getRouteName());
   }
 
   /**
-   * Tests the package entity overrides.
+   * Tests the product bundle entity overrides.
    *
    * @throws \Exception
    */

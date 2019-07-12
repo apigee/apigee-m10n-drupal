@@ -96,11 +96,10 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
 
     // Create and sign in a user with no add credit permissions.
     $this->developer = $this->signIn(['view own prepaid balance']);
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -112,7 +111,6 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),

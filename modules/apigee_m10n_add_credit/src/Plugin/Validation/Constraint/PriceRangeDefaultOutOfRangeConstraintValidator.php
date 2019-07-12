@@ -31,8 +31,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Validates the 'PriceRangeDefaultOutOfRange' constraint.
- *
- * @package Drupal\apigee_m10n_add_credit.
  */
 class PriceRangeDefaultOutOfRangeConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
 

@@ -22,8 +22,6 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 /**
  * Functional test for navigation.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
@@ -60,7 +58,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   public function testNavigation() {
     $this->developer = $this->createAccount([
       'view own prepaid balance',
-      'view package',
+      'view product_bundle',
       'view own purchased_plan',
     ]);
 
@@ -78,7 +76,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & plans');
     $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,
@@ -95,7 +93,6 @@ class NavigationTest extends MonetizationFunctionalTestBase {
 
     $this->stack->queueMockResponse([
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     // Check the manage Balance and plans link.

@@ -30,8 +30,6 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class MockHandlerStack.
- *
- * @package Drupal\apigee_mock_client
  */
 class MockHandlerStack extends MockHandler {
 

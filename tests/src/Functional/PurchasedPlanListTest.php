@@ -60,11 +60,11 @@ class PurchasedPlanListTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testPurchasedPlanListView() {
-    $package = $this->createPackage();
-    $rate_plan = $this->createPackageRatePlan($package);
+    $product_bundle = $this->createProductBundle();
+    $rate_plan = $this->createRatePlan($product_bundle);
     $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 

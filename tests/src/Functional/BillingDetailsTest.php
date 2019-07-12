@@ -60,7 +60,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testBillingDetailsPageView() {
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
       'developer' => [
         'mail'  => ['value' => $this->developer->getEmail()],

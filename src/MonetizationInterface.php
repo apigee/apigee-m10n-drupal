@@ -20,6 +20,7 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
@@ -132,19 +133,11 @@ interface MonetizationInterface {
   public function getSupportedCurrencies(): ?array;
 
   /**
-   * Get the billing documents months for an organization.
-   *
-   * @return array|null
-   *   An array of billing documents.
-   */
-  public function getBillingDocumentsMonths(): ?array;
-
-  /**
    * Returns a CSV string for prepaid balances.
    *
    * @param string $developer_id
    *   The developer id.
-   * @param \DateTimeImmutable $month
+   * @param \DateTimeImmutable $date
    *   The month for the prepaid balances.
    * @param string $currency
    *   The currency id. Example: usd.
@@ -152,7 +145,7 @@ interface MonetizationInterface {
    * @return null|string
    *   A CSV string of prepaid balances.
    */
-  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
+  public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string;
 
   /**
    * Check if developer accepted latest terms and conditions.
@@ -216,5 +209,13 @@ interface MonetizationInterface {
    *   The user role.
    */
   public function userRolePresave(RoleInterface $user_role);
+
+  /**
+   * Gets the Apigee Edge management organization entity.
+   *
+   * @return \Apigee\Edge\Api\Management\Entity\OrganizationInterface
+   *   The organization entity.
+   */
+  public function getOrganization(): ?OrganizationInterface;
 
 }

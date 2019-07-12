@@ -41,7 +41,7 @@ class TeamPrepaidBalanceReportsDownloadForm extends PrepaidBalanceReportsDownloa
    *   A CSV string of prepaid balances.
    */
   public function getReport(EntityInterface $entity, \DateTimeImmutable $billing_date, $currency) {
-    return $this->monetization->getPrepaidBalanceReports($entity->id(), $billing_date, $currency);
+    return $this->monetization->getPrepaidBalanceReport($entity->id(), $billing_date, $currency);
   }
 
 }

@@ -5,7 +5,7 @@ services:
 
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
-    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n', '@user.permissions', '@apigee_m10n.price_formatter']
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n', '@user.permissions', '@apigee_m10n.price_formatter', '@apigee_edge.controller.organization']
 
   apigee_m10n.price_formatter.format_repository:
     class: CommerceGuys\Intl\NumberFormat\NumberFormatRepository
@@ -23,8 +23,8 @@ services:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
     arguments: ['@apigee_edge.sdk_connector']
 
-  apigee_m10n.sdk_controller_proxy.package:
-    class: Drupal\apigee_m10n\Entity\Storage\Controller\ApiPackageEntityControllerProxy
+  apigee_m10n.sdk_controller_proxy.product_bundle:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\ProductBundleEntityControllerProxy
 
   apigee_m10n.sdk_controller_proxy.rate_plan:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxy

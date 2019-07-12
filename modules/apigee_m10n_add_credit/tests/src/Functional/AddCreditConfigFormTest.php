@@ -73,7 +73,7 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
    * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::submitForm
    */
   public function testConfigFormUi() {
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->queueMockResponses(['get-supported-currencies']);
     $this->drupalGet(Url::fromRoute('apigee_m10n_add_credit.settings.add_credit')->toString());
 
