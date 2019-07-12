@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
@@ -178,29 +179,8 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function isMonetizationEnabled(): bool {
-    // Get organization ID string.
-    $org_id = $this->sdk_connector->getOrganization();
-
-    // Use cached result if available.
-    $monetization_status_cache_entry = $this->cache->get("apigee_m10n:org_monetization_status:{$org_id}");
-    $monetization_status             = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : NULL;
-
-    if (!$monetization_status) {
-      try {
-        $org = $this->getOrganization();
-      }
-      catch (\Exception $e) {
-        $this->messenger->addError($e->getMessage());
-        return FALSE;
-      }
-
-      $monetization_status = $org->getPropertyValue('features.isMonetizationEnabled') === 'true' ? 'enabled' : 'disabled';
-      $expire_time         = new \DateTime('now + 5 minutes');
-
-      $this->cache->set("apigee_m10n:org_monetization_status:{$org_id}", $monetization_status, $expire_time->getTimestamp());
-    }
-
-    return ($monetization_status === 'enabled');
+    $org = $this->getOrganization();
+    return ($org && $org->getPropertyValue('features.isMonetizationEnabled') === 'true');
   }
 
   /**
@@ -503,9 +483,26 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getOrganization() {
-    // Make sure the org is loaded.
-    $this->organization = $this->organization ?? $this->organizationController->load($this->sdk_connector->getOrganization());
+  public function getOrganization(): ?OrganizationInterface {
+    // Check if the organization is statically cached.
+    if ($this->organization) {
+      return $this->organization;
+    }
+    // Check the DB cache.
+    $cid = 'apigee_m10n:organization';
+    if (($cache = $this->cache->get($cid)) && !empty($cache->data)) {
+      $this->organization = $cache->data;
+    }
+    else {
+      // Load the org and cache it for 5 minutes.
+      try {
+        $this->organization = $this->organizationController->load($this->sdk_connector->getOrganization());
+      }
+      catch (\Exception $e) {
+        $this->messenger->addError($e->getMessage());
+      }
+      $this->cache->set($cid, $this->organization, strtotime("+5 minutes"));
+    }
 
     return $this->organization;
   }

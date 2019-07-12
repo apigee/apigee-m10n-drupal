@@ -20,6 +20,7 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
@@ -215,6 +216,6 @@ interface MonetizationInterface {
    * @return \Apigee\Edge\Api\Management\Entity\OrganizationInterface
    *   The organization entity.
    */
-  public function getOrganization();
+  public function getOrganization(): ?OrganizationInterface;
 
 }
