@@ -419,7 +419,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getCacheTags() {
-    return Cache::mergeTags(parent::getCacheTags(), $this->get('productBundle')->entity->getCacheTags());
+    return Cache::mergeTags(parent::getCacheTags(), ($entity = $this->get('productBundle')->entity) ? $entity->getCacheTags() : []);
   }
 
   /**
@@ -587,7 +587,7 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getProductBundleId() {
-    return $this->decorated()->getPackage()->id();
+    return ($package = $this->decorated()->getPackage()) ? $package->id() : NULL;
   }
 
   /**
