@@ -53,13 +53,6 @@ function apigee_m10n_teams_purchased_plan_access(EntityInterface $entity, $opera
 /**
  * Implements hook_ENTITY_TYPE_access().
  */
-function apigee_m10n_teams_rate_plan_access(EntityInterface $entity, $operation, AccountInterface $account) {
-  return Drupal::service('apigee_m10n.teams')->ratePlanAccess($entity, $operation, $account);
-}
-
-/**
- * Implements hook_ENTITY_TYPE_access().
- */
 function apigee_m10n_teams_product_bundle_access(EntityInterface $entity, $operation, AccountInterface $account) {
   return Drupal::service('apigee_m10n.teams')->entityAccess($entity, $operation, $account);
 }

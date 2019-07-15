@@ -25,6 +25,7 @@ use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryI
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
+use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
@@ -131,6 +132,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Override the `html` route provider.
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
       $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
+      $entity_types['rate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
     }
 
     // Overrides for the purchased_plan entity.
@@ -173,15 +175,6 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} purchased_plan"]);
       // Team permission results completely override user permissions.
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($team = $this->currentTeam()) {
-      return $this->entityAccess($entity, $operation, $account);
     }
   }
 
