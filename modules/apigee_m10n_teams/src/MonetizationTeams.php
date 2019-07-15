@@ -179,26 +179,9 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
-    if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
-      // Gat the access result.
-      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["purchase rate_plan"]);
-      // Team permission results completely override user permissions.
-      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($team = $this->currentTeam()) {
-      if ($operation === 'purchase') {
-        return $this->purchasedPlanCreateAccess($account, ['team' => $team], 'purchased_plan');
-      }
-      else {
-        return $this->entityAccess($entity, $operation, $account);
-      }
+      return $this->entityAccess($entity, $operation, $account);
     }
   }
 

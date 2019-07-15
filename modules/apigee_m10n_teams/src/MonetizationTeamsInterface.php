@@ -95,21 +95,6 @@ interface MonetizationTeamsInterface {
   public function purchasedPlanAccess(EntityInterface $entity, $operation, AccountInterface $account);
 
   /**
-   * Handles `hook_purchased_plan_create_access` for `apigee_m10n_teams`.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The account requesting access.
-   * @param array $context
-   *   An array of relevant context.
-   * @param string $entity_bundle
-   *   This is always `purchased_plan`.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface|null
-   *   The access result or null for non-team routes.
-   */
-  public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle);
-
-  /**
    * Handles `hook_rate_plan_access` for the `apigee_m10n_teams` module.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
