@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_teams\Entity\Access;
+namespace Drupal\apigee_m10n_teams\Entity\Permissions;
 
 use Drupal\apigee_edge_teams\DynamicTeamPermissionProviderInterface;
 use Drupal\apigee_edge_teams\Structure\TeamPermission;
