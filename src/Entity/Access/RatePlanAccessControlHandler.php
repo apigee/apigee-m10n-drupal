@@ -104,4 +104,11 @@ class RatePlanAccessControlHandler extends EntityAccessControlHandlerBase implem
     return $access->andIf(AccessResult::allowedIfHasPermission($account, "$operation rate_plan"));
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    return AccessResult::forbidden('Rate plans cannot be created via the developer portal.');
+  }
+
 }
