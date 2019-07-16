@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
