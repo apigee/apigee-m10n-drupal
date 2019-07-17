@@ -1,5 +1,5 @@
 apigee_m10n_add_credit.settings.add_credit:
-  path: '/admin/config/apigee-edge/monetization/add-credit'
+  path: '/admin/config/apigee-monetization/prepaid-balance/add-credit'
   defaults:
     _form: '\Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm'
     _title: 'Add credit'
