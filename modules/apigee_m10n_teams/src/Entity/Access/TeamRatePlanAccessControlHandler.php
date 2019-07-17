@@ -95,7 +95,7 @@ class TeamRatePlanAccessControlHandler extends RatePlanAccessControlHandler {
 
     // Test access to CompanyRatePlanInterface.
     if ($sdk_rate_plan instanceof CompanyRatePlanInterface) {
-      $company = $entity->getCompany();
+      $company = $sdk_rate_plan->getCompany();
       $team = $company instanceof CompanyInterface ? Team::load($company->id()) : NULL;
       return $team
         ? $this->teamAccess->allowedIfHasTeamPermissions($team, $account, ["{$operation} rate_plan"])
@@ -105,7 +105,7 @@ class TeamRatePlanAccessControlHandler extends RatePlanAccessControlHandler {
     // Test access to a DeveloperCategoryRatePlanInterface, where the team has
     // the required category.
     elseif ($sdk_rate_plan instanceof DeveloperCategoryRatePlanInterface) {
-     if (($category = $sdk_rate_plan->getDeveloperCategory()) && ($team = $this->teamMonitization->currentTeam())) {
+      if (($category = $sdk_rate_plan->getDeveloperCategory()) && ($team = $this->teamMonitization->currentTeam())) {
        $team_category_access = AccessResult::allowedIf(($team_category = $team->decorated()->getAttributeValue('MINT_DEVELOPER_CATEGORY')) && ($category->id() === $team_category))
          ->andIf(AccessResult::allowedIfHasPermission($account, "$operation rate_plan"));
        // Only return access allowed, as other cases might still be possible
