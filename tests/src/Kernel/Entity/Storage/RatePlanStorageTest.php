@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity\Render;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\Exception\InvalidRatePlanIdException;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
@@ -53,7 +54,6 @@ class RatePlanStorageTest extends MonetizationKernelTestBase {
    * Test rate plans.
    *
    * @covers ::loadRatePlansByProductBundle
-   * @covers ::isValidId
    */
   public function testloadRatePlansByProductBundle() {
     $product_bundle = $this->createProductBundle();
@@ -61,13 +61,61 @@ class RatePlanStorageTest extends MonetizationKernelTestBase {
     // Create one valid and one invalid rate plans.
     $rate_plans = [
       $this->createRatePlan($product_bundle, RatePlanInterface::TYPE_STANDARD, 'foobar'),
-      $this->createRatePlan($product_bundle, RatePlanInterface::TYPE_STANDARD, 'foo/bar')
+      $this->createRatePlan($product_bundle, RatePlanInterface::TYPE_STANDARD, 'foo/bar'),
     ];
     $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plans]]]);
-    $entities = \Drupal::entityTypeManager()->getStorage('rate_plan')->loadRatePlansByProductBundle($product_bundle->id());
+    $entities = \Drupal::entityTypeManager()
+      ->getStorage('rate_plan')
+      ->loadRatePlansByProductBundle($product_bundle->id());
 
     // Expect only one valid rate plan to be returned from storage.
     $this->assertCount(1, $entities);
+  }
+
+  /**
+   * Tests valid rate plan ids.
+   *
+   * @param string $id
+   *   The rate plan Idd.
+   * @param bool $isValid
+   *   TRUE if Id is valid. Otherwise FALSE.
+   *
+   * @dataProvider ratePlanIdsProvider
+   *
+   * @covers ::isValidId
+   *
+   * @throws \Exception
+   */
+  public function testIsValidId(string $id, bool $isValid) {
+    if (!$isValid) {
+      $this->expectException(InvalidRatePlanIdException::class);
+    }
+
+    /** @var \Drupal\apigee_m10n\Entity\Storage\RatePlanStorageInterface $storage */
+    $storage = \Drupal::entityTypeManager()->getStorage('rate_plan');
+    $this->assertEquals($isValid, $storage->isValidId($id));
+  }
+
+  /**
+   * Provides a list of rate plan ids.
+   *
+   * @return array
+   */
+  public function ratePlanIdsProvider() {
+    return [
+      [
+        'ks_test_plan',
+        TRUE,
+      ],
+      [
+        '15_month_plan-per',
+        TRUE,
+      ],
+      [
+        '15/month_rate_plan',
+        FALSE,
+      ],
+    ];
   }
 
 }
