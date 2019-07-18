@@ -100,6 +100,7 @@ class RatePlanStorageTest extends MonetizationKernelTestBase {
    * Provides a list of rate plan ids.
    *
    * @return array
+   *   An array of rate plan ids.
    */
   public function ratePlanIdsProvider() {
     return [
