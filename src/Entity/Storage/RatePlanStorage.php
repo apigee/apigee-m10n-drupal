@@ -24,6 +24,8 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxyInterface;
+use Drupal\apigee_m10n\Exception\InvalidRatePlanIdException;
+use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
@@ -102,9 +104,18 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
       // Load the  rate plans for this product bundle.
       $sdk_entities = $controller->loadRatePlansByProductBundle($product_bundle_id, $include_future_plans);
       // Convert the SDK entities to drupal entities.
+      /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $entity */
       foreach ($sdk_entities as $id => $entity) {
-        $drupal_entity = $this->createNewInstance($entity);
-        $entities[$drupal_entity->id()] = $drupal_entity;
+        try {
+          // Filter out rate plans with invalid Ids.
+          if ($this->isValidId($entity->id())) {
+            $drupal_entity = $this->createNewInstance($entity);
+            $entities[$drupal_entity->id()] = $drupal_entity;
+          }
+        }
+        catch (InvalidRatePlanIdException $exception) {
+          watchdog_exception('apigee_m10n', $exception);
+        }
       }
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
@@ -172,6 +183,17 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
 
     // Returns NULL if the cached value is false.
     return ($plan = $this->future_rate_plans[$ratePlan->id()]) ? $plan : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isValidId(string $id): bool {
+    if (preg_match('/[\/]+/', $id)) {
+      throw new InvalidRatePlanIdException(sprintf('Invalid rate plan Id "%s"', $id));
+    }
+
+    return TRUE;
   }
 
   /**
