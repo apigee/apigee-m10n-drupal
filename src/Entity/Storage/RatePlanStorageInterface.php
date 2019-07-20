@@ -66,4 +66,15 @@ interface RatePlanStorageInterface {
    */
   public function loadFutureRatePlan(RatePlanInterface $ratePlan): ?RatePlanInterface;
 
+  /**
+   * Validates a rate plan ID.
+   *
+   * @param string $id
+   *   The rate plan ID.
+   *
+   * @return bool
+   *   TRUE if the rate plan ID is valid.
+   */
+  public function isValidId(string $id): bool;
+
 }

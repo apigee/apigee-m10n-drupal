@@ -287,13 +287,15 @@ trait ApigeeMonetizationTestTrait {
    *   The rate plan product bundle.
    * @param string $type
    *   The type of plan.
+   * @param string $id
+   *   The rate plan Id. It not set it will randomly generated.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, string $id = NULL): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 
@@ -326,7 +328,7 @@ trait ApigeeMonetizationTestTrait {
       'frequencyDuration'     => 1,
       'frequencyDurationType' => FreemiumPropertiesInterface::FREEMIUM_DURATION_MONTH,
       'freemiumUnit'          => 1,
-      'id'                    => strtolower($this->randomMachineName()),
+      'id'                    => $id ?: strtolower($this->randomMachineName()),
       'isPrivate'             => 'false',
       'name'                  => $this->randomMachineName(),
       'paymentDueDays'        => '30',
