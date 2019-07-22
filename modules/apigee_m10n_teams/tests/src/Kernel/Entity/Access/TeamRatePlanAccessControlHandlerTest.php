@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity\Access;
 
 use Apigee\Edge\Api\Monetization\Entity\Company;
+use Apigee\Edge\Api\Monetization\Entity\CompanyRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategory;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlan;
@@ -215,7 +216,15 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     ]);
 
     $team = $this->createTeam();
+
+    /** @var \Drupal\apigee_edge_teams\Entity\Storage\TeamStorageInterface $team_storage */
+    $team_storage = $this->container->get('entity_type.manager')->getStorage('team');
+    $team = $team_storage->load($team->id());
     $team->decorated()->setAttribute('MINT_DEVELOPER_CATEGORY', $category->id());
+
+    $this->developer = $this->createAccount(['view rate_plan', 'purchase rate_plan']);
+    $this->createCurrentUserSession($this->developer);
+
     $this->addUserToTeam($team, $this->developer);
     $this->setCurrentTeamRoute($team);
 

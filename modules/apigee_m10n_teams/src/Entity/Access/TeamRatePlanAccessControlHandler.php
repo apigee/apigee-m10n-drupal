@@ -24,7 +24,6 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlanInterface;
 use Drupal\apigee_edge_teams\Entity\Team;
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\Access\RatePlanAccessControlHandler;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
@@ -101,18 +100,21 @@ class TeamRatePlanAccessControlHandler extends RatePlanAccessControlHandler {
         ? $this->teamAccess->allowedIfHasTeamPermissions($team, $account, ["{$operation} rate_plan"])
         : AccessResult::forbidden('Unable to load the specified team of the team rate plan.');
     }
+    elseif ($sdk_rate_plan instanceof StandardRatePlanInterface && $this->teamMonitization->currentTeam()) {
+      return $this->teamMonitization->entityAccess($entity, $operation, $account);
+    }
 
     // Test access to a DeveloperCategoryRatePlanInterface, where the team has
     // the required category.
     elseif ($sdk_rate_plan instanceof DeveloperCategoryRatePlanInterface) {
       if (($category = $sdk_rate_plan->getDeveloperCategory()) && ($team = $this->teamMonitization->currentTeam())) {
-       $team_category_access = AccessResult::allowedIf(($team_category = $team->decorated()->getAttributeValue('MINT_DEVELOPER_CATEGORY')) && ($category->id() === $team_category))
-         ->andIf(AccessResult::allowedIfHasPermission($account, "$operation rate_plan"));
-       // Only return access allowed, as other cases might still be possible
-       // and are checked on `parent::checkAccess()`.
-       if ($team_category_access->isAllowed()) {
-         return $team_category_access;
-       }
+        $team_category_access = AccessResult::allowedIf(($team_category = $team->decorated()->getAttributeValue('MINT_DEVELOPER_CATEGORY')) && ($category->id() === $team_category))
+          ->andIf($this->teamAccess->allowedIfHasTeamPermissions($team, $account, ["{$operation} rate_plan"]));
+        // Only return access allowed, as other cases might still be possible
+        // and are checked on `parent::checkAccess()`.
+        if ($team_category_access->isAllowed()) {
+          return $team_category_access;
+        }
       }
     }
 
