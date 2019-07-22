@@ -43,13 +43,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
   use TeamProphecyTrait;
 
   /**
-   * An apigee team.
-   *
-   * @var \Drupal\apigee_edge_teams\Entity\TeamInterface
-   */
-  protected $team;
-
-  /**
    * The user with access.
    *
    * @var \Drupal\user\UserInterface
@@ -62,13 +55,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
    * @var \Drupal\user\UserInterface
    */
   protected $user;
-
-  /**
-   * The rate_plan access control handler.
-   *
-   * @var \Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler
-   */
-  protected $accessControlHandler;
 
   /**
    * {@inheritdoc}
@@ -84,13 +70,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
       'system',
     ]);
 
-    // Enable the Classy theme.
-    \Drupal::service('theme_handler')->install(['classy']);
-    $this->config('system.theme')->set('default', 'classy')->save();
-
-    $this->accessControlHandler = $this->container->get('entity_type.manager')
-      ->getAccessControlHandler('rate_plan');
-
     // Create root user.
     $this->createAccount();
 
@@ -98,7 +77,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     $this->createCurrentUserSession($this->developer);
 
     $this->user = $this->createAccount(['view rate_plan', 'purchase rate_plan']);
-
   }
 
   /**
@@ -110,10 +88,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     $this->assertStandardRatePlan();
     $this->assertDeveloperRatePlan();
     $this->assertDeveloperCategoryRatePlan();
-
-    // Test team access.
-    $this->assertTeamRatePlan();
-    $this->assertTeamCategoryRatePlan();
   }
 
   /**
@@ -124,7 +98,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
   public function assertStandardRatePlan() {
     $plan = $this->createRatePlan($this->createProductBundle());
 
-    $this->accessControlHandler->resetCache();
+    \Drupal::entityTypeManager()->getAccessControlHandler('rate_plan')->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('view', $this->user, TRUE)->isAllowed());
@@ -143,7 +117,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     ]));
     $plan = RatePlan::createFrom($developer_rate_plan);
 
-    $this->accessControlHandler->resetCache();
+    \Drupal::entityTypeManager()->getAccessControlHandler('rate_plan')->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
@@ -162,7 +136,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     $developer_category_rate_plan->setDeveloperCategory($category);
     $plan = RatePlan::createFrom($developer_category_rate_plan);
 
-    $this->accessControlHandler->resetCache();
+    \Drupal::entityTypeManager()->getAccessControlHandler('rate_plan')->resetCache();
     $this->assertFalse($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertFalse($plan->access('purchase', $this->developer, TRUE)->isAllowed());
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
@@ -174,7 +148,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     $developer = $developer_storage->load($this->developer->getEmail());
     $developer->decorated()->setAttribute('MINT_DEVELOPER_CATEGORY', $category->id());
 
-    $this->accessControlHandler->resetCache();
+    \Drupal::entityTypeManager()->getAccessControlHandler('rate_plan')->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
@@ -184,7 +158,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
   /**
    * Tests \Apigee\Edge\Api\Monetization\Entity\CompanyRatePlanInterface rate plan.
    */
-  public function assertTeamRatePlan() {
+  public function testTeamRatePlan() {
     $team = $this->createTeam();
     $this->addUserToTeam($team, $this->developer);
 
@@ -199,7 +173,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
 
     $plan = RatePlan::createFrom($company_rate_plan);
 
-    $this->accessControlHandler->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
@@ -209,7 +182,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
   /**
    * Tests \Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface rate plan for teams.
    */
-  public function assertTeamCategoryRatePlan() {
+  public function testTeamCategoryRatePlan() {
     $category = new DeveloperCategory([
       'id' => $this->getRandomUniqueId(),
       'name' => $this->randomString(10),
@@ -232,7 +205,6 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
     $developer_category_rate_plan->setDeveloperCategory($category);
     $plan = RatePlan::createFrom($developer_category_rate_plan);
 
-    $this->accessControlHandler->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
