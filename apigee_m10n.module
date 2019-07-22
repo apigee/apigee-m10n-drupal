@@ -22,6 +22,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 
 /**
  * Implements hook_ENTITY_TYPE_access().
@@ -100,4 +101,13 @@ function apigee_m10n_preprocess_field(&$variables) {
   if ($variables['field_name'] === 'futurePlanLinks') {
     $variables['#attached']['library'][] = 'apigee_m10n/rate_plan.future_links_field';
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_create_access().
+ */
+function apigee_m10n_purchased_plan_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  // Make sure rate plan context exists.
+  $access = AccessResult::allowedIf(isset($context['rate_plan']) && $context['rate_plan'] instanceof RatePlanInterface);
+  return $access->andIf($context['rate_plan']->access('purchase', $account, TRUE));
 }
