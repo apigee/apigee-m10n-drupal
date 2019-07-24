@@ -50,6 +50,13 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
   protected $user;
 
   /**
+   * The super admin user.
+   *
+   * @var \Drupal\user\Entity\User|false
+   */
+  protected $admin;
+
+  /**
    * The rate_plan access control handler.
    *
    * @var \Drupal\apigee_m10n\Entity\Access\RatePlanAccessControlHandler
@@ -76,9 +83,8 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     // Create root user.
     $this->createUser();
 
+    $this->admin = $this->createAccount(['view rate_plan as anyone', 'purchase rate_plan as anyone']);
     $this->developer = $this->createAccount(['view rate_plan', 'purchase rate_plan']);
-    $this->setCurrentUser($this->developer);
-
     $this->user = $this->createAccount(['view rate_plan', 'purchase rate_plan']);
   }
 
@@ -103,8 +109,12 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     $this->accessControlHandler->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
+
     $this->assertTrue($plan->access('view', $this->user, TRUE)->isAllowed());
-    $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
+    $this->assertTrue($plan->access('purchase', $this->user, TRUE)->isAllowed());
+
+    $this->assertTrue($plan->access('view', $this->admin, TRUE)->isAllowed());
+    $this->assertTrue($plan->access('purchase', $this->admin, TRUE)->isAllowed());
   }
 
   /**
@@ -120,10 +130,15 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     $plan = RatePlan::createFrom($developer_rate_plan);
 
     $this->accessControlHandler->resetCache();
+
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
+
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
     $this->assertFalse($plan->access('purchase', $this->user, TRUE)->isAllowed());
+
+    $this->assertFalse($plan->access('view', $this->admin, TRUE)->isAllowed());
+    $this->assertFalse($plan->access('purchase', $this->admin, TRUE)->isAllowed());
   }
 
   /**
@@ -151,10 +166,15 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     $developer->decorated()->setAttribute('MINT_DEVELOPER_CATEGORY', $category->id());
 
     $this->accessControlHandler->resetCache();
+
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
+
     $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
     $this->assertFalse($plan->access('purchase', $this->user, TRUE)->isAllowed());
+
+    $this->assertFalse($plan->access('view', $this->admin, TRUE)->isAllowed());
+    $this->assertFalse($plan->access('purchase', $this->admin, TRUE)->isAllowed());
   }
 
 }
