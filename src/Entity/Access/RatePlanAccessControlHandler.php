@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity\Access;
 
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\StandardRatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -72,13 +73,13 @@ class RatePlanAccessControlHandler extends EntityAccessControlHandlerBase implem
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $entity */
     $access = parent::checkAccess($entity, $operation, $account);
 
-    // Allow access if user has permission `view/purchase rate_plan as anyone`.
-    if ($account->hasPermission("$operation rate_plan as anyone")) {
-      return AccessResult::allowed();
-    }
-
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $entity->decorated();
+
+    // Allow access if user has permission `view/purchase rate_plan as anyone`.
+    if ($rate_plan instanceof StandardRatePlanInterface && $account->hasPermission("$operation rate_plan as anyone")) {
+      return AccessResult::allowed();
+    }
 
     // If rate plan is a developer category rate plan, deny access if developer
     // does not belong to rate_plan category.
