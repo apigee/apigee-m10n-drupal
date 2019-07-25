@@ -95,7 +95,7 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
           ]),
         ],
       ],
-      'post-prepaid-balance-reports' => [
+      'post-prepaid-balance-reports.csv.twig' => [
         'from' => $last_month->format('Y-m-d'),
         'to' => $last_day_of_last_month->format(('Y-m-d')),
         'developer' => 'Doe, John',
@@ -130,6 +130,10 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
             'batch_size' => 1,
           ],
         ],
+      ],
+      'get_not_found' => [
+        'code' => 'mint.noSuchResource',
+        'message' => 'Did not find any Transaction that matches the search criteria',
       ],
     ];
   }

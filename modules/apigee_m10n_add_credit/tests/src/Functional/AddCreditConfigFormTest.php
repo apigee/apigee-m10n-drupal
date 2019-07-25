@@ -102,7 +102,8 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
     $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation.');
 
     // Test form config.
-    $this->queueMockResponses(['get-supported-currencies']);
+    // TODO: cache supported currencies.
+    $this->queueMockResponses(['get-supported-currencies', 'get-supported-currencies']);
     $this->submitForm([
       'use_modal' => FALSE,
       'notify_on' => AddCreditConfig::NOTIFY_ALWAYS,
