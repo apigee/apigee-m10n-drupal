@@ -19,13 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
-use Drupal\apigee_edge\Entity\ApiProduct;
-use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * Class ProductBundleAdminListingTest.
@@ -41,6 +38,13 @@ class ProductBundleAdminListingTest extends MonetizationKernelTestBase {
    * @var \Drupal\user\UserInterface
    */
   protected $admin;
+
+  /**
+   * Drupal user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $authenticated;
 
   /**
    * Drupal user.
@@ -66,82 +70,73 @@ class ProductBundleAdminListingTest extends MonetizationKernelTestBase {
     $this->installConfig([
       'user',
       'system',
-      'apigee_m10n',
     ]);
 
-    // Create user 1 account - will not be used for tests.
-    $this->user_1 = $this->createAccount([]);
-
-    $this->admin = $this->createAccount(['administer apigee monetization', 'view product_bundle']);
-
-    // Enable the Classy theme.
-    \Drupal::service('theme_handler')->install(['classy']);
-    $this->config('system.theme')->set('default', 'classy')->save();
-
     $this->warmOrganizationCache();
-//    \Drupal::service('apigee_m10n.monetization')->isMonetizationEnabled();
+
+    // Create user 1 account - will not be used for tests.
+    $this->createAccount([]);
+
+    $this->authenticated = $this->createAccount();
+    $this->admin = $this->createAccount([
+      'administer apigee monetization',
+    ]);
 
     $this->product_bundles = [
       $this->createProductBundle(),
       $this->createProductBundle(),
     ];
-
-    // Some of the entities referenced will be loaded from the API unless we
-    // warm the static cache with them.
-//    $entity_static_cache = \Drupal::service('entity.memory_cache');
-    foreach ($this->product_bundles as $product_bundle) {
-      // Warm the static cache for each product bundle.
-//      $entity_static_cache->set(
-//        "values:product_bundle:{$product_bundle->id()}", $product_bundle
-//      );
-      // Warm the static cache for each product bundle product.
-      /*foreach ($product_bundle->decorated()->getApiProducts() as $product) {
-        $api_product = ApiProduct::create(
-          [
-            'id'          => $product->id(),
-            'name'        => $product->getName(),
-            'displayName' => $product->getDisplayName(),
-            'description' => $product->getDescription(),
-          ]
-        );
-        $this->stack->queueMockResponse(['api_product' => ['product' => $api_product]]);
-        // Load the product_bundle drupal entity and warm the entity cache.
-        $api_product_loaded = ApiProduct::load($product->id());
-      }*/
-    }
   }
 
   /**
-   * Tests the entity.product_bundle.collection route as a user with access.
+   * Tests the entity.product_bundle.collection route as a user.
+   *
+   * @covers \Drupal\apigee_m10n\Entity\ListBuilder\ProductBundleListBuilder
    */
-  public function testAsAdmin() {
-    $this->setCurrentUser($this->user_1);
+  public function testPage() {
+    $this->assertAsAuthenticated();
+    $this->assertAsAdmin();
+  }
 
-    // Queue the product bundle response.
-//    var_dump($this->product_bundles);
-    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $this->product_bundles]]);
-//    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $this->product_bundles]]);
+  public function assertAsAuthenticated() {
+    $this->setCurrentUser($this->authenticated);
 
-    /** @var \Drupal\apigee_m10n\Entity\ProductBundle $product_bundle */
-    foreach ($this->product_bundles as $product_bundle) {
-      foreach ($product_bundle->decorated()->getApiProducts() as $product) {
-        $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
-      }
+    $request = Request::create(
+      Url::fromRoute('entity.product_bundle.collection')->toString(), 'GET');
+    $response = $this->container->get('http_kernel')->handle($request);
+
+    // Test the response.
+    $this->assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+  }
+
+  public function assertAsAdmin() {
+    $this->setCurrentUser($this->admin);
+
+    // Queue the packages response.
+    // We need the "decorated" product bundles,
+    // as we need the detailed apiProducts objects for the mock.
+    $product_bundles = [];
+    foreach ($this->product_bundles as $i => $product_bundle) {
+      $product_bundles[$i] = $product_bundle->decorated();
     }
+    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
+    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
 
     $request = Request::create(Url::fromRoute('entity.product_bundle.collection')->toString(), 'GET');
-    /** @var \Symfony\Component\HttpKernel\HttpKernelInterface $kernel */
-    $kernel = $this->container->get('http_kernel');
-    $response = $kernel->handle($request, HttpKernelInterface::MASTER_REQUEST, FALSE);
-
+    $response = $this->container->get('http_kernel')->handle($request);
     $this->setRawContent($response->getContent());
-var_dump($response->getContent());
-    // Make sure user has access to the page.
+
+    // Test the response.
     $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
 
-    // Checking product bundle exists in table columns.
+    // Checking product bundle exists in table.
     foreach ($this->product_bundles as $product_bundle) {
-      $this->assertText($product_bundle->id());
+      $this->assertText($product_bundle->id(), 'Product bundle ID exists.');
+
+      // Checking individual product exists in table.
+      foreach ($product_bundle->get('apiProducts') as $delta => $value) {
+        $this->assertText($value->entity->label(), 'Product with this name exists.');
+      }
     }
   }
 
