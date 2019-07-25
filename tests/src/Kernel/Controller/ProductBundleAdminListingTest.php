@@ -98,6 +98,11 @@ class ProductBundleAdminListingTest extends MonetizationKernelTestBase {
     $this->assertAsAdmin();
   }
 
+  /**
+   * Checks access denied as a user without permissions.
+   *
+   * @throws \Exception
+   */
   public function assertAsAuthenticated() {
     $this->setCurrentUser($this->authenticated);
 
@@ -109,6 +114,11 @@ class ProductBundleAdminListingTest extends MonetizationKernelTestBase {
     $this->assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
   }
 
+  /**
+   * Checks access and response as a user with permissions.
+   *
+   * @throws \Exception
+   */
   public function assertAsAdmin() {
     $this->setCurrentUser($this->admin);
 
