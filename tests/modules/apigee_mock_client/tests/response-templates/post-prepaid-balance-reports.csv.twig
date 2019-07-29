@@ -14,5 +14,5 @@ Type of Report:,{{ type|default('Detailed Balance Top-up report') }}
 
 Developer Name,Developer ID,Currency,Transaction Type,Provider Status,Charged Rate,Transaction ID,Payment Reference,Transaction Start Time,Transaction End Time,Batch Size,
 {% for balance in balances %}
-  {% include 'prepaid-balance-report.twig' with balance %},
+  {% include 'prepaid-balance-report.csv.twig' with balance %},
 {% endfor %}
