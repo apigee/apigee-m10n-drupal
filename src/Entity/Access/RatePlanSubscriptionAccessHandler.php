@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\Access;
 
+use Apigee\Edge\Api\Monetization\Entity\CompanyRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
@@ -99,6 +100,10 @@ class RatePlanSubscriptionAccessHandler implements AccessInterface, EntityHandle
         return AccessResult::allowedIf($account->getEmail() === $developer->getEmail());
       }
       return AccessResult::forbidden("User {$developer->getEmail()} cannot subscribe to developer rate plan.");
+    }
+
+    if ($rate_plan instanceof CompanyRatePlanInterface) {
+      return AccessResult::forbidden();
     }
 
     return AccessResult::allowed();
