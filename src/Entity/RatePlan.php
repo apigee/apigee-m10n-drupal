@@ -58,6 +58,7 @@ use Drupal\user\Entity\User;
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\RatePlanStorage",
  *     "access" = "Drupal\apigee_m10n\Entity\Access\RatePlanAccessControlHandler",
+ *     "subscription_access" = "Drupal\apigee_m10n\Entity\Access\RatePlanSubscriptionAccessHandler",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
