@@ -26,6 +26,7 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler;
+use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanSubscriptionAccessHandler;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
@@ -133,6 +134,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
       $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
       $entity_types['rate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
+      $entity_types['rate_plan']->setHandlerClass('subscription_access', TeamRatePlanSubscriptionAccessHandler::class);
     }
 
     // Overrides for the purchased_plan entity.
