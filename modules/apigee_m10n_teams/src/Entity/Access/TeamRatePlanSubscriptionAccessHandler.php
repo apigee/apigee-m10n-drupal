@@ -23,21 +23,11 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
-use Apigee\Edge\Api\Monetization\Entity\StandardRatePlanInterface;
-use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_edge_teams\TeamMembershipManagerInterface;
 use Drupal\apigee_m10n\Entity\Access\RatePlanSubscriptionAccessHandler;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
-use Drupal\Core\Entity\EntityHandlerInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Routing\Access\AccessInterface;
-use Drupal\user\UserInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Access check for subscribing an account to a rate plan, checking teams.
@@ -53,7 +43,7 @@ class TeamRatePlanSubscriptionAccessHandler extends RatePlanSubscriptionAccessHa
    *
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan_entity
    *   The rate plan drupal entity.
-   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface|null
+   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
    *   The team for which we try to determine subscription access.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
