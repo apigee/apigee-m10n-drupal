@@ -19,6 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 
+use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
+use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
 use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Database\Database;
@@ -137,6 +140,99 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     $this->assertPlansNoAccess($this->accounts['no_access']);
     $this->assertPlansPage($this->accounts['developer']);
     $this->assertPlansPage($this->accounts['admin']);
+  }
+
+  /**
+   * Check plan filtering.
+   *
+   * Check that only plans that developer in the route can subscribe to are
+   * displayed on the page.
+   */
+  public function testPlansFiltering() {
+    $this->warmOrganizationCache();
+
+    $rate_plans = [];
+    $product_bundles = [
+      $this->createProductBundle(),
+      $this->createProductBundle(),
+    ];
+
+    foreach ($product_bundles as $product_bundle) {
+      $rate_plans[$product_bundle->id()] = [];
+      $rate_plans[$product_bundle->id()]['standard'] = $this->createRatePlan($product_bundle, RatePlanInterface::TYPE_STANDARD);
+      $rate_plans[$product_bundle->id()]['developer'] = $this->createRatePlan($product_bundle, RatePlanInterface::TYPE_DEVELOPER, NULL, [
+        'developer' => new Developer([
+          'email' => $this->accounts['developer']->getEmail(),
+          'name' => $this->accounts['developer']->getDisplayName(),
+          'billingType' => 'PREPAID',
+          'type' => 'UNTRUSTED',
+        ]),
+      ]);
+
+      $this->assertSame(StandardRatePlan::class, get_class($rate_plans[$product_bundle->id()]['standard']->decorated()));
+      $this->assertSame(DeveloperRatePlan::class, get_class($rate_plans[$product_bundle->id()]['developer']->decorated()));
+    }
+
+    // Queue the product bundle response.
+    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans]]);
+    }
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      foreach ($plans as $plan) {
+        if (get_class($plan->decorated()) == DeveloperRatePlan::class) {
+          /* @var DeveloperRatePlan $decorated */
+          $decorated = $plan->decorated();
+          $this->assertSame($this->accounts['developer']->getEmail(), $decorated->getDeveloper()->getEmail(), 'Email is the same');
+        }
+      }
+    }
+
+    // Test the controller output for a user that can purchase plans for others
+    // but not subscribe to other developers plans.
+    $this->setCurrentUser($this->accounts['admin']);
+    $request = Request::create(Url::fromRoute('apigee_monetization.plans', ['user' => $this->accounts['admin']->id()])
+      ->toString(), 'GET');
+    $response = $this->container->get('http_kernel')->handle($request);
+    $this->setRawContent($response->getContent());
+
+    // Test the response.
+    static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+    $this->assertTitle('Pricing and Plans | ');
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      $this->assertText($plans['standard']->label());
+      $this->assertNoText($plans['developer']->label());
+    }
+
+    // Test the same but for a different developer context.
+
+    // Queue the product bundle response.
+    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans]]);
+    }
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      foreach ($plans as $plan) {
+        if (get_class($plan->decorated()) == DeveloperRatePlan::class) {
+          /* @var DeveloperRatePlan $decorated */
+          $decorated = $plan->decorated();
+          $this->assertSame($this->accounts['developer']->getEmail(), $decorated->getDeveloper()->getEmail(), 'Email is the same');
+        }
+      }
+    }
+
+    $request = Request::create(Url::fromRoute('apigee_monetization.plans', ['user' => $this->accounts['developer']->id()])
+      ->toString(), 'GET');
+    $response = $this->container->get('http_kernel')->handle($request);
+    $this->setRawContent($response->getContent());
+
+    // Test the response.
+    static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+    $this->assertTitle('Pricing and Plans | ');
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      $this->assertText($plans['standard']->label());
+      $this->assertText($plans['developer']->label());
+    }
   }
 
   /**
