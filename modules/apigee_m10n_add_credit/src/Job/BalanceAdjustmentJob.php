@@ -26,6 +26,7 @@ use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_order\Adjustment;
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityInterface;
@@ -76,6 +77,13 @@ class BalanceAdjustmentJob extends EdgeJob {
   protected $adjustment;
 
   /**
+   * The drupal commerce order.
+   *
+   * @var \Drupal\commerce_order\Entity\OrderInterface
+   */
+  protected $order;
+
+  /**
    * The `apigee_m10n_add_credit` module config.
    *
    * @var \Drupal\Core\Config\ImmutableConfig
@@ -89,8 +97,10 @@ class BalanceAdjustmentJob extends EdgeJob {
    *   The company  or user the adjustment should  be applied to.
    * @param \Drupal\commerce_order\Adjustment $adjustment
    *   The drupal commerce adjustment.
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The drupal commerce order.
    */
-  public function __construct(EntityInterface $company_or_user, Adjustment $adjustment) {
+  public function __construct(EntityInterface $company_or_user, Adjustment $adjustment, OrderInterface $order = NULL) {
     parent::__construct();
 
     // Either a developer or a company can be passed.
@@ -108,6 +118,7 @@ class BalanceAdjustmentJob extends EdgeJob {
     }
 
     $this->adjustment = $adjustment;
+    $this->order = $order;
 
     $this->module_config = \Drupal::config(AddCreditConfig::CONFIG_NAME);
 
@@ -133,6 +144,8 @@ class BalanceAdjustmentJob extends EdgeJob {
       $expected_balance = $existing_top_ups->add($adjustment->getAmount());
 
       try {
+        $transaction_time = new \DateTimeImmutable();
+
         // Top up by the adjustment amount.
         $controller->topUpBalance((float) $adjustment->getAmount()->getNumber(), $currency_code);
         // The data returned from `topUpBalance` doesn't get us the new top up
@@ -147,6 +160,8 @@ class BalanceAdjustmentJob extends EdgeJob {
         $this->getLogger()->error((string) $t);
         $thrown = $t;
       }
+
+      $this->logTransaction($currency_code, $transaction_time);
 
       // Check the balance again to make sure the amount is correct.
       if (!empty($new_balance)
@@ -396,6 +411,36 @@ class BalanceAdjustmentJob extends EdgeJob {
       Language::LANGCODE_DEFAULT,
       $message_context
     );
+  }
+
+  /**
+   * Attempt to recover the Apigee transaction ID and save in log.
+   *
+   * @param $currency_code
+   *   The currency code.
+   * @param \DateTimeImmutable $transaction_time
+   *   The transaction time.
+   */
+  protected function logTransaction($currency_code, \DateTimeImmutable $transaction_time) {
+    $monetization = \Drupal::service('apigee_m10n.monetization');
+    $id = $this->isDeveloperAdjustment() ? $this->developer->getEmail() : $this->company->id();
+    $report = $monetization->getPrepaidBalanceReport($id, $transaction_time, $currency_code);
+    $csv = array_map('str_getcsv', explode("\r\n", $report));
+
+    // This assumes the last transaction is the one we just performed.
+    // @todo: Find a better way to retrieve the transaction ID.
+    $transaction = end($csv);
+
+    /* @var \Drupal\apigee_m10n_add_credit\Entity\AddCreditLogInterface $log */
+    $log = \Drupal::entityTypeManager()->getStorage('add_credit_log')->create([
+      'commerce_order' => $this->order->id(),
+      'apigee_transaction' => $transaction[6],
+      'provider_status' => $transaction[4],
+      'created' => strtotime($transaction[8]),
+      'developer' => $this->isDeveloperAdjustment() ? $this->developer->id() : NULL,
+      'team' => $this->isDeveloperAdjustment() ? NULL : $this->company->id(),
+    ]);
+    $log->save();
   }
 
 }
