@@ -36,21 +36,21 @@ class PriceRangeUnitPriceConstraint extends Constraint {
    *
    * @var string
    */
-  public $rangeMessage = 'The unit price value must be between @minimum and @maximum.';
+  public $rangeMessage = 'The amount must be between @minimum and @maximum.';
 
   /**
    * The validation message when value is less than minimum price.
    *
    * @var string
    */
-  public $minMessage = 'This unit price cannot be less than @minimum.';
+  public $minMessage = 'This amount cannot be less than @minimum.';
 
   /**
    * The validation message when value is greater than maximum price.
    *
    * @var string
    */
-  public $maxMessage = 'This unit price cannot be greater than @maximum.';
+  public $maxMessage = 'This amount cannot be greater than @maximum.';
 
   /**
    * The validation message when currency is invalid.
