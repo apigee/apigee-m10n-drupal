@@ -242,11 +242,13 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   protected function assertRefreshPrepaidBalanceForUser(UserInterface $user) {
     $this->queueResponses();
+    $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $user->id(),
     ]));
     $this->assertSession()->responseContains('Prepaid balance');
     $this->submitForm([], 'Refresh');
+
     $this->assertSession()
       ->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
   }

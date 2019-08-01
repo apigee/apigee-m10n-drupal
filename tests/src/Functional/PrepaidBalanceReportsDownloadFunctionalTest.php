@@ -88,7 +88,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'post-prepaid-balance-reports-empty',
+      'get_not_found',
     ]);
 
     $edit = [
@@ -125,7 +125,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'post-prepaid-balance-reports-empty',
+      'get_not_found',
     ]);
 
     $edit = [
@@ -161,7 +161,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'post-prepaid-balance-reports',
+      'post-prepaid-balance-reports.csv.twig',
     ]);
 
     $edit = [
