@@ -433,14 +433,20 @@ class BalanceAdjustmentJob extends EdgeJob {
 
     /* @var \Drupal\apigee_m10n_add_credit\Entity\AddCreditLogInterface $log */
     $log = \Drupal::entityTypeManager()->getStorage('add_credit_log')->create([
-      'commerce_order' => $this->order->id(),
-      'apigee_transaction' => $transaction[6],
-      'provider_status' => $transaction[4],
-      'created' => strtotime($transaction[8]),
+      'commerce_order' => $this->order ? $this->order->id() : NULL,
+      'apigee_transaction' => isset($transaction[6]) ?: NULL,
+      'provider_status' => isset($transaction[4]) ?: NULL,
+      'created' => isset($transaction[8]) ? strtotime($transaction[8]) : NULL,
       'developer' => $this->isDeveloperAdjustment() ? $this->developer->id() : NULL,
       'team' => $this->isDeveloperAdjustment() ? NULL : $this->company->id(),
     ]);
-    $log->save();
+
+    try {
+      $log->save();
+    }
+    catch (\Exception $e) {
+      $this->getLogger()->error('Could not save add credit log entry.');
+    }
   }
 
 }
