@@ -1,5 +1,5 @@
 apigee_m10n.settings:
-  path: /admin/config/apigee-edge/monetization
+  path: /admin/config/apigee-monetization
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Monetization
@@ -11,7 +11,7 @@ apigee_m10n.settings:
 
 # This route is required for field UI routes to be attached to.
 apigee_m10n.settings.rate_plan:
-  path: /admin/config/apigee-edge/monetization/rate-plan
+  path: /admin/config/apigee-monetization/rate-plan
   defaults:
     _form: \Drupal\apigee_m10n\Form\RatePlanConfigForm
     _title: Rate Plans
@@ -20,18 +20,18 @@ apigee_m10n.settings.rate_plan:
   options:
     _apigee_monetization_route: TRUE
 
-apigee_m10n.settings.package:
-  path: /admin/config/apigee-edge/monetization/package
+apigee_m10n.settings.product_bundle:
+  path: /admin/config/apigee-monetization/product-bundle
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
-    _title: Package settings
+    _title: Product bundle settings
   requirements:
     _permission: administer apigee monetization
   options:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.prepaid_balance:
-  path: /admin/config/apigee-edge/monetization/prepaid-balance
+  path: /admin/config/apigee-monetization/prepaid-balance
   defaults:
     _form: \Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm
     _title: Prepaid balance
@@ -41,7 +41,7 @@ apigee_m10n.settings.prepaid_balance:
     _apigee_monetization_route: TRUE
 
 apigee_m10n.settings.purchased_plan:
-  path: /admin/config/apigee-edge/monetization/purchased-plan-settings
+  path: /admin/config/apigee-monetization/purchased-plan-settings
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Rate plan purchase settings
@@ -50,11 +50,11 @@ apigee_m10n.settings.purchased_plan:
   options:
     _apigee_monetization_route: TRUE
 
-entity.package.collection:
-  path: /admin/config/apigee-edge/monetization/package/list
+entity.product_bundle.collection:
+  path: /admin/config/apigee-monetization/product-bundle/list
   defaults:
-    _entity_list: package
-    _title: Packages
+    _entity_list: product_bundle
+    _title: Product bundles
   requirements:
     _permission: administer apigee monetization
   options:
@@ -122,7 +122,7 @@ entity.purchased_plan.developer_collection:
     _apigee_monetization_route: TRUE
 
 entity.rate_plan.canonical:
-  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}
+  path: /user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}
   defaults:
     _entity_view: rate_plan.full
     _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
@@ -139,7 +139,7 @@ entity.rate_plan.canonical:
         converter: paramconverter.entity.rate_plan
 
 entity.rate_plan.purchase:
-  path: /user/{user}/monetization/package/{package}/plan/{rate_plan}/purchase
+  path: /user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase
   defaults:
     _controller: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::purchaseForm
     _title_callback: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController::title

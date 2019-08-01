@@ -33,11 +33,11 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
   use RatePlanDetailsKernelTestAssertionTrait;
 
   /**
-   * Test package rate plan.
+   * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $package_rate_plan;
+  protected $rate_plan;
 
   /**
    * The developer drupal user.
@@ -65,7 +65,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->developer = $this->createAccount(['view rate_plan']);
     $this->setCurrentUser($this->developer);
 
-    $this->package_rate_plan = $this->createPackageRatePlan($this->createPackage());
+    $this->rate_plan = $this->createRatePlan($this->createProductBundle());
 
     // Enable the Classy theme.
     \Drupal::service('theme_handler')->install(['classy']);
@@ -81,7 +81,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $price_formatter = \Drupal::service('apigee_m10n.price_formatter');
 
-    $rate_plan = $this->package_rate_plan;
+    $rate_plan = $this->rate_plan;
 
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($rate_plan->getEntityTypeId());
 
@@ -97,9 +97,9 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->assertLinkByHref($rate_plan->toUrl()->toString(), 0, 'The display name links to the rate plan.');
 
     // Test product names.
-    foreach ($rate_plan->get('packageProducts') as $index => $product_field) {
+    foreach ($rate_plan->get('products') as $index => $product_field) {
       $css_index = $index + 1;
-      $this->assertCssElementText(".rate-plan .field--name-packageproducts .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
+      $this->assertCssElementText(".rate-plan .field--name-products .field__items .field__item:nth-child({$css_index})", $product_field->entity->label());
     }
 
     // Test fees.

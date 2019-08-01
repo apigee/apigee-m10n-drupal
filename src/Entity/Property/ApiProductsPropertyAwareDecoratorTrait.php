@@ -31,7 +31,7 @@ trait ApiProductsPropertyAwareDecoratorTrait {
     // Convert products to entity references.
     return array_map(function ($sdk_api_product) {
       return ['target_id' => $sdk_api_product->getName()];
-    }, $this->decorated->getApiProducts());
+    }, $this->decorated()->getApiProducts());
   }
 
 }

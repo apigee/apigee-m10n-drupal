@@ -1,12 +1,12 @@
 system.admin_apigee_m10n:
-  title: 'Monetization'
-  parent: system.admin_config_edge
+  title: 'Apigee monetization'
+  parent: system.admin_config
   route_name: apigee_m10n.settings
 
-entity.package.collection:
-  title: 'Packages'
-  route_name: entity.package.collection
-  description: 'Manage packages.'
+entity.product_bundle.collection:
+  title: 'Product bundles'
+  route_name: entity.product_bundle.collection
+  description: 'Manage product bundles.'
   parent: system.admin_apigee_m10n
   weight: 99
 

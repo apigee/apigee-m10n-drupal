@@ -38,8 +38,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class AddCreditAddToCartForm.
- *
- * @package Drupal\apigee_m10n_add_credit
  */
 class AddCreditAddToCartForm extends AddToCartForm {
 

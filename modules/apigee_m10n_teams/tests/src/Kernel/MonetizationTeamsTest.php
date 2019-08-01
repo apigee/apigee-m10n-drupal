@@ -21,10 +21,10 @@ namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorageInterface;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorageInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamsPackageInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundleInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
@@ -56,11 +56,11 @@ class MonetizationTeamsTest extends KernelTestBase {
   protected $team;
 
   /**
-   * A test package.
+   * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A test rate plan.
@@ -107,12 +107,12 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Create a team Entity.
     $this->team = Team::create(['name' => strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4))]);
 
-    $this->package = $this->entity_type_manager->getStorage('package')->create([
+    $this->product_bundle = $this->entity_type_manager->getStorage('product_bundle')->create([
       'id' => $this->randomMachineName(),
     ]);
     $this->rate_plan = $this->entity_type_manager->getStorage('rate_plan')->create([
       'id' => $this->randomMachineName(),
-      'package' => $this->package,
+      'package' => $this->product_bundle->decorated(),
     ]);
     $this->purchased_plan = $this->entity_type_manager->getStorage('purchased_plan')->create([
       'id' => $this->randomMachineName(),
@@ -144,12 +144,12 @@ class MonetizationTeamsTest extends KernelTestBase {
    */
   public function assertEntityAlter() {
     // Check class overrides.
-    static::assertInstanceOf(TeamsPackageInterface::class, $this->package);
+    static::assertInstanceOf(TeamProductBundleInterface::class, $this->product_bundle);
     static::assertInstanceOf(TeamsRatePlan::class, $this->rate_plan);
     static::assertInstanceOf(TeamsPurchasedPlanInterface::class, $this->purchased_plan);
 
     // Check storage overrides.
-    static::assertInstanceOf(TeamPackageStorageInterface::class, $this->entity_type_manager->getStorage('package'));
+    static::assertInstanceOf(TeamProductBundleStorageInterface::class, $this->entity_type_manager->getStorage('product_bundle'));
     static::assertInstanceOf(TeamPurchasedPlanStorageInterface::class, $this->entity_type_manager->getStorage('purchased_plan'));
   }
 
@@ -164,7 +164,7 @@ class MonetizationTeamsTest extends KernelTestBase {
     // Prophesize the `apigee_edge_teams.team_permissions` service.
     $team_handler = $this->prophesize(TeamPermissionHandlerInterface::class);
     $team_handler->getDeveloperPermissionsByTeam($this->team, $account)->willReturn([
-      'view package',
+      'view product_bundle',
       'view rate_plan',
       'purchase rate_plan',
     ]);
@@ -173,17 +173,17 @@ class MonetizationTeamsTest extends KernelTestBase {
 
     // Create an entity we can test against `entityAccess`.
     $entity_id = strtolower($this->randomMachineName(8) . '-' . $this->randomMachineName(4));
-    // We are only using package here because it's easy.
-    $package = Package::create(['id' => $entity_id]);
+    // We are only using product bundle here because it's easy.
+    $product_bundle = ProductBundle::create(['id' => $entity_id]);
 
-    // Test view package for a team member.
-    static::assertTrue($package->access('view', $account));
-    // Test view package for a non team member.
-    static::assertFalse($package->access('view', $non_member));
+    // Test view product bundle for a team member.
+    static::assertTrue($product_bundle->access('view', $account));
+    // Test view product bundle for a non team member.
+    static::assertFalse($product_bundle->access('view', $non_member));
 
-    // Populate the entity cache with the rate plan's API package because it
-    // will be loaded when the rate plan cache tags are loaded.
-    \Drupal::service('entity.memory_cache')->set("values:package:{$this->package->id()}", $this->package);
+    // Populate the entity cache with the rate plan's API product bundle because
+    // it will be loaded when the rate plan cache tags are loaded.
+    \Drupal::service('entity.memory_cache')->set("values:product_bundle:{$this->product_bundle->id()}", $this->product_bundle);
 
     // Test view rate plan for a team member.
     static::assertTrue($this->rate_plan->access('view', $account));
@@ -200,11 +200,11 @@ class MonetizationTeamsTest extends KernelTestBase {
    * Make sure the monetization service returns the current team.
    */
   public function assertEntityLinks() {
-    // Package team url.
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}", $this->package->toUrl('team')->toString());
+    // Product bundle team url.
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}", $this->product_bundle->toUrl('team')->toString());
     // Rate plan team url.
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
-    static::assertSame("/teams/{$this->team->id()}/monetization/package/{$this->package->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}", $this->rate_plan->toUrl('team')->toString());
+    static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}/purchase", $this->rate_plan->toUrl('team-purchase')->toString());
     // Team purchased plan URLs.
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plans", Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $this->team->id()])->toString());
     static::assertSame("/teams/{$this->team->id()}/monetization/purchased-plan/{$this->purchased_plan->id()}/cancel", Url::fromRoute('entity.purchased_plan.team_cancel_form', [

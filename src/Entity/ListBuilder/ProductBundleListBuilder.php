@@ -24,9 +24,9 @@ use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Render\Markup;
 
 /**
- * Admin list builder for `package` entities.
+ * Admin list builder for `product_bundle` entities.
  */
-class PackageListBuilder extends EntityListBuilder {
+class ProductBundleListBuilder extends EntityListBuilder {
 
   /**
    * {@inheritdoc}
@@ -45,7 +45,7 @@ class PackageListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /** @var \Drupal\apigee_m10n\Entity\PackageInterface $entity */
+    /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $entity */
     // Build a list of product links.
     $product_links = [];
     // ApiProducts is an entity reference field so we treat it as such.

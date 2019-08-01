@@ -20,8 +20,8 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity;
 
 use Drupal\apigee_edge\Entity\EdgeEntityType;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Entity\PackageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
@@ -31,19 +31,19 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Test the `package` entity.
+ * Test the `product_bundle` entity.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class PackageEntityKernelTest extends MonetizationKernelTestBase {
+class ProductBundleEntityKernelTest extends MonetizationKernelTestBase {
 
   /**
-   * A test package.
+   * A test product bundle.
    *
-   * @var \Drupal\apigee_m10n\Entity\PackageInterface
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $package;
+  protected $product_bundle;
 
   /**
    * A test user.
@@ -58,8 +58,8 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->package = $this->createPackage();
-    static::assertInstanceOf(Package::class, $this->package);
+    $this->product_bundle = $this->createProductBundle();
+    static::assertInstanceOf(ProductBundle::class, $this->product_bundle);
 
     // Prepare to create a user.
     $this->installEntitySchema('user');
@@ -75,48 +75,49 @@ class PackageEntityKernelTest extends MonetizationKernelTestBase {
    *
    * @throws \Exception
    */
-  public function testPackageEntity() {
+  public function testProductBundleEntity() {
     $this->setCurrentRouteMatch();
 
-    // Get the package entity definition.
-    $entity_type = $this->container->get('entity_type.manager')->getDefinition('package');
+    // Get the `product_bundle` entity definition.
+    $entity_type = $this->container->get('entity_type.manager')->getDefinition('product_bundle');
     static::assertInstanceOf(EdgeEntityType::class, $entity_type);
 
     // Check that the entity class remains unchanged.
-    static::assertSame(Package::class, $entity_type->getClass());
+    static::assertSame(ProductBundle::class, $entity_type->getClass());
 
     // Make sure we are using our custom route provider.
     static::assertSame(MonetizationEntityRouteProvider::class, $entity_type->getRouteProviderClasses()['html']);
 
-    // Test that package canonical urls are redirecting to developer urls.
-    $request = Request::create(Url::fromRoute('entity.package.canonical', ['package' => $this->package->id()])->toString(), 'GET');
+    // Test that product_bundle canonical urls are redirecting to the developer
+    // specific product bundle url.
+    $request = Request::create(Url::fromRoute('entity.product_bundle.canonical', ['product_bundle' => $this->product_bundle->id()])->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
     static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/package/{$this->package->id()}", $response->headers->get('location'));
+    static::assertSame("http://localhost/user/{$this->user->id()}/monetization/product-bundle/{$this->product_bundle->id()}", $response->headers->get('location'));
 
-    // Make sure we get a team context when getting a package url.
-    $url = $this->package->toUrl('canonical');
-    static::assertSame("/user/1/monetization/package/{$this->package->id()}", $url->toString());
-    static::assertSame('entity.package.developer', $url->getRouteName());
+    // Make sure we get a team context when getting a product bundle url.
+    $url = $this->product_bundle->toUrl('canonical');
+    static::assertSame("/user/1/monetization/product-bundle/{$this->product_bundle->id()}", $url->toString());
+    static::assertSame('entity.product_bundle.developer', $url->getRouteName());
 
-    // Load the cached package.
-    $package = Package::load($this->package->id());
+    // Load the cached product bundle.
+    $product_bundle = ProductBundle::load($this->product_bundle->id());
 
-    static::assertInstanceOf(PackageInterface::class, $package);
-    static::assertSame(gettype($package), gettype($this->package));
+    static::assertInstanceOf(ProductBundleInterface::class, $product_bundle);
+    static::assertSame(gettype($product_bundle), gettype($this->product_bundle));
 
     // Check properties.
-    static::assertSame($this->package->id(), $package->id());
-    static::assertSame($this->package->getDisplayName(), $package->getDisplayName());
-    static::assertSame($this->package->getName(), $package->getName());
-    static::assertSame($this->package->getDescription(), $package->getDescription());
-    static::assertSame($this->package->getStatus(), $package->getStatus());
-    // Get the package products.
-    $products = $package->getApiProducts();
+    static::assertSame($this->product_bundle->id(), $product_bundle->id());
+    static::assertSame($this->product_bundle->getDisplayName(), $product_bundle->getDisplayName());
+    static::assertSame($this->product_bundle->getName(), $product_bundle->getName());
+    static::assertSame($this->product_bundle->getDescription(), $product_bundle->getDescription());
+    static::assertSame($this->product_bundle->getStatus(), $product_bundle->getStatus());
+    // Get the product bundle products.
+    $products = $product_bundle->getApiProducts();
     static::assertGreaterThan(0, $this->count($products));
-    static::assertCount(count($this->package->getApiProducts()), $products);
+    static::assertCount(count($this->product_bundle->getApiProducts()), $products);
 
-    foreach ($this->package->getApiProducts() as $product_id => $product) {
+    foreach ($this->product_bundle->getApiProducts() as $product_id => $product) {
       static::assertArrayHasKey($product_id, $products);
     }
   }

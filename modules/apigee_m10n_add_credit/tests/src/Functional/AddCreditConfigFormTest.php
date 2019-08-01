@@ -73,7 +73,7 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
    * @covers \Drupal\apigee_m10n_add_credit\Form\AddCreditConfigForm::submitForm
    */
   public function testConfigFormUi() {
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->queueMockResponses(['get-supported-currencies']);
     $this->drupalGet(Url::fromRoute('apigee_m10n_add_credit.settings.add_credit')->toString());
 
@@ -102,7 +102,8 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
     $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation.');
 
     // Test form config.
-    $this->queueMockResponses(['get-supported-currencies']);
+    // TODO: cache supported currencies.
+    $this->queueMockResponses(['get-supported-currencies', 'get-supported-currencies']);
     $this->submitForm([
       'use_modal' => FALSE,
       'notify_on' => AddCreditConfig::NOTIFY_ALWAYS,

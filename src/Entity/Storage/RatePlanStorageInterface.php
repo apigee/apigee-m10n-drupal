@@ -27,23 +27,23 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface;
 interface RatePlanStorageInterface {
 
   /**
-   * Loads rate plans by package name.
+   * Loads rate plans by product bundle id.
    *
-   * @param string $package_name
-   *   The name of the API package.
+   * @param string $product_bundle_id
+   *   The product bundle ID.
    * @param bool $include_future_plans
    *   Whether to include future plans in the list.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
-   *   An array of rate plans for a given package.
+   *   An array of rate plans for a given product bundle.
    */
-  public function loadPackageRatePlans(string $package_name, $include_future_plans = FALSE): array;
+  public function loadRatePlansByProductBundle(string $product_bundle_id, $include_future_plans = FALSE): array;
 
   /**
-   * Load an individual package rate plan by package_id and rate plan ID.
+   * Load an individual rate plan by product bundle id and rate plan ID.
    *
-   * @param string $package_name
-   *   The package the rate plan belongs to.
+   * @param string $product_bundle_id
+   *   The product bundle the rate plan belongs to.
    * @param string $id
    *   The rate plan ID.
    *
@@ -53,7 +53,7 @@ interface RatePlanStorageInterface {
    * @throws \Drupal\Core\Entity\EntityStorageException
    *   Thrown if the rate plan doesn't exist.
    */
-  public function loadById(string $package_name, string $id): RatePlanInterface;
+  public function loadById(string $product_bundle_id, string $id): RatePlanInterface;
 
   /**
    * Gets the future rate plan of a rate plan.
@@ -65,5 +65,16 @@ interface RatePlanStorageInterface {
    *   The future rate plan or NULL if none were found.
    */
   public function loadFutureRatePlan(RatePlanInterface $ratePlan): ?RatePlanInterface;
+
+  /**
+   * Validates a rate plan ID.
+   *
+   * @param string $id
+   *   The rate plan ID.
+   *
+   * @return bool
+   *   TRUE if the rate plan ID is valid.
+   */
+  public function isValidId(string $id): bool;
 
 }

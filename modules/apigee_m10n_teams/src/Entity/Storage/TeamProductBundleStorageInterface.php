@@ -17,24 +17,24 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Entity\Storage;
+namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
 /**
- * The storage controller interface for the `package` entity.
+ * An overridden storage controller interface for the `product_bundle` entity.
  */
-interface PackageStorageInterface {
+interface TeamProductBundleStorageInterface {
 
   /**
-   * Gets a list of package entities for a developer.
+   * Gets a list of product bundle entities for a team.
    *
-   * @param string $developer_id
-   *   The SDK developer ID.
+   * @param string $team_id
+   *   The SDK company ID.
    *
    * @return array
-   *   A list of package entities that would have be available to a developer.
+   *   A list of product bundle entities that would have be available to a team.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function getAvailableApiPackagesByDeveloper($developer_id);
+  public function getAvailableProductBundlesByTeam($team_id);
 
 }

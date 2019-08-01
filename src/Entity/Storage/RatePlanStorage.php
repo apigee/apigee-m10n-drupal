@@ -24,6 +24,8 @@ use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxyInterface;
+use Drupal\apigee_m10n\Exception\InvalidRatePlanIdException;
+use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
@@ -38,7 +40,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
   /**
    * The controller proxy.
    *
-   * The rate plan controller typically requires a package ID in the constructor
+   * The rate plan controller requires a product bundle ID in the constructor
    * so we use a proxy that can handle instantiating controllers as needed.
    *
    * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface
@@ -49,9 +51,9 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    * Static cache for future rate plans.
    *
    * Loading future rate plans for a given rate plan is expensive as it
-   * retrieves all rate plans for the current plan's package and loops through
-   * them to determine which one is a future revision. For that reason, we cache
-   * the results here.
+   * retrieves all rate plans for the current plan's product bundle and loops
+   * through them to determine which one is a future revision. For that reason,
+   * we cache the results here.
    *
    * @var array
    */
@@ -95,16 +97,25 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadPackageRatePlans(string $package_id, $include_future_plans = FALSE): array {
+  public function loadRatePlansByProductBundle(string $product_bundle_id, $include_future_plans = FALSE): array {
     $entities = [];
 
-    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $include_future_plans, &$entities) {
-      // Load the  rate plans for this package.
-      $sdk_entities = $controller->loadPackageRatePlans($package_id, $include_future_plans);
+    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $include_future_plans, &$entities) {
+      // Load the  rate plans for this product bundle.
+      $sdk_entities = $controller->loadRatePlansByProductBundle($product_bundle_id, $include_future_plans);
       // Convert the SDK entities to drupal entities.
+      /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $entity */
       foreach ($sdk_entities as $id => $entity) {
-        $drupal_entity = $this->createNewInstance($entity);
-        $entities[$drupal_entity->id()] = $drupal_entity;
+        try {
+          // Filter out rate plans with invalid Ids.
+          if ($this->isValidId($entity->id())) {
+            $drupal_entity = $this->createNewInstance($entity);
+            $entities[$drupal_entity->id()] = $drupal_entity;
+          }
+        }
+        catch (InvalidRatePlanIdException $exception) {
+          watchdog_exception('apigee_m10n', $exception);
+        }
       }
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
@@ -118,7 +129,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadById(string $package_id, string $id): RatePlanInterface {
+  public function loadById(string $product_bundle_id, string $id): RatePlanInterface {
     // Load from cache.
     $ids = [$id];
     $rate_plans = $this->getFromPersistentCache($ids);
@@ -128,8 +139,8 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     }
 
     $entity = NULL;
-    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($package_id, $id, &$entity) {
-      $drupal_entity = ($sdk_entity = $controller->loadById($package_id, $id))
+    $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $id, &$entity) {
+      $drupal_entity = ($sdk_entity = $controller->loadById($product_bundle_id, $id))
         ? $this->createNewInstance($sdk_entity)
         : FALSE;
 
@@ -152,8 +163,8 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     if (!isset($this->future_rate_plans[$ratePlan->id()])) {
       // Future plans haven't started as of today.
       $today = new \DateTimeImmutable('today', $ratePlan->getStartDate()->getTimezone());
-      // Load all plans for this package.
-      $all_plans = $this->loadPackageRatePlans($ratePlan->getPackage()->id(), TRUE);
+      // Load all plans for this product bundle.
+      $all_plans = $this->loadRatePlansByProductBundle($ratePlan->getProductBundleId(), TRUE);
       // Loop through to see if any future previous revisions are the given
       // plan.
       foreach ($all_plans as $future_candidate) {
@@ -172,6 +183,17 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
 
     // Returns NULL if the cached value is false.
     return ($plan = $this->future_rate_plans[$ratePlan->id()]) ? $plan : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isValidId(string $id): bool {
+    if (preg_match('/[\/]+/', $id)) {
+      throw new InvalidRatePlanIdException(sprintf('Invalid rate plan Id "%s"', $id));
+    }
+
+    return TRUE;
   }
 
   /**

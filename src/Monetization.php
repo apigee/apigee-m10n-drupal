@@ -19,16 +19,15 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Management\Controller\OrganizationController;
+use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
-use CommerceGuys\Intl\Currency\CurrencyRepository;
-use CommerceGuys\Intl\Formatter\CurrencyFormatter;
+use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -47,8 +46,6 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Apigee Monetization base service.
- *
- * @package Drupal\apigee_m10n
  */
 class Monetization implements MonetizationInterface {
 
@@ -125,6 +122,20 @@ class Monetization implements MonetizationInterface {
   protected $permission_handler;
 
   /**
+   * The management organization controller.
+   *
+   * @var \Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface
+   */
+  protected $organizationController;
+
+  /**
+   * The management organization entity.
+   *
+   * @var \Apigee\Edge\Api\Management\Entity\OrganizationInterface
+   */
+  protected $organization;
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -141,6 +152,8 @@ class Monetization implements MonetizationInterface {
    *   The permission handler.
    * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
    *   A currency formatter.
+   * @param \Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface $organization_controller
+   *   The management organization controller.
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
@@ -149,7 +162,8 @@ class Monetization implements MonetizationInterface {
     CacheBackendInterface $cache,
     LoggerInterface $logger,
     PermissionHandlerInterface $permission_handler,
-    CurrencyFormatterInterface $currency_formatter
+    CurrencyFormatterInterface $currency_formatter,
+    OrganizationControllerInterface $organization_controller
   ) {
     $this->sdk_connector          = $sdk_connector;
     $this->sdk_controller_factory = $sdk_controller_factory;
@@ -158,39 +172,15 @@ class Monetization implements MonetizationInterface {
     $this->logger                 = $logger;
     $this->permission_handler     = $permission_handler;
     $this->currencyFormatter      = $currency_formatter;
+    $this->organizationController = $organization_controller;
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMonetizationEnabled(): bool {
-    // Get organization ID string.
-    $org_id = $this->sdk_connector->getOrganization();
-
-    // Use cached result if available.
-    $monetization_status_cache_entry = $this->cache->get("apigee_m10n:org_monetization_status:{$org_id}");
-    $monetization_status             = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : NULL;
-
-    if (!$monetization_status) {
-
-      // Load organization and populate cache.
-      $org_controller = new OrganizationController($this->sdk_connector->getClient());
-
-      try {
-        $org = $org_controller->load($org_id);
-      }
-      catch (\Exception $e) {
-        $this->messenger->addError($e->getMessage());
-        return FALSE;
-      }
-
-      $monetization_status = $org->getPropertyValue('features.isMonetizationEnabled') === 'true' ? 'enabled' : 'disabled';
-      $expire_time         = new \DateTime('now + 5 minutes');
-
-      $this->cache->set("apigee_m10n:org_monetization_status:{$org_id}", $monetization_status, $expire_time->getTimestamp());
-    }
-
-    return ($monetization_status === 'enabled');
+    $org = $this->getOrganization();
+    return ($org && $org->getPropertyValue('features.isMonetizationEnabled') === 'true');
   }
 
   /**
@@ -410,16 +400,14 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getBillingDocumentsMonths(): ?array {
-    return $this->sdk_controller_factory->billingDocumentsController()->getEntities();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string {
-    return $this->sdk_controller_factory->prepaidBalanceReportsController($developer_id)
-      ->getReport($month, $currency);
+  public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string {
+    $controller = $this->sdk_controller_factory->developerReportDefinitionController($developer_id);
+    $criteria = new PrepaidBalanceReportCriteria(strtoupper($date->format('F')), (int) $date->format('Y'));
+    $criteria
+      ->developers($developer_id)
+      ->currencies($currency)
+      ->showTransactionDetail(TRUE);
+    return $controller->generateReport($criteria);
   }
 
   /**
@@ -462,8 +450,8 @@ class Monetization implements MonetizationInterface {
     // Since there is no hook_permissions_alter, we can at least remove them
     // from the admin form.
     $unused_permissions = [
-      'administer package fields',
-      'administer package form display',
+      'administer product_bundle fields',
+      'administer product_bundle form display',
       'administer rate_plan fields',
       'administer rate_plan form display',
       'administer purchased_plan fields',
@@ -490,6 +478,33 @@ class Monetization implements MonetizationInterface {
       }
     }
 
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOrganization(): ?OrganizationInterface {
+    // Check if the organization is statically cached.
+    if ($this->organization) {
+      return $this->organization;
+    }
+    // Check the DB cache.
+    $cid = 'apigee_m10n:organization';
+    if (($cache = $this->cache->get($cid)) && !empty($cache->data)) {
+      $this->organization = $cache->data;
+    }
+    else {
+      // Load the org and cache it for 5 minutes.
+      try {
+        $this->organization = $this->organizationController->load($this->sdk_connector->getOrganization());
+      }
+      catch (\Exception $e) {
+        $this->messenger->addError($e->getMessage());
+      }
+      $this->cache->set($cid, $this->organization, strtotime("+5 minutes"));
+    }
+
+    return $this->organization;
   }
 
   /**

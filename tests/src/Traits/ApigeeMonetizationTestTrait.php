@@ -29,8 +29,8 @@ use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Entity\PackageInterface;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -244,17 +244,18 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Create an API package.
+   * Create a product bundle.
    *
    * @throws \Exception
    */
-  protected function createPackage(): PackageInterface {
+  protected function createProductBundle(): ProductBundleInterface {
     $products = [];
     for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
     }
 
-    $package = new ApiPackage([
+    $api_package = new ApiPackage([
+      'id'          => $this->randomMachineName(),
       'name'        => $this->randomMachineName(),
       'description' => $this->getRandomGenerator()->sentences(3),
       'displayName' => $this->getRandomGenerator()->word(16),
@@ -262,39 +263,39 @@ trait ApigeeMonetizationTestTrait {
       // CREATED, ACTIVE, INACTIVE.
       'status'      => 'CREATED',
     ]);
-    // Get a package controller from the package controller factory.
-    $package_controller = $this->controller_factory->apiPackageController();
-    $this->stack
-      ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
-    $package_controller->create($package);
 
-    // Remove the packages in the cleanup queue.
+    $this->stack->queueMockResponse(['package' => ['package' => $api_package]]);
+    // Load the product_bundle drupal entity and warm the entity cache.
+    $product_bundle = ProductBundle::load($api_package->id());
+    // Remove the product bundle in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 10,
-      'callback' => function () use ($package, $package_controller) {
+      'callback' => function () use ($product_bundle) {
         $this->stack
-          ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
-        $package_controller->delete($package->id());
+          ->queueMockResponse(['get_monetization_package' => ['package' => $product_bundle]]);
+        $product_bundle->delete();
       },
     ];
 
-    $this->stack->queueMockResponse(['package' => ['package' => $package]]);
-    // Load the package drupal entity and warm the cache.
-    return Package::load($package->id());
+    return $product_bundle;
   }
 
   /**
-   * Create a package rate plan for a given package.
+   * Create a rate plan for a given product bundle.
    *
-   * @param \Drupal\apigee_m10n\Entity\PackageInterface $package
-   *   The rate plan package.
+   * @param \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle
+   *   The rate plan product bundle.
+   * @param string $type
+   *   The type of plan.
+   * @param string $id
+   *   The rate plan Id. It not set it will randomly generated.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createPackageRatePlan(PackageInterface $package): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, string $id = NULL): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 
@@ -327,7 +328,7 @@ trait ApigeeMonetizationTestTrait {
       'frequencyDuration'     => 1,
       'frequencyDurationType' => FreemiumPropertiesInterface::FREEMIUM_DURATION_MONTH,
       'freemiumUnit'          => 1,
-      'id'                    => strtolower($this->randomMachineName()),
+      'id'                    => $id ?: strtolower($this->randomMachineName()),
       'isPrivate'             => 'false',
       'name'                  => $this->randomMachineName(),
       'paymentDueDays'        => '30',
@@ -359,10 +360,10 @@ trait ApigeeMonetizationTestTrait {
       'recurringType'         => 'CALENDAR',
       'setUpFee'              => '1.0000',
       'startDate'             => $start_date,
-      'type'                  => 'STANDARD',
+      'type'                  => $type,
       'organization'          => $org,
       'currency'              => $currency,
-      'package'               => $package->decorated(),
+      'package'               => $product_bundle->decorated(),
       'purchase'             => [],
     ]);
 
@@ -371,7 +372,7 @@ trait ApigeeMonetizationTestTrait {
 
     // Warm the cache.
     $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
-    $rate_plan = RatePlan::loadById($package->id(), $rate_plan->id());
+    $rate_plan = RatePlan::loadById($product_bundle->id(), $rate_plan->id());
 
     // Warm the future plan cache.
     $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan]]]);
@@ -480,7 +481,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function queueOrg($monetized = TRUE) {
+  protected function warmOrganizationCache($monetized = TRUE) {
     $this->stack
       ->queueMockResponse([
         'get_organization' => [
@@ -488,6 +489,7 @@ trait ApigeeMonetizationTestTrait {
           'timezone' => $this->org_default_timezone,
         ],
       ]);
+    \Drupal::service('apigee_m10n.monetization')->getOrganization();
   }
 
   /**

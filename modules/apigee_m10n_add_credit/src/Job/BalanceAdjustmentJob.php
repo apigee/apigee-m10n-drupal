@@ -44,8 +44,6 @@ use Drupal\user\UserInterface;
  * trigger a retry.
  *
  * @todo: Handle refunds when the monetization API supports it.
- *
- * @package Drupal\apigee_m10n_add_credit\Job
  */
 class BalanceAdjustmentJob extends EdgeJob {
 

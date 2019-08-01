@@ -42,17 +42,17 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
    * @throws \Drupal\Core\ParamConverter\ParamNotConvertedException
    */
   public function convert($value, $definition, $name, array $defaults) {
-    if (!($package_id = $defaults['package']) || empty($package_id)) {
+    if (!($product_bundle_id = $defaults['product_bundle']) || empty($product_bundle_id)) {
       $cache_metadata = new CacheableMetadata();
-      // If there is no package set the URL is invalid.
-      throw new CacheableNotFoundHttpException($cache_metadata->setCacheContexts(['url']), 'Invalid API package.');
+      // If there is no product bundle set the URL is invalid.
+      throw new CacheableNotFoundHttpException($cache_metadata->setCacheContexts(['url']), 'Invalid product bundle.');
     }
 
     try {
       /** @var \Drupal\apigee_m10n\Entity\Storage\RatePlanStorageInterface $storage */
       $storage = $this->entityTypeManager->getStorage('rate_plan');
       // The rate plan value should already be validated so just load it.
-      $entity = $storage->loadById($package_id, $value);
+      $entity = $storage->loadById($product_bundle_id, $value);
     }
     catch (EntityStorageException $ex) {
       throw new ParamNotConvertedException('Unable to load rate plan.', 404, $ex);

@@ -18,7 +18,7 @@
  * MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_teams\Entity\Access;
+namespace Drupal\apigee_m10n_teams\Entity\Permissions;
 
 use Drupal\apigee_edge_teams\DynamicTeamPermissionProviderInterface;
 use Drupal\apigee_edge_teams\Structure\TeamPermission;
@@ -37,7 +37,7 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
   public function permissions(): array {
     $group = $this->t('Purchased plans');
     $plan_group = $this->t('Rate plan');
-    $package_group = $this->t('Package');
+    $product_bundle_group = $this->t('Product bundle');
     return [
       'purchase rate_plan' => new TeamPermission(
         'purchase rate_plan',
@@ -63,11 +63,11 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
         $this->t('View rate plans'),
         $plan_group
       ),
-      // Packages.
-      'view package' => new TeamPermission(
-        'view package',
-        $this->t('View package'),
-        $package_group
+      // Product bundles.
+      'view product_bundle' => new TeamPermission(
+        'view product_bundle',
+        $this->t('View product bundle'),
+        $product_bundle_group
       ),
       'edit billing details' => new TeamPermission(
         'edit billing details',

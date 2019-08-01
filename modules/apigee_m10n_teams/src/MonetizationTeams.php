@@ -25,11 +25,12 @@ use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryI
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
+use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
-use Drupal\apigee_m10n_teams\Entity\Storage\TeamPackageStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
-use Drupal\apigee_m10n_teams\Entity\TeamsPackage;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
@@ -106,31 +107,32 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function entityTypeAlter(array &$entity_types) {
     /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
-    if (isset($entity_types['package'])) {
+    if (isset($entity_types['product_bundle'])) {
       // Use our class to override the original entity class.
-      $entity_types['package']->setClass(TeamsPackage::class);
-      // Create a link template for team packages.
-      $entity_types['package']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}');
+      $entity_types['product_bundle']->setClass(TeamProductBundle::class);
+      // Create a link template for team product bundles.
+      $entity_types['product_bundle']->setLinkTemplate('team', '/teams/{team}/monetization/product-bundle/{product_bundle}');
       // Get the entity route providers.
-      $route_providers = $entity_types['package']->getRouteProviderClasses();
+      $route_providers = $entity_types['product_bundle']->getRouteProviderClasses();
       // Override the `html` route provider.
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
-      $entity_types['package']->setHandlerClass('route_provider', $route_providers);
+      $entity_types['product_bundle']->setHandlerClass('route_provider', $route_providers);
       // Override the storage class.
-      $entity_types['package']->setStorageClass(TeamPackageStorage::class);
+      $entity_types['product_bundle']->setStorageClass(TeamProductBundleStorage::class);
     }
 
     // Overrides for the `rate_plan` entity.
     if (isset($entity_types['rate_plan'])) {
       // Use our class to override the original entity class.
       $entity_types['rate_plan']->setClass(TeamsRatePlan::class);
-      $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}');
-      $entity_types['rate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/package/{package}/plan/{rate_plan}/purchase');
+      $entity_types['rate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}');
+      $entity_types['rate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase');
       // Get the entity route providers.
       $route_providers = $entity_types['rate_plan']->getRouteProviderClasses();
       // Override the `html` route provider.
       $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
       $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
+      $entity_types['rate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
     }
 
     // Overrides for the purchased_plan entity.
@@ -173,32 +175,6 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} purchased_plan"]);
       // Team permission results completely override user permissions.
       return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function purchasedPlanCreateAccess(AccountInterface $account, array $context, $entity_bundle) {
-    if (isset($context['team']) && $context['team'] instanceof TeamInterface) {
-      // Gat the access result.
-      $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($context['team'], $account, ["purchase rate_plan"]);
-      // Team permission results completely override user permissions.
-      return $access->isAllowed() ? $access : AccessResult::forbidden($access->getReason());
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function ratePlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if ($team = $this->currentTeam()) {
-      if ($operation === 'purchase') {
-        return $this->purchasedPlanCreateAccess($account, ['team' => $team], 'purchased_plan');
-      }
-      else {
-        return $this->entityAccess($entity, $operation, $account);
-      }
     }
   }
 

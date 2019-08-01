@@ -45,8 +45,6 @@ use Drupal\Core\Url;
 
 /**
  * Helper service to handle basic module tasks.
- *
- * @package Drupal\apigee_m10n_add_credit
  */
 class AddCreditService implements AddCreditServiceInterface {
 
@@ -317,6 +315,27 @@ class AddCreditService implements AddCreditServiceInterface {
    * {@inheritdoc}
    */
   public function apigeeM10nPrepaidBalanceListAlter(array &$build, EntityInterface $entity) {
+
+    // Show links to "Add credit" even if no current balances in all or
+    // some currencies.
+    $currencies = Drupal::service('commerce_price.currency_repository')->getAll();
+    foreach ($currencies as $currency) {
+      $currency_id = strtolower($currency->getCurrencyCode());
+      if (empty($build['table']['#rows'][$currency_id])) {
+        $build['table']['#rows'][$currency_id] = [
+          'class' => ["apigee-balance-row-{$currency_id}"],
+          'data' => [
+            'currency' => $currency->getCurrencyCode(),
+            'previous_balance' => $this->t('There is no balance available.'),
+            'credit' => '',
+            'usage' => '',
+            'tax' => '',
+            'current_balance' => '',
+          ],
+        ];
+      }
+    }
+
     // TODO: This can be move to entity operations when/if prepaid balance are
     // made into entities.
     if ((count($build['table']['#rows']))) {
@@ -403,9 +422,8 @@ class AddCreditService implements AddCreditServiceInterface {
     // Add the "Add credit" link.
     if ($url = $this->getAddCreditUrl($purchased_plan->getRatePlan()->getCurrency()->id(), user_load_by_mail($purchased_plan->getDeveloper()->getEmail()))) {
       $arguments['@link'] = Link::fromTextAndUrl('Add credit', $url)->toString();
+      $message = $this->t("{$original_message} @link", $arguments, $options);
     }
-
-    $message = $this->t("{$original_message} @link", $arguments, $options);
   }
 
   /**

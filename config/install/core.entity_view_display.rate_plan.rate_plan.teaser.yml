@@ -10,7 +10,7 @@ targetEntityType: rate_plan
 bundle: rate_plan
 mode: teaser
 content:
-  packageProducts:
+  products:
     type: entity_reference_label
     weight: 0
     region: content
@@ -45,7 +45,7 @@ hidden:
   id: true
   name: true
   organization: true
-  packageEntity: true
+  productBundle: true
   paymentDueDays: true
   private: true
   prorate: true

@@ -215,10 +215,10 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       $display_name = $this->getEntity()->getRatePlan()->getDisplayName();
       Cache::invalidateTags([static::MY_PURCHASES_CACHE_TAG]);
 
-      // This means the user has confirmed purchase.
-      // We can suppress warning and terminates all purchased rate plans that
-      // the developer has to API packages that contain the conflicting API
-      // products. It then purchases a new API package for the developer.
+      // This means the user has confirmed purchase. We can suppress warning and
+      // terminates all purchased rate plans that the developer has two product
+      // bundles that contain the conflicting products. It then purchases the
+      // rate plan for the developer.
       if ($form_state->get('confirm')) {
         $this->getEntity()->setSuppressWarning(TRUE);
       }
@@ -386,11 +386,11 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
       return $values;
     }, $overlaps);
 
-    $package = $this->getEntity()->getRatePlan()->getPackage();
+    $product_bundle = $this->getEntity()->getRatePlan()->getPackage();
 
     // Process products in attempted purchased plan.
     $products = [];
-    foreach ($package->getApiProducts() as $product) {
+    foreach ($product_bundle->getApiProducts() as $product) {
       $products[$product->id()] = $product;
     }
 

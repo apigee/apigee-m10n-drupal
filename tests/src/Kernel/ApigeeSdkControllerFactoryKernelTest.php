@@ -112,7 +112,7 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
-   * Test the package rate plan controller.
+   * Test the rate plan controller.
    */
   public function testRatePlanController() {
     /** @var \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface $controller */

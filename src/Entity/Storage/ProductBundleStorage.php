@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n\Entity\Storage;
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
-use Drupal\apigee_m10n\Entity\Storage\Controller\ApiPackageEntityControllerProxy;
+use Drupal\apigee_m10n\Entity\Storage\Controller\ProductBundleEntityControllerProxy;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
@@ -30,9 +30,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * The storage controller for the `package` entity.
+ * The storage controller for the `product_bundle` entity.
  */
-class PackageStorage extends EdgeEntityStorageBase implements PackageStorageInterface {
+class ProductBundleStorage extends EdgeEntityStorageBase implements ProductBundleStorageInterface {
 
   /**
    * The controller proxy.
@@ -40,6 +40,20 @@ class PackageStorage extends EdgeEntityStorageBase implements PackageStorageInte
    * @var \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface
    */
   protected $controller_proxy;
+
+  /**
+   * Static cache for all product bundles.
+   *
+   * @var array
+   */
+  protected $all_product_bundles;
+
+  /**
+   * Static cache for product bundles by developer.
+   *
+   * @var array
+   */
+  protected $product_bundles_by_developer = [];
 
   /**
    * Constructs an RatePlanStorage instance.
@@ -70,7 +84,7 @@ class PackageStorage extends EdgeEntityStorageBase implements PackageStorageInte
       $container->get('cache.apigee_edge_entity'),
       $container->get('entity.memory_cache'),
       $container->get('datetime.time'),
-      $container->get('apigee_m10n.sdk_controller_proxy.package')
+      $container->get('apigee_m10n.sdk_controller_proxy.product_bundle')
     );
   }
 
@@ -84,20 +98,66 @@ class PackageStorage extends EdgeEntityStorageBase implements PackageStorageInte
   /**
    * {@inheritdoc}
    */
-  public function getAvailableApiPackagesByDeveloper($developer_id) {
+  public function getAvailableProductBundlesByDeveloper($developer_id) {
     $entities = [];
 
+    // Check for a cached list.
+    if (isset($this->product_bundles_by_developer[$developer_id])) {
+      return $this->loadMultiple($this->product_bundles_by_developer[$developer_id]);
+    }
+
     $this->withController(function (EdgeEntityControllerInterface $controller) use ($developer_id, &$entities) {
-      $sdk_packages = $controller->getAvailableApiPackagesByDeveloper($developer_id, TRUE, TRUE);
+      // Get product bundles from the PHP API client.
+      $sdk_product_bundles = $controller->getAvailableProductBundlesByDeveloper($developer_id, TRUE, TRUE);
 
       // Returned entities are SDK entities and not Drupal entities,
       // what if the id is used in Drupal is different than what
       // SDK uses? (ex.: developer)
-      foreach ($sdk_packages as $id => $entity) {
+      foreach ($sdk_product_bundles as $id => $entity) {
         $entities[$id] = $this->createNewInstance($entity);
       }
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
+
+      // TODO: Consider caching this list in the DB.
+      // Set static cache.
+      $this->product_bundles_by_developer[$developer_id] = array_map(function ($entity) {
+        return $entity->id();
+      }, $entities);
+    });
+
+    return $entities;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadAll() {
+    $entities = [];
+
+    // Check for a cached list.
+    if (isset($this->all_product_bundles)) {
+      return $this->loadMultiple($this->all_product_bundles);
+    }
+
+    $this->withController(function (EdgeEntityControllerInterface $controller) use (&$entities) {
+      // Get all product bundles from the PHP API client.
+      $sdk_product_bundles = $controller->getEntities();
+
+      // Returned entities are SDK entities and not Drupal entities,
+      // what if the id is used in Drupal is different than what
+      // SDK uses? (ex.: developer)
+      foreach ($sdk_product_bundles as $id => $entity) {
+        $entities[$id] = $this->createNewInstance($entity);
+      }
+      $this->invokeStorageLoadHook($entities);
+      $this->setPersistentCache($entities);
+
+      // TODO: Consider caching this list in the DB.
+      // Set static cache.
+      $this->all_product_bundles = array_map(function ($entity) {
+        return $entity->id();
+      }, $entities);
     });
 
     return $entities;
