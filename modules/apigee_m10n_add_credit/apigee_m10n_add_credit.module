@@ -22,6 +22,7 @@ use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
@@ -114,4 +115,11 @@ function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity,
  */
 function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan) {
   return \Drupal::service('apigee_m10n.add_credit')->insufficientBalanceErrorMessageAlter($message, $purchased_plan);
+}
+
+/**
+ * Implements hook_help().
+ */
+function apigee_m10n_add_credit_help($route_name, RouteMatchInterface $route_match) {
+  return \Drupal::service('apigee_m10n.add_credit')->help($route_name, $route_match);
 }
