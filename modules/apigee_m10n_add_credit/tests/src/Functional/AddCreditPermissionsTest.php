@@ -21,6 +21,7 @@ namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
 use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Url;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests permissions for add credit products.
@@ -62,6 +63,9 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     $this->product = $this->createCommerceProduct($this->createCommerceStore(), $variation);
 
     $this->createCommercePaymentGateway();
+
+    // Remove default module permission.
+    user_role_revoke_permissions(RoleInterface::AUTHENTICATED_ID, ['add credit to own developer prepaid balance']);
   }
 
   /**
