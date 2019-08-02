@@ -73,7 +73,7 @@ class AddCreditProductType extends RequirementBase {
       ->getStorage('commerce_product_variation_type');
     $variation_type = $variation_type_storage->load('add_credit');
 
-    if (!$order_item_type) {
+    if (!$variation_type) {
       $variation_type = $variation_type_storage->create([
         'status' => 1,
         'id' => 'add_credit',

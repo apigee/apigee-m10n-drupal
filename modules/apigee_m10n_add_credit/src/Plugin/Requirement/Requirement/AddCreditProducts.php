@@ -42,6 +42,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   dependencies={
  *      "apigee_edge_connection",
  *      "commerce_store",
+ *      "add_credit_product_type",
  *   }
  * )
  */
