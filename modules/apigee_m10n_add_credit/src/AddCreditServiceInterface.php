@@ -32,6 +32,13 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 interface AddCreditServiceInterface {
 
   /**
+   * A list of permissions that will be given to authenticated users on install.
+   */
+  const DEFAULT_AUTHENTICATED_PERMISSIONS = [
+    'add credit to own developer prepaid balance',
+  ];
+
+  /**
    * Handles the mail callback for the `apigee_m10n_add_credit` module.
    *
    * @param string $key
