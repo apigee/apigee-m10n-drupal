@@ -142,10 +142,9 @@ class BalanceAdjustmentJob extends EdgeJob {
 
       // Calculate the expected new balance.
       $expected_balance = $existing_top_ups->add($adjustment->getAmount());
+      $transaction_time = new \DateTimeImmutable();
 
       try {
-        $transaction_time = new \DateTimeImmutable();
-
         // Top up by the adjustment amount.
         $controller->topUpBalance((float) $adjustment->getAmount()->getNumber(), $currency_code);
         // The data returned from `topUpBalance` doesn't get us the new top up
@@ -416,7 +415,7 @@ class BalanceAdjustmentJob extends EdgeJob {
   /**
    * Attempt to recover the Apigee transaction ID and save in log.
    *
-   * @param $currency_code
+   * @param string $currency_code
    *   The currency code.
    * @param \DateTimeImmutable $transaction_time
    *   The transaction time.
