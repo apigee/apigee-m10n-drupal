@@ -26,6 +26,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\requirement\Plugin\RequirementBase;
 
 /**
+ * Check if a commerce store exists.
+ *
  * @Requirement(
  *   id = "commerce_store",
  *   group="apigee_m10n_add_credit",

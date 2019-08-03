@@ -22,6 +22,8 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\RequirementGroup;
 use Drupal\requirement\Plugin\RequirementGroupBase;
 
 /**
+ * Requirement group for Apigee Monetization Add Credit requirements.
+ *
  * @RequirementGroup(
  *   id = "apigee_m10n_add_credit",
  *   label = "Apigee Monetization Add Credit",

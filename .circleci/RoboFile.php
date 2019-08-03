@@ -430,6 +430,9 @@ class RoboFile extends \Robo\Tasks
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
 
+      // We need requirement module as a dependency of apigee_m10n_add_credit.
+      $config->require->{"drupal/requirement"} = "~1.0";
+
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
 }

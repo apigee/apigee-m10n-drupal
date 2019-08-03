@@ -24,6 +24,8 @@ use Drupal\Core\Url;
 use Drupal\requirement\Plugin\RequirementBase;
 
 /**
+ * Check that at least a commerce payment gateway exists.
+ *
  * @Requirement(
  *   id = "payment_gateway",
  *   group="apigee_m10n_add_credit",

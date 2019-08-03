@@ -593,7 +593,7 @@ class AddCreditService implements AddCreditServiceInterface {
    * @param string $route_name
    *   The route machine name.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The route match object
+   *   The route match object.
    *
    * @return string|null
    *   The help message, if applicable.
@@ -601,9 +601,9 @@ class AddCreditService implements AddCreditServiceInterface {
   public static function help($route_name, RouteMatchInterface $route_match) {
     if ($route_name === 'apigee_m10n_add_credit.settings.add_credit') {
       return '<p>' . t('Review the %module module requirements in the <a href=":requirements">Requirements report</a>.', [
-          '%module' => Drupal::moduleHandler()->getName('apigee_m10n_add_credit'),
-          ':requirements' => Url::fromRoute('requirement.report')->toString(),
-        ]) . '</p>';
+        '%module' => Drupal::moduleHandler()->getName('apigee_m10n_add_credit'),
+        ':requirements' => Url::fromRoute('requirement.report')->toString(),
+      ]) . '</p>';
     }
   }
 

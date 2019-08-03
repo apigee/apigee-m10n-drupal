@@ -22,6 +22,8 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\RequirementGroup;
 use Drupal\requirement\Plugin\RequirementGroupBase;
 
 /**
+ * Requirement group for Apigee Edge requirements.
+ *
  * @RequirementGroup(
  *   id = "apigee_edge",
  *   label = "Apigee Edge",

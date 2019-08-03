@@ -32,6 +32,8 @@ use Drupal\requirement\Plugin\RequirementBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
+ * Check that the "Add credit" product has been configured.
+ *
  * @Requirement(
  *   id="add_credit_products",
  *   group="apigee_m10n_add_credit",
@@ -115,7 +117,8 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
       $this->supportedCurrencies = array_filter($supported_currency_controller->getEntities(), function (SupportedCurrencyInterface $currency) {
         return !$this->addCreditProductManager->getProductForCurrency($currency->id()) && $this->isCurrencyImportable($currency);
       });
-    } catch (\Exception $exception) {
+    }
+    catch (\Exception $exception) {
       watchdog_exception('apigee_kickstart', $exception);
     }
   }
@@ -227,7 +230,8 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
             'product_id' => $product->id(),
           ])
           ->save();
-      } catch (\Exception $exception) {
+      }
+      catch (\Exception $exception) {
         watchdog_exception('apigee_kickstart', $exception);
       }
     }

@@ -23,6 +23,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\requirement\Plugin\RequirementBase;
 
 /**
+ * Check that the "Add credit" product type has been configured.
+ *
  * @Requirement(
  *   id = "add_credit_product_type",
  *   group="apigee_m10n_add_credit",

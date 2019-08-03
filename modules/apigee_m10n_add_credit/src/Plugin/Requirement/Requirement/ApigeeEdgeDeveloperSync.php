@@ -23,6 +23,8 @@ use Drupal\apigee_edge\Job\Job;
 use Drupal\requirement\Plugin\RequirementBase;
 
 /**
+ * Check if the developer sync job has been run.
+ *
  * @Requirement(
  *   id="apigee_edge_developer_sync",
  *   group="apigee_edge",
@@ -60,7 +62,7 @@ class ApigeeEdgeDeveloperSync extends RequirementBase {
       ->execute()
       ->fetchField();
 
-    return (int)($jobs) > 0;
+    return (int) ($jobs) > 0;
   }
 
 }

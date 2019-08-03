@@ -23,6 +23,8 @@ use Drupal\apigee_m10n_add_credit\ApigeeEdgeSdkConnectorTrait;
 use Drupal\requirement\Plugin\RequirementBase;
 
 /**
+ * Check that the Apigee Edge connection is working.
+ *
  * @Requirement(
  *   id="apigee_edge_connection",
  *   group="apigee_edge",
@@ -53,7 +55,8 @@ class ApigeeEdgeConnection extends RequirementBase {
     try {
       $this->getApigeeEdgeSdkConnector()->testConnection();
       return TRUE;
-    } catch (\Exception $exception) {
+    }
+    catch (\Exception $exception) {
       watchdog_exception('requirement', $exception);
     }
 
