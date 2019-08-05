@@ -309,6 +309,32 @@ class AddCreditService implements AddCreditServiceInterface {
         }
       }
     }
+
+    // Update the label for the unit price for add_credit products.
+    $this->addToCartFormAlter($form, $form_state, $form_id);
+  }
+
+  /**
+   * Update the label for the unit price for add_credit products.
+   *
+   * @param array $form
+   *   The form to alter.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $form_id
+   *   The form id.
+   */
+  protected function addToCartFormAlter(&$form, FormStateInterface $form_state, $form_id) {
+    if (strpos($form_id, 'commerce_order_item_add_to_cart_form') === 0) {
+      $order_item = $form_state->getFormObject()->getEntity();
+      $purchased_entity = $order_item->getPurchasedEntity();
+      $product = $purchased_entity->getProduct();
+
+      // Update the label for the unit price for add_credit products.
+      if ($product->get(AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME)->value) {
+        $form['unit_price']['widget'][0]['amount']['#title'] = t('Amount to be added to your account balance');
+      }
+    }
   }
 
   /**

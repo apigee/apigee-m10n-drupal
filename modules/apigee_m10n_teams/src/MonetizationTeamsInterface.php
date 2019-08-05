@@ -33,6 +33,13 @@ use Drupal\Core\Session\AccountInterface;
 interface MonetizationTeamsInterface {
 
   /**
+   * A list of permissions that will be given to authenticated users on install.
+   */
+  const DEFAULT_AUTHENTICATED_PERMISSIONS = [
+    'add credit to own team prepaid balance',
+  ];
+
+  /**
    * Handles `hook_entity_type_alter` for the `apigee_m10n_teams` module.
    *
    * @param array $entity_types
