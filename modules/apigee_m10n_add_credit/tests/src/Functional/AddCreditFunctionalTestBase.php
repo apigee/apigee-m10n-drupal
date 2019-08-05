@@ -122,6 +122,9 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
           'topups_usd' => $amount,
           'current_usage_usd' => '0',
         ],
+      ])
+      ->queueMockResponse([
+        'post-prepaid-balance-reports.csv.twig',
       ]);
 
     // Finalize the payment.
