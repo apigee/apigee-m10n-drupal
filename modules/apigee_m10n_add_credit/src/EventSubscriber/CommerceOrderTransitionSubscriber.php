@@ -106,7 +106,7 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
           'type' => 'apigee_balance',
           'label' => 'Apigee balance adjustment',
           'amount' => $amount,
-        ]));
+        ]), $order);
 
         // Save and execute the job.
         $this->getExecutor()->call($job);
