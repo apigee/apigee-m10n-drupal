@@ -339,21 +339,21 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         30.00,
         25.00,
         35.00,
-        'The unit price value must be between USD20.00 and USD30.00.',
+        'The amount must be between USD20.00 and USD30.00.',
       ],
       [
         20.00,
         NULL,
         25.00,
         15.00,
-        'This unit price cannot be less than USD20.00.',
+        'This amount cannot be less than USD20.00.',
       ],
       [
         20.00,
         NULL,
         NULL,
         15.00,
-        'This unit price cannot be less than USD20.00.',
+        'This amount cannot be less than USD20.00.',
       ],
     ];
   }
