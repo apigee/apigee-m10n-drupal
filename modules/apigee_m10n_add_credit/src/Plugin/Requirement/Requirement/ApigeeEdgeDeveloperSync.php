@@ -30,7 +30,7 @@ use Drupal\requirement\Plugin\RequirementBase;
  *   group="apigee_edge",
  *   label="Developer Sync",
  *   description="Sync Drupal users with Apigee Edge developers.",
- *   severity="error",
+ *   severity="recommendation",
  *   form="\Drupal\apigee_edge\Form\DeveloperSyncForm",
  *   action_button_label="Sync developers",
  *   dependencies={
