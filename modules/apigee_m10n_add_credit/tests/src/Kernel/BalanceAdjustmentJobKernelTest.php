@@ -144,6 +144,9 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
           'topups_usd' => '19.99',
           'current_usage_usd' => '0',
         ],
+      ])
+      ->queueMockResponse([
+        'post-prepaid-balance-reports.csv.twig',
       ]);
 
     // Execute the job which will update the developer balance.
@@ -211,7 +214,10 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
           'topups_usd' => '39.98',
           'current_usage_usd' => '0',
         ],
-      ]);
+      ])
+      ->queueMockResponse([
+        'post-prepaid-balance-reports.csv.twig',
+      ]);;
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);
@@ -293,6 +299,9 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       ])
       // Queue a developer balance response for the top up (POST).
       ->append(new Response(415, [], ''));
+    $this->stack->queueMockResponse([
+      'post-prepaid-balance-reports.csv.twig',
+    ]);
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);
