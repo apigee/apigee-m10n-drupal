@@ -116,12 +116,18 @@ class PricingAndPlansController extends ControllerBase {
     }
 
     $rate_plans = [];
+    $subscription_handler = \Drupal::entityTypeManager()->getHandler('rate_plan', 'subscription_access');
 
     // Load rate plans for each product bundle.
     foreach (ProductBundle::getAvailableProductBundlesByDeveloper($user->getEmail()) as $product_bundle) {
       /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle */
       foreach ($product_bundle->get('ratePlans') as $rate_plan) {
-        $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+
+        /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan_entity */
+        $rate_plan_entity = $rate_plan->entity;
+        if ($subscription_handler->access($rate_plan_entity, $user) == AccessResult::allowed()) {
+          $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+        }
       };
     }
 

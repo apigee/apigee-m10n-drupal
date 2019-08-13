@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_teams\Controller;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Controller\PricingAndPlansController;
 use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Generates the pricing and plans page.
@@ -39,12 +40,18 @@ class TeamPricingAndPlansController extends PricingAndPlansController {
    */
   public function teamCatalogPage(TeamInterface $team) {
     $rate_plans = [];
+    $subscription_handler = \Drupal::entityTypeManager()->getHandler('rate_plan', 'subscription_access');
 
     // Load rate plans for each product bundle.
     foreach (TeamProductBundle::getAvailableProductBundlesByTeam($team->id()) as $product_bundle) {
       /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle */
       foreach ($product_bundle->get('ratePlans') as $rate_plan) {
-        $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+
+        /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan_entity */
+        $rate_plan_entity = $rate_plan->entity;
+        if ($subscription_handler->teamAccess($rate_plan_entity, $team) == AccessResult::allowed()) {
+          $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+        }
       };
     }
 
