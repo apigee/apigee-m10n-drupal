@@ -19,6 +19,9 @@
 
 namespace Drupal\apigee_m10n\Entity;
 
+use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\RatePlan as MonetizationRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\RatePlanRevisionInterface;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
@@ -58,6 +61,7 @@ use Drupal\user\Entity\User;
  *   handlers = {
  *     "storage" = "Drupal\apigee_m10n\Entity\Storage\RatePlanStorage",
  *     "access" = "Drupal\apigee_m10n\Entity\Access\RatePlanAccessControlHandler",
+ *     "subscription_access" = "Drupal\apigee_m10n\Entity\Access\RatePlanSubscriptionAccessHandler",
  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
  *   },
  *   links = {
@@ -600,6 +604,31 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
       ->get('entity')
       ->getValue()
       ->getApiProducts();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getType(): string {
+    if ($this->decorated instanceof DeveloperRatePlanInterface) {
+      return RatePlanInterface::TYPE_DEVELOPER;
+    }
+    elseif ($this->decorated instanceof DeveloperCategoryRatePlanInterface) {
+      return RatePlanInterface::TYPE_DEVELOPER_CATEGORY;
+    }
+
+    return RatePlanInterface::TYPE_STANDARD;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloper(): ?DeveloperInterface {
+    if ($this->decorated instanceof DeveloperRatePlanInterface) {
+      return $this->decorated->getDeveloper();
+    }
+
+    return NULL;
   }
 
 }

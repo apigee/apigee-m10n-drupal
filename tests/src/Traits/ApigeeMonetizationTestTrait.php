@@ -24,6 +24,7 @@ use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
 use Apigee\Edge\Api\Monetization\Entity\ApiProduct as MonetizationApiProduct;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\Property\FreemiumPropertiesInterface;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
@@ -289,13 +290,15 @@ trait ApigeeMonetizationTestTrait {
    *   The type of plan.
    * @param string $id
    *   The rate plan Id. It not set it will randomly generated.
+   * @param array $properties
+   *   Optional properties to set on the decorated object.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, string $id = NULL): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, string $id = NULL, array $properties = []): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 
@@ -317,8 +320,7 @@ trait ApigeeMonetizationTestTrait {
 
     $start_date = new \DateTimeImmutable('2018-07-26 00:00:00', new \DateTimeZone($this->org_default_timezone));
     $end_date = new \DateTimeImmutable('today +1 year', new \DateTimeZone($this->org_default_timezone));
-    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-    $rate_plan = RatePlan::create([
+    $properties += [
       'advance'               => TRUE,
       'customPaymentTerm'     => TRUE,
       'description'           => $this->getRandomGenerator()->sentences(3),
@@ -365,22 +367,32 @@ trait ApigeeMonetizationTestTrait {
       'currency'              => $currency,
       'package'               => $product_bundle->decorated(),
       'purchase'             => [],
-    ]);
+    ];
 
-    $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
-    $rate_plan->save();
+    switch ($type) {
+      case RatePlanInterface::TYPE_DEVELOPER:
+        $this->stack->queueMockResponse(['rate_plan' => ['plan' => $properties]]);
+        $rate_plan = RatePlan::loadById($product_bundle->id(), $properties['id']);
+        break;
 
-    // Warm the cache.
-    $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
-    $rate_plan = RatePlan::loadById($product_bundle->id(), $rate_plan->id());
+      default:
+        /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+        $rate_plan = RatePlan::create($properties);
+        $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+        $rate_plan->save();
 
-    // Warm the future plan cache.
-    $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan]]]);
-    $rate_plan->getFuturePlanStartDate();
+        // Warm the cache.
+        $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+        $rate_plan = RatePlan::loadById($product_bundle->id(), $rate_plan->id());
 
-    // Make sure the dates loaded the same as they were originally set.
-    static::assertEquals($start_date, $rate_plan->getStartDate());
-    static::assertEquals($end_date, $rate_plan->getEndDate());
+        // Warm the future plan cache.
+        $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan]]]);
+        $rate_plan->getFuturePlanStartDate();
+
+        // Make sure the dates loaded the same as they were originally set.
+        static::assertEquals($start_date, $rate_plan->getStartDate());
+        static::assertEquals($end_date, $rate_plan->getEndDate());
+    }
 
     // Remove the rate plan in the cleanup queue.
     $this->cleanup_queue[] = [

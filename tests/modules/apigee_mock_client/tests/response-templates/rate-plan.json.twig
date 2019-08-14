@@ -73,5 +73,8 @@
     "setUpFee":                 {{ plan.setUpFee|default('1.0000') }},
     "startDate":                "{{ plan.startDate|date('Y-m-d 00:00:00')|default(date('today -1 day')|date('Y-m-d 00:00:00')) }}",
     "endDate":                  "{{ plan.endDate|date('Y-m-d 00:00:00')|default('null') }}",
+    {% if plan.type == "DEVELOPER" %}
+    "developer" : {% include 'monetization-developer.json.twig' with { "developer": plan.developer } %},
+    {% endif %}
     "type":                     "{{ plan.type|default('STANDARD') }}"
 }
