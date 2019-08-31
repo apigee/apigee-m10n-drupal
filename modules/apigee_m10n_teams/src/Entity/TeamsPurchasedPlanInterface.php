@@ -36,11 +36,6 @@ interface TeamsPurchasedPlanInterface {
   public function purchasedPlanType();
 
   /**
-   * {@inheritdoc}
-   */
-  public function getTeam();
-
-  /**
    * Get's whether or not this is a team purchased_plan.
    *
    * @return bool

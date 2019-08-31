@@ -114,24 +114,15 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getTeam() {
-    // Returns an entity reference. If you need the monetization company
-    // reference, you can use `$purchased_plan->decorated()->getCompany()` but
-    // you have to check `$purchased_plan->isTeamPurchasedPlan()` first.
-    return $this->isTeamPurchasedPlan() ? $this->getTeamReference() : NULL;
-  }
-
-  /**
    * Get the team from the team reference if it exists.
    *
    * @return string
    *   Returns the team ID.
    */
   private function getTeamId(): ?string {
-
-    return ($team = $this->getTeam()) ? $team->id() : NULL;
+    /** @var \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface $decorated */
+    $decorated = $this->decorated();
+    return $decorated ? $decorated->getCompany()->id() : NULL;
   }
 
   /**
@@ -167,6 +158,20 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
     return $this->decorated() instanceof CompanyAcceptedRatePlanInterface
       ? static::PURCHASED_PLAN_TYPE_TEAM
       : static::PURCHASED_PLAN_TYPE_DEVELOPER;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    // Team purchased plans do not belong to a particular user, but to a team,
+    // however the EntityOwnerInterface expects a user, so return NULL instead.
+    if ($this->isTeamPurchasedPlan()) {
+      return NULL;
+    }
+    else {
+      return parent::getOwner();
+    }
   }
 
   /**
