@@ -19,6 +19,8 @@
 
 namespace Drupal\apigee_m10n_teams\Entity;
 
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
+
 /**
  * Team specific additions to the the purchased_plan entity.
  */
@@ -42,6 +44,14 @@ interface TeamsPurchasedPlanInterface {
    *   Whether this is a team purchased_plan.
    */
   public function isTeamPurchasedPlan(): bool;
+
+  /**
+   * Get the team entity if it exists.
+   *
+   * @return \Drupal\apigee_edge_teams\Entity\TeamInterface
+   *   Returns the team.
+   */
+  public function getTeamEntity(): ?TeamInterface;
 
   /**
    * Loads purchased plans by team ID.

@@ -23,6 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\Core\Entity\Entity;
@@ -123,6 +124,20 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
     /** @var \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface $decorated */
     $decorated = $this->decorated();
     return $decorated ? $decorated->getCompany()->id() : NULL;
+  }
+
+  /**
+   * Get the team entity if it exists.
+   *
+   * @return \Drupal\apigee_edge_teams\Entity\TeamInterface
+   *   Returns the team.
+   */
+  public function getTeamEntity(): ?TeamInterface {
+    if ($this->isTeamPurchasedPlan()) {
+      return \Drupal::entityTypeManager()->getStorage('team')->load($this->getTeamId());
+    }
+
+    return NULL;
   }
 
   /**
