@@ -71,6 +71,7 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
 
     // Modules for this test.
     'apigee_m10n_add_credit',
+    'profile',
     'commerce_order',
     'commerce_price',
     'commerce_product',

@@ -75,6 +75,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     'system',
     // Modules for this test.
     'apigee_m10n_add_credit',
+    'profile',
     'commerce_order',
     'commerce_price',
     'commerce',
@@ -98,6 +99,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       'system',
     ]);
     $this->installEntitySchema('user');
+    $this->installEntitySchema('profile');
     \Drupal::service('commerce_price.currency_importer')->importByCountry('US');
 
     $this->developer = $this->createAccount();
