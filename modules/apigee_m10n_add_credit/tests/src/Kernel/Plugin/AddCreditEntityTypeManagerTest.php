@@ -62,6 +62,7 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
 
     // Modules for this test.
     'apigee_m10n_add_credit',
+    'profile',
     'commerce_order',
     'commerce_price',
     'commerce_product',
@@ -83,6 +84,7 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
       'system',
     ]);
     $this->installEntitySchema('user');
+    $this->installEntitySchema('profile');
 
     $this->manager = $this->container->get('plugin.manager.apigee_add_credit_entity_type');
   }
