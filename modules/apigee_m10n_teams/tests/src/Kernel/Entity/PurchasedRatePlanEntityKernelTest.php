@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2018 Google Inc.
+ * Copyright 2019 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -26,7 +26,6 @@ use Drupal\Tests\apigee_m10n_teams\Traits\ApigeeMonetizationTeamsTestTrait;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * Tests the team rate plan entity.
@@ -205,11 +204,9 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
 
     $this->stack
       ->queueMockResponse(['get_company_purchased_plans' => ['purchased_plans' => [$this->purchased_plan->decorated()]]]);
-    $this->stack
-      ->queueMockResponse(['companies' => ['companies' => [$this->team->id()]]]);
 
     $request = Request::create($url->toString(), 'GET');
-    $response = $this->container->get('http_kernel')->handle($request, HttpKernelInterface::SUB_REQUEST, FALSE);
+    $response = $this->container->get('http_kernel')->handle($request);
 
     $this->setRawContent($response->getContent());
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
