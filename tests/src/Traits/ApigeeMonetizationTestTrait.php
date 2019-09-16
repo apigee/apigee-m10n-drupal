@@ -477,6 +477,8 @@ trait ApigeeMonetizationTestTrait {
    *   The developer user to get properties from.
    * @param string|null $response_code
    *   Add a response code to override the default.
+   * @param string|null $billing_type
+   *   The developer billing type.
    */
   protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL, $billing_type = NULL) {
     $context = empty($response_code) ? [] : ['status_code' => $response_code];
