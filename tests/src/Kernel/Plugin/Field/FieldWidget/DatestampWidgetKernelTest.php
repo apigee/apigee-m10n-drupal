@@ -23,19 +23,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Test the `apigee_organization` field widget.
+ * Test the `apigee_datestamp` field widget.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernelTest {
+class DatestampWidgetKernelTest extends BaseWidgetKernelTest {
 
   /**
    * Test widget display.
    */
   public function testView() {
     $field_name = 'field_test';
-    $field_type = 'apigee_organization';
+    $field_type = 'apigee_datestamp';
     $settings = [
       'size' => 30,
       'placeholder' => 'lorem ipsum',
@@ -43,7 +43,7 @@ class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernelTest {
     $this->createField('node', 'page', $field_name, $field_type, $field_name);
     entity_get_form_display('node', 'page', 'default')
       ->setComponent($field_name, [
-        'type' => 'apigee_organization',
+        'type' => 'apigee_datestamp',
         'settings' => $settings,
       ])
       ->save();
@@ -55,12 +55,11 @@ class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernelTest {
     $this->setRawContent($response->getContent());
 
     $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
-    $element = $this->cssSelect('[name="' . $field_name . '[0][value]"]');
+    $element = $this->cssSelect('[name="' . $field_name . '[0][value][date]"]');
     $this->assertNotEmpty($element);
     $element = $element[0];
     $attributes = (array) $element;
-    $this->assertEquals($settings['size'], $attributes['@attributes']['size']);
-    $this->assertEquals($settings['placeholder'], $attributes['@attributes']['placeholder']);
+    $this->assertEquals('date', $attributes['@attributes']['type']);
   }
 
 }
