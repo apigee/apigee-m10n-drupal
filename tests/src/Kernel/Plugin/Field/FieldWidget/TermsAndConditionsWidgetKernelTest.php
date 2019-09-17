@@ -23,24 +23,35 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Test the `apigee_datestamp` field widget.
+ * Test the `apigee_tnc_widget` field widget.
  *
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class DatestampWidgetKernelTest extends BaseWidgetKernelTest {
+class TermsAndConditionsWidgetKernelTest extends BaseWidgetKernelTest {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+
+    $this->warmTnsCache();
+  }
 
   /**
    * Test widget display.
    */
   public function testView() {
     $field_name = 'field_test';
-    $field_type = 'apigee_datestamp';
-    $settings = [];
+    $field_type = 'apigee_tnc';
+    $settings = [
+      'default_description' => 'lorem ipsum',
+    ];
     $this->createField('node', 'page', $field_name, $field_type, $field_name);
     entity_get_form_display('node', 'page', 'default')
       ->setComponent($field_name, [
-        'type' => 'apigee_datestamp',
+        'type' => 'apigee_tnc_widget',
         'settings' => $settings,
       ])
       ->save();
@@ -52,11 +63,11 @@ class DatestampWidgetKernelTest extends BaseWidgetKernelTest {
     $this->setRawContent($response->getContent());
 
     $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
-    $element = $this->cssSelect('[name="' . $field_name . '[0][value][date]"]');
+    $element = $this->cssSelect('[name="' . $field_name . '[0][value]"]');
     $this->assertNotEmpty($element);
     $element = $element[0];
     $attributes = (array) $element;
-    $this->assertEquals('date', $attributes['@attributes']['type']);
+    $this->assertEquals('checkbox', $attributes['@attributes']['type']);
   }
 
 }
