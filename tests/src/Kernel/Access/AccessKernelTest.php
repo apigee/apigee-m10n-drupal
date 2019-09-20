@@ -49,6 +49,13 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   protected $developer;
 
   /**
+   * Drupal developer user account with billing type as POSTPAID.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $postpaid;
+
+  /**
    * Drupal anonymous user account.
    *
    * @var \Drupal\Core\Session\AccountInterface
@@ -107,6 +114,13 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->product_bundle = $this->createProductBundle();
     $this->rate_plan = $this->createRatePlan($this->product_bundle);
 
+    // Create a postpaid developer.
+    $this->postpaid = $this->createAccount([
+      'view product_bundle',
+      'view own purchased_plan',
+      'view rate_plan',
+    ], TRUE, '', ['billing_type' => 'POSTPAID']);
+
     $this->prophesizeCurrentUser([]);
   }
 
@@ -140,6 +154,14 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'user' => $this->administrator->id(),
     ]);
     static::assertTrue($prepaid_balance_url->access($this->administrator));
+    static::assertFalse($prepaid_balance_url->access($this->developer));
+    static::assertFalse($prepaid_balance_url->access($this->anonymous));
+
+    // Prepaid balance pages should return access denied for a postpaid dev.
+    $prepaid_balance_url = Url::fromRoute('apigee_monetization.billing', [
+      'user' => $this->postpaid->id(),
+    ]);
+    static::assertFalse($prepaid_balance_url->access($this->administrator));
     static::assertFalse($prepaid_balance_url->access($this->developer));
     static::assertFalse($prepaid_balance_url->access($this->anonymous));
 
