@@ -52,6 +52,11 @@ interface MonetizationInterface {
   ];
 
   /**
+   * Developer billing type attribute name.
+   */
+  const BILLING_TYPE_ATTR = 'MINT_BILLING_TYPE';
+
+  /**
    * Tests whether the current organization has monetization enabled.
    *
    * A monitization enabled org is a requirement for using this module.
@@ -217,5 +222,16 @@ interface MonetizationInterface {
    *   The organization entity.
    */
   public function getOrganization(): ?OrganizationInterface;
+
+  /**
+   * Returns true if developer billing type is prepaid, false if postpaid.
+   *
+   * @param \Drupal\user\UserInterface $account
+   *   The developer account.
+   *
+   * @return bool
+   *   True if developer is prepaid.
+   */
+  public function isDeveloperPrepaid(UserInterface $account): bool;
 
 }
