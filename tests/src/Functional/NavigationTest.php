@@ -77,31 +77,23 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
 
     $this->warmOrganizationCache();
-    $this->stack->queueMockResponse([
-      'get-prepaid-balances' => [
-        "current_aud" => 100.0000,
-        "current_total_aud" => 200.0000,
-        "current_usage_aud" => 50.0000,
-        "topups_aud" => 50.0000,
+    $product_bundle = $this->createProductBundle();
+    $rate_plan = $this->createRatePlan($product_bundle);
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
 
-        "current_usd" => 72.2000,
-        "current_total_usd" => 120.0200,
-        "current_usage_usd" => 47.8200,
-        "topups_usd" => 30.0200,
+    $this->stack->queueMockResponse([
+      'get_developer_purchased_plans' => [
+        'purchased_plans' => [$purchased_plan],
       ],
-    ]);
-
-    $this->stack->queueMockResponse([
-      'get-supported-currencies',
     ]);
 
     // Check the manage Balance and plans link.
     $this->clickLink('Balance and plans');
-    $session->linkExists('Prepaid balance');
     $session->linkExists('Purchased plans');
+    $session->linkExists('Prepaid balance');
     $session->linkExists('Billing Details');
-    $this->assertCssElementContains('nav.tabs', 'Prepaid balance');
     $this->assertCssElementContains('nav.tabs', 'Purchased plans');
+    $this->assertCssElementContains('nav.tabs', 'Prepaid balance');
     $this->assertCssElementContains('nav.tabs', 'Billing Details');
   }
 
