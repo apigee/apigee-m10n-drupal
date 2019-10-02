@@ -4,7 +4,7 @@
  *   Purchased plan include file. Use this whenever a team accepted rate plan is a part of an object.
  *
  * Usage:
- *   @code {% include 'team-purchased_plan.json.twig' %} @endcode
+ *   @code {% include 'team-purchased-plan.json.twig' %} @endcode
  *
  * Variables:
  * - purchased_plan: The `team-purchased_plan` Drupal entity.
@@ -21,7 +21,7 @@
 #}
 {
     "created": "{{ purchased_plan.created|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
-    "developer": {% include 'monetization-company.json.twig' with {"developer": purchased_plan.company } %},
+    "developer": {% include 'monetization-company.json.twig' with {"company": purchased_plan.company } %},
     {% if purchased_plan.endDate %}
         "endDate": "{{ purchased_plan.endDate|date('Y-m-d h:m:s') }}",
     {% endif %}
