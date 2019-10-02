@@ -62,8 +62,8 @@ abstract class BaseWidgetKernelTest extends MonetizationKernelTestBase {
 
     // Create a Content type and two test nodes.
     $this->createContentType(['type' => 'page']);
-    $this->createNode(['title' => 'Test page']);
-    $this->createNode(['title' => 'Page test']);
+    $this->createNode(['title' => 'Test page', 'uid' => 0]);
+    $this->createNode(['title' => 'Page test', 'uid' => 0]);
 
     $developer = $this->createAccount([
       'access content',
