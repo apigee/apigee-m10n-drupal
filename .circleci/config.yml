@@ -74,7 +74,7 @@ update_dependencies: &update_dependencies
           - .
 
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal unit and kernel tests as one job. This command invokes the test.sh
 # hook.
@@ -89,13 +89,14 @@ unit_kernel_tests: &unit_kernel_tests
     - run:
         working_directory: /var/www/html
         command: &unit_kernel_tests_command |
+          cp ./modules/apigee_m10n/.circleci/test.sh /var/www/html
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal functional tests. This command invokes the test-functional.sh
 # hook.
@@ -110,13 +111,14 @@ functional_tests: &functional_tests
     - run:
         working_directory: /var/www/html
         command: &functional_tests_command |
+          cp ./modules/apigee_m10n/.circleci/test-functional.sh /var/www/html
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal functional tests. This command invokes the test-functional-js.sh
 # hook.
@@ -131,13 +133,14 @@ functional_js_tests: &functional_js_tests
     - run:
         working_directory: /var/www/html
         command: &functional_js_tests_command |
+          cp ./modules/apigee_m10n/.circleci/test-functional-js.sh /var/www/html
           modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional-js.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run code quality tests. This invokes code-sniffer.sh.
 code_sniffer: &code_sniffer
@@ -203,7 +206,7 @@ all_tests: &all_tests
         command: *functional_js_tests_command
 
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Declare all of the jobs we should run.
 version: 2
