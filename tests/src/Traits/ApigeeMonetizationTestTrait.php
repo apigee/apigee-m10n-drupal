@@ -151,7 +151,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * {@inheritdoc}
    */
-  protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = ''): ?UserInterface {
+  protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = '', $attributes = []): ?UserInterface {
     $rid = NULL;
     if ($permissions) {
       $rid = $this->createRole($permissions);
@@ -177,8 +177,10 @@ trait ApigeeMonetizationTestTrait {
 
     $account = User::create($edit);
 
+    $billing_type = empty($attributes['billing_type']) ? NULL : $attributes['billing_type'];
+
     // Queue up a created response.
-    $this->queueDeveloperResponse($account, 201);
+    $this->queueDeveloperResponse($account, 201, $billing_type);
 
     // Save the user.
     $account->save();
@@ -197,9 +199,9 @@ trait ApigeeMonetizationTestTrait {
     $this->cleanup_queue[] = [
       'weight' => 99,
       // Prepare for deleting the developer.
-      'callback' => function () use ($account) {
-        $this->queueDeveloperResponse($account);
-        $this->queueDeveloperResponse($account);
+      'callback' => function () use ($account, $billing_type) {
+        $this->queueDeveloperResponse($account, NULL, $billing_type);
+        $this->queueDeveloperResponse($account, NULL, $billing_type);
         // Delete it.
         $account->delete();
       },
@@ -475,12 +477,18 @@ trait ApigeeMonetizationTestTrait {
    *   The developer user to get properties from.
    * @param string|null $response_code
    *   Add a response code to override the default.
+   * @param string|null $billing_type
+   *   The developer billing type.
    */
-  protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL) {
+  protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL, $billing_type = NULL) {
     $context = empty($response_code) ? [] : ['status_code' => $response_code];
 
     $context['developer'] = $developer;
     $context['org_name'] = $this->sdk_connector->getOrganization();
+
+    if ($billing_type) {
+      $context['billing_type'] = $billing_type;
+    }
 
     $this->stack->queueMockResponse(['get_developer' => $context]);
   }

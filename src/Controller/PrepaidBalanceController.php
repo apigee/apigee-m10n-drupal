@@ -45,7 +45,7 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
   }
 
   /**
-   * Checks current users access.
+   * Checks current users access and if developer is prepaid.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
@@ -53,10 +53,14 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
    *   Run access checks for this account.
    *
    * @return \Drupal\Core\Access\AccessResult
-   *   Grants access to the route if passed permissions are present.
+   *   Grants access to the route if passed permissions are present and given
+   *   developer is prepaid.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
     $user = $route_match->getParameter('user');
+    if (!$this->monetization->isDeveloperPrepaid($user)) {
+      return AccessResult::forbidden('Developer is not prepaid.');
+    }
     return AccessResult::allowedIf(
       $account->hasPermission('view any prepaid balance') ||
       ($account->hasPermission('view own prepaid balance') && $account->id() === $user->id())

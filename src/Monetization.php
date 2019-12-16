@@ -28,6 +28,7 @@ use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryI
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
+use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -432,6 +433,34 @@ class Monetization implements MonetizationInterface {
       }
     }
     return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isDeveloperPrepaid(UserInterface $account): bool {
+
+    // Use cached result if available.
+    $cid = "apigee_m10n:dev:billing_type:{$account->getEmail()}";
+
+    if ($cache = $this->cache->get($cid)) {
+      $billing_type = $cache->data;
+    }
+    else {
+      $config = \Drupal::service('config.factory');
+      $cacheExpiration = $config->get('apigee_edge.developer_settings')->get('cache_expiration');
+      $developer = Developer::load($account->getEmail());
+      $billing_type = $developer->getAttributeValue(static::BILLING_TYPE_ATTR);
+
+      if ($cacheExpiration < 0) {
+        $this->cache->set($cid, $billing_type);
+      }
+      elseif ($cacheExpiration > 0) {
+        $this->cache->set($cid, $billing_type, strtotime('now + ' . $cacheExpiration . ' seconds'));
+      }
+    }
+
+    return $billing_type == 'PREPAID';
   }
 
   /**

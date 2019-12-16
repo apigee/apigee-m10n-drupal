@@ -10,20 +10,20 @@ entity.product_bundle.collection:
   base_route: apigee_m10n.settings.product_bundle
 
 apigee_m10n.balance_and_plans:
-  route_name: apigee_monetization.billing
+  route_name: entity.purchased_plan.developer_collection
   title: 'Balance and plans'
   base_route: entity.user.canonical
-
-apigee_m10n.billing:
-  title: 'Prepaid balance'
-  route_name: apigee_monetization.billing
-  base_route: entity.user.canonical
-  parent_id: apigee_m10n.balance_and_plans
-  weight: -2
 
 apigee_m10n.purchased_plans:
   title: 'Purchased plans'
   route_name: entity.purchased_plan.developer_collection
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
+  weight: -2
+
+apigee_m10n.billing:
+  title: 'Prepaid balance'
+  route_name: apigee_monetization.billing
   base_route: entity.user.canonical
   parent_id: apigee_m10n.balance_and_plans
   weight: -1

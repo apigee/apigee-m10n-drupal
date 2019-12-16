@@ -50,16 +50,22 @@ class RoboFile extends \Robo\Tasks
         $config->extra->{"patches"} = new \stdClass();
         file_put_contents('composer.json', json_encode($config));
 
-        // Create a directory for our artifacts.
+        // Create directories for our artifacts.
         $this->taskFilesystemStack()
           ->mkdir('artifacts')
-          ->mkdir('artifacts/phpunit')
           ->mkdir('artifacts/phpcs')
           ->mkdir('artifacts/phpmd')
+          ->mkdir('artifacts/coverage-html')
+          ->mkdir('artifacts/coverage-xml')
+          ->mkdir('/tmp/artifacts')
+          ->mkdir('/tmp/artifacts/phpunit')
+          ->mkdir('/tmp/artifacts/phpcs')
+          ->mkdir('/tmp/artifacts/phpmd')
           ->run();
 
         $this->taskFilesystemStack()
           ->chown('artifacts', 'www-data', TRUE)
+          ->chown('/tmp/artifacts', 'www-data', TRUE)
           ->run();
     }
 

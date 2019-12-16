@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
+namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
@@ -29,9 +29,9 @@ use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
  * Tests the status page for add credit.
  *
  * @group apigee_m10n
- * @group apigee_m10n_functional
+ * @group apigee_m10n_kernel
  * @group apigee_m10n_add_credit
- * @group apigee_m10n_add_credit_functional
+ * @group apigee_m10n_add_credit_kernel
  */
 class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
 
@@ -54,6 +54,7 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
     // Modules for this test.
     'apigee_m10n_add_credit',
     'address',
+    'profile',
     'commerce_order',
     'commerce_price',
     'commerce_product',

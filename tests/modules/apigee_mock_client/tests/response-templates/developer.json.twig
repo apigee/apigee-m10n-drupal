@@ -10,6 +10,7 @@
  * - developer: The user account for the developer.
  * - org_name: The name of the organization.
  * - companies: A list of companies.
+ * - billing_type: the billing type, defaults to "PREPAID".
  */
 #}
 {
@@ -29,7 +30,7 @@
     "attributes" : [
         {
             "name" : "MINT_BILLING_TYPE",
-            "value" : "PREPAID"
+            "value" : "{{ billing_type|default('PREPAID') }}"
         },
         {
             "name" : "MINT_DEVELOPER_TYPE",
