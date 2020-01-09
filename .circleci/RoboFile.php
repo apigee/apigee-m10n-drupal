@@ -418,9 +418,8 @@ class RoboFile extends \Robo\Tasks
       // for an updated version.
       // See: <https://github.com/deviantintegral/drupal_tests/issues/55>
       // Require drupal core via composer.
-      $config->require->{"drupal/core"} = "~8.8.0";
-      $config->require->{"webflo/drupal-core-strict"} = "~8.8.0";
-      $config->{"require-dev"} = (object) ["webflo/drupal-core-require-dev" => "~8.8.0"];
+      $config->require->{"drupal/core"} = "~8.8";
+      $config->require->{"drupal/core-recommended"} = "^8.8";
       // If you require core, you must not replace it.
       unset($config->replace);
       // You can't merge from a package that is required.
