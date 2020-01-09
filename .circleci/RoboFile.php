@@ -435,6 +435,10 @@ class RoboFile extends \Robo\Tasks
       $config->require->{"drupal/commerce"} = "~2.0";
       $config->require->{"drupal/token"} = "~1.0";
 
+      // Add dependencies for phpunit tests.
+      $config->require->{"symfony/phpunit-bridge"} = "~5.0";
+      $config->require->{"mikey179/vfsstream"} = "^1.6";
+
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
 }
