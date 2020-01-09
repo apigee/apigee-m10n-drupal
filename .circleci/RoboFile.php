@@ -432,7 +432,7 @@ class RoboFile extends \Robo\Tasks
       // TODO Revert this when `andrewberry/drupal_tests` is updated to ~8.7.0.
 
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
-      $config->require->{"drupal/commerce"} = "~2.0";
+      $config->require->{"drupal/commerce"} = "2.13.0";
       $config->require->{"drupal/token"} = "~1.0";
 
       // Add dependencies for phpunit tests.
