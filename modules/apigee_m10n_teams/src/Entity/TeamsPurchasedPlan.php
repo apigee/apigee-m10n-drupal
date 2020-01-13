@@ -26,7 +26,7 @@ use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\Core\Entity\Entity;
+use Drupal\Core\Entity\EntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
@@ -52,7 +52,7 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
     // The entity type is not passed from `EdgeEntityBase::createFrom`.
     $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
     // Bypass the `PurchasedPlan` and `EdgeEntityBase` constructors.
-    Entity::__construct([], $entity_type);
+    EntityBase::__construct([], $entity_type);
     // Set the decorated value.
     if ($decorated) {
       $this->decorated = $decorated;
