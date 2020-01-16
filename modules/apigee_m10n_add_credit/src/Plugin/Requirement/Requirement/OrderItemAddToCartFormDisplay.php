@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\requirement\Plugin\RequirementBase;
@@ -46,11 +47,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class OrderItemAddToCartFormDisplay extends RequirementBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The entity form display.
+   * The entity display repository.
    *
-   * @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface
+   * @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface
    */
-  protected $entityFormDisplay;
+  protected $entityDisplayRepository;
 
   /**
    * OrderItemAddToCartFormDisplay constructor.
@@ -61,12 +62,12 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
    *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\Display\EntityFormDisplayInterface $entity_form_display
-   *   The entity form display.
+   * @param \Drupal\Core\Entity\EntityDisplayRepositoryInterface $entity_display_repository
+   *   THe entity display repository.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityFormDisplayInterface $entity_form_display) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityDisplayRepositoryInterface $entity_display_repository) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityFormDisplay = $entity_form_display;
+    $this->entityDisplayRepository = $entity_display_repository;
   }
 
   /**
@@ -77,7 +78,7 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_display.repository')->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart')
+      $container->get('entity_display.repository')
     );
   }
 
@@ -99,7 +100,7 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     // Enable the required fields.
     foreach ($this->getRequiredFields() as $required_field => $type) {
-      $this->entityFormDisplay->setComponent($required_field, [
+      $this->getEntityFormDisplay()->setComponent($required_field, [
         'region' => 'content',
         'type' => $type,
       ])->save();
@@ -117,7 +118,17 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
    * {@inheritdoc}
    */
   public function isCompleted(): bool {
-    return !array_diff_key($this->getRequiredFields(), $this->entityFormDisplay->getComponents());
+    return !array_diff_key($this->getRequiredFields(), $this->getEntityFormDisplay()->getComponents());
+  }
+
+  /**
+   * Returns the entity form display.
+   *
+   * @return \Drupal\Core\Entity\Display\EntityFormDisplayInterface
+   *   The entity form display.
+   */
+  protected function getEntityFormDisplay(): EntityFormDisplayInterface {
+    return $this->entityDisplayRepository->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart');
   }
 
   /**
