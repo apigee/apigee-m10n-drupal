@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
+namespace Drupal\apigee_m10n\Plugin\Requirement\Requirement;
 
 use Drupal\apigee_edge\Job\Job;
 use Drupal\requirement\Plugin\RequirementBase;

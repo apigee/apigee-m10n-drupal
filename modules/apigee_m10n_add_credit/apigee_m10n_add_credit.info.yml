@@ -13,6 +13,5 @@ dependencies:
   - commerce:commerce_order
   - commerce:commerce_cart
   - commerce:commerce_checkout
-  - requirement:requirement
 
 php: "7.1"

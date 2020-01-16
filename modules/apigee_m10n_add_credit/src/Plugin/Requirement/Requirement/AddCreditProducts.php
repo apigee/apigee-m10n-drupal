@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
-use Drupal\apigee_m10n_add_credit\ApigeeEdgeSdkConnectorTrait;
+use Drupal\apigee_m10n\ApigeeEdgeSdkConnectorTrait;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;

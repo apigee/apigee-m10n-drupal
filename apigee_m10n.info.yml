@@ -8,5 +8,6 @@ core: 8.x
 dependencies:
   - apigee_edge:apigee_edge
   - drupal:link
+  - requirement:requirement
 
 php: "7.1"

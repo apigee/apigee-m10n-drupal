@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\apigee_m10n_add_credit;
+namespace Drupal\apigee_m10n;
 
 /**
  * Provides a trait with utility method to fetch Apigee's Edge sdk connector.
