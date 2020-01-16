@@ -418,9 +418,8 @@ class RoboFile extends \Robo\Tasks
       // for an updated version.
       // See: <https://github.com/deviantintegral/drupal_tests/issues/55>
       // Require drupal core via composer.
-      $config->require->{"drupal/core"} = "~8.7.0";
-      $config->require->{"webflo/drupal-core-strict"} = "~8.7.0";
-      $config->{"require-dev"} = (object) ["webflo/drupal-core-require-dev" => "~8.7.0"];
+      $config->require->{"drupal/core"} = "~8.8";
+      $config->require->{"drupal/core-recommended"} = "^8.8";
       // If you require core, you must not replace it.
       unset($config->replace);
       // You can't merge from a package that is required.
@@ -433,11 +432,12 @@ class RoboFile extends \Robo\Tasks
       // TODO Revert this when `andrewberry/drupal_tests` is updated to ~8.7.0.
 
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
-      $config->require->{"drupal/commerce"} = "~2.0";
+      $config->require->{"drupal/commerce"} = "2.13.0";
       $config->require->{"drupal/token"} = "~1.0";
 
-      // We need requirement module as a dependency of apigee_m10n_add_credit.
-      $config->require->{"drupal/requirement"} = "~1.0";
+      // Add dependencies for phpunit tests.
+      $config->require->{"symfony/phpunit-bridge"} = "~5.0";
+      $config->require->{"mikey179/vfsstream"} = "^1.6";
 
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
