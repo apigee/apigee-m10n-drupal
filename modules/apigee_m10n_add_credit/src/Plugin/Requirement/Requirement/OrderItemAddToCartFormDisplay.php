@@ -77,7 +77,7 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_display.repository')->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart'),
+      $container->get('entity_display.repository')->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart')
     );
   }
 
