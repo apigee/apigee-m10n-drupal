@@ -38,14 +38,14 @@ class DateAndTextFormatterKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Drupal\Core\Field\FormatterPluginManager
    */
-  protected $formatter_manager;
+  protected $formatterManager;
 
   /**
    * The entity field manager.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $field_manager;
+  protected $fieldManager;
 
   /**
    * The field's display settings.
@@ -95,7 +95,8 @@ class DateAndTextFormatterKernelTest extends MonetizationKernelTestBase {
     ]);
     $instance->save();
 
-    $this->display = entity_get_display($this->entityType, $this->bundle, 'default')
+    $this->display = $this->container->get('entity_display.repository')
+      ->getViewDisplay($this->entityType, $this->bundle, 'default')
       ->setComponent($this->fieldName, [
         'type' => 'boolean',
         'settings' => [],

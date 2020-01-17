@@ -37,35 +37,35 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Drupal\Core\Field\FormatterPluginManager
    */
-  protected $formatter_manager;
+  protected $formatterManager;
 
   /**
    * The entity field manager.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $field_manager;
+  protected $fieldManager;
 
   /**
    * Test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $product_bundle;
+  protected $productBundle;
 
   /**
    * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $rate_plan;
+  protected $ratePlan;
 
   /**
    * Test purchased rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */
-  protected $purchased_plan;
+  protected $purchasedPlan;
 
   /**
    * {@inheritdoc}
@@ -84,12 +84,12 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
     $this->createAccount();
     $developer = $this->createAccount(MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
 
-    $this->product_bundle = $this->createProductBundle();
-    $this->rate_plan = $this->createRatePlan($this->product_bundle);
-    $this->purchased_plan = $this->createPurchasedPlan($developer, $this->rate_plan);
+    $this->productBundle = $this->createProductBundle();
+    $this->ratePlan = $this->createRatePlan($this->productBundle);
+    $this->purchasedPlan = $this->createPurchasedPlan($developer, $this->ratePlan);
 
-    $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
-    $this->field_manager = $this->container->get('entity_field.manager');
+    $this->formatterManager = $this->container->get('plugin.manager.field.formatter');
+    $this->fieldManager = $this->container->get('entity_field.manager');
   }
 
   /**
@@ -101,11 +101,11 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
   public function testView() {
     $date_format = 'custom';
     $custom_date_format = 'm/d/Y';
-    $item_list = $this->purchased_plan->get('startDate');
+    $item_list = $this->purchasedPlan->get('startDate');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\DatestampFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_datestamp', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('rate_plan')['startDate'],
+    $instance = $this->formatterManager->createInstance('apigee_datestamp', [
+      'field_definition' => $this->fieldManager->getBaseFieldDefinitions('rate_plan')['startDate'],
       'settings' => [
         'date_format' => $date_format,
         'custom_date_format' => $custom_date_format,
@@ -118,7 +118,7 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
     static::assertInstanceOf(DatestampFormatter::class, $instance);
 
     /* @var \DateTimeImmutable $value */
-    $value = $this->purchased_plan->getStartDate();
+    $value = $this->purchasedPlan->getStartDate();
     $expected = \Drupal::service('date.formatter')
       ->format($value->getTimestamp(), $date_format, $custom_date_format);
 

@@ -41,7 +41,8 @@ class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernelTest {
       'placeholder' => 'lorem ipsum',
     ];
     $this->createField('node', 'page', $field_name, $field_type, $field_name);
-    entity_get_form_display('node', 'page', 'default')
+    $this->container->get('entity_display.repository')
+      ->getFormDisplay('node', 'page', 'default')
       ->setComponent($field_name, [
         'type' => 'apigee_organization',
         'settings' => $settings,

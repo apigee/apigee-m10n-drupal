@@ -89,8 +89,10 @@ abstract class BaseWidgetKernelTest extends MonetizationKernelTestBase {
    *   The cardinality of the field.
    * @param array $settings
    *   The field settings.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createField($entity_type, $bundle, $field_name, $field_type, $field_label, $cardinality = 1, $settings = []) {
+  protected function createField($entity_type, $bundle, $field_name, $field_type, $field_label, $cardinality = 1, array $settings = []) {
     // Look for or add the specified field to the requested entity bundle.
     if (!FieldStorageConfig::loadByName($entity_type, $field_name)) {
       FieldStorageConfig::create([

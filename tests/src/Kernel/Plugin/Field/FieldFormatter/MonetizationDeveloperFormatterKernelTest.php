@@ -38,35 +38,35 @@ class MonetizationDeveloperFormatterKernelTest extends MonetizationKernelTestBas
    *
    * @var \Drupal\Core\Field\FormatterPluginManager
    */
-  protected $formatter_manager;
+  protected $formatterManager;
 
   /**
    * The entity field manager.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $field_manager;
+  protected $fieldManager;
 
   /**
    * Test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $product_bundle;
+  protected $productBundle;
 
   /**
    * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $rate_plan;
+  protected $ratePlan;
 
   /**
    * Test purchased rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
    */
-  protected $purchased_plan;
+  protected $purchasedPlan;
 
   /**
    * Drupal developer user account.
@@ -95,12 +95,12 @@ class MonetizationDeveloperFormatterKernelTest extends MonetizationKernelTestBas
 
     $this->developer = $this->createAccount(MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
 
-    $this->product_bundle = $this->createProductBundle();
-    $this->rate_plan = $this->createRatePlan($this->product_bundle);
-    $this->purchased_plan = $this->createPurchasedPlan($this->developer, $this->rate_plan);
+    $this->productBundle = $this->createProductBundle();
+    $this->ratePlan = $this->createRatePlan($this->productBundle);
+    $this->purchasedPlan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
-    $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
-    $this->field_manager = $this->container->get('entity_field.manager');
+    $this->formatterManager = $this->container->get('plugin.manager.field.formatter');
+    $this->fieldManager = $this->container->get('entity_field.manager');
   }
 
   /**
@@ -110,13 +110,13 @@ class MonetizationDeveloperFormatterKernelTest extends MonetizationKernelTestBas
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function testView() {
-    $item_list = $this->purchased_plan->get('developer');
+    $item_list = $this->purchasedPlan->get('developer');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     static::assertInstanceOf(MonetizationDeveloperFieldItem::class, $item_list->get(0));
-    static::assertSame($this->purchased_plan->getDeveloper()->id(), $item_list->get(0)->value->id());
+    static::assertSame($this->purchasedPlan->getDeveloper()->id(), $item_list->get(0)->value->id());
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\MonetizationDeveloperFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_monetization_developer', [
-      'field_definition' => $this->field_manager->getBaseFieldDefinitions('purchased_plan')['developer'],
+    $instance = $this->formatterManager->createInstance('apigee_monetization_developer', [
+      'field_definition' => $this->fieldManager->getBaseFieldDefinitions('purchased_plan')['developer'],
       'settings' => [],
       'label' => TRUE,
       'view_mode' => 'default',
@@ -129,10 +129,10 @@ class MonetizationDeveloperFormatterKernelTest extends MonetizationKernelTestBas
 
     static::assertSame('Developer', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
-    static::assertSame($this->purchased_plan->getDeveloper()->getName(), (string) $build[0]['#markup']);
+    static::assertSame($this->purchasedPlan->getDeveloper()->getName(), (string) $build[0]['#markup']);
 
     $this->render($build);
-    $this->assertText($this->purchased_plan->getDeveloper()->getName());
+    $this->assertText($this->purchasedPlan->getDeveloper()->getName());
   }
 
 }
