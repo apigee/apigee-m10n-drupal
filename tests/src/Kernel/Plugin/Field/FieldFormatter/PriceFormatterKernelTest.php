@@ -36,28 +36,28 @@ class PriceFormatterKernelTest extends MonetizationKernelTestBase {
    *
    * @var \Drupal\Core\Field\FormatterPluginManager
    */
-  protected $formatter_manager;
+  protected $formatterManager;
 
   /**
    * The entity field manager.
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $field_manager;
+  protected $fieldManager;
 
   /**
    * Test product bundle.
    *
    * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
    */
-  protected $product_bundle;
+  protected $productBundle;
 
   /**
    * Test rate plan.
    *
    * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
    */
-  protected $rate_plan;
+  protected $ratePlan;
 
   /**
    * {@inheritdoc}
@@ -65,11 +65,11 @@ class PriceFormatterKernelTest extends MonetizationKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->product_bundle = $this->createProductBundle();
-    $this->rate_plan = $this->createRatePlan($this->product_bundle);
+    $this->productBundle = $this->createProductBundle();
+    $this->ratePlan = $this->createRatePlan($this->productBundle);
 
-    $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
-    $this->field_manager = $this->container->get('entity_field.manager');
+    $this->formatterManager = $this->container->get('plugin.manager.field.formatter');
+    $this->fieldManager = $this->container->get('entity_field.manager');
   }
 
   /**
@@ -80,19 +80,19 @@ class PriceFormatterKernelTest extends MonetizationKernelTestBase {
    */
   public function testView() {
     $value = '2.0000';
-    $this->rate_plan->setEarlyTerminationFee($value);
+    $this->ratePlan->setEarlyTerminationFee($value);
     $settings = [
       'strip_trailing_zeroes' => FALSE,
       'currency_display' => 'symbol',
     ];
 
-    $item_list = $this->rate_plan->get('earlyTerminationFee');
+    $item_list = $this->ratePlan->get('earlyTerminationFee');
     static::assertInstanceOf(FieldItemList::class, $item_list);
     /* @var \Drupal\Core\Field\BaseFieldDefinition $field_definition */
-    $field_definition = $this->field_manager->getBaseFieldDefinitions('rate_plan')['earlyTerminationFee'];
+    $field_definition = $this->fieldManager->getBaseFieldDefinitions('rate_plan')['earlyTerminationFee'];
 
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter $instance */
-    $instance = $this->formatter_manager->createInstance('apigee_price', [
+    $instance = $this->formatterManager->createInstance('apigee_price', [
       'field_definition' => $field_definition,
       'settings' => $settings,
       'label' => TRUE,
