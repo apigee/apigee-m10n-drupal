@@ -232,7 +232,6 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
     $request = Request::create($url->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
 
-    $this->setRawContent($response->getContent());
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
   }
 
@@ -249,7 +248,6 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
     $request = Request::create($url->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
 
-    $this->setRawContent($response->getContent());
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
   }
 
