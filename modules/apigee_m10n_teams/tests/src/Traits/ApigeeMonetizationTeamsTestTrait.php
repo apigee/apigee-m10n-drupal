@@ -22,6 +22,7 @@ namespace Drupal\Tests\apigee_m10n_teams\Traits;
 use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 
@@ -76,8 +77,9 @@ trait ApigeeMonetizationTeamsTestTrait {
    * @throws \Twig_Error_Syntax
    */
   public function createTeamPurchasedPlan(Team $team, RatePlanInterface $rate_plan): TeamsPurchasedPlanInterface {
+    $purchased_plan_storage = \Drupal::entityTypeManager()->getStorage('purchased_plan');
     $start_date = new \DateTimeImmutable('today', new \DateTimeZone($this->org_default_timezone));
-    $purchased_plan = TeamsPurchasedPlan::create([
+    $purchased_plan = $purchased_plan_storage->create([
       'ratePlan' => $rate_plan,
       'company' => new Company([
         'id' => $team->id(),
@@ -90,9 +92,14 @@ trait ApigeeMonetizationTeamsTestTrait {
     $purchased_plan->save();
 
     // Warm the cache for this purchased_plan.
-    $purchased_plan->set('id', $this->getRandomUniqueId());
+    $integration_enabled = !empty(getenv(EnvironmentVariable::APIGEE_INTEGRATION_ENABLE));
+    if (!$integration_enabled) {
+      // Only set the ID if using the mock client, otherwise the previous
+      // save() call should have set the ID.
+      $purchased_plan->set('id', $this->getRandomUniqueId());
+    }
     $this->stack->queueMockResponse(['team_purchased_plan' => ['purchased_plan' => $purchased_plan->decorated()]]);
-    $purchased_plan = TeamsPurchasedPlan::load($purchased_plan->id());
+    $purchased_plan = $purchased_plan_storage->load($purchased_plan->id());
     $this->assertTrue($purchased_plan instanceof TeamsPurchasedPlanInterface);
 
     // Make sure the start date is unchanged while loading.
