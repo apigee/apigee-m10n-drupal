@@ -172,7 +172,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    */
   public function purchasedPlanAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface $entity */
-    if ($entity->isTeamPurchasedPlan() && ($team = $entity->get('team')->entity)) {
+    if ($entity->isTeamPurchasedPlan() && ($team = $entity->getTeamEntity())) {
       // Gat the access result.
       $access = $this->teamAccessCheck()->allowedIfHasTeamPermissions($team, $account, ["{$operation} purchased_plan"]);
       // Team permission results completely override user permissions.
