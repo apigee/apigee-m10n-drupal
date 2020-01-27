@@ -23,6 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\Core\Entity\EntityBase;
@@ -130,8 +131,23 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
    *   Returns the team ID.
    */
   private function getTeamId(): ?string {
+    /** @var \Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface $decorated */
+    $decorated = $this->decorated();
+    return $decorated ? $decorated->getCompany()->id() : NULL;
+  }
 
-    return ($team = $this->getTeam()) ? $team->id() : NULL;
+  /**
+   * Get the team entity if it exists.
+   *
+   * @return \Drupal\apigee_edge_teams\Entity\TeamInterface
+   *   Returns the team.
+   */
+  public function getTeamEntity(): ?TeamInterface {
+    if ($this->isTeamPurchasedPlan()) {
+      return \Drupal::entityTypeManager()->getStorage('team')->load($this->getTeamId());
+    }
+
+    return NULL;
   }
 
   /**
@@ -167,6 +183,20 @@ class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInte
     return $this->decorated() instanceof CompanyAcceptedRatePlanInterface
       ? static::PURCHASED_PLAN_TYPE_TEAM
       : static::PURCHASED_PLAN_TYPE_DEVELOPER;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    // Team purchased plans do not belong to a particular user, but to a team,
+    // however the EntityOwnerInterface expects a user, so return NULL instead.
+    if ($this->isTeamPurchasedPlan()) {
+      return NULL;
+    }
+    else {
+      return parent::getOwner();
+    }
   }
 
   /**
