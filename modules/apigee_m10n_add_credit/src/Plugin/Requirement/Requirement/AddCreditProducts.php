@@ -88,7 +88,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
   protected $importableCurrencies;
 
   /**
-   * ApigeeEdgeConnection constructor.
+   * AddCreditProducts constructor.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
