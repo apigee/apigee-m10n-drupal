@@ -137,7 +137,7 @@ class CommerceStore extends RequirementBase {
       $store->save();
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_kickstart', $exception);
+      watchdog_exception('apigee_m10n_add_credit', $exception);
     }
   }
 
