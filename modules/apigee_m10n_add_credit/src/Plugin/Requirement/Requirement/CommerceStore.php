@@ -19,11 +19,17 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
+use Apigee\Edge\Api\Management\Controller\OrganizationController;
+use Apigee\Edge\Api\Monetization\Controller\OrganizationProfileController;
 use CommerceGuys\Addressing\AddressFormat\AddressField;
+use CommerceGuys\Addressing\Subdivision\SubdivisionRepositoryInterface;
 use Drupal\address\FieldHelper;
 use Drupal\address\LabelHelper;
+use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\requirement\Plugin\RequirementBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Check if a commerce store exists.
@@ -37,7 +43,79 @@ use Drupal\requirement\Plugin\RequirementBase;
  *   severity="error"
  * )
  */
-class CommerceStore extends RequirementBase {
+class CommerceStore extends RequirementBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * SDK connector service.
+   *
+   * @var \Drupal\apigee_edge\SDKConnectorInterface
+   */
+  protected $sdkConnector;
+
+  /**
+   * The subdivision repository.
+   *
+   * @var \CommerceGuys\Addressing\Subdivision\SubdivisionRepositoryInterface
+   */
+  protected $subdivisionRepository;
+
+  /**
+   * The Apigee Organization.
+   *
+   * @var \Apigee\Edge\Api\Monetization\Entity\OrganizationProfileInterface
+   */
+  protected $organization;
+
+  /**
+   * CommerceStore constructor.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
+   *   SDK connector service.
+   * @param \CommerceGuys\Addressing\Subdivision\SubdivisionRepositoryInterface $subdivision_repository
+   *   The subdivision repository.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, SDKConnectorInterface $sdk_connector, SubdivisionRepositoryInterface $subdivision_repository) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->sdkConnector = $sdk_connector;
+    $this->subdivisionRepository = $subdivision_repository;
+
+    try {
+      $organization_id = $this->sdkConnector->getOrganization();
+      $client = $this->sdkConnector->getClient();
+
+      // Load the organization.
+      $organization_controller = new OrganizationController($client);
+      $organization = $organization_controller->load($organization_id);
+      /** @var \Apigee\Edge\Api\Management\Entity\OrganizationInterface $organization */
+      if ($organization->getPropertyValue('features.isMonetizationEnabled') === 'true') {
+        // Set the organization.
+        $organization_profile_controller = new OrganizationProfileController($organization_id, $client);
+        $this->organization = $organization_profile_controller->load($organization_id);
+      }
+    }
+    catch (\Exception $exception) {
+      watchdog_exception('apigee_m10n_add_credit', $exception);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('apigee_edge.sdk_connector'),
+      $container->get('address.subdivision_repository')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -119,6 +197,25 @@ class CommerceStore extends RequirementBase {
         '#size' => $settings['size'],
         '#placeholder' => $settings['placeholder'],
       ];
+    }
+
+    // Add default address from organization.
+    if ($this->organization && $addresses = $this->organization->getAddresses()) {
+      /** @var \Apigee\Edge\Api\Monetization\Structure\Address $address */
+      $address = reset($addresses);
+
+      $form['address']['country_code']['#default_value'] = $address->getCountry();
+      $form['address'][FieldHelper::getPropertyName(AddressField::ADDRESS_LINE1)]['#default_value'] = $address->getAddress1();
+      $form['address'][FieldHelper::getPropertyName(AddressField::ADDRESS_LINE1)]['#default_value'] = $address->getAddress1();
+      $form['address'][FieldHelper::getPropertyName(AddressField::LOCALITY)]['#default_value'] = $address->getCity();
+      $form['address'][FieldHelper::getPropertyName(AddressField::POSTAL_CODE)]['#default_value'] = $address->getZip();
+
+      // Find the state code from the country subdivisions.
+      if (($state = $address->getState())
+        && ($subdivisions = $this->subdivisionRepository->getList([$address->getCountry()]))
+        && (in_array($state, $subdivisions)) || (isset($subdivisions[$state]))) {
+        $form['address'][FieldHelper::getPropertyName(AddressField::ADMINISTRATIVE_AREA)]['#default_value'] = $state;
+      }
     }
 
     return $form;
