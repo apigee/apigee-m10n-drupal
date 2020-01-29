@@ -95,6 +95,8 @@ class DateAndTextFormatterKernelTest extends MonetizationKernelTestBase {
     ]);
     $instance->save();
 
+    // Set the default display for the field to a simple formatter (boolean); we
+    // later switch it to the actual formatter during the test.
     $this->display = $this->container->get('entity_display.repository')
       ->getViewDisplay($this->entityType, $this->bundle, 'default')
       ->setComponent($this->fieldName, [
