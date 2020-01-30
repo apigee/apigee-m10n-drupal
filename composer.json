@@ -9,6 +9,7 @@
         "cweagans/composer-patches": "~1.6",
         "commerceguys/intl": "~1.0",
         "drupal/apigee_edge": "~1.0",
+        "drupal/requirement": "~1.0",
         "apigee/apigee-client-php": "~2.0.3"
     },
     "require-dev": {

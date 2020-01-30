@@ -38,6 +38,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -610,6 +611,26 @@ class AddCreditService implements AddCreditServiceInterface {
     }
 
     return t('N/A');
+  }
+
+  /**
+   * Implements hook_help().
+   *
+   * @param string $route_name
+   *   The route machine name.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match object.
+   *
+   * @return string|null
+   *   The help message, if applicable.
+   */
+  public static function help($route_name, RouteMatchInterface $route_match) {
+    if ($route_name === 'apigee_m10n_add_credit.settings.add_credit') {
+      return '<p>' . t('Review the %module module requirements in the <a href=":requirements">Requirements report</a>.', [
+        '%module' => Drupal::moduleHandler()->getName('apigee_m10n_add_credit'),
+        ':requirements' => Url::fromRoute('requirement.report')->toString(),
+      ]) . '</p>';
+    }
   }
 
 }
