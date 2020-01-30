@@ -478,7 +478,7 @@ class AddCreditService implements AddCreditServiceInterface {
         'query' => [
           AddCreditConfig::TARGET_FIELD_NAME => [
             'target_type' => $add_credit_type_plugin->getPluginId(),
-            'target_id' => $target_id,
+            'target_id' => $add_credit_type_plugin->getEntityId($add_credit_target),
           ],
         ],
       ]);
