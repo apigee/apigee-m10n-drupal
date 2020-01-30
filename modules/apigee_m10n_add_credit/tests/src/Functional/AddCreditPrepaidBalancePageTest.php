@@ -88,6 +88,17 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->assertSession()->elementExists('css', '.add-credit--usd.dropbutton');
     $this->assertSession()->elementNotExists('css', '.add-credit--aud.dropbutton');
 
+    // Verify link to add credit, it should contain the developer email.
+    $url = $this->product->toUrl('canonical', [
+      'query' => [
+        AddCreditConfig::TARGET_FIELD_NAME => [
+          'target_type' => 'developer',
+          'target_id' => $this->developer->getEmail(),
+        ],
+      ],
+    ]);
+    $this->assertSession()->linkByHrefExists($url->toString());
+
     // Configure an add credit product for AUD.
     // There should be an add credit button for BOTH usd and aud.
     $this->setAddCreditProductForCurrencyId($this->product, 'aud');
