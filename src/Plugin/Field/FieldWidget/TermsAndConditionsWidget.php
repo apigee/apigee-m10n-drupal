@@ -124,11 +124,22 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
         '#default_value' => !empty($items[0]->value),
         '#element_validate' => [[$this, 'validate']],
       ];
+
+      // Validate url.
+      try {
+        $url = Url::fromUri($tnc->getUrl())->toString();
+      }
+      catch (\InvalidArgumentException $exception) {
+        // Fallback to user supplied url.
+        $url = $tnc->getUrl();
+      }
+
       // Accept TnC description.
-      $element['#description'] = $this->t('%description @link', [
+      $element['#description'] = $this->t('%description <a href=":url">Terms and Conditions</a>', [
         '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
-        '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
+        ':url' => $url,
       ]);
+
       $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
       return ['value' => $element];
     }
