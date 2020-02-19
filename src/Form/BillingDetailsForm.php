@@ -141,7 +141,7 @@ class BillingDetailsForm extends FormBase {
 
     // Load the mint developer to retrieve legal name and billing type.
     /** @var \Apigee\Edge\Api\Monetization\Entity\Developer $mintDeveloper */
-    $mintDeveloper = $this->developerController->load($user->getEmail());
+    $mint_developer = $this->developerController->load($user->getEmail());
 
     $form['company'] = [
       '#type' => 'fieldset',
@@ -150,7 +150,7 @@ class BillingDetailsForm extends FormBase {
     $form['company']['legal_company_name'] = [
       '#title' => $this->t('Legal Company Name'),
       '#type' => 'textfield',
-      '#default_value' => $mintDeveloper->getLegalName(),
+      '#default_value' => $mint_developer->getLegalName() ?? $this->developer->getEmail(),
       '#required' => TRUE,
     ];
     $form['billing'] = [
@@ -158,7 +158,7 @@ class BillingDetailsForm extends FormBase {
       '#title' => $this->t('Billing Type'),
     ];
     $form['billing']['billing_type'] = [
-      '#markup' => $mintDeveloper->getBillingType(),
+      '#markup' => $mint_developer->getBillingType(),
     ];
     $form['actions'] = [
       '#type' => 'actions',
