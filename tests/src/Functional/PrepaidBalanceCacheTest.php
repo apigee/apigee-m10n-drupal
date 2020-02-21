@@ -138,6 +138,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // Visit the prepaid balance page.
     $expected_expiration_time = time() + static::CACHE_MAX_AGE;
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -154,6 +155,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalanceCacheIdsRebuild() {
     // Visit the prepaid balance page to set the caches.
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -184,6 +186,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->checkDriverHeaderSupport();
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
