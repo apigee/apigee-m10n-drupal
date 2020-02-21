@@ -101,6 +101,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     // Create and sign in a user with no add credit permissions.
     $this->developer = $this->signIn(['view own prepaid balance']);
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
@@ -112,6 +113,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
 
     // Create and sign in a user with add credit permissions.
     $this->developer = $this->signIn(['view own prepaid balance', 'add credit to own developer prepaid balance']);
+    $this->queueDeveloperResponse($this->developer);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',

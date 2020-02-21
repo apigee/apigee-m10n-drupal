@@ -87,6 +87,7 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
