@@ -111,7 +111,7 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
    * {@inheritdoc}
    */
   public function isApplicable(): bool {
-    return $this->getModuleHandler()->moduleExists('apigee_m10n_add_credit');
+    return $this->getModuleHandler()->moduleExists('apigee_m10n_add_credit') && $this->getEntityFormDisplay();
   }
 
   /**
@@ -127,8 +127,14 @@ class OrderItemAddToCartFormDisplay extends RequirementBase implements Container
    * @return \Drupal\Core\Entity\Display\EntityFormDisplayInterface
    *   The entity form display.
    */
-  protected function getEntityFormDisplay(): EntityFormDisplayInterface {
-    return $this->entityDisplayRepository->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart');
+  protected function getEntityFormDisplay():? EntityFormDisplayInterface {
+    try {
+      $form_display = $this->entityDisplayRepository->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart');
+    }
+    catch (\RuntimeException $e) {
+      return NULL;
+    }
+    return $form_display;
   }
 
   /**
