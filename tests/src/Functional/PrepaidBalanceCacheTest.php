@@ -109,6 +109,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     // User can refresh own account.
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->assertRefreshPrepaidBalanceForUser($this->developer);
   }
 
@@ -125,6 +126,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // User can refresh another user account.
     $other_user = $this->createAccount();
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($other_user);
     $this->assertRefreshPrepaidBalanceForUser($other_user);
   }
 

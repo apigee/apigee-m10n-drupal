@@ -76,6 +76,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $month_numeric = $this->lastMonth->format('m');
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->account);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
@@ -113,6 +114,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $month_numeric = $this->lastMonth->format('m');
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->account);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
@@ -149,6 +151,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
     $month_numeric = $this->lastMonth->format('m');
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->account);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
