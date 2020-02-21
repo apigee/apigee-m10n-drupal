@@ -55,6 +55,9 @@ class AddCreditProductType extends RequirementBase {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    /* @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
+    $display_repository = \Drupal::service('entity_display.repository');
+
     // Get or create the order item type.
     $order_item_type_storage = $this->getEntityTypeManager()
       ->getStorage('commerce_order_item_type');
@@ -66,8 +69,29 @@ class AddCreditProductType extends RequirementBase {
         'id' => 'add_credit',
         'label' => 'Add credit',
         'orderType' => 'default',
+        'purchasableEntityType' => 'commerce_product_variation',
       ]);
       $order_item_type->save();
+
+      $display_repository
+        ->getFormDisplay('commerce_order_item', 'add_credit', 'add_to_cart')
+        ->removeComponent('quantity')
+        ->setComponent('add_credit_target', [
+          'type' => 'add_credit_target_entity',
+          'weight' => 1,
+          'region' => 'content',
+        ])
+        ->setComponent('purchased_entity', [
+          'type' => 'commerce_product_variation_attributes',
+          'weight' => 0,
+          'region' => 'content',
+        ])
+        ->setComponent('unit_price', [
+          'type' => 'commerce_unit_price',
+          'weight' => 2,
+          'region' => 'content',
+        ])
+        ->save();
     }
 
     // Get or create the variation type.
@@ -98,15 +122,21 @@ class AddCreditProductType extends RequirementBase {
         'label' => 'Add credit',
         'description' => 'This product is used to add credit to prepaid balances.',
         'variationType' => $variation_type->id(),
+        'multipleVariations' => TRUE,
+        'injectVariationFields' => TRUE,
       ])
         ->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_add_credit', TRUE)
         ->setThirdPartySetting('apigee_m10n_add_credit', 'apigee_m10n_enable_skip_cart', TRUE);
       $product_type->save();
 
       // These functions add the appropriate fields to the type.
-      commerce_product_add_variations_field($product_type);
-      commerce_product_add_stores_field($product_type);
       commerce_product_add_body_field($product_type);
+
+      $display = $display_repository->getViewDisplay('commerce_product', 'add_credit', 'default');
+      $component = $display->getComponent('variations');
+      $component['label'] = 'hidden';
+      $display->setComponent('variations', $component)
+        ->save();
     }
   }
 
