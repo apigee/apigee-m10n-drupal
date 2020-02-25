@@ -28,7 +28,6 @@ use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryI
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
-use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -57,14 +56,14 @@ class Monetization implements MonetizationInterface {
    *
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
-  private $sdk_connector;
+  private $sdkConnector;
 
   /**
    * The SDK controller factory.
    *
    * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
    */
-  private $sdk_controller_factory;
+  private $sdkControllerFactory;
 
   /**
    * Drupal core messenger service (for adding flash messages).
@@ -166,8 +165,8 @@ class Monetization implements MonetizationInterface {
     CurrencyFormatterInterface $currency_formatter,
     OrganizationControllerInterface $organization_controller
   ) {
-    $this->sdk_connector          = $sdk_connector;
-    $this->sdk_controller_factory = $sdk_controller_factory;
+    $this->sdkConnector           = $sdk_connector;
+    $this->sdkControllerFactory   = $sdk_controller_factory;
     $this->messenger              = $messenger;
     $this->cache                  = $cache;
     $this->logger                 = $logger;
@@ -195,7 +194,7 @@ class Monetization implements MonetizationInterface {
 
     if (!isset($eligible_product_cache[$developer_id])) {
       // Instantiate an instance of the m10n ApiProduct controller.
-      $product_controller = new ApiProductController($this->sdk_connector->getOrganization(), $this->sdk_connector->getClient());
+      $product_controller = new ApiProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
       // Get a list of available products for the m10n developer.
       $eligible_product_cache[$developer_id] = $product_controller->getEligibleProductsByDeveloper($developer_id);
     }
@@ -215,7 +214,7 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function getDeveloperPrepaidBalances(UserInterface $developer, \DateTimeImmutable $billingDate): ?array {
-    $balance_controller = $this->sdk_controller_factory->developerBalanceController($developer);
+    $balance_controller = $this->sdkControllerFactory->developerBalanceController($developer);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
@@ -223,7 +222,7 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array {
-    $balance_controller = $this->sdk_controller_factory->companyBalanceController($company);
+    $balance_controller = $this->sdkControllerFactory->companyBalanceController($company);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
@@ -243,7 +242,7 @@ class Monetization implements MonetizationInterface {
       $latest_tnc_id = $latest_tnc->id();
 
       // Creates a controller for getting accepted TnC.
-      $controller = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id);
+      $controller = $this->sdkControllerFactory->developerTermsAndConditionsController($developer_id);
 
       try {
         $history = $controller->getTermsAndConditionsHistory();
@@ -323,7 +322,7 @@ class Monetization implements MonetizationInterface {
     }
     else {
       try {
-        $list = $this->sdk_controller_factory->termsAndConditionsController()->getEntities();
+        $list = $this->sdkControllerFactory->termsAndConditionsController()->getEntities();
       }
       catch (\Exception $ex) {
         $this->logger->error("Unable to load Terms and Conditions: \n {$ex}");
@@ -347,7 +346,7 @@ class Monetization implements MonetizationInterface {
     try {
       // Reset the static cache for this developer.
       unset($this->developerAcceptedTermsStatus[$developer_id]);
-      return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
+      return $this->sdkControllerFactory->developerTermsAndConditionsController($developer_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
     catch (\Throwable $t) {
@@ -395,14 +394,14 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function getSupportedCurrencies(): ?array {
-    return $this->sdk_controller_factory->supportedCurrencyController()->getEntities();
+    return $this->sdkControllerFactory->supportedCurrencyController()->getEntities();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string {
-    $controller = $this->sdk_controller_factory->developerReportDefinitionController($developer_id);
+    $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
     $criteria = new PrepaidBalanceReportCriteria(strtoupper($date->format('F')), (int) $date->format('Y'));
     $criteria
       ->developers($developer_id)
@@ -449,8 +448,9 @@ class Monetization implements MonetizationInterface {
     else {
       $config = \Drupal::service('config.factory');
       $cacheExpiration = $config->get('apigee_edge.developer_settings')->get('cache_expiration');
-      $developer = Developer::load($account->getEmail());
-      $billing_type = $developer->getAttributeValue(static::BILLING_TYPE_ATTR);
+      /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperInterface $developer */
+      $developer = $this->sdkControllerFactory->developerController()->load($account->getEmail());
+      $billing_type = $developer->getBillingType();
 
       if ($cacheExpiration < 0) {
         $this->cache->set($cid, $billing_type);
@@ -525,7 +525,7 @@ class Monetization implements MonetizationInterface {
     else {
       // Load the org and cache it for 5 minutes.
       try {
-        $this->organization = $this->organizationController->load($this->sdk_connector->getOrganization());
+        $this->organization = $this->organizationController->load($this->sdkConnector->getOrganization());
       }
       catch (\Exception $e) {
         $this->messenger->addError($e->getMessage());

@@ -87,8 +87,8 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
     ]);
 
     $this->drupalLogin($this->account);
-
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->account);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',

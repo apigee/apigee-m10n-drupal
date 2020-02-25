@@ -24,6 +24,7 @@ use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\apigee_m10n\Plugin\Field\FieldWidget\TermsAndConditionsWidget;
 use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -53,13 +54,15 @@ class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget implement
    *   The widget settings.
    * @param array $third_party_settings
    *   Any third party settings.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger channel.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   Monetization factory.
    * @param \Drupal\apigee_m10n_teams\MonetizationTeamsInterface $team_monetization
    *   Teams monetization factory.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationInterface $monetization, MonetizationTeamsInterface $team_monetization) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $monetization);
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LoggerInterface $logger, MonetizationInterface $monetization, MonetizationTeamsInterface $team_monetization) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings, $logger, $monetization);
     $this->team_monetization = $team_monetization;
   }
 
@@ -73,6 +76,7 @@ class CompanyTermsAndConditionsWidget extends TermsAndConditionsWidget implement
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
+      $container->get('logger.factory')->get('apigee_m10n'),
       $container->get('apigee_m10n.monetization'),
       $container->get('apigee_m10n.teams')
     );

@@ -53,6 +53,7 @@ class PrepaidBalanceTest extends MonetizationFunctionalTestBase {
     $this->drupalLogin($this->developer);
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->stack->queueMockResponse([
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,

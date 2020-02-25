@@ -145,6 +145,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $prepaid_balance_url = Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
     ]);
+    $this->queueDeveloperResponse(user_load_by_mail($this->developer->getEmail()));
     static::assertTrue($prepaid_balance_url->access($this->administrator));
     static::assertTrue($prepaid_balance_url->access($this->developer));
     static::assertFalse($prepaid_balance_url->access($this->anonymous));
@@ -153,6 +154,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $prepaid_balance_url = Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->administrator->id(),
     ]);
+    $this->queueDeveloperResponse(user_load_by_mail($this->administrator->getEmail()));
     static::assertTrue($prepaid_balance_url->access($this->administrator));
     static::assertFalse($prepaid_balance_url->access($this->developer));
     static::assertFalse($prepaid_balance_url->access($this->anonymous));
@@ -161,7 +163,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $prepaid_balance_url = Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->postpaid->id(),
     ]);
-    static::assertFalse($prepaid_balance_url->access($this->administrator));
+    $this->queueDeveloperResponse(user_load_by_mail($this->postpaid->getEmail()));
+    static::assertFalse($prepaid_balance_url->access($this->postpaid));
     static::assertFalse($prepaid_balance_url->access($this->developer));
     static::assertFalse($prepaid_balance_url->access($this->anonymous));
 
