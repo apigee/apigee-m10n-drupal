@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -27,7 +28,6 @@ use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
 
 /**
  * Plugin implementation of the 'apigee_tnc_widget' widget.
@@ -50,6 +50,13 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
   protected $entity;
 
   /**
+   * The logger channel.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * Monetization factory.
    *
    * @var \Drupal\apigee_m10n\MonetizationInterface
@@ -69,12 +76,15 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
    *   The widget settings.
    * @param array $third_party_settings
    *   Any third party settings.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger channel.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   Monetization factory.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, MonetizationInterface $monetization = NULL) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, LoggerInterface $logger, MonetizationInterface $monetization = NULL) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     $this->monetization = $monetization;
+    $this->logger = $logger;
   }
 
   /**
@@ -87,6 +97,7 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
+      $container->get('logger.factory')->get('apigee_m10n'),
       $container->get('apigee_m10n.monetization')
     );
   }
@@ -124,11 +135,24 @@ class TermsAndConditionsWidget extends WidgetBase implements ContainerFactoryPlu
         '#default_value' => !empty($items[0]->value),
         '#element_validate' => [[$this, 'validate']],
       ];
+
+      // Validate url.
+      try {
+        $url = Url::fromUri($tnc->getUrl())->toString();
+      }
+      catch (\InvalidArgumentException $exception) {
+        $this->logger->error($exception->getMessage());
+
+        // Fallback to user supplied url.
+        $url = $tnc->getUrl();
+      }
+
       // Accept TnC description.
-      $element['#description'] = $this->t('%description @link', [
+      $element['#description'] = $this->t('%description <a href=":url">Terms and Conditions</a>', [
         '%description' => ($description = $tnc->getDescription()) ? $this->t($description) : $this->getSetting('default_description'),
-        '@link' => ($link = $tnc->getUrl()) ? Link::fromTextAndUrl($this->t('Terms and Conditions'), Url::fromUri($link))->toString() : '',
+        ':url' => $url,
       ]);
+
       $element['#attached']['library'][] = 'apigee_m10n/tnc-widget';
       return ['value' => $element];
     }
