@@ -78,6 +78,7 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     // Configure an add credit product for USD.
     // There should be an add credit button for usd but NOT for aud.
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
+    $this->queueDeveloperResponse($this->developer);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
