@@ -88,6 +88,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     ]);
 
     // Check the manage Balance and plans link.
+    $this->queueDeveloperResponse($this->developer);
     $this->clickLink('Balance and plans');
     $session->linkExists('Purchased plans');
     $session->linkExists('Prepaid balance');

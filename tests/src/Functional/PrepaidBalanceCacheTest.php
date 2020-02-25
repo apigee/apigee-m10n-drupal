@@ -90,6 +90,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     // User cannot refresh prepaid balance.
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -108,6 +109,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     // User can refresh own account.
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->assertRefreshPrepaidBalanceForUser($this->developer);
   }
 
@@ -124,6 +126,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // User can refresh another user account.
     $other_user = $this->createAccount();
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($other_user);
     $this->assertRefreshPrepaidBalanceForUser($other_user);
   }
 
@@ -137,6 +140,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     // Visit the prepaid balance page.
     $expected_expiration_time = time() + static::CACHE_MAX_AGE;
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -153,6 +157,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalanceCacheIdsRebuild() {
     // Visit the prepaid balance page to set the caches.
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -183,6 +188,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->checkDriverHeaderSupport();
 
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -202,6 +208,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     // Visit the prepaid balance page.
     $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),

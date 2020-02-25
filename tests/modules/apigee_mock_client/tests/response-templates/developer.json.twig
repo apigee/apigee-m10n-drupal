@@ -27,6 +27,8 @@
     "userName" : "{{ developer.name.value }}",
     "organizationName" : "{{ org_name }}",
     "status" : "active",
+    "billingType": "{{ billing_type|default('PREPAID') }}",
+    "isCompany": "{{ isCompany|default(false) }}",
     "attributes" : [
         {
             "name" : "MINT_BILLING_TYPE",
