@@ -193,7 +193,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     ], 'Add to cart');
 
     $this->drupalGet('checkout/1');
-    $this->assertCssElementContains('.field--name-total-price .order-total-line-value', '$50.00');
+    $this->assertCssElementContains('.order-total-line .order-total-line-value', '$50.00');
   }
 
   /**
@@ -256,9 +256,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94105',
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
-    $this->assertCssElementContains('.view-commerce-checkout-order-summary', $title);
+    $this->assertCssElementContains('.checkout-order-summary', $title);
     $total = ($amount_1 * $quantity_1) + ($amount_2 * $quantity_2);
-    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $$total");
+    $this->assertCssElementContains('.checkout-order-summary', "Total $$total");
 
     // Finalize the payment.
     $this->queueSupportedCurrencyResponse();
