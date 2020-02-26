@@ -90,8 +90,8 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
       'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94043',
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
-    $this->assertCssElementContains('.view-commerce-checkout-order-summary', $product->label());
-    $this->assertCssElementContains('.view-commerce-checkout-order-summary', "Total $$amount");
+    $this->assertCssElementContains('.checkout-order-summary', $product->label());
+    $this->assertCssElementContains('.checkout-order-summary', "Total $$amount");
 
     // Before finalizing the payment, we have to add a couple of responses to
     // the queue.
