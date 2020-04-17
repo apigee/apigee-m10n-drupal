@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 use Drupal\commerce_payment\PaymentGatewayManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Url;
 use Drupal\requirement\Plugin\RequirementBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -32,7 +33,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "payment_gateway",
  *   group="apigee_m10n_add_credit",
  *   label = "Payment gateway",
- *   description = "Configure a payment gateway to handle prepaid balance checkouts.",
+ *   description = "Configure a manual payment gateway to handle prepaid balance checkouts (useful for tests).",
  *   action_button_label="Create payment gateway",
  *   severity="error"
  * )
@@ -81,6 +82,17 @@ class PaymentGateway extends RequirementBase implements ContainerFactoryPluginIn
   public function buildConfigurationForm(array $form, FormStateInterface $form_state): array {
     $form['gateway'] = [
       '#markup' => $this->t('Configure a payment gateway to handle prepaid balance checkouts.'),
+    ];
+
+    $form['warning'] = [
+      '#theme' => 'status_messages',
+      '#message_list' => [
+        'warning' => [
+          $this->t('Note: a manual payment gateway will be created. This is useful for tests only. <a href=":url">Click here</a> if you need to setup a different payment gateway.', [
+            ':url' => Url::fromRoute('entity.commerce_payment_gateway.add_form')->toString(),
+          ]),
+        ],
+      ],
     ];
 
     $form['label'] = [
