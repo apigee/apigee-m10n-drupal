@@ -99,8 +99,7 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
     $this->click('.add-credit--usd.dropbutton a');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertCssElementContains('.ui-dialog-title', $this->product->label());
-    $this->assertCssElementContains('select[name="' . AddCreditConfig::TARGET_FIELD_NAME . '"]', $this->developer->label());
-    $this->getSession()->wait(10000);
+    $this->assertCssElementContains('select[name="' . AddCreditConfig::TARGET_FIELD_NAME . '"]', "{$this->developer->get('first_name')->value} {$this->developer->get('last_name')->value}");
   }
 
 }
