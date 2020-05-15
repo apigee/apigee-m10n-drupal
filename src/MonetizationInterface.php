@@ -153,6 +153,23 @@ interface MonetizationInterface {
   public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string;
 
   /**
+   * Returns a CSV string for revenue.
+   *
+   * @param string $developer_id
+   *   The developer id.
+   * @param \DateTimeImmutable $from_date
+   *   The from month for the report.
+   * @param \DateTimeImmutable $to_date
+   *   The to month for the report.
+   * @param string $currency
+   *   The currency id. Example: usd.
+   *
+   * @return null|string
+   *   A CSV string of revenue report.
+   */
+  public function getRevenueReport(string $developer_id, \DateTimeImmutable $from_date, \DateTimeImmutable $to_date, string $currency): ?string;
+
+  /**
    * Check if developer accepted latest terms and conditions.
    *
    * @param string $developer_id

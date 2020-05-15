@@ -26,6 +26,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
+use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\RevenueReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
@@ -403,6 +404,19 @@ class Monetization implements MonetizationInterface {
   public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string {
     $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
     $criteria = new PrepaidBalanceReportCriteria(strtoupper($date->format('F')), (int) $date->format('Y'));
+    $criteria
+      ->developers($developer_id)
+      ->currencies($currency)
+      ->showTransactionDetail(TRUE);
+    return $controller->generateReport($criteria);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRevenueReport(string $developer_id, \DateTimeImmutable $from_date, \DateTimeImmutable $to_date, string $currency): ?string {
+    $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
+    $criteria = new RevenueReportCriteria($from_date, $to_date);
     $criteria
       ->developers($developer_id)
       ->currencies($currency)
