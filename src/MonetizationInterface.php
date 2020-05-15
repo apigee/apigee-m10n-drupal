@@ -49,6 +49,7 @@ interface MonetizationInterface {
     'refresh own prepaid balance',
     'download prepaid balance reports',
     'view own billing details',
+    'download own reports',
   ];
 
   /**

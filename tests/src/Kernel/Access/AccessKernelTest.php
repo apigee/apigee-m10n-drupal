@@ -135,6 +135,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->assertRatePlanRoutes();
     $this->assertPurchasedPlanRoutes();
     $this->assertBillingRoutes();
+    $this->assertReportsRoute();
   }
 
   /**
@@ -331,6 +332,27 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   }
 
   /**
+   * Tests permissions for billing routes.
+   */
+  public function assertReportsRoute() {
+    // Own reports.
+    $prepaid_balance_url = Url::fromRoute('apigee_monetization.reports', [
+      'user' => $this->developer->id(),
+    ]);
+    static::assertTrue($prepaid_balance_url->access($this->administrator));
+    static::assertTrue($prepaid_balance_url->access($this->developer));
+    static::assertFalse($prepaid_balance_url->access($this->anonymous));
+
+    // Any reports.
+    $prepaid_balance_url = Url::fromRoute('apigee_monetization.reports', [
+      'user' => $this->administrator->id(),
+    ]);
+    static::assertTrue($prepaid_balance_url->access($this->administrator));
+    static::assertFalse($prepaid_balance_url->access($this->developer));
+    static::assertFalse($prepaid_balance_url->access($this->anonymous));
+  }
+
+  /**
    * Tests that the permission list is correct.
    */
   public function assertPermissionList() {
@@ -370,6 +392,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view rate_plan as anyone' => 'View rate plans as any developer',
       'purchase rate_plan' => 'Purchase a rate plan',
       'purchase rate_plan as anyone' => 'Purchase a rate plan as any developer',
+      'download any reports' => 'Download any reports',
+      'download own reports' => 'Download own reports',
     ];
 
     // Sort both for comparison.

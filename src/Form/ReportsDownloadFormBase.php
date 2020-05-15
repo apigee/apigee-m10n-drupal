@@ -21,7 +21,6 @@
 namespace Drupal\apigee_m10n\Form;
 
 use Apigee\Edge\Exception\ClientErrorException;
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -53,6 +52,13 @@ abstract class ReportsDownloadFormBase extends FormBase {
    * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
+
+  /**
+   * The entity to generate reports for.
+   *
+   * @var \Drupal\Core\Entity\EntityInterface
+   */
+  protected $entity;
 
   /**
    * The current user.
@@ -109,7 +115,9 @@ abstract class ReportsDownloadFormBase extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function getForm(array $form, FormStateInterface $form_state, EntityInterface $entity) {
+    $this->entity = $entity;
+
     $form['heading'] = [
       '#type' => 'html_tag',
       '#tag' => 'h3',
@@ -131,9 +139,14 @@ abstract class ReportsDownloadFormBase extends FormBase {
     // Build currency options.
     $currency_options = [];
     /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface $currency */
-    foreach ($this->monetization->getSupportedCurrencies() as $currency) {
+    foreach ($supported_currencies as $currency) {
       $currency_options[$currency->id()] = "{$currency->getName()} ({$currency->getDisplayName()})";
     }
+
+    $form['entity_id'] = [
+      '#type' => 'value',
+      '#value' => $this->getEntityId(),
+    ];
 
     $form['currency'] = [
       '#title' => $this->t('Select currency'),
@@ -201,9 +214,10 @@ abstract class ReportsDownloadFormBase extends FormBase {
     $from_date = $form_state->getValue('from_date');
     /** @var \Drupal\Core\Datetime\DrupalDateTime $to_date */
     $to_date = $form_state->getValue('to_date');
+    $entity_id = $form_state->getValue('entity_id');
 
     try {
-      if ($report = $this->monetization->getRevenueReport($this->getEntityId(), new \DateTimeImmutable("@{$from_date->getTimestamp()}"), new \DateTimeImmutable("@{$to_date->getTimestamp()}"), $currency)) {
+      if ($report = $this->monetization->getRevenueReport($entity_id, new \DateTimeImmutable("@{$from_date->getTimestamp()}"), new \DateTimeImmutable("@{$to_date->getTimestamp()}"), $currency)) {
         $filename = "revenue-report-{$from_date->format('Y-m-d')}-{$to_date->format('Y-m-d')}.csv";
         $response = new Response($report);
         $response->headers->set('Content-Type', 'text/csv');

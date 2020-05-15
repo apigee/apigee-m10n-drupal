@@ -76,8 +76,5 @@ apigee_m10n_teams.team_reports:
   requirements:
     _team_permission: 'download reports'
   options:
-    parameters:
-      team:
-        type: entity:team
     _apigee_monetization_route: TRUE
     _apigee_developer_route: apigee_monetization.profile
