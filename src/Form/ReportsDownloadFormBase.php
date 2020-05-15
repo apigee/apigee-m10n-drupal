@@ -140,8 +140,8 @@ abstract class ReportsDownloadFormBase extends FormBase {
       '#type' => 'select',
       '#required' => TRUE,
       '#options' => [
-          '' => $this->t('Select currency'),
-        ] + $currency_options,
+        '' => $this->t('Select currency'),
+      ] + $currency_options,
     ];
 
     $form['from_date'] = [
@@ -213,7 +213,8 @@ abstract class ReportsDownloadFormBase extends FormBase {
     }
     catch (ClientErrorException $exception) {
       $form_state->setRebuild(TRUE);
-      $this->messenger()->addError($this->t('There are no revenue reports for the selected dates.'));
+      $this->messenger()
+        ->addError($this->t('There are no revenue reports for the selected dates.'));
     }
   }
 
