@@ -21,9 +21,12 @@
 namespace Drupal\apigee_m10n\Form;
 
 use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -225,7 +228,13 @@ abstract class ReportsDownloadFormBase extends FormBase {
    * @return \Drupal\Core\Access\AccessResult
    *   Grants access to the route if passed permissions are present.
    */
-//  abstract public function access(RouteMatchInterface $route_match, AccountInterface $account): AccessResultInterface;
+  public function access(RouteMatchInterface $route_match, AccountInterface $account): AccessResultInterface {
+    $user = $route_match->getParameter('user');
+    return AccessResult::allowedIf(
+      $account->hasPermission('download any reports') ||
+      ($account->hasPermission('download own reports') && $account->id() === $user->id())
+    );
+  }
 
   /**
    * Returns the entity id for which the report should be generated for.

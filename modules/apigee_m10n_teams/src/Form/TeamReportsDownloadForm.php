@@ -18,22 +18,20 @@
  * MA 02110-1301, USA.
  */
 
-namespace Drupal\apigee_m10n\Form;
+namespace Drupal\apigee_m10n_teams\Form;
+
+use Drupal\apigee_m10n\Form\ReportsDownloadFormBase;
 
 /**
- * Defines the reports download form for developer.
+ * Defines the reports download form for team.
  */
-class ReportsDownloadForm extends ReportsDownloadFormBase {
+class TeamReportsDownloadForm extends ReportsDownloadFormBase {
 
   /**
    * {@inheritdoc}
    */
   protected function getEntityId(): string {
-    if ($user = $this->routeMatch->getParameter('user')) {
-      return $this->entityTypeManager->getStorage('user')->load($user)->getEmail();
-    }
-
-    return $this->currentUser->getEmail();
+    return $this->routeMatch->getParameter('team')->id();
   }
 
 }
