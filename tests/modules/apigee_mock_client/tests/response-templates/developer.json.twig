@@ -21,26 +21,26 @@
         {% endfor %}
     ],
     "email" : "{{ developer.mail.value }}",
-    "developerId" : "{{ developer.uuid.value|default('00112233-4455-6677-8899-aabbccddeeff') }}",
+    "developerId" : "{{ developer.uuid.value }}",
     "firstName" : "{{ developer.first_name.value }}",
     "lastName" : "{{ developer.last_name.value }}",
     "userName" : "{{ developer.name.value }}",
-    "organizationName" : "{{ org_name|default('example') }}",
+    "organizationName" : "{{ org_name }}",
     "status" : "active",
     "billingType": "{{ billing_type|default('PREPAID') }}",
     "isCompany": "{{ isCompany|default(false) }}",
     "attributes" : [
         {
             "name" : "MINT_BILLING_TYPE",
-            "value" : "{{ developer.attributeValue('MINT_BILLING_TYPE')|default('PREPAID') }}"
+            "value" : "{{ billing_type|default('PREPAID') }}"
         },
         {
             "name" : "MINT_DEVELOPER_TYPE",
-            "value" : "{{ developer.attributeValue('MINT_DEVELOPER_TYPE')|default('UNTRUSTED') }}"
+            "value" : "UNTRUSTED"
         },
         {
             "name": "MINT_DEVELOPER_LEGAL_NAME",
-            "value": "{{ developer.attributeValue("MINT_DEVELOPER_LEGAL_NAME") }}"
+            "value": "{{ developer.mail.value }}"
         } ],
     "createdAt" : 1537547358558,
     "createdBy" : "user@example.com",
