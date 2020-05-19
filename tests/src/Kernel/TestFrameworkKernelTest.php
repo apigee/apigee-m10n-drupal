@@ -19,6 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
+use Apigee\Edge\Structure\AttributesProperty;
+use Drupal\apigee_edge\Entity\Developer;
+use Drupal\apigee_edge\Entity\DeveloperInterface;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
@@ -77,6 +80,48 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
     self::assertEquals("200", $response->getStatusCode());
     self::assertEquals('{"status": "success", "catalog_version": "1.0"}', (string) $response->getBody());
+  }
+
+  /**
+   * Tests the Apigee Edge developer response.
+   *
+   * @throws \Http\Client\Exception
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  public function testDeveloperResponse() {
+    $email = "{$this->randomMachineName()}@example.com";
+    $developer = Developer::create([
+      'developerId' => $email,
+      'email' => $email,
+      'firstName' => $this->randomMachineName(),
+      'lastName' => $this->randomMachineName(),
+      'userName' => $this->randomMachineName(),
+      'status' => 'ACTIVE',
+    ]);
+
+    $account = $this->container->get('entity_type.manager')->getStorage('user')->create([
+      'mail' => $developer->getEmail(),
+      'name' => $developer->getUserName(),
+      'first_name' => $developer->getFirstName(),
+      'last_name' => $developer->getLastName(),
+      'status' => ($developer->getStatus() == DeveloperInterface::STATUS_ACTIVE) ? 1 : 0,
+    ]);
+
+    $this->queueDeveloperResponse($account);
+
+    // Execute a client call.
+    $response = $this->sdk_connector->buildClient(new AutoBasicAuth())->get('/');
+
+    self::assertEquals("200", $response->getStatusCode());
+
+    $developer_array = json_decode($response->getBody(), TRUE);
+    static::assertSame($developer->getEmail(), $developer_array['email']);
+    static::assertSame($developer->getFirstName(), $developer_array['firstName']);
+    static::assertSame($developer->getLastName(), $developer_array['lastName']);
+    static::assertSame($developer->getUserName(), $developer_array['userName']);
+    static::assertSame($developer->getStatus(), strtoupper($developer_array['status']));
   }
 
   /**
