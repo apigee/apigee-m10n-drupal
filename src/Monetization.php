@@ -417,21 +417,36 @@ class Monetization implements MonetizationInterface {
     // Use cached result if available.
     // TODO: Handle purchased_plan caching per developer on the storage level.
     // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
-    $cid = "apigee_m10n:dev:purchased_plans:{$developer_id}";
-
-    if (!($cache = $this->cache->get($cid))) {
-      if ($purchases = PurchasedPlan::loadByDeveloperId($developer_id)) {
-        $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
-      }
+    $cid = $this->getDeveloperPurchasedPlansCacheId($developer_id);
+    if ($cache = $this->cache->get($cid)) {
+      $purchases = $cache->data;
     }
     else {
-      foreach ($cache->data as $purchased_plan) {
-        if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isActive()) {
-          return TRUE;
-        }
+      $purchases = PurchasedPlan::loadByDeveloperId($developer_id);
+      $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
+    }
+
+    foreach ($purchases as $purchased_plan) {
+      if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isActive()) {
+        return TRUE;
       }
     }
+
     return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloperPurchasedPlansCacheId(string $developer_id): string {
+    return "apigee_m10n:dev:purchased_plans:{$developer_id}";
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function clearDeveloperPurchasedPlansCache(string $developer_id): void {
+    $this->cache->delete($this->getDeveloperPurchasedPlansCacheId($developer_id));
   }
 
   /**

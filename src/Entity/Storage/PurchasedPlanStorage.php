@@ -24,6 +24,7 @@ use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxyInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n\Exception\UnexpectedValueException;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
@@ -48,6 +49,13 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
   protected $controller_proxy;
 
   /**
+   * The monetization service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface|null
+   */
+  protected $monetization;
+
+  /**
    * Constructs an PurchasedPlanStorage instance.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -60,11 +68,17 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
    *   The system time.
    * @param \Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface $controller_proxy
    *   The controller proxy.
+   * @param \Drupal\apigee_m10n\MonetizationInterface|null $monetization
+   *   The monetization service.
    */
-  public function __construct(EntityTypeInterface $entity_type, CacheBackendInterface $cache_backend, MemoryCacheInterface $memory_cache, TimeInterface $system_time, EdgeEntityControllerInterface $controller_proxy) {
+  public function __construct(EntityTypeInterface $entity_type, CacheBackendInterface $cache_backend, MemoryCacheInterface $memory_cache, TimeInterface $system_time, EdgeEntityControllerInterface $controller_proxy, MonetizationInterface $monetization = NULL) {
     parent::__construct($entity_type, $cache_backend, $memory_cache, $system_time);
+    if (!$monetization) {
+      $monetization = \Drupal::service('apigee_m10n.monetization');
+    }
 
     $this->controller_proxy = $controller_proxy;
+    $this->monetization = $monetization;
   }
 
   /**
@@ -76,7 +90,8 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
       $container->get('cache.apigee_edge_entity'),
       $container->get('entity.memory_cache'),
       $container->get('datetime.time'),
-      $container->get('apigee_m10n.sdk_controller_proxy.purchased_plan')
+      $container->get('apigee_m10n.sdk_controller_proxy.purchased_plan'),
+      $container->get('apigee_m10n.monetization')
     );
   }
 
@@ -101,6 +116,18 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
     });
 
     return $entities;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function doPostSave(EntityInterface $entity, $update) {
+    parent::doPostSave($entity, $update);
+
+    // Rebuild the purchased plans cache on create or update.
+    if ($developer = $entity->getDeveloper()) {
+      $this->monetization->clearDeveloperPurchasedPlansCache($developer->getEmail());
+    }
   }
 
   /**

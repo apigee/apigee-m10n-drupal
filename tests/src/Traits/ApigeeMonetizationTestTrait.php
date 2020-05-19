@@ -467,7 +467,7 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Twig_Error_Syntax
    */
   protected function warmPurchasedPlanCache(UserInterface $user): void {
-    \Drupal::cache()->set("apigee_m10n:dev:purchased_plans:{$user->getEmail()}", []);
+    \Drupal::cache()->set(\Drupal::service('apigee_m10n.monetization')->getDeveloperPurchasedPlansCacheId($user->getEmail()), []);
   }
 
   /**
