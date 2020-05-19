@@ -80,11 +80,11 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     // Check if price field is disabled and all price range fields are visible.
     $this->drupalGet('product/add/default');
     $this->assertSession()
-      ->elementNotExists('css', '[name="variations[form][inline_entity_form][price][0][number]"]');
+      ->elementNotExists('css', '[name="variations[form][0][price][0][number]"]');
     $price_range_fields = ['minimum', 'maximum', 'default', 'currency_code'];
     foreach ($price_range_fields as $field_name) {
       $this->assertSession()
-        ->elementExists('css', '[name="variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][' . $field_name . ']"]');
+        ->elementExists('css', '[name="variations[form][0][apigee_price_range][0][price_range][fields][' . $field_name . ']"]');
     }
   }
 
@@ -115,10 +115,10 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
 
     // Validate price range fields.
     $this->submitForm([
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][minimum]' => $minimum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][default]' => $default,
+      'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => $minimum,
+      'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
+      'variations[form][0][apigee_price_range][0][price_range][fields][default]' => $default,
     ], 'Create variation');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertSession()->pageTextContains($message);
@@ -152,10 +152,10 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $title = $this->randomString(16);
     $this->submitForm([
       'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][minimum]' => $minimum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][default]' => $default,
+      'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => $minimum,
+      'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
+      'variations[form][0][apigee_price_range][0][price_range][fields][default]' => $default,
     ], 'Save');
 
     // Check if default value is set.
@@ -182,10 +182,10 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $title = $this->randomString(16);
     $this->submitForm([
       'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][minimum]' => 20,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][maximum]' => 500,
-      'variations[form][inline_entity_form][apigee_price_range][0][price_range][fields][default]' => 40,
+      'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => 20,
+      'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => 500,
+      'variations[form][0][apigee_price_range][0][price_range][fields][default]' => 40,
     ], 'Save');
 
     $this->submitForm([
@@ -223,8 +223,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $title = $this->randomString(16);
     $this->submitForm([
       'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][inline_entity_form][price][0][number]' => 1,
+      'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
+      'variations[form][0][price][0][number]' => 1,
     ], 'Save');
 
     $this->drupalGet('product/1');
@@ -288,8 +288,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $title = 'Name of product';
     $this->submitForm([
       'title[0][value]' => $title,
-      'variations[form][inline_entity_form][sku][0][value]' => 'SKU-PRODUCT',
-      'variations[form][inline_entity_form][price][0][number]' => $value,
+      'variations[form][0][sku][0][value]' => 'SKU-PRODUCT',
+      'variations[form][0][price][0][number]' => $value,
     ], 'Save');
 
     $this->assertSession()->pageTextContains(t($message, [
