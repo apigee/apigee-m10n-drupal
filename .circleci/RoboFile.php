@@ -414,7 +414,7 @@ class RoboFile extends \Robo\Tasks
         "*" => "dist"
       ];
 
-      // Add edge dependencies.
+      // Add apigee_edge dependencies.
       $config->require->{"drupal/rules"} = "^3.0@alpha";
 
       // The drupal image contains Drupal core v8.6.x. A request has been made
