@@ -113,7 +113,7 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
     self::assertEquals("200", $response->getStatusCode());
 
     $developer_array = json_decode($response->getBody(), TRUE);
-    static::assertSame($developer->id(), $developer_array['developerId']);
+    static::assertSame($developer->id(), $developer_array['email']);
     static::assertSame($developer->getEmail(), $developer_array['email']);
     static::assertSame($developer->getFirstName(), $developer_array['firstName']);
     static::assertSame($developer->getLastName(), $developer_array['lastName']);
