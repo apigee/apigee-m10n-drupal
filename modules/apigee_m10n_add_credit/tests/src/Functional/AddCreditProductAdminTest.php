@@ -80,7 +80,7 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
     );
 
     // Enable the variations field.
-    $this->container->get('entity.manager')
+    $this->container->get('entity_type.manager')
       ->getStorage('entity_form_display')
       ->load('commerce_product.default.default')
       ->setComponent('variations', [
