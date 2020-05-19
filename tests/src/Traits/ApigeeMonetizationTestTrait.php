@@ -478,7 +478,7 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Queues up a mock developer response.
    *
-   * @param \Drupal\user\UserInterface $user
+   * @param \Drupal\user\UserInterface $developer
    *   The developer user to get properties from.
    * @param string|null $response_code
    *   Add a response code to override the default.
@@ -488,8 +488,7 @@ trait ApigeeMonetizationTestTrait {
   protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL, $billing_type = NULL) {
     $context = empty($response_code) ? [] : ['status_code' => $response_code];
 
-    $context['developer'] = $this->convertUserToEdgeDeveloper($user);
-
+    $context['developer'] = $developer;
     $context['org_name'] = $this->sdk_connector->getOrganization();
 
     if ($billing_type) {
@@ -664,7 +663,11 @@ trait ApigeeMonetizationTestTrait {
       'get_developer_terms_conditions',
     ]);
 
-    \Drupal::service('apigee_m10n.monetization')->isLatestTermsAndConditionAccepted($developer->getEmail());
+    \Drupal::service('apigee_m10n.monetization')
+      ->isLatestTermsAndConditionAccepted($developer->getEmail());
+  }
+
+  /**
    * Convert a Drupal developer to a Apigee Edge developer.
    *
    * @param \Drupal\user\UserInterface $user

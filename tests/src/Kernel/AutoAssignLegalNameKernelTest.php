@@ -58,12 +58,12 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
    * Tests legal name auto assignment routine.
    */
   public function testAutoAssignLegalName() {
-    $package = $this->createPackage();
-    $rate_plan = $this->createPackageRatePlan($package);
-    $subscription = $this->createsubscription($this->developer, $rate_plan);
+    $package = $this->createProductBundle();
+    $rate_plan = $this->createRatePlan($package);
+    $subscription = $this->createPurchasedPlan($this->developer, $rate_plan);
     $dev = $this->convertUserToEdgeDeveloper($this->developer, ['MINT_DEVELOPER_LEGAL_NAME' => $this->developer->getEmail()]);
     \Drupal::cache('apigee_edge_entity')->delete("values:developer:{$dev->id()}");
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse([
         'developer' => ['developer' => $dev],

@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Url;
 
 /**
@@ -71,29 +70,6 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
         'name' => ['value' => $this->developer->getEmail()],
         'org_name' => 'Test Org',
       ],
-    $user_roles = $this->developer->getRoles();
-    $this->grantPermissions(Role::load(reset($user_roles)), ['view any monetization billing details']);
-
-    // Load the page before setting the legal name.
-    $this->queueOrg();
-    $this->drupalGet(Url::fromRoute('apigee_monetization.profile', [
-      'user' => $this->developer->id(),
-    ]));
-    // Make sure user has access to the page.
-    $this->assertSession()->responseNotContains('Access denied');
-    $this->assertSession()->responseNotContains('Connection error');
-    $this->assertSame('', $this->getSession()->getPage()->findById('edit-legal-company-name')->getValue());
-    $this->assertCssElementContains('#edit-billing .fieldset-wrapper', 'PREPAID');
-
-    // Load the developer.
-    $developer = Developer::load($this->developer->getEmail());
-    // Clear the cache so the developer is re-loaded.
-    \Drupal::cache('apigee_edge_entity')->delete("values:developer:{$developer->id()}");
-
-    // Set the legal name and queue a `get_developer` response.
-    $developer->setAttribute('MINT_DEVELOPER_LEGAL_NAME', $developer->getEmail());
-    $this->stack->queueMockResponse([
-      'developer' => ['developer' => $developer],
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.profile', [
@@ -105,7 +81,6 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Connection error');
     $this->assertSame($this->developer->getEmail(), $this->getSession()->getPage()->findById('edit-legal-company-name')->getValue());
     $this->assertCssElementContains('#edit-billing .fieldset-wrapper', 'PREPAID');
-
   }
 
 }
