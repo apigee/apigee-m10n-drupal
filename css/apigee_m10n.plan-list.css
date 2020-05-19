@@ -1,0 +1,28 @@
+
+/* Rate plan entity */
+.rate-plan .field {
+  margin-bottom: 1rem;
+}
+
+.rate-plan .field--name-products > .field__label {
+  font-size: inherit;
+  font-weight: bold;
+}
+
+.rate-plan .field--name-products .field__items {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.rate-plan .field--name-products .field__item:not(:last-child)::after {
+  content: ',';
+  margin-right: 1ch;
+}
+
+/* Rate plan entity, teaser specific */
+.rate-plan--view-mode-teaser {
+  background-color: #f9f9f9;
+  border: 1px solid #e3e3e3;
+  margin: 20px 0;
+  padding: 20px;
+}

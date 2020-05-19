@@ -25,22 +25,26 @@ use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
 use Apigee\Edge\Api\Monetization\Entity\ApiProduct as MonetizationApiProduct;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\Property\FreemiumPropertiesInterface;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
 use Drupal\apigee_edge\UserDeveloperConverterInterface;
 use Drupal\apigee_m10n\Entity\Package;
 use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\Subscription;
-use Drupal\apigee_m10n\Entity\SubscriptionInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
+use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 use Drupal\key\Entity\Key;
-use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeTestTrait;
+use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -49,8 +53,8 @@ use Drupal\user\UserInterface;
  */
 trait ApigeeMonetizationTestTrait {
 
-  use ApigeeEdgeTestTrait {
-    setUp as edgeSetup;
+  use AccountProphecyTrait;
+  use ApigeeEdgeFunctionalTestTrait {
     createAccount as edgeCreateAccount;
   }
 
@@ -89,6 +93,13 @@ trait ApigeeMonetizationTestTrait {
   protected $cleanup_queue;
 
   /**
+   * The default org timezone.
+   *
+   * @var string
+   */
+  protected $org_default_timezone = 'America/Los_Angeles';
+
+  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
@@ -120,8 +131,17 @@ trait ApigeeMonetizationTestTrait {
     ]);
 
     $key->save();
+
+    // Collect credentials from environment variables.
+    $fields = [];
+    foreach (array_keys($key->getKeyType()->getPluginDefinition()['multivalue']['fields']) as $field) {
+      $id = 'APIGEE_EDGE_' . strtoupper($field);
+      if ($value = getenv($id)) {
+        $fields[$id] = $value;
+      }
+    }
     // Make sure the credentials persists for functional tests.
-    $key->getKeyProvider()->setKeyValue($key, $key->getKeyValue());
+    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $fields);
 
     $this->config('apigee_edge.auth')
       ->set('active_key', 'apigee_m10n_test_auth')
@@ -131,14 +151,12 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Create an account.
    *
-   * We override this function from `ApigeeEdgeTestTrait` so we can queue the
+   * We override this function from `ApigeeEdgeFunctionalTestTrait` so we can queue the
    * appropriate response upon account creation.
    *
    * {@inheritdoc}
-   *
-   * @throws \Exception
    */
-  protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = ''): ?UserInterface {
+  protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = '', $attributes = []): ?UserInterface {
     $rid = NULL;
     if ($permissions) {
       $rid = $this->createRole($permissions);
@@ -164,8 +182,10 @@ trait ApigeeMonetizationTestTrait {
 
     $account = User::create($edit);
 
+    $billing_type = empty($attributes['billing_type']) ? NULL : $attributes['billing_type'];
+
     // Queue up a created response.
-    $this->queueDeveloperResponse($account, 200);
+    $this->queueDeveloperResponse($account, 201, $billing_type);
 
     // Save the user.
     $account->save();
@@ -178,12 +198,15 @@ trait ApigeeMonetizationTestTrait {
     // This is here to make drupalLogin() work.
     $account->passRaw = $edit['pass'];
 
+    // Assume the account has no purchased plans initially.
+    $this->warmPurchasedPlanCache($account);
+
     $this->cleanup_queue[] = [
       'weight' => 99,
       // Prepare for deleting the developer.
-      'callback' => function () use ($account) {
-        $this->queueDeveloperResponse($account);
-        $this->queueDeveloperResponse($account);
+      'callback' => function () use ($account, $billing_type) {
+        $this->queueDeveloperResponse($account, NULL, $billing_type);
+        $this->queueDeveloperResponse($account, NULL, $billing_type);
         // Delete it.
         $account->delete();
       },
@@ -209,6 +232,8 @@ trait ApigeeMonetizationTestTrait {
     // Need to queue the management spi product.
     $this->stack->queueMockResponse(['api_product' => ['product' => $product]]);
     $product->save();
+    // Warm the entity static cache.
+    \Drupal::service('entity.memory_cache')->set("values:api_product:{$product->id()}", $product);
 
     // Remove the product in the cleanup queue.
     $this->cleanup_queue[] = [
@@ -227,17 +252,18 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Create an API package.
+   * Create a product bundle.
    *
    * @throws \Exception
    */
-  protected function createPackage(): PackageInterface {
+  protected function createProductBundle(): ProductBundleInterface {
     $products = [];
     for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
     }
 
-    $package = new ApiPackage([
+    $api_package = new ApiPackage([
+      'id'          => $this->randomMachineName(),
       'name'        => $this->randomMachineName(),
       'description' => $this->getRandomGenerator()->sentences(3),
       'displayName' => $this->getRandomGenerator()->word(16),
@@ -245,37 +271,41 @@ trait ApigeeMonetizationTestTrait {
       // CREATED, ACTIVE, INACTIVE.
       'status'      => 'CREATED',
     ]);
-    // Get a package controller from the package controller factory.
-    $package_controller = $this->controller_factory->apiPackageController();
-    $this->stack
-      ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
-    $package_controller->create($package);
 
-    // Remove the packages in the cleanup queue.
+    $this->stack->queueMockResponse(['package' => ['package' => $api_package]]);
+    // Load the product_bundle drupal entity and warm the entity cache.
+    $product_bundle = ProductBundle::load($api_package->id());
+    // Remove the product bundle in the cleanup queue.
     $this->cleanup_queue[] = [
       'weight' => 10,
-      'callback' => function () use ($package, $package_controller) {
+      'callback' => function () use ($product_bundle) {
         $this->stack
-          ->queueMockResponse(['get_monetization_package' => ['package' => $package]]);
-        $package_controller->delete($package->id());
+          ->queueMockResponse(['get_monetization_package' => ['package' => $product_bundle]]);
+        $product_bundle->delete();
       },
     ];
 
-    return Package::createFrom($package);
+    return $product_bundle;
   }
 
   /**
-   * Create a package rate plan for a given package.
+   * Create a rate plan for a given product bundle.
    *
-   * @param \Drupal\apigee_m10n\Entity\PackageInterface $package
-   *   The rate plan package.
+   * @param \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle
+   *   The rate plan product bundle.
+   * @param string $type
+   *   The type of plan.
+   * @param string $id
+   *   The rate plan Id. It not set it will randomly generated.
+   * @param array $properties
+   *   Optional properties to set on the decorated object.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   A rate plan entity.
    *
    * @throws \Exception
    */
-  protected function createPackageRatePlan(PackageInterface $package): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, string $id = NULL, array $properties = []): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 
@@ -295,18 +325,19 @@ trait ApigeeMonetizationTestTrait {
     ]);
     $rate_plan_rate->setStartUnit(1);
 
-    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-    $rate_plan = RatePlan::create([
+    $start_date = new \DateTimeImmutable('2018-07-26 00:00:00', new \DateTimeZone($this->org_default_timezone));
+    $end_date = new \DateTimeImmutable('today +1 year', new \DateTimeZone($this->org_default_timezone));
+    $properties += [
       'advance'               => TRUE,
       'customPaymentTerm'     => TRUE,
       'description'           => $this->getRandomGenerator()->sentences(3),
       'displayName'           => $this->getRandomGenerator()->word(16),
       'earlyTerminationFee'   => '2.0000',
-      'endDate'               => new \DateTimeImmutable('now + 1 year'),
+      'endDate'               => $end_date,
       'frequencyDuration'     => 1,
       'frequencyDurationType' => FreemiumPropertiesInterface::FREEMIUM_DURATION_MONTH,
       'freemiumUnit'          => 1,
-      'id'                    => strtolower($this->randomMachineName()),
+      'id'                    => $id ?: strtolower($this->randomMachineName()),
       'isPrivate'             => 'false',
       'name'                  => $this->randomMachineName(),
       'paymentDueDays'        => '30',
@@ -337,17 +368,38 @@ trait ApigeeMonetizationTestTrait {
       'recurringStartUnit'    => '1',
       'recurringType'         => 'CALENDAR',
       'setUpFee'              => '1.0000',
-      'startDate'             => new \DateTimeImmutable('2018-07-26 00:00:00'),
-      'type'                  => 'STANDARD',
+      'startDate'             => $start_date,
+      'type'                  => $type,
       'organization'          => $org,
       'currency'              => $currency,
-      'package'               => $package->decorated(),
-      'subscribe'             => [],
-    ]);
+      'package'               => $product_bundle->decorated(),
+      'purchase'             => [],
+    ];
 
-    $this->stack
-      ->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
-    $rate_plan->save();
+    switch ($type) {
+      case RatePlanInterface::TYPE_DEVELOPER:
+        $this->stack->queueMockResponse(['rate_plan' => ['plan' => $properties]]);
+        $rate_plan = RatePlan::loadById($product_bundle->id(), $properties['id']);
+        break;
+
+      default:
+        /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+        $rate_plan = RatePlan::create($properties);
+        $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+        $rate_plan->save();
+
+        // Warm the cache.
+        $this->stack->queueMockResponse(['rate_plan' => ['plan' => $rate_plan]]);
+        $rate_plan = RatePlan::loadById($product_bundle->id(), $rate_plan->id());
+
+        // Warm the future plan cache.
+        $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => [$rate_plan]]]);
+        $rate_plan->getFuturePlanStartDate();
+
+        // Make sure the dates loaded the same as they were originally set.
+        static::assertEquals($start_date, $rate_plan->getStartDate());
+        static::assertEquals($end_date, $rate_plan->getEndDate());
+    }
 
     // Remove the rate plan in the cleanup queue.
     $this->cleanup_queue[] = [
@@ -362,37 +414,65 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
-   * Creates a subscription.
+   * Creates a purchased plan.
    *
    * @param \Drupal\user\UserInterface $user
-   *   The user to subscribe to the rate plan.
+   *   The user to purchase the rate plan.
    * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
-   *   The rate plan to subscribe to.
+   *   The rate plan to purchase.
    *
-   * @return \Drupal\apigee_m10n\Entity\SubscriptionInterface
-   *   The subscription.
+   * @return \Drupal\apigee_m10n\Entity\PurchasedPlanInterface
+   *   The purchased plan.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    * @throws \Twig_Error_Loader
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  protected function createSubscription(UserInterface $user, RatePlanInterface $rate_plan): SubscriptionInterface {
-    $subscription = Subscription::create([
+  protected function createPurchasedPlan(UserInterface $user, RatePlanInterface $rate_plan): PurchasedPlanInterface {
+    $start_date = new \DateTimeImmutable('today', new \DateTimeZone($this->org_default_timezone));
+    $purchased_plan = PurchasedPlan::create([
       'ratePlan' => $rate_plan,
       'developer' => new Developer([
         'email' => $user->getEmail(),
         'name' => $user->getDisplayName(),
       ]),
-      'startDate' => new \DateTimeImmutable(),
+      'startDate' => $start_date,
     ]);
 
-    $this->stack->queueMockResponse('subscription', ['subscription' => $subscription]);
-    $subscription->save();
+    $this->stack->queueMockResponse(['purchased_plan' => ['purchased_plan' => $purchased_plan]]);
+    $purchased_plan->save();
 
-    // The subscription controller does not have a delete operation so there is
+    // Warm the cache for this purchased_plan.
+    $purchased_plan->set('id', $this->getRandomUniqueId());
+    $this->stack->queueMockResponse(['purchased_plan' => ['purchased_plan' => $purchased_plan]]);
+    $purchased_plan = PurchasedPlan::load($purchased_plan->id());
+
+    // Make sure the start date is unchanged while loading.
+    static::assertEquals($start_date, $purchased_plan->decorated()->getStartDate());
+
+    // The purchased_plan controller does not have a delete operation so there is
     // nothing to add to the cleanup queue.
-    return $subscription;
+    return $purchased_plan;
+  }
+
+  /**
+   * Populates the purchased plan cache for a user.
+   *
+   * Use this for tests that fetch purchased plans.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The user entity.
+   *
+   * @see \Drupal\apigee_m10n\Monetization::isDeveloperAlreadySubscribed()
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Twig_Error_Loader
+   * @throws \Twig_Error_Runtime
+   * @throws \Twig_Error_Syntax
+   */
+  protected function warmPurchasedPlanCache(UserInterface $user): void {
+    \Drupal::cache()->set("apigee_m10n:dev:purchased_plans:{$user->getEmail()}", []);
   }
 
   /**
@@ -402,15 +482,19 @@ trait ApigeeMonetizationTestTrait {
    *   The developer user to get properties from.
    * @param string|null $response_code
    *   Add a response code to override the default.
-   *
-   * @throws \Exception
+   * @param string|null $billing_type
+   *   The developer billing type.
    */
-  protected function queueDeveloperResponse(UserInterface $user, $response_code = NULL) {
+  protected function queueDeveloperResponse(UserInterface $developer, $response_code = NULL, $billing_type = NULL) {
     $context = empty($response_code) ? [] : ['status_code' => $response_code];
 
     $context['developer'] = $this->convertUserToEdgeDeveloper($user);
 
     $context['org_name'] = $this->sdk_connector->getOrganization();
+
+    if ($billing_type) {
+      $context['billing_type'] = $billing_type;
+    }
 
     $this->stack->queueMockResponse(['get_developer' => $context]);
   }
@@ -423,9 +507,32 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function queueOrg($monetized = TRUE) {
+  protected function warmOrganizationCache($monetized = TRUE) {
     $this->stack
-      ->queueMockResponse(['get_organization' => ['monetization_enabled' => $monetized ? 'true' : 'false']]);
+      ->queueMockResponse([
+        'get_organization' => [
+          'monetization_enabled' => $monetized ? 'true' : 'false',
+          'timezone' => $this->org_default_timezone,
+        ],
+      ]);
+    \Drupal::service('apigee_m10n.monetization')->getOrganization();
+  }
+
+  /**
+   * Helper for testing element text matches by css selector.
+   *
+   * @param string $selector
+   *   The css selector.
+   * @param string $text
+   *   The test to look for.
+   *
+   * @throws \Behat\Mink\Exception\ElementTextException
+   */
+  protected function assertCssElementText($selector, $text) {
+    static::assertSame(
+      $this->getSession()->getPage()->find('css', $selector)->getText(),
+      $text
+    );
   }
 
   /**
@@ -536,6 +643,28 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
+   * Warm the terms and services cache.
+   */
+  protected function warmTnsCache() {
+    $this->stack->queueMockResponse([
+      'get_terms_conditions',
+    ]);
+
+    \Drupal::service('apigee_m10n.monetization')->getLatestTermsAndConditions();
+  }
+
+  /**
+   * Warm the terms and services cache accepted cache for a developer.
+   *
+   * @param \Drupal\user\UserInterface $developer
+   *   The developer.
+   */
+  protected function warmDeveloperTnsCache(UserInterface $developer) {
+    $this->stack->queueMockResponse([
+      'get_developer_terms_conditions',
+    ]);
+
+    \Drupal::service('apigee_m10n.monetization')->isLatestTermsAndConditionAccepted($developer->getEmail());
    * Convert a Drupal developer to a Apigee Edge developer.
    *
    * @param \Drupal\user\UserInterface $user

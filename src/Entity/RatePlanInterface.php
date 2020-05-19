@@ -23,40 +23,64 @@ use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface as MonetizationRatePla
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityInterface;
 
 /**
- * Defines the interface for package rate plan entity objects.
+ * Defines the interface for rate plan entity objects.
  */
 interface RatePlanInterface extends MonetizationRatePlanInterface, FieldableEdgeEntityInterface {
 
   /**
-   * Loads rate plans by package name.
+   * Gets the ID of the product bundle this rate plan belongs to.
    *
-   * @param string $package_name
-   *   The name of the API package.
-   *
-   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
-   *   An array of rate plans for a given package.
+   * @return string
+   *   The product bundle ID.
    */
-  public static function loadPackageRatePlans(string $package_name): array;
+  public function getProductBundleId();
 
   /**
-   * Load an individual package rate plan by package_id and rate plan ID.
+   * Loads rate plans by product bundle id.
    *
-   * @param string $package_name
-   *   The package the rate plan belongs to.
+   * @param string $product_bundle
+   *   The name of the product bundle.
+   *
+   * @return \Drupal\apigee_m10n\Entity\RatePlanInterface[]
+   *   An array of rate plans for a given product bundle.
+   */
+  public static function loadRatePlansByProductBundle(string $product_bundle): array;
+
+  /**
+   * Load an individual rate plan by product_bundle_id and rate plan ID.
+   *
+   * @param string $product_bundle_id
+   *   The product bundle the rate plan belongs to.
    * @param string $id
    *   The rate plan ID.
    *
    * @return \Drupal\apigee_m10n\Entity\RatePlanInterface
    *   The rate plan.
    */
-  public static function loadById(string $package_name, string $id): RatePlanInterface;
+  public static function loadById(string $product_bundle_id, string $id): RatePlanInterface;
 
   /**
-   * Get's data for the `apigee_subscribe` field formatter.
+   * Get's data for the `apigee_purchase` field formatter.
    *
    * @return array|null
-   *   An array with data to build a link or form to subscribe to a rate plan.
+   *   An array with data to build a link or form to purchase a rate plan.
    */
-  public function getSubscribe():? array;
+  public function getPurchase():? array;
+
+  /**
+   * Gets the start date of the future plan for if a future plan exists.
+   *
+   * @return \DateTimeImmutable|null
+   *   The future start date or NULL if there is no future plan.
+   */
+  public function getFuturePlanStartDate(): ?\DateTimeImmutable;
+
+  /**
+   * Gets a link to the future plan if a future plan exists.
+   *
+   * @return \Drupal\link\LinkItemInterface|null
+   *   A link to the future plan.
+   */
+  public function getFuturePlanLinks();
 
 }

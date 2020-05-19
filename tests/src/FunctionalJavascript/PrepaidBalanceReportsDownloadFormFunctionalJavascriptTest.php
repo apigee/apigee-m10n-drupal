@@ -19,13 +19,13 @@
 
 namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
 
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
+use Drupal\Core\Render\Element\Date;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Traits\PrepaidBalanceReportsDownloadFormTestTrait;
 
 /**
  * UI tests for the prepaid balance reports download form.
- *
- * @package Drupal\Tests\apigee_m10n\Functional
  *
  * @group apigee_m10n
  * @group apigee_m10n_functional
@@ -54,14 +54,14 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
   public function testDownloadPrepaidBalanceReportsAccessDenied() {
     // Create a user that can access the billing page.
     $this->account = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
     ]);
 
     $this->drupalLogin($this->account);
 
     $this->queueMockResponses(['get-prepaid-balances']);
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->account->id(),
     ]));
@@ -82,24 +82,24 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
   public function testPrepaidBalanceReportsDownloadForm() {
     // Create a user that can access the billing page and download report.
     $this->account = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
       'download prepaid balance reports',
     ]);
 
     $this->drupalLogin($this->account);
-
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->account);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->account->id(),
     ]));
 
-    // A user with the 'download prepaid balance reports' permission can see the form.
+    // A user with the 'download prepaid balance reports' permission can see the
+    // form.
     $this->assertSession()
       ->elementExists('css', 'form.previous-balances-reports-download-form');
 
@@ -108,24 +108,29 @@ class PrepaidBalanceReportsDownloadFormFunctionalJavascriptTest extends Monetiza
     $this->assertSession()->optionExists('edit-currency', 'aud');
 
     // Check for year options.
-    $this->assertSession()->optionExists('edit-year', 2017);
-    $this->assertSession()->optionExists('edit-year', 2018);
+    $allowed_months = $this->config(PrepaidBalanceConfigForm::CONFIG_NAME)->get('max_statement_history_months');
+    $options = [];
+    for ($i = $allowed_months - 1; $i >= 0; $i--) {
+      $date = new \DateTimeImmutable("first day of this month 00:00:00 - {$i} months");
+      $year = $date->format('Y');
+      $options[$year]["{$year}-{$date->format('m')}"] = $date->format('F');
+    }
 
     $page = $this->getSession()->getPage();
 
     // Select an account.
     $page->selectFieldOption('edit-currency', 'usd');
 
-    // Test month field when year is selected.
-    $page->selectFieldOption('edit-year', 2017);
-    $this->assertSession()->waitForElementVisible('css', 'select#edit-month-2017');
-    $this->assertSession()->optionExists('month_2017', '2017-12');
+    foreach ($options as $year => $month_options) {
+      $this->assertSession()->optionExists('edit-year', $year);
+      $page->selectFieldOption('edit-year', $year);
+      $this->assertSession()->waitForElementVisible('css', "select#edit-month-{$year}");
+      // Test month field when year is selected.
+      foreach ($options as $index => $month_option) {
+        $this->assertSession()->optionExists("edit-month-{$index}", array_keys($month_option)[0]);
+      }
+    }
 
-    // Test month field when year is changed.
-    $page->selectFieldOption('edit-year', 2018);
-    $this->assertSession()->waitForElementVisible('css', 'select#edit-month-2018');
-    $this->assertSession()->optionExists('month_2018', '2018-8');
-    $this->assertSession()->optionExists('month_2018', '2018-9');
   }
 
 }

@@ -30,6 +30,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_datestamp",
  *   label = @Translation("Apigee Date"),
  *   description = @Translation("An entity field containing a date."),
+ *   category = @Translation("Apigee"),
  *   no_ui = TRUE,
  *   default_widget = "apigee_datestamp",
  *   default_formatter = "apigee_datestamp"

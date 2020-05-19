@@ -22,8 +22,6 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 /**
  * Functional test for navigation.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
@@ -36,6 +34,9 @@ class NavigationTest extends MonetizationFunctionalTestBase {
    */
   protected $developer;
 
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = ['block'];
 
   /**
@@ -56,9 +57,9 @@ class NavigationTest extends MonetizationFunctionalTestBase {
    */
   public function testNavigation() {
     $this->developer = $this->createAccount([
-      'view mint prepaid reports',
-      'access monetization packages',
-      'view subscription',
+      'view own prepaid balance',
+      'view product_bundle',
+      'view own purchased_plan',
     ]);
 
     $this->drupalLogin($this->developer);
@@ -70,13 +71,31 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $session = $this->assertSession();
     $session->linkExists('Pricing & plans');
     $session->linkExists('My account');
-    $session->linkExists('Prepaid balance');
-    $session->linkExists('Purchased plans');
+    $session->linkExists('Balance and plans');
 
     $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & plans');
     $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
-    $this->assertCssElementContains('nav.tabs', 'Prepaid balance');
+
+    $this->warmOrganizationCache();
+    $product_bundle = $this->createProductBundle();
+    $rate_plan = $this->createRatePlan($product_bundle);
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
+
+    $this->stack->queueMockResponse([
+      'get_developer_purchased_plans' => [
+        'purchased_plans' => [$purchased_plan],
+      ],
+    ]);
+
+    // Check the manage Balance and plans link.
+    $this->queueDeveloperResponse($this->developer);
+    $this->clickLink('Balance and plans');
+    $session->linkExists('Purchased plans');
+    $session->linkExists('Prepaid balance');
+    $session->linkExists('Billing Details');
     $this->assertCssElementContains('nav.tabs', 'Purchased plans');
+    $this->assertCssElementContains('nav.tabs', 'Prepaid balance');
+    $this->assertCssElementContains('nav.tabs', 'Billing Details');
   }
 
 }

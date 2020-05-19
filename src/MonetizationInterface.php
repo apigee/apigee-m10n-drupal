@@ -20,18 +20,41 @@
 
 namespace Drupal\apigee_m10n;
 
+use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 
 /**
  * Interface MonetizationInterface.
  */
 interface MonetizationInterface {
+
+  /**
+   * A list of permissions that will be given to authenticated users on install.
+   */
+  const DEFAULT_AUTHENTICATED_PERMISSIONS = [
+    'view rate_plan',
+    'purchase rate_plan',
+    'view own purchased_plan',
+    'update own purchased_plan',
+    'view own prepaid balance',
+    'refresh own prepaid balance',
+    'download prepaid balance reports',
+    'view own billing details',
+  ];
+
+  /**
+   * Developer billing type attribute name.
+   */
+  const BILLING_TYPE_ATTR = 'MINT_BILLING_TYPE';
 
   /**
    * Tests whether the current organization has monetization enabled.
@@ -115,19 +138,11 @@ interface MonetizationInterface {
   public function getSupportedCurrencies(): ?array;
 
   /**
-   * Get the billing documents months for an organization.
-   *
-   * @return array|null
-   *   An array of billing documents.
-   */
-  public function getBillingDocumentsMonths(): ?array;
-
-  /**
    * Returns a CSV string for prepaid balances.
    *
    * @param string $developer_id
    *   The developer id.
-   * @param \DateTimeImmutable $month
+   * @param \DateTimeImmutable $date
    *   The month for the prepaid balances.
    * @param string $currency
    *   The currency id. Example: usd.
@@ -135,7 +150,7 @@ interface MonetizationInterface {
    * @return null|string
    *   A CSV string of prepaid balances.
    */
-  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string;
+  public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string;
 
   /**
    * Check if developer accepted latest terms and conditions.
@@ -166,5 +181,57 @@ interface MonetizationInterface {
    *   Terms and conditions history item.
    */
   public function acceptLatestTermsAndConditions(string $developer_id): ?LegalEntityTermsAndConditionsHistoryItem;
+
+  /**
+   * Check if developer accepted latest terms and conditions.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan
+   *   Rate plan entity.
+   *
+   * @return bool|null
+   *   Check if developer is subscribed to a plan.
+   */
+  public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool;
+
+  /**
+   * Handles `hook_form_FORM_ID_alter` (user_admin_permissions) for this module.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   * @param string $form_id
+   *   The form ID (should always be `user_admin_permissions`).
+   */
+  public function formUserAdminPermissionsAlter(&$form, FormStateInterface $form_state, $form_id);
+
+  /**
+   * Handles `hook_ENTITY_TYPE_presave` (user_role) for this module.
+   *
+   * @param \Drupal\user\RoleInterface $user_role
+   *   The user role.
+   */
+  public function userRolePresave(RoleInterface $user_role);
+
+  /**
+   * Gets the Apigee Edge management organization entity.
+   *
+   * @return \Apigee\Edge\Api\Management\Entity\OrganizationInterface
+   *   The organization entity.
+   */
+  public function getOrganization(): ?OrganizationInterface;
+
+  /**
+   * Returns true if developer billing type is prepaid, false if postpaid.
+   *
+   * @param \Drupal\user\UserInterface $account
+   *   The developer account.
+   *
+   * @return bool
+   *   True if developer is prepaid.
+   */
+  public function isDeveloperPrepaid(UserInterface $account): bool;
 
 }

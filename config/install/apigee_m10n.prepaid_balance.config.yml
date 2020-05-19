@@ -1,2 +1,4 @@
 cache:
   max_age: 0
+enable_insufficient_funds_workflow: TRUE
+max_statement_history_months: 12

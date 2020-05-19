@@ -1,0 +1,71 @@
+apigee_m10n_add_credit.config:
+  type: config_object
+  label: 'Apigee add credit config'
+  mapping:
+    notify_on:
+      type: string
+      label: 'Whether to sent notifications "always" or "error_only".'
+    notification_recipient:
+      type: string
+      label: 'The email address to send notifications to.'
+    use_modal:
+      type: boolean
+      label: 'Whether to use a modal for adding credit'
+    products:
+      type: sequence
+      sequence:
+        type: mapping
+        mapping:
+          product_id:
+            label: 'Product ID'
+            type: string
+
+commerce_product.commerce_product_type.*.third_party.apigee_m10n_add_credit:
+  type: mapping
+  label: 'Apigee add credit'
+  mapping:
+    apigee_m10n_enable_add_credit:
+      type: boolean
+      label: 'Whether to enable "Add credit" for this product.'
+    apigee_m10n_enable_skip_cart:
+      type: boolean
+      label: 'Where to skip cart for this product'
+
+field.value.apigee_price_range:
+  type: mapping
+  label: 'Price range'
+  mapping:
+    mininum:
+      type: string
+      label: 'Minimum'
+    maximum:
+      type: string
+      label: 'Maximum'
+    default:
+      type: string
+      label: 'Default'
+    currencyCode:
+      type: string
+      label: 'Currency code'
+
+field.field_settings.apigee_price_range:
+  type: mapping
+  label: 'Price field settings'
+  mapping:
+    available_currencies:
+      type: sequence
+      label: 'Available currencies'
+      orderby: value
+      sequence:
+        type: string
+
+field.value.add_credit_target_entity:
+  type: mapping
+  label: 'Add credit target'
+  mapping:
+    target_id:
+      type: string
+      label: 'Entity ID'
+    target_type:
+      type: string
+      label: 'Entity type'

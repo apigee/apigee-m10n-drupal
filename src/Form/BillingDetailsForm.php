@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Form;
 
+use Apigee\Edge\Api\Monetization\Controller\DeveloperControllerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -39,11 +40,6 @@ class BillingDetailsForm extends FormBase {
    * Developer legal name attribute name.
    */
   const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
-
-  /**
-   * Developer billing type attribute name.
-   */
-  const BILLING_TYPE_ATTR = 'MINT_BILLING_TYPE';
 
   /**
    * Developer.
@@ -74,6 +70,13 @@ class BillingDetailsForm extends FormBase {
   protected $messenger;
 
   /**
+   * The mint developer controller.
+   *
+   * @var \Apigee\Edge\Api\Monetization\Controller\DeveloperControllerInterface
+   */
+  protected $developerController;
+
+  /**
    * Constructs a CompanyProfileForm object.
    *
    * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
@@ -82,11 +85,14 @@ class BillingDetailsForm extends FormBase {
    *   Messenger service.
    * @param \Drupal\Core\Routing\RouteMatchInterface $routeMatch
    *   The current route match.
+   * @param \Apigee\Edge\Api\Monetization\Controller\DeveloperControllerInterface $developer_controller
+   *   The mint developer controller.
    */
-  public function __construct(LoggerChannelFactory $loggerFactory, MessengerInterface $messenger, RouteMatchInterface $routeMatch) {
+  public function __construct(LoggerChannelFactory $loggerFactory, MessengerInterface $messenger, RouteMatchInterface $routeMatch, DeveloperControllerInterface $developer_controller) {
     $this->loggerFactory = $loggerFactory->get('apigee_m10n');
     $this->messenger = $messenger;
     $this->routeMatch = $routeMatch;
+    $this->developerController = $developer_controller;
   }
 
   /**
@@ -96,24 +102,27 @@ class BillingDetailsForm extends FormBase {
     return new static(
       $container->get('logger.factory'),
       $container->get('messenger'),
-      $container->get('current_route_match')
+      $container->get('current_route_match'),
+      $container->get('apigee_m10n.sdk_controller_factory')->developerController()
     );
   }
 
   /**
    * Checks current users access to Billing Profile page.
    *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The current route match.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
    *
    * @return \Drupal\Core\Access\AccessResult
    *   Grants access to the route if passed permissions are present.
    */
-  public function access(AccountInterface $account) {
-    $userParameter = $this->routeMatch->getParameter('user');
+  public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+    $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
-      $account->hasPermission('view any monetization billing details') ||
-      ($account->hasPermission('view own monetization billing details') && $account->id() === $userParameter->id())
+      $account->hasPermission('view any billing details') ||
+      ($account->hasPermission('view own billing details') && $account->id() === $user->id())
     );
   }
 
@@ -130,6 +139,10 @@ class BillingDetailsForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
     $this->developer = Developer::load($user->getEmail());
 
+    // Load the mint developer to retrieve legal name and billing type.
+    /** @var \Apigee\Edge\Api\Monetization\Entity\Developer $mintDeveloper */
+    $mint_developer = $this->developerController->load($user->getEmail());
+
     $form['company'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Company Details'),
@@ -137,7 +150,7 @@ class BillingDetailsForm extends FormBase {
     $form['company']['legal_company_name'] = [
       '#title' => $this->t('Legal Company Name'),
       '#type' => 'textfield',
-      '#default_value' => $this->developer->getAttributeValue(static::LEGAL_NAME_ATTR),
+      '#default_value' => $mint_developer->getLegalName() ?? $this->developer->getEmail(),
       '#required' => TRUE,
     ];
     $form['billing'] = [
@@ -145,7 +158,7 @@ class BillingDetailsForm extends FormBase {
       '#title' => $this->t('Billing Type'),
     ];
     $form['billing']['billing_type'] = [
-      '#markup' => $this->developer->getAttributeValue(static::BILLING_TYPE_ATTR),
+      '#markup' => $mint_developer->getBillingType(),
     ];
     $form['actions'] = [
       '#type' => 'actions',

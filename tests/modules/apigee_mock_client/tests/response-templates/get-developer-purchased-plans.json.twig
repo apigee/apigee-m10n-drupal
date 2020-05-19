@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ *   GET /v1/mint/organizations/{org_name}/developers/{developer_id}/developer-accepted-rateplans
+ *
+ * Response Code: 200
+ */
+#}
+{
+    "developerRatePlan": [
+        {% for purchased_plan in purchased_plans %}
+            {% include 'purchased-plan.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "totalRecords": {{ purchased_plan|length }}
+}

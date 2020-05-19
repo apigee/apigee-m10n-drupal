@@ -1,14 +1,17 @@
-package:
-  version: 1.0
+rate_plan.entity_list:
   css:
     theme:
-      css/package.css: {}
-  js:
-    js/package.js: {}
-  dependencies:
-    - core/jquery
-    - core/jquery.once
-    - core/drupal
+      css/apigee_m10n.plan-list.css: {}
+
+rate_plan.future_links_field:
+  css:
+    theme:
+      css/apigee_m10n.future-links-field.css: {}
+
+rate_plan.details_field:
+  css:
+    theme:
+      css/apigee_m10n.plan-details-field.css: {}
 
 prepaid_balance:
   css:
@@ -16,7 +19,6 @@ prepaid_balance:
       css/apigee_m10n.prepaid-balance.css: {}
 
 tnc-widget:
-  version: 1.0
   css:
     theme:
       css/tnc-widget.css: {}

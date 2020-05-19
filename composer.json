@@ -5,14 +5,18 @@
     "description": "Apigee Edge Monetization for Drupal",
     "require": {
         "php": ">=7.1",
-        "cweagans/composer-patches": "^1.6",
-        "commerceguys/intl": "^1.0",
-        "drupal/apigee_edge": "^1.0-beta2"
+        "ext-bcmath": "*",
+        "cweagans/composer-patches": "~1.6",
+        "commerceguys/intl": "~1.0",
+        "drupal/apigee_edge": "~1.0",
+        "drupal/requirement": "~1.0",
+        "apigee/apigee-client-php": "~2.0.3"
     },
     "require-dev": {
         "behat/mink-extension": "v2.2",
         "behat/mink-selenium2-driver": "1.3.x-dev",
         "bex/behat-screenshot": "^1.2",
+        "consolidation/robo": "~1.0",
         "drupal/coder": "^8.3",
         "drupal/drupal-extension": "master-dev",
         "phpmd/phpmd": "^2.6",
@@ -23,15 +27,5 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "extra": {
-        "patches": {
-            "apigee/apigee-client-php": {
-                "Fix company ID issue for subscriptions": "https://github.com/apigee/apigee-client-php/files/2847006/company-accepted-company-id-fix.patch.txt"
-            },
-            "drupal/core": {
-                "`EntityViewBuilder::getBuildDefaults()` doesn't check for `RevisionableInterface`.": "https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch"
-            }
-        }
-    }
+    "prefer-stable": true
 }

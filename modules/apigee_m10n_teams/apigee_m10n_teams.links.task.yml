@@ -1,0 +1,32 @@
+apigee_m10n_teams.balance_and_plans:
+  route_name: apigee_monetization_teams.billing
+  title: 'Balance and plans'
+  base_route: entity.team.canonical
+
+apigee_m10n_teams.billing:
+  title: 'Prepaid balance'
+  route_name: apigee_monetization_teams.billing
+  base_route: entity.team.canonical
+  parent_id: apigee_m10n_teams.balance_and_plans
+  weight: -2
+
+apigee_m10n_teams.purchased_plans:
+  title: 'Purchased plans'
+  route_name: entity.purchased_plan.team_collection
+  base_route: entity.team.canonical
+  parent_id: apigee_m10n_teams.balance_and_plans
+  weight: -1
+
+apigee_m10n_teams.team_billing_details:
+  title: 'Billing Details'
+  route_name: apigee_m10n_teams.team_billing_details
+  base_route: entity.team.canonical
+  parent_id: apigee_m10n_teams.balance_and_plans
+  weight: 0
+
+apigee_m10n_teams.team_plans:
+  route_name: apigee_monetization.team_plans
+  title: 'Pricing and Plans'
+  base_route: entity.team.canonical
+  parent_id: apigee_m10n_teams.balance_and_plans
+  weight: 1

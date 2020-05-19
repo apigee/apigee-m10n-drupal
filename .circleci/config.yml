@@ -64,12 +64,7 @@ update_dependencies: &update_dependencies
 
     - run:
         working_directory: /var/www/html
-        command: |
-          sudo sed -i 's/^zend_extension/;zend_extension/g' /usr/local/etc/php/conf.d/xdebug.ini
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          ./update-dependencies.sh apigee_m10n
-          wget -q -O - https://www.drupal.org/files/issues/2019-01-10/2951487_15_no-tests.patch | patch -p1
+        command: modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
 
     - save_cache: *save_cache
 
@@ -77,6 +72,9 @@ update_dependencies: &update_dependencies
         root: /var/www/html
         paths:
           - .
+
+    - store_artifacts:
+        path: /tmp/artifacts
 
 # Run Drupal unit and kernel tests as one job. This command invokes the test.sh
 # hook.
@@ -90,15 +88,15 @@ unit_kernel_tests: &unit_kernel_tests
 
     - run:
         working_directory: /var/www/html
-        command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+        command: &unit_kernel_tests_command |
+          cp ./modules/apigee_m10n/.circleci/test.sh /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal functional tests. This command invokes the test-functional.sh
 # hook.
@@ -112,15 +110,15 @@ functional_tests: &functional_tests
 
     - run:
         working_directory: /var/www/html
-        command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+        command: &functional_tests_command |
+          cp ./modules/apigee_m10n/.circleci/test-functional.sh /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run Drupal functional tests. This command invokes the test-functional-js.sh
 # hook.
@@ -134,15 +132,15 @@ functional_js_tests: &functional_js_tests
 
     - run:
         working_directory: /var/www/html
-        command: |
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+        command: &functional_js_tests_command |
+          cp ./modules/apigee_m10n/.circleci/test-functional-js.sh /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./test-functional-js.sh apigee_m10n
 
     - store_test_results:
-        path: /var/www/html/artifacts/phpunit
+        path: /tmp/artifacts/phpunit
     - store_artifacts:
-        path: /var/www/html/artifacts
+        path: /tmp/artifacts
 
 # Run code quality tests. This invokes code-sniffer.sh.
 code_sniffer: &code_sniffer
@@ -155,7 +153,8 @@ code_sniffer: &code_sniffer
 
     - run:
         working_directory: /var/www/html
-        command: |
+        command: &code_sniffer_command |
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
           vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile artifacts/phpmd/index.html
           vendor/bin/phpmetrics --extensions=php,inc,module --report-html=artifacts/phpmetrics --git modules/apigee_m10n
@@ -179,11 +178,35 @@ code_coverage: &code_coverage
         working_directory: /var/www/html
         command: |
           sudo sed -i 's/^;zend_extension/zend_extension/g' /usr/local/etc/php/conf.d/xdebug.ini
-          cp ./modules/apigee_m10n/.circleci/update-dependencies.sh /var/www/html
-          cp ./modules/apigee_m10n/.circleci/RoboFile.php /var/www/html
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
           ./code-coverage-stats.sh apigee_m10n
     - store_artifacts:
         path: /var/www/html/artifacts
+
+# Run all tests.
+all_tests: &all_tests
+  <<: *defaults
+  steps:
+    - attach_workspace:
+        at: /var/www/html
+
+    - checkout
+
+    - run:
+        working_directory: /var/www/html
+        command: *code_sniffer_command
+    - run:
+        working_directory: /var/www/html
+        command: *unit_kernel_tests_command
+    - run:
+        working_directory: /var/www/html
+        command: *functional_tests_command
+    - run:
+        working_directory: /var/www/html
+        command: *functional_js_tests_command
+
+    - store_artifacts:
+        path: /tmp/artifacts
 
 # Declare all of the jobs we should run.
 version: 2
@@ -196,6 +219,8 @@ jobs:
      <<: *functional_tests
   run-functional-js-tests:
      <<: *functional_js_tests
+  run-all-tests:
+    <<: *all_tests
   run-code-sniffer:
      <<: *code_sniffer
   run-code-coverage:

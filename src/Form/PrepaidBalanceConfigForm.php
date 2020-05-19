@@ -18,7 +18,7 @@
 
 namespace Drupal\apigee_m10n\Form;
 
-use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
+use Drupal\apigee_m10n\Controller\PrepaidBalanceControllerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
@@ -28,8 +28,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Config form for prepaid balance.
- *
- * @package Drupal\apigee_m10n
  */
 class PrepaidBalanceConfigForm extends ConfigFormBase {
 
@@ -103,6 +101,29 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
       '#description' => $this->t('Set the cache age for the prepaid balance for a developer.'),
     ];
 
+    $form['general'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('General'),
+    ];
+
+    $form['general']['enable_insufficient_funds_workflow'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable insufficient funds workflow.'),
+      '#description' => $this->t('If checked, the "Purchase" button on rate plans will be disabled if developer billing type is PREPAID and does not have enough credit.'),
+      '#default_value' => $config->get('enable_insufficient_funds_workflow'),
+    ];
+
+    $form['general']['max_statement_history_months'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Billing history limit.'),
+      '#description' => $this->t('The maximum number of months to allow generating as prepaid statement.'),
+      '#default_value' => $config->get('max_statement_history_months'),
+      '#required' => TRUE,
+      '#min' => 1,
+      '#max' => 1200,
+      '#field_suffix' => t('months'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -112,10 +133,12 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config(static::CONFIG_NAME)
       ->set('cache.max_age', $form_state->getValue('max_age'))
+      ->set('enable_insufficient_funds_workflow', $form_state->getValue('enable_insufficient_funds_workflow'))
+      ->set('max_statement_history_months', $form_state->getValue('max_statement_history_months'))
       ->save();
 
     // Clear caches.
-    Cache::invalidateTags([PrepaidBalanceController::CACHE_PREFIX]);
+    Cache::invalidateTags([PrepaidBalanceControllerInterface::CACHE_PREFIX]);
 
     parent::submitForm($form, $form_state);
   }

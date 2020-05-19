@@ -1,0 +1,19 @@
+name: Apigee Monetization Add Credit
+description: Provides the ability to create a Drupal Commerce "Add Credit" product.
+package: Apigee (Experimental)
+
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+
+dependencies:
+  - apigee_m10n:apigee_m10n
+  - commerce:commerce (>=8.x-2.16)
+  - commerce:commerce_product
+  - commerce:commerce_payment
+  - commerce:commerce_price
+  - commerce:commerce_order
+  - commerce:commerce_cart
+  - commerce:commerce_checkout
+
+php: "7.1"

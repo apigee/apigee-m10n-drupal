@@ -23,6 +23,7 @@ use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
 use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Traits\PrepaidBalanceReportsDownloadFormTestTrait;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
@@ -64,7 +65,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     parent::setUp();
 
     $this->developer = $this->createAccount([
-      'view mint prepaid reports',
+      'view own prepaid balance',
       'download prepaid balance reports',
     ]);
     $this->drupalLogin($this->developer);
@@ -83,8 +84,13 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testNoPermission() {
+    $authenticated_role = Role::load(AccountInterface::AUTHENTICATED_ROLE);
+    $authenticated_role->revokePermission('refresh own prepaid balance');
+    $authenticated_role->save();
+
     // User cannot refresh prepaid balance.
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -102,7 +108,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->grantPermissions(Role::load(reset($user_roles)), ['refresh own prepaid balance']);
 
     // User can refresh own account.
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->assertRefreshPrepaidBalanceForUser($this->developer);
   }
 
@@ -113,13 +120,13 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   public function testRefreshAnyPrepaidBalancePermission() {
     // Given a user with "refresh any prepaid balance" permission.
-    // TODO: Update permissions when 'view any prepaid balance' permission is added.
     $user_roles = $this->developer->getRoles();
-    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh any prepaid balance']);
+    $this->grantPermissions(Role::load(reset($user_roles)), ['refresh any prepaid balance', 'view any prepaid balance']);
 
     // User can refresh another user account.
-    $other_user = $this->createAccount(['view mint prepaid reports']);
-    $this->queueOrg();
+    $other_user = $this->createAccount();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($other_user);
     $this->assertRefreshPrepaidBalanceForUser($other_user);
   }
 
@@ -132,7 +139,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     // Visit the prepaid balance page.
     $expected_expiration_time = time() + static::CACHE_MAX_AGE;
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -148,7 +156,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   public function testPrepaidBalanceCacheIdsRebuild() {
     // Visit the prepaid balance page to set the caches.
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -178,7 +187,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   public function testPrepaidBalanceCacheTags() {
     $this->checkDriverHeaderSupport();
 
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -197,7 +207,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
       ->save();
 
     // Visit the prepaid balance page.
-    $this->queueOrg();
+    $this->warmOrganizationCache();
+    $this->queueDeveloperResponse($this->developer);
     $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $this->developer->id(),
@@ -212,7 +223,6 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
-      'get-billing-documents-months',
     ]);
   }
 
@@ -226,7 +236,6 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
     return [
       PrepaidBalanceController::getCacheId($this->developer, 'prepaid_balances'),
       PrepaidBalanceController::getCacheId($this->developer, 'supported_currencies'),
-      PrepaidBalanceController::getCacheId($this->developer, 'billing_documents'),
     ];
   }
 
@@ -240,11 +249,13 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   protected function assertRefreshPrepaidBalanceForUser(UserInterface $user) {
     $this->queueResponses();
+    $this->queueResponses();
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
       'user' => $user->id(),
     ]));
     $this->assertSession()->responseContains('Prepaid balance');
     $this->submitForm([], 'Refresh');
+
     $this->assertSession()
       ->responseContains(PrepaidBalanceRefreshForm::SUCCESS_MESSAGE);
   }

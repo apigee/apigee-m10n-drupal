@@ -1,6 +1,0 @@
-apigee_m10n_add_credit.apigee_add_credit_config_form:
-  title: 'Add credit settings'
-  route_name: apigee_m10n_add_credit.apigee_add_credit_config_form
-  description: 'Configure adding credit using Drupal Commerce module.'
-  parent: system.admin_apigee_m10n
-  weight: 99

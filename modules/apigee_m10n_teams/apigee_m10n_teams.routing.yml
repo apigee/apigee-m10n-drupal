@@ -1,0 +1,69 @@
+apigee_monetization_teams.billing:
+  path: /teams/{team}/monetization/billing
+  defaults:
+    _controller: \Drupal\apigee_m10n_teams\Controller\TeamPrepaidBalanceController::teamBalancePage
+    _title: 'Prepaid balance'
+  requirements:
+    _team_permission: 'view prepaid balance'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.billing
+
+entity.purchased_plan.team_collection:
+  path: '/teams/{team}/monetization/purchased-plans'
+  defaults:
+    _controller: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamPurchasedPlanListBuilder::render'
+    _title_callback: '\Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamPurchasedPlanListBuilder::getPageTitle'
+  requirements:
+    user: '\d+'
+    _team_permission: 'view purchased_plan'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: entity.purchased_plan.developer_collection
+
+entity.rate_plan.team_purchase:
+  path: '/teams/{team}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase'
+  defaults:
+    _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamPurchaseForm'
+    _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamTitle'
+  requirements:
+    _entity_access: 'rate_plan.purchase'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: entity.rate_plan.purchase
+
+entity.purchased_plan.team_cancel_form:
+  path: '/teams/{team}/monetization/purchased-plan/{purchased_plan}/cancel'
+  defaults:
+    _entity_form: 'purchased_plan.cancel'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'purchased_plan.update'
+  options:
+    _apigee_monetization_route: TRUE
+    parameters:
+      purchased_plan:
+        type: 'entity:purchased_plan'
+        converter: paramconverter.entity.purchased_plan
+
+apigee_monetization.team_plans:
+  path: '/teams/{team}/plans'
+  defaults:
+    _controller: \Drupal\apigee_m10n_teams\Controller\TeamPricingAndPlansController::teamCatalogPage
+    _title: "Pricing and Plans"
+  requirements:
+    _team_permission: 'view rate_plan'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.plans
+
+apigee_m10n_teams.team_billing_details:
+  path: '/teams/{team}/monetization/billing-details'
+  defaults:
+    _form: '\Drupal\apigee_m10n_teams\Form\BillingDetailsForm'
+    _title: 'Billing Details'
+  requirements:
+    _team_permission: 'edit billing details'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.profile

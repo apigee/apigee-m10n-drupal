@@ -23,7 +23,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldFormatter\TimestampFormatter;
 
 /**
- * Plugin implementation of the 'apigee_api_package' field formatter.
+ * Plugin implementation of the 'apigee_datestamp' field formatter.
  *
  * @FieldFormatter(
  *   id = "apigee_datestamp",

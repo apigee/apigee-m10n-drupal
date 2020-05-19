@@ -1,0 +1,33 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: product_bundle.product_bundle.default
+targetEntityType: product_bundle
+bundle: product_bundle
+mode: default
+content:
+  apiProducts:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  ratePlans:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+hidden:
+  description: true
+  displayName: true
+  id: true
+  name: true
+  organization: true
+  status: true

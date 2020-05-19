@@ -25,12 +25,14 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
- * Plugin implementation of the 'apigee_subscribe' field type.
+ * Plugin implementation of the 'apigee_tnc' field type.
  *
  * @FieldType(
  *   id = "apigee_tnc",
  *   label = @Translation("Apigee terms and conditions"),
  *   description = @Translation("Apigee terms and conditions"),
+ *   category = @Translation("Apigee"),
+ *   no_ui = TRUE,
  *   default_formatter = "apigee_tnc_default"
  * )
  */

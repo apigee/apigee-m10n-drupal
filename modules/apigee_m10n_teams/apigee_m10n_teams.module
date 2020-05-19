@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Copyright 2018 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function apigee_m10n_teams_entity_type_alter(array &$entity_types) {
+  Drupal::service('apigee_m10n.teams')->entityTypeAlter($entity_types);
+}
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ */
+function apigee_m10n_teams_field_formatter_info_alter(array &$info) {
+  Drupal::service('apigee_m10n.teams')->fieldFormatterInfoAlter($info);
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function apigee_m10n_teams_field_widget_info_alter(array &$info) {
+  Drupal::service('apigee_m10n.teams')->fieldWidgetInfoAlter($info);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_teams_purchased_plan_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return Drupal::service('apigee_m10n.teams')->purchasedPlanAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_teams_product_bundle_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return Drupal::service('apigee_m10n.teams')->entityAccess($entity, $operation, $account);
+}

@@ -39,6 +39,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
   protected static $modules = [
     'key',
     'file',
+    'link',
     'entity',
     'apigee_edge',
     'apigee_m10n',
@@ -66,6 +67,31 @@ class MonetizationKernelTestBase extends KernelTestBase {
     $this->installConfig(['apigee_edge', 'apigee_m10n']);
 
     $this->baseSetUp();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementText($selector, $text) {
+    $element = $this->cssSelect($selector);
+    static::assertArrayHasKey(0, $element, "No match found for `{$selector}`.");
+    static::assertSame(trim($element[0]), $text);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementContains($selector, $text) {
+    $element = $this->cssSelect($selector);
+    static::assertTrue(strpos((string) $element[0], $text) !== FALSE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementNotContains($selector, $text) {
+    $element = $this->cssSelect($selector);
+    static::assertTrue(strpos((string) $element[0], $text) === FALSE);
   }
 
 }

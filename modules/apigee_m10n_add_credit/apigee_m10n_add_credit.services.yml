@@ -1,0 +1,22 @@
+services:
+  apigee_m10n.add_credit:
+    class: Drupal\apigee_m10n_add_credit\AddCreditService
+    arguments: ['@config.factory', '@current_user', '@plugin.manager.apigee_add_credit_entity_type', '@apigee_m10n_add_credit.product_manager']
+
+  apigee_m10n_add_credit.product_manager:
+    class: Drupal\apigee_m10n_add_credit\AddCreditProductManager
+    arguments: ['@config.factory', '@entity_type.manager']
+
+  apigee_m10n_add_credit.payment_transition_subscriber:
+    class: Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceOrderTransitionSubscriber
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_edge.job_executor']
+    tags:
+      - { name: event_subscriber }
+
+  logger.channel.apigee_m10n_add_credit:
+    parent: logger.channel_base
+    arguments: ['apigee_monetization_add_credit']
+
+  plugin.manager.apigee_add_credit_entity_type:
+    class: Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManager
+    parent: default_plugin_manager

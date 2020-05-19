@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * Default theme implementation to conflicting/overlapping products.
+ *
+ * Variables:
+ *   - items: Confcliting plans.
+ */
+#}
+{% if items %}
+  <h4
+    class="conflict-message">{{ 'The plans below share some common products with the plan you are trying to purchase. However if you continue to purchase then these plans will be replaced by the plan you are about to purchase'|t }}</h4>
+  <table class='conflicting-produts'>
+    <thead>
+    <tr>
+      <th>{{ 'Already Purchased Plan'|t }}</th>
+      <th>{{ 'Has Product'|t }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td>{{ item.data }}</td>
+        <td>
+          {% for situation_item in item.children %}
+            <h3 class="conflict-type-name">
+              <strong>{{ situation_item.data }}</strong>
+            </h3>
+            <div class="item-list">
+              <ul>
+                {% for situation_children in situation_item.children %}
+                  <li class="conflict">{{ situation_children }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}

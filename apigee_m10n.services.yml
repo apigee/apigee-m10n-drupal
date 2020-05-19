@@ -5,17 +5,32 @@ services:
 
   apigee_m10n.monetization:
     class: Drupal\apigee_m10n\Monetization
-    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n']
+    arguments: ['@apigee_edge.sdk_connector', '@apigee_m10n.sdk_controller_factory', '@messenger', '@cache.default', '@logger.channel.apigee_m10n', '@user.permissions', '@apigee_m10n.price_formatter', '@apigee_edge.controller.organization']
+
+  apigee_m10n.price_formatter.format_repository:
+    class: CommerceGuys\Intl\NumberFormat\NumberFormatRepository
+    public: false
+
+  apigee_m10n.price_formatter.currency_repository:
+    class: CommerceGuys\Intl\Currency\CurrencyRepository
+    public: false
+
+  apigee_m10n.price_formatter:
+    class: CommerceGuys\Intl\Formatter\CurrencyFormatter
+    arguments: ['@apigee_m10n.price_formatter.format_repository', '@apigee_m10n.price_formatter.currency_repository']
 
   apigee_m10n.sdk_controller_factory:
     class: Drupal\apigee_m10n\ApigeeSdkControllerFactory
     arguments: ['@apigee_edge.sdk_connector']
 
-  apigee_m10n.sdk_controller_proxy.rate_plan:
-    class: Drupal\apigee_m10n\Entity\Storage\RatePlanSdkControllerProxy
+  apigee_m10n.sdk_controller_proxy.product_bundle:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\ProductBundleEntityControllerProxy
 
-  apigee_m10n.sdk_controller_proxy.subscription:
-    class: Drupal\apigee_m10n\Entity\Storage\DeveloperAcceptedRatePlanSdkControllerProxy
+  apigee_m10n.sdk_controller_proxy.rate_plan:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxy
+
+  apigee_m10n.sdk_controller_proxy.purchased_plan:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy
 
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
@@ -34,8 +49,8 @@ services:
       - { name: paramconverter }
     arguments: ['@entity.manager', '@language_manager']
 
-  paramconverter.entity.subscription:
-    class: Drupal\apigee_m10n\Entity\ParamConverter\SubscriptionConverter
+  paramconverter.entity.purchased_plan:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter
     tags:
       - { name: paramconverter }
     arguments: ['@entity.manager', '@language_manager']
@@ -44,3 +59,14 @@ services:
     class: Drupal\apigee_m10n\Routing\MonetizationRouteSubscriber
     tags:
      - { name: event_subscriber }
+
+  access_check.monetization_developer:
+    class: Drupal\apigee_m10n\Entity\Access\EntityDeveloperAccessCheck
+    tags:
+      - { name: access_check, applies_to: _entity_developer_access }
+
+  cache_context.url.developer:
+    class: Drupal\apigee_m10n\Cache\DeveloperCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }

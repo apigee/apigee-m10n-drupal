@@ -7,11 +7,25 @@
  *   @code {% include 'developer.json.twig' %} @endcode
  *
  * Variables:
- * - developer: An Apigee Edge developer entity.
+ * - developer: The user account for the developer.
+ * - org_name: The name of the organization.
+ * - companies: A list of companies.
+ * - billing_type: the billing type, defaults to "PREPAID".
  */
 #}
 {
     "apps" : [ ],
+    "companies" : [
+        {% for company in companies %}
+            "{{ company }}"{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ],
+    "email" : "{{ developer.mail.value }}",
+    "developerId" : "{{ developer.uuid.value }}",
+    "firstName" : "{{ developer.first_name.value }}",
+    "lastName" : "{{ developer.last_name.value }}",
+    "userName" : "{{ developer.name.value }}",
+    "organizationName" : "{{ org_name }}",
     "companies" : [ ],
     "email" : "{{ developer.email }}",
     "developerId" : "{{ developer.uuid|default('00112233-4455-6677-8899-aabbccddeeff') }}",
@@ -20,9 +34,12 @@
     "userName" : "{{ developer.userName }}",
     "organizationName" : "{{ org_name|default('example') }}",
     "status" : "active",
+    "billingType": "{{ billing_type|default('PREPAID') }}",
+    "isCompany": "{{ isCompany|default(false) }}",
     "attributes" : [
         {
             "name" : "MINT_BILLING_TYPE",
+            "value" : "{{ billing_type|default('PREPAID') }}"
             "value" : "{{ developer.attributeValue('MINT_BILLING_TYPE')|default('PREPAID') }}"
         },
         {

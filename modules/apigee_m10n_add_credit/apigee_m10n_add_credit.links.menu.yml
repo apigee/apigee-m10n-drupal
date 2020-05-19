@@ -1,0 +1,6 @@
+apigee_m10n_add_credit.settings.add_credit:
+  title: 'Add credit'
+  route_name: apigee_m10n_add_credit.settings.add_credit
+  description: 'Configure adding credit using Drupal Commerce module.'
+  parent: apigee_m10n.settings.prepaid_balance
+  weight: 99

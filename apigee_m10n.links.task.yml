@@ -1,44 +1,42 @@
-apigee_m10n.settings.package:
-  route_name: apigee_m10n.settings.package
-  title: 'Settings'
-  base_route: apigee_m10n.settings.package
-
 apigee_m10n.settings.rate_plan:
   route_name: apigee_m10n.settings.rate_plan
   title: 'Rate plan settings'
   base_route: apigee_m10n.settings.rate_plan
   weight: -10
 
-entity.package.collection:
-  route_name: entity.package.collection
+entity.product_bundle.collection:
   title: 'List'
-  base_route: apigee_m10n.settings.package
+  route_name: entity.product_bundle.collection
+  base_route: apigee_m10n.settings.product_bundle
 
-apigee_m10n.settings.subscription:
-  route_name: apigee_m10n.settings.subscription
-  title: 'Rate plan purchase settings'
-  base_route: apigee_m10n.settings.subscription
-  weight: -10
+apigee_m10n.balance_and_plans:
+  route_name: entity.purchased_plan.developer_collection
+  title: 'Balance and plans'
+  base_route: entity.user.canonical
+
+apigee_m10n.purchased_plans:
+  title: 'Purchased plans'
+  route_name: entity.purchased_plan.developer_collection
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
+  weight: -2
 
 apigee_m10n.billing:
   title: 'Prepaid balance'
   route_name: apigee_monetization.billing
   base_route: entity.user.canonical
-  weight: -2
-
-apigee_m10n.subscriptions:
-  title: 'Purchased plans'
-  route_name: entity.subscription.collection_by_developer
-  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
   weight: -1
 
 apigee_m10n.profile:
   title: 'Billing Details'
   route_name: apigee_monetization.profile
   base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
   weight: 0
 
-entity.package.collection:
-  title: 'Packages'
-  route_name: entity.package.collection
-  base_route: entity.package.collection
+apigee_m10n.settings.prepaid_balance:
+  title: 'Prepaid balance'
+  route_name: apigee_m10n.settings.prepaid_balance
+  base_route: apigee_m10n.settings.prepaid_balance
+  weight: -10

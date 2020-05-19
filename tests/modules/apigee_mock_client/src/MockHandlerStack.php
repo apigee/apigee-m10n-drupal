@@ -30,8 +30,6 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class MockHandlerStack.
- *
- * @package Drupal\apigee_mock_client
  */
 class MockHandlerStack extends MockHandler {
 
@@ -82,10 +80,6 @@ class MockHandlerStack extends MockHandler {
    *   e.g. `get-developer` or `get_developer` @see /tests/response-templates.
    *
    * @return $this
-   *
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
    */
   public function queueMockResponse($response_ids) {
     $org_name = \Drupal::service('apigee_edge.sdk_connector')
@@ -117,7 +111,8 @@ class MockHandlerStack extends MockHandler {
       $status_code = !empty($context['status_code']) ? $context['status_code'] : $status_code;
 
       // Render the response content.
-      $template = str_replace('_', '-', $id) . '.json.twig';
+      $template = str_replace('_', '-', $id);
+      $template = strpos($template, '.twig') === FALSE ? "{$template}.json.twig" : $template;
       $content = $this->twig->getLoader()
         ->exists($template) ? $this->twig->render($template, $context) : '';
 

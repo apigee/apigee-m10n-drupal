@@ -21,7 +21,6 @@ namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Url;
-use Drupal\user\Entity\Role;
 
 /**
  * Class BillingDetailsTest.
@@ -57,22 +56,21 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
   }
 
   /**
-   * Tests permissions for `Billing Details` page.
-   */
-  public function testBillingDetailsAccessDenied() {
-    $this->drupalGet(Url::fromRoute('apigee_monetization.profile', [
-      'user' => $this->developer->id(),
-    ]));
-
-    $this->assertSession()->responseContains('Access denied');
-  }
-
-  /**
-   * Tests for `Billing Details` page with `view any monetization billing details` permission.
+   * Tests for `Billing Details` page.
    *
    * @throws \Exception
    */
   public function testBillingDetailsPageView() {
+    $this->warmOrganizationCache();
+    $this->stack->queueMockResponse([
+      'developer' => [
+        'mail'  => ['value' => $this->developer->getEmail()],
+        'uuid' => ['value' => '123123123'],
+        'first_name' => ['value' => 'First Name'],
+        'last_name' => ['value' => 'Last Name'],
+        'name' => ['value' => $this->developer->getEmail()],
+        'org_name' => 'Test Org',
+      ],
     $user_roles = $this->developer->getRoles();
     $this->grantPermissions(Role::load(reset($user_roles)), ['view any monetization billing details']);
 

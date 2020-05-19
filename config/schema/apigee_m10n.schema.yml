@@ -1,10 +1,10 @@
-apigee_m10n.package.config:
+apigee_m10n.rate_plan.config:
   type: config_object
-  label: 'Package settings'
+  label: 'Rate plan settings'
   mapping:
     catalog_view_mode:
       type: string
-      label: 'View mode to use for packages on the "Pricing and plans" page.'
+      label: 'View mode to use for rate plans on the "Pricing and plans" page.'
 
 apigee_m10n.prepaid_balance.config:
   type: config_object
@@ -16,45 +16,50 @@ apigee_m10n.prepaid_balance.config:
         max_age:
           type: integer
           label: 'Max age for prepaid balance'
+    enable_insufficient_funds_workflow:
+      type: boolean
+      label: 'Whether to enable insufficient funds workflow'
+    max_statement_history_months:
+      type: integer
+      label: 'How many months in the past to allow billing statements to be generated.'
 
-apigee_m10n.subscription.config:
-  type: config_object
-  label: 'Rate plan purchase settings'
-  mapping:
-    subscribe_label:
-      type: label
-      label: 'The subscribe label.'
-    subscribe_form_title:
-      type: label
-      label: 'Subscribe form page title.'
-    subscribe_button_label:
-      type: label
-      label: 'Subscribe button label.'
-    unsubscribe_question:
-      type: label
-      label: 'Unsubscribe form page title.'
-    unsubscribe_description:
-      type: label
-      label: 'Unsubscribe form description.'
-    unsubscribe_button_label:
-      type: label
-      label: 'Unsubscribe button label.'
-
-field.formatter.settings.apigee_subscribe_link:
+field.value.apigee_price:
   type: mapping
-  label: 'Subscribe Link'
+  label: 'Price'
+  mapping:
+    amount:
+      type: decimal
+      label: 'Amount'
+    currency_code:
+      type: string
+      label: 'Currency code'
+
+field.formatter.settings.apigee_price:
+  type: mapping
+  label: 'Default price formatter settings'
+  mapping:
+    strip_trailing_zeroes:
+      type: boolean
+      label: 'Strip trailing zeroes after the decimal point'
+    currency_display:
+      type: string
+      label: 'Currency display'
+
+field.formatter.settings.apigee_purchase_plan_link:
+  type: mapping
+  label: 'Purchase plan link'
   mapping:
     label:
       type: label
-      label: 'Subscribe label'
+      label: 'Purchase label'
 
-field.formatter.settings.apigee_subscribe_form:
+field.formatter.settings.apigee_purchase_plan_form:
   type: mapping
-  label: 'Subscribe form settings'
+  label: 'Rate plan purchase form settings'
   mapping:
     label:
       type: label
-      label: 'Subscribe Label'
+      label: 'Purchase Label'
 
 field.formatter.settings.apigee_datestamp:
   type: mapping
@@ -77,3 +82,20 @@ field.formatter.settings.apigee_tnc_default:
     default_description:
       type: string
       label: 'Terms and Conditions'
+
+field.formatter.settings.apigee_date_and_text_formatter:
+  type: mapping
+  label: 'Apigee date and text formatter'
+  mapping:
+    date_format:
+      type: string
+      label: 'Date format'
+    custom_date_format:
+      type: string
+      label: 'Custom date format'
+    timezone:
+      type: string
+      label: 'Timezone'
+    text:
+      type: string
+      label: 'Text'

@@ -24,12 +24,8 @@ use Drupal\apigee_m10n\Monetization;
 /**
  * Tests the monetization enable check on routes.
  *
- * @package Drupal\Tests\apigee_m10n\Functional
- *
  * @group apigee_m10n
  * @group apigee_m10n_functional
- *
- * @coversDefaultClass \Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
  */
 class RouteValidateMonetizationEnabledFunctionalTest extends MonetizationFunctionalTestBase {
 
@@ -60,7 +56,7 @@ class RouteValidateMonetizationEnabledFunctionalTest extends MonetizationFunctio
     $route_provider = \Drupal::service('router.route_provider');
 
     if ($route = $route_provider->getRouteByName($route_name)) {
-      $this->queueOrg();
+      $this->warmOrganizationCache();
 
       $this->assertTrue($this->container->get('apigee_m10n.monetization')->isMonetizationEnabled());
 

@@ -1,19 +1,19 @@
 system.admin_apigee_m10n:
-  title: 'Monetization'
-  parent: system.admin_config_edge
+  title: 'Apigee monetization'
+  parent: system.admin_config
   route_name: apigee_m10n.settings
 
-apigee_m10n.settings.package:
-  title: 'Packages'
-  route_name: apigee_m10n.settings.package
-  description: 'Package settings.'
+entity.product_bundle.collection:
+  title: 'Product bundles'
+  route_name: entity.product_bundle.collection
+  description: 'Manage product bundles.'
   parent: system.admin_apigee_m10n
   weight: 99
 
 # This goes straight to display settings since there aren't any config items.
-entity.entity_view_display.rate_plan.default:
+apigee_m10n.settings.rate_plan:
   title: 'Rate plans'
-  route_name: entity.entity_view_display.rate_plan.default
+  route_name: apigee_m10n.settings.rate_plan
   description: 'Configure rate plans.'
   parent: system.admin_apigee_m10n
   weight: 99
@@ -25,16 +25,16 @@ apigee_m10n.settings.prepaid_balance:
   parent: system.admin_apigee_m10n
   weight: 100
 
-apigee_m10n.settings.subscription:
+apigee_m10n.settings.purchased_plan:
   title: 'Rate plan purchases'
-  route_name: apigee_m10n.settings.subscription
-  description: 'Configure rate plan purchases.'
+  route_name: entity.entity_view_display.purchased_plan.default
+  description: 'Configure rate plan view display.'
   parent: system.admin_apigee_m10n
   weight: 100
 
-apigee_m10n.packages:
+apigee_m10n.pricing_and_plans:
   title: 'Pricing & plans'
   description: 'Pricing & plans.'
-  route_name: apigee_monetization.my_packages
+  route_name: apigee_monetization.my_plans
   menu_name: main
   weight: 10

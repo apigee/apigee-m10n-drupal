@@ -50,6 +50,8 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
    *   An array of mock responses.
    */
   public function getMockResponses() {
+    $last_month = new \DateTimeImmutable('first day of last month 00:00:00');
+    $last_day_of_last_month = new \DateTimeImmutable('last day of last month 00:00:00');
     return [
       'get-prepaid-balances' => [
         "current_aud" => 100.0000,
@@ -93,31 +95,9 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
           ]),
         ],
       ],
-      'get-billing-documents-months' => [
-        'documents' => [
-          [
-            "month" => 9,
-            "monthEnum" => "SEPTEMBER",
-            "status" => "OPEN",
-            "year" => 2018,
-          ],
-          [
-            "month" => 8,
-            "monthEnum" => "AUGUST",
-            "status" => "OPEN",
-            "year" => 2018,
-          ],
-          [
-            "month" => 12,
-            "monthEnum" => "DECEMBER",
-            "status" => "OPEN",
-            "year" => 2017,
-          ],
-        ],
-      ],
-      'post-prepaid-balance-reports' => [
-        'from' => '2018-09-01',
-        'to' => '2018-09-30',
+      'post-prepaid-balance-reports.csv.twig' => [
+        'from' => $last_month->format('Y-m-d'),
+        'to' => $last_day_of_last_month->format(('Y-m-d')),
         'developer' => 'Doe, John',
         'application' => 'All',
         'currency' => 'Local',
@@ -132,8 +112,8 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
             'charged_data' => 10.0000,
             'transaction_id' => 'e9dde609-ec39-4793-98ed-24ff47d6ce22',
             'payment_reference' => 'e9dde609-ec39-4793-98ed-24ff47d6ce22',
-            'start_time' => '2018-09-13 17:05:16',
-            'end_time' => '2018-09-13 17:05:16',
+            'start_time' => $last_month->format('Y-m-d 17:05:16'),
+            'end_time' => $last_month->format('Y-m-d 17:05:16'),
             'batch_size' => 1,
           ],
           [
@@ -145,11 +125,15 @@ trait PrepaidBalanceReportsDownloadFormTestTrait {
             'charged_data' => 210.9900,
             'transaction_id' => '99dbed33-1e58-4924-933e-349b0afbaee1',
             'payment_reference' => '99dbed33-1e58-4924-933e-349b0afbaee1',
-            'start_time' => '2018-09-13 17:07:32',
-            'end_time' => '2018-09-13 17:07:32',
+            'start_time' => $last_month->format('Y-m-d 17:07:32'),
+            'end_time' => $last_month->format('Y-m-d 17:07:32'),
             'batch_size' => 1,
           ],
         ],
+      ],
+      'get_not_found' => [
+        'code' => 'mint.noSuchResource',
+        'message' => 'Did not find any Transaction that matches the search criteria',
       ],
     ];
   }

@@ -50,16 +50,22 @@ class RoboFile extends \Robo\Tasks
         $config->extra->{"patches"} = new \stdClass();
         file_put_contents('composer.json', json_encode($config));
 
-        // Create a directory for our artifacts.
+        // Create directories for our artifacts.
         $this->taskFilesystemStack()
           ->mkdir('artifacts')
-          ->mkdir('artifacts/phpunit')
           ->mkdir('artifacts/phpcs')
           ->mkdir('artifacts/phpmd')
+          ->mkdir('artifacts/coverage-html')
+          ->mkdir('artifacts/coverage-xml')
+          ->mkdir('/tmp/artifacts')
+          ->mkdir('/tmp/artifacts/phpunit')
+          ->mkdir('/tmp/artifacts/phpcs')
+          ->mkdir('/tmp/artifacts/phpmd')
           ->run();
 
         $this->taskFilesystemStack()
           ->chown('artifacts', 'www-data', TRUE)
+          ->chown('/tmp/artifacts', 'www-data', TRUE)
           ->run();
     }
 
@@ -99,9 +105,8 @@ class RoboFile extends \Robo\Tasks
         foreach ($modules as $module) {
             list($module,) = explode(':', $module);
             $config->extra->{"merge-plugin"}->include[] = "modules/$module/composer.json";
-            $base = isset($config->extra->{"patches"}) ?  (array)$config->extra->{"patches"} : [];
-            $config->extra->{"patches"} = (object)array_merge($base,
-              (array)$this->getPatches($module));
+            $base = isset($config->extra->patches) ? (array) $config->extra->patches : [];
+            $config->extra->patches = (object) array_merge($base, (array) $this->getPatches($module));
         }
 
         file_put_contents('composer.json', json_encode($config));
@@ -136,11 +141,10 @@ class RoboFile extends \Robo\Tasks
         $config = json_decode(file_get_contents('composer.json'));
 
         // Rebuild the patches array.
-        $config->extra->{"patches"} = new \stdClass();
+        $config->extra->patches = new \stdClass();
         foreach ($modules as $module) {
             list($module,) = explode(':', $module);
-            $config->extra->{"patches"} = (object)array_merge((array)$config->extra->{"patches"},
-              (array)$this->getPatches($module));
+            $config->extra->patches = (object) array_merge((array) $config->extra->patches, (array) $this->getPatches($module));
         }
 
         file_put_contents('composer.json', json_encode($config));
@@ -164,12 +168,15 @@ class RoboFile extends \Robo\Tasks
      */
     public function updateDependencies()
     {
+        // Disable xdebug.
+        $this->taskExec('sed -i \'s/^zend_extension/;zend_extension/g\' /usr/local/etc/php/conf.d/xdebug.ini')->run();
         // The git checkout includes a composer.lock, and running composer update
         // on it fails for the first time.
         $this->taskFilesystemStack()->remove('composer.lock')->run();
 
         $this->taskDeleteDir('vendor/behat/mink')->run();
-        $this->taskComposerUpdate()
+        // Composer often runs out of memory when installing drupal.
+        $this->taskComposerUpdate('php -d memory_limit=-1 /usr/local/bin/composer')
           ->optimizeAutoloader()
           ->run();
 
@@ -178,6 +185,12 @@ class RoboFile extends \Robo\Tasks
           ->copy('composer.json', 'artifacts/composer.json')
           ->copy('composer.lock', 'artifacts/composer.lock')
           ->run();
+
+        // Write drush status results to an artifact file.
+        $this->taskExec('vendor/bin/drush status > artifacts/core-stats.txt')->run();
+        $this->taskExec('cat artifacts/core-stats.txt')->run();
+        // Add php info to an artifact file.
+        $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
     }
 
     /**
@@ -191,12 +204,21 @@ class RoboFile extends \Robo\Tasks
      */
     protected function getPatches($module)
     {
-        $path = 'modules/' . $module . '/patches.json';
-        if (file_exists($path)) {
-            return json_decode(file_get_contents($path));
-        } else {
-            return new stdClass();
+        $patches_file_path = 'modules/' . $module . '/patches.json';
+        // Add patch  file patches.
+        $patches = file_exists($patches_file_path) ? json_decode(file_get_contents($patches_file_path)) : [];
+
+        $composer_file_path = 'modules/' . $module . '/composer.json';
+
+        if (file_exists($composer_file_path)
+            && ($composer_contents = json_decode(file_get_contents($composer_file_path)))
+            && !empty($composer_contents->extra->patches)
+        ) {
+            // Ad composer file patches.
+            $patches += (array) $composer_contents->extra->patches;
         }
+
+        return $patches;
     }
 
     /**
@@ -392,9 +414,30 @@ class RoboFile extends \Robo\Tasks
         "*" => "dist"
       ];
 
+      // The drupal image contains Drupal core v8.6.x. A request has been made
+      // for an updated version.
+      // See: <https://github.com/deviantintegral/drupal_tests/issues/55>
+      // Require drupal core via composer.
+      $config->require->{"drupal/core"} = "~8.8";
+      $config->require->{"drupal/core-recommended"} = "^8.8";
+      // If you require core, you must not replace it.
+      unset($config->replace);
+      // You can't merge from a package that is required.
+      foreach ($config->extra->{"merge-plugin"}->include as $index => $merge_entry) {
+        if ($merge_entry === 'core/composer.json') {
+          unset($config->extra->{"merge-plugin"}->include[$index]);
+        }
+      }
+      $config->extra->{"merge-plugin"}->include = array_values($config->extra->{"merge-plugin"}->include);
+      // TODO Revert this when `andrewberry/drupal_tests` is updated to ~8.7.0.
+
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
-      $config->require->{"drupal/commerce"} = "~2.0";
+      $config->require->{"drupal/commerce"} = "^2.16";
       $config->require->{"drupal/token"} = "~1.0";
+
+      // Add dependencies for phpunit tests.
+      $config->require->{"symfony/phpunit-bridge"} = "~5.0";
+      $config->require->{"mikey179/vfsstream"} = "^1.6";
 
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }

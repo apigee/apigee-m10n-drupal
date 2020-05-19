@@ -18,7 +18,10 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+use Apigee\Edge\Exception\ApiException;
 use Drupal\apigee_m10n\Monetization;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * @file
@@ -33,17 +36,42 @@ function apigee_m10n_requirements($phase) {
 
   // If monetization is disabled after module has been installed, show error on status page.
   if ($phase === 'runtime') {
-    /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
-    $monetization = \Drupal::service('apigee_m10n.monetization');
+    try {
+      /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
+      $monetization = Drupal::service('apigee_m10n.monetization');
 
-    if (!$monetization->isMonetizationEnabled()) {
-      $requirements['apigee_monetization_connection_error'] = [
-        'title' => t('Apigee Monetization'),
-        'description' => t(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE),
+      if (!$monetization->isMonetizationEnabled()) {
+        $requirements['apigee_monetization_connection_error'] = [
+          'title' => t('Apigee Monetization'),
+          'description' => t(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE),
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
+    }
+    catch (ApiException $exception) {
+      Drupal::logger('apigee_m10n')->error($exception->getMessage());
+    }
+  }
+
+  if ($phase == 'install' || $phase == 'runtime') {
+    if (!extension_loaded('bcmath')) {
+      $requirements['apigee_monetization_bcmath'] = [
+        'title' => t('BC Math'),
+        'description' => t('Apigee Monetization requires the BC Math PHP extension in order to format prices.'),
         'severity' => REQUIREMENT_ERROR,
       ];
     }
   }
 
   return $requirements;
+}
+
+/**
+ * Implements hook_install().
+ */
+function apigee_m10n_install() {
+  // Populate the default permissions for the authenticated user.
+  if (Drupal::moduleHandler()->moduleExists('user')) {
+    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
+  }
 }

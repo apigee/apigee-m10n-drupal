@@ -19,30 +19,33 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Management\Controller\OrganizationController;
+use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
-use CommerceGuys\Intl\Currency\CurrencyRepository;
-use CommerceGuys\Intl\Formatter\CurrencyFormatter;
-use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
+use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\PermissionHandlerInterface;
+use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
 use Psr\Log\LoggerInterface;
 
 /**
  * Apigee Monetization base service.
- *
- * @package Drupal\apigee_m10n
  */
 class Monetization implements MonetizationInterface {
 
@@ -53,14 +56,14 @@ class Monetization implements MonetizationInterface {
    *
    * @var \Drupal\apigee_edge\SDKConnectorInterface
    */
-  private $sdk_connector;
+  private $sdkConnector;
 
   /**
    * The SDK controller factory.
    *
    * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
    */
-  private $sdk_controller_factory;
+  private $sdkControllerFactory;
 
   /**
    * Drupal core messenger service (for adding flash messages).
@@ -112,6 +115,27 @@ class Monetization implements MonetizationInterface {
   protected $termsAndConditionsList;
 
   /**
+   * The permission handler.
+   *
+   * @var \Drupal\user\PermissionHandlerInterface
+   */
+  protected $permission_handler;
+
+  /**
+   * The management organization controller.
+   *
+   * @var \Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface
+   */
+  protected $organizationController;
+
+  /**
+   * The management organization entity.
+   *
+   * @var \Apigee\Edge\Api\Management\Entity\OrganizationInterface
+   */
+  protected $organization;
+
+  /**
    * Monetization constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -124,57 +148,39 @@ class Monetization implements MonetizationInterface {
    *   The Cache backend.
    * @param \Psr\Log\LoggerInterface $logger
    *   The logger.
+   * @param \Drupal\user\PermissionHandlerInterface $permission_handler
+   *   The permission handler.
+   * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
+   *   A currency formatter.
+   * @param \Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface $organization_controller
+   *   The management organization controller.
    */
   public function __construct(
     SDKConnectorInterface $sdk_connector,
     ApigeeSdkControllerFactoryInterface $sdk_controller_factory,
     MessengerInterface $messenger,
     CacheBackendInterface $cache,
-    LoggerInterface $logger
+    LoggerInterface $logger,
+    PermissionHandlerInterface $permission_handler,
+    CurrencyFormatterInterface $currency_formatter,
+    OrganizationControllerInterface $organization_controller
   ) {
-    $this->sdk_connector          = $sdk_connector;
-    $this->sdk_controller_factory = $sdk_controller_factory;
+    $this->sdkConnector           = $sdk_connector;
+    $this->sdkControllerFactory   = $sdk_controller_factory;
     $this->messenger              = $messenger;
     $this->cache                  = $cache;
     $this->logger                 = $logger;
-
-    $numberFormatRepository = new NumberFormatRepository();
-    $currencyRepository = new CurrencyRepository();
-
-    $this->currencyFormatter = new CurrencyFormatter($numberFormatRepository, $currencyRepository);
+    $this->permission_handler     = $permission_handler;
+    $this->currencyFormatter      = $currency_formatter;
+    $this->organizationController = $organization_controller;
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMonetizationEnabled(): bool {
-    // Get organization ID string.
-    $org_id = $this->sdk_connector->getOrganization();
-
-    // Use cached result if available.
-    $monetization_status_cache_entry = $this->cache->get("apigee_m10n:org_monetization_status:{$org_id}");
-    $monetization_status             = $monetization_status_cache_entry ? $monetization_status_cache_entry->data : NULL;
-
-    if (!$monetization_status) {
-
-      // Load organization and populate cache.
-      $org_controller = new OrganizationController($this->sdk_connector->getClient());
-
-      try {
-        $org = $org_controller->load($org_id);
-      }
-      catch (\Exception $e) {
-        $this->messenger->addError($e->getMessage());
-        return FALSE;
-      }
-
-      $monetization_status = $org->getPropertyValue('features.isMonetizationEnabled') === 'true' ? 'enabled' : 'disabled';
-      $expire_time         = new \DateTime('now + 5 minutes');
-
-      $this->cache->set("apigee_m10n:org_monetization_status:{$org_id}", $monetization_status, $expire_time->getTimestamp());
-    }
-
-    return ($monetization_status === 'enabled');
+    $org = $this->getOrganization();
+    return ($org && $org->getPropertyValue('features.isMonetizationEnabled') === 'true');
   }
 
   /**
@@ -188,7 +194,7 @@ class Monetization implements MonetizationInterface {
 
     if (!isset($eligible_product_cache[$developer_id])) {
       // Instantiate an instance of the m10n ApiProduct controller.
-      $product_controller = new ApiProductController($this->sdk_connector->getOrganization(), $this->sdk_connector->getClient());
+      $product_controller = new ApiProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
       // Get a list of available products for the m10n developer.
       $eligible_product_cache[$developer_id] = $product_controller->getEligibleProductsByDeveloper($developer_id);
     }
@@ -208,7 +214,7 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function getDeveloperPrepaidBalances(UserInterface $developer, \DateTimeImmutable $billingDate): ?array {
-    $balance_controller = $this->sdk_controller_factory->developerBalanceController($developer);
+    $balance_controller = $this->sdkControllerFactory->developerBalanceController($developer);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
@@ -216,7 +222,7 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array {
-    $balance_controller = $this->sdk_controller_factory->companyBalanceController($company);
+    $balance_controller = $this->sdkControllerFactory->companyBalanceController($company);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
   }
 
@@ -236,7 +242,7 @@ class Monetization implements MonetizationInterface {
       $latest_tnc_id = $latest_tnc->id();
 
       // Creates a controller for getting accepted TnC.
-      $controller = $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id);
+      $controller = $this->sdkControllerFactory->developerTermsAndConditionsController($developer_id);
 
       try {
         $history = $controller->getTermsAndConditionsHistory();
@@ -316,7 +322,7 @@ class Monetization implements MonetizationInterface {
     }
     else {
       try {
-        $list = $this->sdk_controller_factory->termsAndConditionsController()->getEntities();
+        $list = $this->sdkControllerFactory->termsAndConditionsController()->getEntities();
       }
       catch (\Exception $ex) {
         $this->logger->error("Unable to load Terms and Conditions: \n {$ex}");
@@ -340,7 +346,7 @@ class Monetization implements MonetizationInterface {
     try {
       // Reset the static cache for this developer.
       unset($this->developerAcceptedTermsStatus[$developer_id]);
-      return $this->sdk_controller_factory->developerTermsAndConditionsController($developer_id)
+      return $this->sdkControllerFactory->developerTermsAndConditionsController($developer_id)
         ->acceptTermsAndConditionsById($this->getLatestTermsAndConditions()->id());
     }
     catch (\Throwable $t) {
@@ -388,22 +394,160 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function getSupportedCurrencies(): ?array {
-    return $this->sdk_controller_factory->supportedCurrencyController()->getEntities();
+    return $this->sdkControllerFactory->supportedCurrencyController()->getEntities();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getBillingDocumentsMonths(): ?array {
-    return $this->sdk_controller_factory->billingDocumentsController()->getEntities();
+  public function getPrepaidBalanceReport(string $developer_id, \DateTimeImmutable $date, string $currency): ?string {
+    $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
+    $criteria = new PrepaidBalanceReportCriteria(strtoupper($date->format('F')), (int) $date->format('Y'));
+    $criteria
+      ->developers($developer_id)
+      ->currencies($currency)
+      ->showTransactionDetail(TRUE);
+    return $controller->generateReport($criteria);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPrepaidBalanceReports(string $developer_id, \DateTimeImmutable $month, string $currency): ?string {
-    return $this->sdk_controller_factory->prepaidBalanceReportsController($developer_id)
-      ->getReport($month, $currency);
+  public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool {
+    // Use cached result if available.
+    // TODO: Handle purchased_plan caching per developer on the storage level.
+    // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
+    $cid = "apigee_m10n:dev:purchased_plans:{$developer_id}";
+
+    if (!($cache = $this->cache->get($cid))) {
+      if ($purchases = PurchasedPlan::loadByDeveloperId($developer_id)) {
+        $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
+      }
+    }
+    else {
+      foreach ($cache->data as $purchased_plan) {
+        if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isActive()) {
+          return TRUE;
+        }
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isDeveloperPrepaid(UserInterface $account): bool {
+
+    // Use cached result if available.
+    $cid = "apigee_m10n:dev:billing_type:{$account->getEmail()}";
+
+    if ($cache = $this->cache->get($cid)) {
+      $billing_type = $cache->data;
+    }
+    else {
+      $config = \Drupal::service('config.factory');
+      $cacheExpiration = $config->get('apigee_edge.developer_settings')->get('cache_expiration');
+      /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperInterface $developer */
+      $developer = $this->sdkControllerFactory->developerController()->load($account->getEmail());
+      $billing_type = $developer->getBillingType();
+
+      if ($cacheExpiration < 0) {
+        $this->cache->set($cid, $billing_type);
+      }
+      elseif ($cacheExpiration > 0) {
+        $this->cache->set($cid, $billing_type, strtotime('now + ' . $cacheExpiration . ' seconds'));
+      }
+    }
+
+    return $billing_type == 'PREPAID';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function formUserAdminPermissionsAlter(&$form, FormStateInterface $form_state, $form_id) {
+    // Disable All incompatible permissions in the UI.
+    foreach (array_keys($this->getMonetizationPermissions()) as $permission_name) {
+      if (isset($form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE])) {
+        // Disable the permission.
+        $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#disabled'] = TRUE;
+        $form['permissions'][$permission_name][AccountInterface::ANONYMOUS_ROLE]['#value'] = 0;
+      }
+    }
+    // These permissions are provided by 3rd party modules and aren't needed.
+    // Since there is no hook_permissions_alter, we can at least remove them
+    // from the admin form.
+    $unused_permissions = [
+      'administer product_bundle fields',
+      'administer product_bundle form display',
+      'administer rate_plan fields',
+      'administer rate_plan form display',
+      'administer purchased_plan fields',
+    ];
+    foreach ($unused_permissions as $unused_permission) {
+      if (isset($form['permissions'][$unused_permission])) {
+        $form['permissions'][$unused_permission]['#access'] = FALSE;
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function userRolePresave(RoleInterface $user_role) {
+    // This prevents monetization permission grants on config import.
+    if ($user_role->id() === AccountInterface::ANONYMOUS_ROLE) {
+      // Get any permissions anon shouldn't have.
+      $unauthorized_perms = array_intersect($user_role->getPermissions(), array_keys($this->getMonetizationPermissions()));
+      // Remove all unauthorized perms.
+      foreach ($unauthorized_perms as $permission_name) {
+        $user_role->revokePermission($permission_name);
+        $this->logger->info('Removing the `%permission` permission from the anonymous role.', ['%permission' => $permission_name]);
+      }
+    }
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOrganization(): ?OrganizationInterface {
+    // Check if the organization is statically cached.
+    if ($this->organization) {
+      return $this->organization;
+    }
+    // Check the DB cache.
+    $cid = 'apigee_m10n:organization';
+    if (($cache = $this->cache->get($cid)) && !empty($cache->data)) {
+      $this->organization = $cache->data;
+    }
+    else {
+      // Load the org and cache it for 5 minutes.
+      try {
+        $this->organization = $this->organizationController->load($this->sdkConnector->getOrganization());
+      }
+      catch (\Exception $e) {
+        $this->messenger->addError($e->getMessage());
+      }
+      $this->cache->set($cid, $this->organization, strtotime("+5 minutes"));
+    }
+
+    return $this->organization;
+  }
+
+  /**
+   * Gets a list of Apigee monetization permissions.
+   *
+   * These permissions should only be applied to authenticated roles.
+   *
+   * @return array
+   *   Permissions for the monetization module.
+   */
+  protected function getMonetizationPermissions() {
+    return array_filter($this->permission_handler->getPermissions(), function ($permission) {
+      return ($permission['provider'] === 'apigee_m10n');
+    });
   }
 
 }

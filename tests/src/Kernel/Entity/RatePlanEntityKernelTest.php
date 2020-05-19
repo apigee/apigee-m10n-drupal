@@ -44,10 +44,10 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $package = $this->createPackage();
+    $product_bundle = $this->createProductBundle();
 
     // Create a rate plan.
-    $this->rate_plan = $this->createPackageRatePlan($package);
+    $this->rate_plan = $this->createRatePlan($product_bundle);
   }
 
   /**
@@ -62,13 +62,13 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
   /**
    * Test loading a rate plan from drupal entity storage.
    *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   * @throws \Twig_Error_Loader
-   * @throws \Twig_Error_Runtime
-   * @throws \Twig_Error_Syntax
+   * @throws \Exception
    */
   public function testLoadRatePlan() {
+    // Set the current user to a mock. Anon can no longer access product
+    // bundles.
+    $account = $this->prophesizeCurrentUser();
+
     $this->stack
       ->queueMockResponse(['rate_plan' => ['plan' => $this->rate_plan]]);
 
@@ -88,7 +88,7 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->id(), $this->rate_plan->id());
     static::assertSame($rate_plan->isPrivate(), $this->rate_plan->isPrivate());
     // What about `keepOriginalStartDate`?
-    static::assertSame($rate_plan->getPackage()->id(), $this->rate_plan->getPackage()->id());
+    static::assertSame($rate_plan->getProductBundleId(), $this->rate_plan->getProductBundleId());
     static::assertSame($rate_plan->getName(), $this->rate_plan->getName());
     static::assertSame($rate_plan->getOrganization()->getName(), $this->rate_plan->getOrganization()->getName());
     static::assertSame($rate_plan->getPaymentDueDays(), $this->rate_plan->getPaymentDueDays());
@@ -98,10 +98,12 @@ class RatePlanEntityKernelTest extends MonetizationKernelTestBase {
     static::assertSame($rate_plan->getRecurringStartUnit(), $this->rate_plan->getRecurringStartUnit());
     static::assertSame($rate_plan->getRecurringType(), $this->rate_plan->getRecurringType());
     static::assertSame($rate_plan->getSetUpFee(), $this->rate_plan->getSetUpFee());
-    static::assertSame("/user/0/monetization/packages/{$rate_plan->getPackage()->id()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
-
-    // @todo: make sure timestamps are using the same timezone.
-    // static::assertSame($rate_plan->getStartDate()->format('d-m-y h:m:s'), $this->rate_plan->getStartDate()->format('d-m-y h:m:s'));
+    static::assertSame("/user/{$account->id()}/monetization/product-bundle/{$rate_plan->getProductBundleId()}/plan/{$rate_plan->id()}", $rate_plan->toUrl()->toString());
+    // Check bundled products.
+    $product_ids = array_map(function ($product) {
+      return ['target_id' => $product->id()];
+    }, $rate_plan->getPackage()->getApiProducts());
+    static::assertSame($product_ids, $this->rate_plan->getProducts());
   }
 
 }

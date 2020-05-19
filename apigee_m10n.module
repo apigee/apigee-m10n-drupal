@@ -20,7 +20,9 @@
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 
 /**
  * Implements hook_ENTITY_TYPE_access().
@@ -37,104 +39,75 @@ function apigee_m10n_api_product_access(EntityInterface $entity, $operation, Acc
 }
 
 /**
- * Implements hook_theme_suggestions_HOOK().
- */
-function apigee_m10n_theme_suggestions_rate_plan(array $variables) {
-  $suggestions = [];
-  $rate_plan = $variables['elements']['#rate_plan'];
-  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
-
-  $suggestions[] = 'apigee_rate_plan__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->bundle();
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->bundle() . '__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->id();
-  $suggestions[] = 'apigee_rate_plan__' . $rate_plan->id() . '__' . $sanitized_view_mode;
-
-  return $suggestions;
-}
-
-/**
- * Prepares variables for rate-plan templates.
- *
- * Default template: rate-plan.html.twig.
- *
- * @param array $variables
- *   An associative array containing:
- *   - elements: An array of elements to display in view mode.
- *   - rate_plan: The Apigee  package rate plan entity.
- *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
- *   - url: The canonical URL to view the plan directly.
- *
- * @throws \Drupal\Core\Entity\EntityMalformedException
- */
-function template_preprocess_rate_plan(&$variables) {
-  $variables['view_mode'] = $variables['elements']['#view_mode'];
-
-  $variables['rate_plan'] = $variables['elements']['#rate_plan'];
-  /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-  $rate_plan = $variables['rate_plan'];
-
-  $variables['url'] = $rate_plan->toUrl('canonical');
-}
-
-/**
- * Implements hook_theme_suggestions_HOOK().
- */
-function apigee_m10n_theme_suggestions_package(array $variables) {
-  $suggestions = [];
-  $package = $variables['elements']['#package'];
-  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
-
-  $suggestions[] = 'apigee_package__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_package__' . $package->bundle();
-  $suggestions[] = 'apigee_package__' . $package->bundle() . '__' . $sanitized_view_mode;
-  $suggestions[] = 'apigee_package__' . $package->id();
-  $suggestions[] = 'apigee_package__' . $package->id() . '__' . $sanitized_view_mode;
-
-  return $suggestions;
-}
-
-/**
- * Prepares variables for rate-plan templates.
- *
- * Default template: rate-plan.html.twig.
- *
- * @param array $variables
- *   An associative array containing:
- *   - elements: An array of elements to display in view mode.
- *   - rate_plan: The Apigee  package rate plan entity.
- *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
- *   - url: The canonical URL to view the plan directly.
- *
- * @throws \Drupal\Core\Entity\EntityMalformedException
- */
-function template_preprocess_package(&$variables) {
-  $variables['view_mode'] = $variables['elements']['#view_mode'];
-  $variables['package'] = $variables['elements']['#package'];
-  $variables['url'] = $variables['package']->toUrl('canonical');
-}
-
-/**
  * Implements hook_theme().
  */
 function apigee_m10n_theme($existing, $type, $theme, $path) {
   return [
-    'rate_plan' => [
-      'render element' => 'elements',
+    'apigee_entity__rate_plan' => [
+      'base hook' => 'apigee_entity',
     ],
-    'prepaid_balances' => [
-      'variables' => ['balances' => NULL],
-      'template' => 'prepaid-balances',
-    ],
-    'package' => [
-      'render element' => 'elements',
+    'apigee_entity__product_bundle' => [
+      'base hook' => 'apigee_entity',
     ],
     'api_product' => [
       'variables' => ['api_product' => NULL],
     ],
     'rate_plan_detail' => [
-      'variables' => ['detail' => NULL],
+      'variables' => [
+        'detail' => NULL,
+        'ratecard_rates' => NULL,
+        'revshare_rates' => NULL,
+        'free_quantity' => NULL,
+        'entity' => NULL,
+      ],
       'template' => 'rate-plan-detail',
     ],
+    'ratecard_rates' => [
+      'variables' => [
+        'rates' => NULL,
+      ],
+    ],
+    'revshare_rates' => [
+      'variables' => [
+        'rates' => NULL,
+      ],
+    ],
+    'conflicting_products' => [
+      'variables' => ['items' => NULL],
+      'template' => 'conflicting-products',
+    ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function apigee_m10n_form_user_admin_permissions_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::service('apigee_m10n.monetization')->formUserAdminPermissionsAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function apigee_m10n_user_role_presave(EntityInterface $entity) {
+  \Drupal::service('apigee_m10n.monetization')->userRolePresave($entity);
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function apigee_m10n_preprocess_field(&$variables) {
+  // Add a library to the rate plan `futurePlanLinks` field.
+  if ($variables['field_name'] === 'futurePlanLinks') {
+    $variables['#attached']['library'][] = 'apigee_m10n/rate_plan.future_links_field';
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_create_access().
+ */
+function apigee_m10n_purchased_plan_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  // Make sure rate plan context exists.
+  $access = AccessResult::allowedIf(isset($context['rate_plan']) && $context['rate_plan'] instanceof RatePlanInterface);
+  return $access->andIf($context['rate_plan']->access('purchase', $account, TRUE));
 }

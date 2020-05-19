@@ -1,0 +1,125 @@
+<?php
+
+/**
+ * @file
+ * Copyright 2018 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Implements hook_mail().
+ */
+function apigee_m10n_add_credit_mail($key, &$message, $params) {
+  \Drupal::service('apigee_m10n.add_credit')->mail($key, $message, $params);
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function apigee_m10n_add_credit_entity_base_field_info(EntityTypeInterface $entity_type) {
+  return \Drupal::service('apigee_m10n.add_credit')->entityBaseFieldInfo($entity_type);
+}
+
+/**
+ * Implements hook_entity_bundle_field_info().
+ */
+function apigee_m10n_add_credit_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  return \Drupal::service('apigee_m10n.add_credit')->entityBundleFieldInfo($entity_type, $bundle, $base_field_definitions);
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function apigee_m10n_add_credit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::service('apigee_m10n.add_credit')->formAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function apigee_m10n_add_credit_form_commerce_product_type_add_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::service('apigee_m10n.add_credit')->formCommerceProductTypeEditFormAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function apigee_m10n_add_credit_form_commerce_product_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::service('apigee_m10n.add_credit')->formCommerceProductTypeEditFormAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ */
+function apigee_m10n_add_credit_inline_entity_form_table_fields_alter(&$fields, $context) {
+  \Drupal::service('apigee_m10n.add_credit')->inlineEntityFormTableFieldsAlter($fields, $context);
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function apigee_m10n_add_credit_entity_type_alter(array &$entity_types) {
+  \Drupal::service('apigee_m10n.add_credit')->entityTypeAlter($entity_types);
+}
+
+/**
+ * Implements hook_field_info_alter().
+ */
+function apigee_m10n_add_credit_field_info_alter(&$info) {
+  \Drupal::service('apigee_m10n.add_credit')->fieldInfoAlter($info);
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function apigee_m10n_add_credit_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  \Drupal::service('apigee_m10n.add_credit')->fieldWidgetFormAlter($element, $form_state, $context);
+}
+
+/**
+ * Implements hook_apigee_m10n_prepaid_balance_list_alter().
+ */
+function apigee_m10n_add_credit_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterface $entity) {
+  \Drupal::service('apigee_m10n.add_credit')->apigeeM10nPrepaidBalanceListAlter($build, $entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function apigee_m10n_add_credit_commerce_product_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  return \Drupal::service('apigee_m10n.add_credit')->commerceProductAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_apigee_m10n_insufficient_balance_error_message_alter().
+ */
+function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan) {
+  return \Drupal::service('apigee_m10n.add_credit')->insufficientBalanceErrorMessageAlter($message, $purchased_plan);
+}
+
+/**
+ * Implements hook_help().
+ */
+function apigee_m10n_add_credit_help($route_name, RouteMatchInterface $route_match) {
+  return \Drupal::service('apigee_m10n.add_credit')->help($route_name, $route_match);
+}

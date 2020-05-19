@@ -1,0 +1,20 @@
+services:
+  apigee_m10n.teams:
+    class: Drupal\apigee_m10n_teams\MonetizationTeams
+    arguments: ['@current_route_match', '@apigee_m10n_teams.sdk_controller_factory', '@apigee_m10n.monetization', '@logger.channel.apigee_m10n']
+
+  apigee_m10n_teams.access_check.team_permission:
+    class: Drupal\apigee_m10n_teams\Access\TeamPermissionAccessCheck
+    arguments: ['@apigee_edge_teams.team_permissions']
+    tags:
+      - { name: access_check, applies_to: _team_permission }
+
+  apigee_m10n_teams.sdk_controller_factory:
+    class: Drupal\apigee_m10n_teams\TeamSdkControllerFactory
+    arguments: ['@apigee_edge.sdk_connector']
+
+  cache_context.url.team:
+    class: Drupal\apigee_m10n_teams\Cache\TeamCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context }

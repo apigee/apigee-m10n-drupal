@@ -19,16 +19,16 @@
 
 namespace Drupal\apigee_m10n\Entity\ParamConverter;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\RevisionableInterface;
-use Drupal\Core\Entity\TranslatableInterface;
-use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Http\Exception\CacheableNotFoundHttpException;
 use Drupal\Core\ParamConverter\EntityConverter;
 use Drupal\Core\ParamConverter\ParamConverterInterface;
+use Drupal\Core\ParamConverter\ParamNotConvertedException;
 use Symfony\Component\Routing\Route;
 
 /**
- * Parameter converter for upcasting subscriptions entity IDs to full objects.
+ * Parameter converter for up-casting purchased plan entity IDs to full objects.
  *
  * {@inheritdoc}
  */
@@ -42,16 +42,20 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
    * @throws \Drupal\Core\ParamConverter\ParamNotConvertedException
    */
   public function convert($value, $definition, $name, array $defaults) {
-    $entity_type_id = $this->getEntityTypeFromDefaults($definition, $name, $defaults);
+    if (!($product_bundle_id = $defaults['product_bundle']) || empty($product_bundle_id)) {
+      $cache_metadata = new CacheableMetadata();
+      // If there is no product bundle set the URL is invalid.
+      throw new CacheableNotFoundHttpException($cache_metadata->setCacheContexts(['url']), 'Invalid product bundle.');
+    }
 
-    // Get the package ID.
-    $package_id = $defaults['package'] ?? FALSE;
-
-    // Load the rate_plan.
-    // @TODO: If the entity doesn't exist, we should return a 404.
-    if (!$package_id || !($entity = $this->entityManager->getStorage($entity_type_id)->loadById($package_id, $value))) {
-      // TODO: Improve the error message here.
-      throw new \InvalidArgumentException('Unable to load rate plan.');
+    try {
+      /** @var \Drupal\apigee_m10n\Entity\Storage\RatePlanStorageInterface $storage */
+      $storage = $this->entityTypeManager->getStorage('rate_plan');
+      // The rate plan value should already be validated so just load it.
+      $entity = $storage->loadById($product_bundle_id, $value);
+    }
+    catch (EntityStorageException $ex) {
+      throw new ParamNotConvertedException('Unable to load rate plan.', 404, $ex);
     }
 
     return $entity;
@@ -61,7 +65,7 @@ class RatePlanConverter extends EntityConverter implements ParamConverterInterfa
    * {@inheritdoc}
    */
   public function applies($definition, $name, Route $route) {
-    // This only applies to subscription entities.
+    // This only applies to purchased_plan entities.
     return (parent::applies($definition, $name, $route) && $definition['type'] === 'entity:rate_plan');
   }
 

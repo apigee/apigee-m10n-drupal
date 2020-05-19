@@ -19,36 +19,24 @@
 
 namespace Drupal\apigee_m10n;
 
-use Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface;
+use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
-use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
-use Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface;
-use Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface;
 use Drupal\user\UserInterface;
 
 /**
  * Interface for the `apigee_m10n.sdk_controller_factory` service.
- *
- * @package Drupal\apigee_m10n
  */
 interface ApigeeSdkControllerFactoryInterface {
-
-  /**
-   * Gets and org controller.
-   *
-   * @return \Apigee\Edge\Api\Management\Controller\OrganizationControllerInterface
-   *   The organization controller.
-   */
-  public function organizationController(): OrganizationControllerInterface;
 
   /**
    * Creates a monetization developer controller.
@@ -83,7 +71,7 @@ interface ApigeeSdkControllerFactoryInterface {
   /**
    * Creates a company prepaid balance controller.
    *
-   * @param \Apigee\Edge\Api\Monetization\Entity\CompanyInterface $company
+   * @param \Apigee\Edge\Api\Management\Entity\CompanyInterface $company
    *   The company.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface
@@ -100,10 +88,10 @@ interface ApigeeSdkControllerFactoryInterface {
   public function apiProductController(): ApiProductControllerInterface;
 
   /**
-   * Creates a package controller.
+   * Creates an API package SDK controller.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface
-   *   The controller.
+   *   The SDK controller.
    */
   public function apiPackageController(): ApiPackageControllerInterface;
 
@@ -113,7 +101,7 @@ interface ApigeeSdkControllerFactoryInterface {
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The controller.
    */
-  public function ratePlanController($package_id): RatePlanControllerInterface;
+  public function ratePlanController($product_bundle_id): RatePlanControllerInterface;
 
   /**
    * Creates a developer accepted rate plan controller.
@@ -143,22 +131,14 @@ interface ApigeeSdkControllerFactoryInterface {
   public function supportedCurrencyController(): SupportedCurrencyControllerInterface;
 
   /**
-   * Creates a billing documents controller.
-   *
-   * @return \Drupal\apigee_m10n\SDK\Controller\BillingDocumentsControllerInterface
-   *   The controller.
-   */
-  public function billingDocumentsController(): BillingDocumentsControllerInterface;
-
-  /**
    * Creates a prepaid balance reports controller.
    *
    * @param string $developer_id
    *   UUID or email address of a developer.
    *
-   * @return \Drupal\apigee_m10n\SDK\Controller\PrepaidBalanceReportsControllerInterface
+   * @return \Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface
    *   The controller.
    */
-  public function prepaidBalanceReportsController(string $developer_id): PrepaidBalanceReportsControllerInterface;
+  public function developerReportDefinitionController(string $developer_id): DeveloperReportDefinitionControllerInterface;
 
 }

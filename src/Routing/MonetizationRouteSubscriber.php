@@ -41,20 +41,20 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
       "field_ui.field_storage_config_add_rate_plan",
       "entity.entity_form_display.rate_plan.default",
       "entity.entity_form_display.rate_plan.form_mode",
-      // Subscriptions.
-      "entity.field_config.subscription_field_edit_form",
-      "entity.field_config.subscription_storage_edit_form",
-      "entity.field_config.subscription_field_delete_form",
-      "entity.subscription.field_ui_fields",
-      "field_ui.field_storage_config_add_subscription",
-      // Packages.
-      "entity.field_config.package_field_edit_form",
-      "entity.field_config.package_storage_edit_form",
-      "entity.field_config.package_field_delete_form",
-      "entity.package.field_ui_fields",
-      "field_ui.field_storage_config_add_package",
-      "entity.entity_form_display.package.default",
-      "entity.entity_form_display.package.form_mode",
+      // Purchased plans.
+      "entity.field_config.purchased_plan_field_edit_form",
+      "entity.field_config.purchased_plan_storage_edit_form",
+      "entity.field_config.purchased_plan_field_delete_form",
+      "entity.purchased_plan.field_ui_fields",
+      "field_ui.field_storage_config_add_purchased_plan",
+      // Product bundles.
+      "entity.field_config.product_bundle_field_edit_form",
+      "entity.field_config.product_bundle_storage_edit_form",
+      "entity.field_config.product_bundle_field_delete_form",
+      "entity.product_bundle.field_ui_fields",
+      "field_ui.field_storage_config_add_product_bundle",
+      "entity.entity_form_display.product_bundle.default",
+      "entity.entity_form_display.product_bundle.form_mode",
     ];
 
     foreach ($routes_to_block as $route_id) {

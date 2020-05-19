@@ -8,7 +8,7 @@
  *
  * Variables:
  * Variables:
- * - plan: The package rate plan.
+ * - plan: The rate plan.
  *   - advance:                  Flag that specifies whether or not the recurring fee is charged in advance. For example, if set to true and the period is 1 month, the recurring fee is charged on the invoice generated when the prior billing month ends. Defaults to false.
  *   - currency:                 See: `currency.json.twig`.
  *   - customPaymentTerm:        Flag that specifies whether or not there is a custom payment term.
@@ -71,6 +71,10 @@
     "recurringStartUnit":       {{ plan.recurringStartUnit|default('1') }},
     "recurringType":            "{{ plan.recurringType|default('CALENDAR') }}",
     "setUpFee":                 {{ plan.setUpFee|default('1.0000') }},
-    "startDate":                "{{ plan.startDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
+    "startDate":                "{{ plan.startDate|date('Y-m-d 00:00:00')|default(date('today -1 day')|date('Y-m-d 00:00:00')) }}",
+    "endDate":                  "{{ plan.endDate|date('Y-m-d 00:00:00')|default('null') }}",
+    {% if plan.type == "DEVELOPER" %}
+    "developer" : {% include 'monetization-developer.json.twig' with { "developer": plan.developer } %},
+    {% endif %}
     "type":                     "{{ plan.type|default('STANDARD') }}"
 }
