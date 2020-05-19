@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
+use Apigee\Edge\Api\Management\Entity\DeveloperInterface;
 use Apigee\Edge\Api\Monetization\Controller\OrganizationProfileController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
@@ -32,6 +33,10 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n\Entity\ProductBundleInterface;
+use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
+use Drupal\apigee_edge\UserDeveloperConverterInterface;
+use Drupal\apigee_m10n\Entity\Package;
+use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -658,7 +663,35 @@ trait ApigeeMonetizationTestTrait {
       'get_developer_terms_conditions',
     ]);
 
-    \Drupal::service('apigee_m10n.monetization')->isLatestTermsAndConditionAccepted($developer->getEmail());
+    \Drupal::service('apigee_m10n.monetization')
+      ->isLatestTermsAndConditionAccepted($developer->getEmail());
+  }
+
+  /**
+   * Convert a Drupal developer to a Apigee Edge developer.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The Drupal user.
+   * @param array $attributes
+   *   any attributes that should be added to the Apigee Edge developer.
+   *
+   * @return \Apigee\Edge\Api\Management\Entity\DeveloperInterface
+   *   An edge developer.
+   */
+  public function convertUserToEdgeDeveloper(UserInterface $user, $attributes = []): DeveloperInterface {
+    // Create a developer.
+    $developer = EdgeDeveloper::create([]);
+    // Synchronise values of base fields.
+    foreach (UserDeveloperConverterInterface::DEVELOPER_PROP_USER_BASE_FIELD_MAP as $developer_prop => $base_field) {
+      $setter = 'set' . ucfirst($developer_prop);
+      $developer->{$setter}($user->get($base_field)->value);
+    }
+    // Set the developer attributes.
+    foreach ($attributes as $name => $value) {
+      $developer->setAttribute($name, $value);
+    }
+
+    return $developer;
   }
 
 }
