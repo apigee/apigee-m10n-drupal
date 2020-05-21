@@ -414,6 +414,9 @@ class RoboFile extends \Robo\Tasks
         "*" => "dist"
       ];
 
+      // Add apigee_edge dependencies.
+      $config->require->{"drupal/rules"} = "^3.0@alpha";
+
       // The drupal image contains Drupal core v8.6.x. A request has been made
       // for an updated version.
       // See: <https://github.com/deviantintegral/drupal_tests/issues/55>
