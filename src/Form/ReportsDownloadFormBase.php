@@ -267,6 +267,8 @@ abstract class ReportsDownloadFormBase extends FormBase {
   /**
    * Returns a CSV string for revenue.
    *
+   * TODO: Refactor this to an MonetizationInterface.
+   *
    * @param string $developer_id
    *   The developer id.
    * @param \DateTimeImmutable $from_date
