@@ -414,19 +414,6 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRevenueReport(string $developer_id, \DateTimeImmutable $from_date, \DateTimeImmutable $to_date, string $currency): ?string {
-    $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
-    $criteria = new RevenueReportCriteria($from_date, $to_date);
-    $criteria
-      ->developers($developer_id)
-      ->currencies($currency)
-      ->showTransactionDetail(TRUE);
-    return $controller->generateReport($criteria);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool {
     // Use cached result if available.
     // TODO: Handle purchased_plan caching per developer on the storage level.

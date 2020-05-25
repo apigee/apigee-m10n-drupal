@@ -20,7 +20,9 @@
 
 namespace Drupal\apigee_m10n\Form;
 
+use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\RevenueReportCriteria;
 use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -75,10 +77,19 @@ abstract class ReportsDownloadFormBase extends FormBase {
   protected $entityTypeManager;
 
   /**
+   * The SDK controller factory.
+   *
+   * @var \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface
+   */
+  protected $sdkControllerFactory;
+
+  /**
    * ReportsForm constructor.
    *
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   The Apigee Monetization base service.
+   * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
+   *   The SDK controller factory.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
    * @param \Drupal\Core\Session\AccountInterface $current_user
@@ -86,11 +97,12 @@ abstract class ReportsDownloadFormBase extends FormBase {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(MonetizationInterface $monetization, RouteMatchInterface $route_match, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(MonetizationInterface $monetization, ApigeeSdkControllerFactoryInterface $sdk_controller_factory, RouteMatchInterface $route_match, AccountInterface $current_user, EntityTypeManagerInterface $entity_type_manager) {
     $this->monetization = $monetization;
     $this->routeMatch = $route_match;
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
+    $this->sdkControllerFactory = $sdk_controller_factory;
   }
 
   /**
@@ -99,6 +111,7 @@ abstract class ReportsDownloadFormBase extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('apigee_m10n.monetization'),
+      $container->get('apigee_m10n.sdk_controller_factory'),
       $container->get('current_route_match'),
       $container->get('current_user'),
       $container->get('entity_type.manager')
@@ -217,7 +230,7 @@ abstract class ReportsDownloadFormBase extends FormBase {
     $entity_id = $form_state->getValue('entity_id');
 
     try {
-      if ($report = $this->monetization->getRevenueReport($entity_id, new \DateTimeImmutable("@{$from_date->getTimestamp()}"), new \DateTimeImmutable("@{$to_date->getTimestamp()}"), $currency)) {
+      if ($report = $this->getRevenueReport($entity_id, new \DateTimeImmutable("@{$from_date->getTimestamp()}"), new \DateTimeImmutable("@{$to_date->getTimestamp()}"), $currency)) {
         $filename = "revenue-report-{$from_date->format('Y-m-d')}-{$to_date->format('Y-m-d')}.csv";
         $response = new Response($report);
         $response->headers->set('Content-Type', 'text/csv');
@@ -249,6 +262,31 @@ abstract class ReportsDownloadFormBase extends FormBase {
       $account->hasPermission('download any reports') ||
       ($account->hasPermission('download own reports') && $account->id() === $user->id())
     );
+  }
+
+  /**
+   * Returns a CSV string for revenue.
+   *
+   * @param string $developer_id
+   *   The developer id.
+   * @param \DateTimeImmutable $from_date
+   *   The from month for the report.
+   * @param \DateTimeImmutable $to_date
+   *   The to month for the report.
+   * @param string $currency
+   *   The currency id. Example: usd.
+   *
+   * @return null|string
+   *   A CSV string of revenue report.
+   */
+  private function getRevenueReport(string $developer_id, \DateTimeImmutable $from_date, \DateTimeImmutable $to_date, string $currency): ?string {
+    $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
+    $criteria = new RevenueReportCriteria($from_date, $to_date);
+    $criteria
+      ->developers($developer_id)
+      ->currencies($currency)
+      ->showTransactionDetail(TRUE);
+    return $controller->generateReport($criteria);
   }
 
   /**
