@@ -234,23 +234,4 @@ interface MonetizationInterface {
    */
   public function isDeveloperPrepaid(UserInterface $account): bool;
 
-  /**
-   * Returns the purchased plan cache id for a developer.
-   *
-   * @param string $developer_id
-   *   The developer id, usually the developer email.
-   *
-   * @return string
-   *   The purchased plan cache id for the provided developer id.
-   */
-  public function getDeveloperPurchasedPlansCacheId(string $developer_id): string;
-
-  /**
-   * Clears the purchased plan cache for a developer.
-   *
-   * @param string $developer_id
-   *   The developer id.
-   */
-  public function clearDeveloperPurchasedPlansCache(string $developer_id): void;
-
 }

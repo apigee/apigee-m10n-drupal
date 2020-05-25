@@ -417,7 +417,7 @@ class Monetization implements MonetizationInterface {
     // Use cached result if available.
     // TODO: Handle purchased_plan caching per developer on the storage level.
     // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
-    $cid = $this->getDeveloperPurchasedPlansCacheId($developer_id);
+    $cid = "apigee_m10n:dev:purchased_plans:{$developer_id}";
     if ($cache = $this->cache->get($cid)) {
       $purchases = $cache->data;
     }
@@ -433,20 +433,6 @@ class Monetization implements MonetizationInterface {
     }
 
     return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDeveloperPurchasedPlansCacheId(string $developer_id): string {
-    return "apigee_m10n:dev:purchased_plans:{$developer_id}";
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function clearDeveloperPurchasedPlansCache(string $developer_id): void {
-    $this->cache->delete($this->getDeveloperPurchasedPlansCacheId($developer_id));
   }
 
   /**
