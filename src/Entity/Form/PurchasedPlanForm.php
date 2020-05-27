@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity\Form;
 
 use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Apigee\Edge\Exception\ClientErrorException;
+use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\MonetizationInterface;
@@ -416,7 +417,7 @@ class PurchasedPlanForm extends FieldableMonetizationEntityForm {
             'children' => [],
           ];
           foreach ($situation_products as $situation_product) {
-            if (!in_array($situation_product->getDisplayName(), $product_items['children'])) {
+            if ($situation_product instanceof ApiProductInterface && !in_array($situation_product->getDisplayName(), $product_items['children'])) {
               $product_items['children'][] = $situation_product->getDisplayName();
             }
           }
