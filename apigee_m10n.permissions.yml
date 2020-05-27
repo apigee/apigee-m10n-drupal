@@ -22,6 +22,12 @@ view own billing details:
 view any billing details:
   title: 'View any billing details'
 
+download own reports:
+  title: 'Download own reports'
+
+download any reports:
+  title: 'Download any reports'
+
 view product_bundle:
   title: 'View product bundles'
 

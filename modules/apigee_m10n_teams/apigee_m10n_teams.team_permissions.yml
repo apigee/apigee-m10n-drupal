@@ -9,3 +9,6 @@ view prepaid balance report:
 
 refresh prepaid balance:
   title: 'Refresh prepaid balance'
+
+download reports:
+  title: 'Download reports'

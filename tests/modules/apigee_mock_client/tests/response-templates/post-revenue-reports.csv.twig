@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ *   POST /v1/mint/organizations/{org}/revenue-reports
+ *
+ * Response Code: 200
+ */
+#}
+Reporting Period:,From:,{{ from|default('2018-09-01') }},  To:,{{ to|default('2018-09-30') }}
+API Product:,All
+Developer:,{{ developer|default('Doe, John') }},
+Application:,{{ application|default('All') }}
+Currency:,{{ currency|default('Local') }}
+Type of Report:,Detailed Revenue Report
+
+Monetization Package,Package ID,Rate Plan,Plan ID,API Product,Product ID,Developer Name,Developer ID,Application Name,Application ID,Currency,Transaction Type,Provider Status,Charged Rate,Transaction ID,Payment Reference,Transaction Start Time,Transaction End Time,Batch Size,
+Balance Top-up,,N/A,,N/A,,{{ developer|default('Doe, John') }},5da6ba14-71aa-4efb-ac33-2b4cff161487,N/A,,USD,BALANCE,SUCCESS,-22.0000,f99399b0-22ec-4992-8a91-a8cdac303616,f99399b0-22ec-4992-8a91-a8cdac303616,2020-04-28 06:55:19,2020-04-28 06:55:19,1,
+

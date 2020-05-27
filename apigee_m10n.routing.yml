@@ -110,6 +110,17 @@ apigee_monetization.profile:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_monetization.reports:
+  path: /user/{user}/monetization/reports
+  defaults:
+    _form: \Drupal\apigee_m10n\Form\ReportsDownloadForm
+    _title: Download Reports
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Form\ReportsDownloadForm::access
+  options:
+    _apigee_monetization_route: TRUE
+
 entity.purchased_plan.developer_collection:
   path: /user/{user}/monetization/purchased-plans
   defaults:

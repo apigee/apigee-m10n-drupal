@@ -35,6 +35,13 @@ apigee_m10n.profile:
   parent_id: apigee_m10n.balance_and_plans
   weight: 0
 
+apigee_m10n.reports:
+  title: 'Reports'
+  route_name: apigee_monetization.reports
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_plans
+  weight: 10
+
 apigee_m10n.settings.prepaid_balance:
   title: 'Prepaid balance'
   route_name: apigee_m10n.settings.prepaid_balance
