@@ -53,7 +53,6 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
         $entity->getQuotaTarget(),
         $suppress_warning
       );
-    // TODO: Clear cache for "apigee_m10n:dev:purchased_plans:{$developer_id}".
   }
 
   /**
@@ -69,7 +68,6 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    // TODO: Clear cache for "apigee_m10n:dev:purchased_plans:{$developer_id}".
     $this->getPurchasedPlanController($entity)->updateSubscription($entity);
   }
 

@@ -63,7 +63,6 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
    */
   public function __construct(EntityTypeInterface $entity_type, CacheBackendInterface $cache_backend, MemoryCacheInterface $memory_cache, TimeInterface $system_time, EdgeEntityControllerInterface $controller_proxy) {
     parent::__construct($entity_type, $cache_backend, $memory_cache, $system_time);
-
     $this->controller_proxy = $controller_proxy;
   }
 
@@ -101,6 +100,18 @@ class PurchasedPlanStorage extends EdgeEntityStorageBase implements PurchasedPla
     });
 
     return $entities;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function doPostSave(EntityInterface $entity, $update) {
+    parent::doPostSave($entity, $update);
+
+    // Rebuild the purchased plans cache on create or update.
+    if ($developer = $entity->getDeveloper()) {
+      \Drupal::cache()->delete("apigee_m10n:dev:purchased_plans:{$developer->getEmail()}");
+    }
   }
 
   /**
