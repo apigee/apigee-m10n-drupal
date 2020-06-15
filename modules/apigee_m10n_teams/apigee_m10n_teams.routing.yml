@@ -67,3 +67,14 @@ apigee_m10n_teams.team_billing_details:
   options:
     _apigee_monetization_route: TRUE
     _apigee_developer_route: apigee_monetization.profile
+
+apigee_m10n_teams.team_reports:
+  path: '/teams/{team}/monetization/reports'
+  defaults:
+    _form: '\Drupal\apigee_m10n_teams\Form\TeamReportsDownloadForm'
+    _title: 'Download Reports'
+  requirements:
+    _team_permission: 'download reports'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.profile

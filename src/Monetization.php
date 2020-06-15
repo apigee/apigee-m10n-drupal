@@ -26,6 +26,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
+use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\RevenueReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
@@ -418,19 +419,20 @@ class Monetization implements MonetizationInterface {
     // TODO: Handle purchased_plan caching per developer on the storage level.
     // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
     $cid = "apigee_m10n:dev:purchased_plans:{$developer_id}";
-
-    if (!($cache = $this->cache->get($cid))) {
-      if ($purchases = PurchasedPlan::loadByDeveloperId($developer_id)) {
-        $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
-      }
+    if ($cache = $this->cache->get($cid)) {
+      $purchases = $cache->data;
     }
     else {
-      foreach ($cache->data as $purchased_plan) {
-        if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isActive()) {
-          return TRUE;
-        }
+      $purchases = PurchasedPlan::loadByDeveloperId($developer_id);
+      $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
+    }
+
+    foreach ($purchases as $purchased_plan) {
+      if ($purchased_plan->getRatePlan()->id() == $rate_plan->id() && $purchased_plan->isActive()) {
+        return TRUE;
       }
     }
+
     return FALSE;
   }
 

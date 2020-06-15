@@ -24,6 +24,13 @@ apigee_m10n_teams.team_billing_details:
   parent_id: apigee_m10n_teams.balance_and_plans
   weight: 0
 
+apigee_m10n_teams.team_reports:
+  title: 'Reports'
+  route_name: apigee_m10n_teams.team_reports
+  base_route: entity.team.canonical
+  parent_id: apigee_m10n_teams.balance_and_plans
+  weight: 10
+
 apigee_m10n_teams.team_plans:
   route_name: apigee_monetization.team_plans
   title: 'Pricing and Plans'
