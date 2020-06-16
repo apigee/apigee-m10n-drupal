@@ -23,6 +23,7 @@ use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Apigee\Edge\Exception\ClientErrorException;
 use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge\Entity\Developer;
+use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityForm;
 use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Cache\Cache;
@@ -38,7 +39,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Purchased plan entity form.
  */
-class PurchasedPlanForm extends FieldableMonetizationEntityForm {
+class PurchasedPlanForm extends FieldableEdgeEntityForm {
 
   /**
    * Developer legal name attribute name.

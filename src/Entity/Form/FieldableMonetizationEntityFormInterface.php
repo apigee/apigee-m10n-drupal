@@ -24,6 +24,11 @@ use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Entity form variant for Apigee Monetization entity types.
+ *
+ * @deprecated in 1.7 and is removed from 2.x. Use
+ * \Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityFormInterface instead.
+ *
+ * @see https://github.com/apigee/apigee-m10n-drupal/issues/236
  */
 interface FieldableMonetizationEntityFormInterface extends FieldableEdgeEntityFormInterface {
 
