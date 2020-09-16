@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
-use Drupal;
 use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
@@ -345,7 +344,7 @@ class AddCreditService implements AddCreditServiceInterface {
 
     // Show links to "Add credit" even if no current balances in all or
     // some currencies.
-    $currencies = Drupal::service('commerce_price.currency_repository')->getAll();
+    $currencies = \Drupal::service('commerce_price.currency_repository')->getAll();
     foreach ($currencies as $currency) {
       $currency_id = strtolower($currency->getCurrencyCode());
       if (empty($build['table']['#rows'][$currency_id])) {
@@ -518,14 +517,14 @@ class AddCreditService implements AddCreditServiceInterface {
       $add_credit_items = [];
       /** @var \Drupal\commerce_order\Entity\OrderItemInterface $item */
       foreach ($flow->getOrder()->getItems() as $item) {
-        if (Drupal::service('apigee_m10n_add_credit.product_manager')->isProductAddCreditEnabled($item->getPurchasedEntity()->getProduct())) {
+        if (\Drupal::service('apigee_m10n_add_credit.product_manager')->isProductAddCreditEnabled($item->getPurchasedEntity()->getProduct())) {
           $add_credit_items[] = $item;
         }
       }
 
       if (count($add_credit_items)) {
         /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface[] $supported_currencies */
-        $supported_currencies = Drupal::service('apigee_m10n.monetization')
+        $supported_currencies = \Drupal::service('apigee_m10n.monetization')
           ->getSupportedCurrencies();
 
         // Validate the total for order item against the minimum top up amount.
@@ -540,7 +539,7 @@ class AddCreditService implements AddCreditServiceInterface {
           ) {
             $form_state->setErrorByName('review', t('The minimum top up amount is @amount @currency_code.', [
               '@currency_code' => $supported_currency->getName(),
-              '@amount' => Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
+              '@amount' => \Drupal::service('commerce_price.currency_formatter')->format($minimum_top_up_amount, $supported_currency->getName(), [
                 'currency_display' => 'symbol',
               ]),
             ]));
@@ -627,7 +626,7 @@ class AddCreditService implements AddCreditServiceInterface {
   public static function help($route_name, RouteMatchInterface $route_match) {
     if ($route_name === 'apigee_m10n_add_credit.settings.add_credit') {
       return '<p>' . t('Review the %module module requirements in the <a href=":requirements">Requirements report</a>.', [
-        '%module' => Drupal::moduleHandler()->getName('apigee_m10n_add_credit'),
+        '%module' => \Drupal::moduleHandler()->getName('apigee_m10n_add_credit'),
         ':requirements' => Url::fromRoute('requirement.report')->toString(),
       ]) . '</p>';
     }

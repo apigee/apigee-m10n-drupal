@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Drupal;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -61,7 +60,7 @@ class ModuleInstallKernelTest extends KernelTestBase {
     $this->installSchema('system', ['sequences']);
 
     // Install the user module.
-    Drupal::service('module_installer')->install(['user', 'apigee_edge']);
+    \Drupal::service('module_installer')->install(['user', 'apigee_edge']);
 
     // Create an admin user.
     $this->admin = $this->createUser([], NULL, TRUE);
@@ -77,7 +76,7 @@ class ModuleInstallKernelTest extends KernelTestBase {
    * installed at the same time.
    */
   public function testModuleInstall() {
-    Drupal::service('module_installer')->install(['apigee_m10n']);
+    \Drupal::service('module_installer')->install(['apigee_m10n']);
     // Installing modules updates the container and needs a router rebuild.
     $this->container = \Drupal::getContainer();
     $this->container->get('router.builder')->rebuildIfNeeded();
@@ -104,7 +103,7 @@ class ModuleInstallKernelTest extends KernelTestBase {
     }
 
     // Test uninstalling the monetization module.
-    Drupal::service('module_installer')->uninstall(['apigee_m10n']);
+    \Drupal::service('module_installer')->uninstall(['apigee_m10n']);
   }
 
 }
