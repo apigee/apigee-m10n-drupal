@@ -14,4 +14,4 @@ vendor/bin/phpmd modules/$1/src html cleancode,codesize,design,unusedcode --igno
 vendor/bin/phpmetrics --extensions=php,inc,module --report-html=artifacts/phpmetrics --git modules/$1
 
 # Check coding standards
-vendor/bin/phpcs -p -s -n --colors --standard=modules/apigee_edge/phpcs.xml.dist --report=junit --report-junit=artifacts/phpcs/phpcs.xml modules/$1
+vendor/bin/phpcs -p -s -n --colors --standard=modules/$1/phpcs.xml.dist --report=junit --report-junit=artifacts/phpcs/phpcs.xml modules/$1

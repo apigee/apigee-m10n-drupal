@@ -171,7 +171,7 @@ code_sniffer: &code_sniffer
     - run:
         working_directory: /var/www/html
         command: &code_sniffer_command |
-          cp ./modules/apigee_edge/.circleci/code-sniffer.sh /var/www/html
+          cp ./modules/apigee_m10n/.circleci/code-sniffer.sh /var/www/html
           ./code-sniffer.sh apigee_m10n
 
     - store_test_results:
