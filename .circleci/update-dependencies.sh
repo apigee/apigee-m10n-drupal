@@ -7,6 +7,7 @@ cp modules/apigee_m10n/.circleci/RoboFile.php ./
 if [[ ! -f dependencies_updated ]]; then
   robo setup:skeleton
   robo add:modules $1
+  robo drupal:version $2
   robo configure:m10n-dependencies
   robo update:dependencies
 fi

@@ -45,9 +45,13 @@ class RoboFile extends \Robo\Tasks
         // composer config doesn't allow us to set arrays, so we have to do this by
         // hand.
         $config = json_decode(file_get_contents('composer.json'));
-        $config->require->{"drush/drush"} = "~9.0";
         $config->extra->{"enable-patching"} = 'true';
         $config->extra->{"patches"} = new \stdClass();
+        $config->extra->{"drupal-scaffold"} = new \stdClass();
+        $config->extra->{"drupal-scaffold"}->{"locations"} = (object) [
+          'web-root' => '.',
+        ];
+
         file_put_contents('composer.json', json_encode($config));
 
         // Create directories for our artifacts.
@@ -57,6 +61,7 @@ class RoboFile extends \Robo\Tasks
           ->mkdir('artifacts/phpmd')
           ->mkdir('artifacts/coverage-html')
           ->mkdir('artifacts/coverage-xml')
+          ->mkdir('artifacts/d9')
           ->mkdir('/tmp/artifacts')
           ->mkdir('/tmp/artifacts/phpunit')
           ->mkdir('/tmp/artifacts/phpcs')
@@ -66,6 +71,8 @@ class RoboFile extends \Robo\Tasks
         $this->taskFilesystemStack()
           ->chown('artifacts', 'www-data', TRUE)
           ->chown('/tmp/artifacts', 'www-data', TRUE)
+          ->copy('modules/apigee_m10n/.circleci/d9.sh', '/var/www/html/d9.sh')
+          ->chmod('/var/www/html/d9.sh', 0777)
           ->run();
     }
 
@@ -168,29 +175,44 @@ class RoboFile extends \Robo\Tasks
      */
     public function updateDependencies()
     {
-        // Disable xdebug.
-        $this->taskExec('sed -i \'s/^zend_extension/;zend_extension/g\' /usr/local/etc/php/conf.d/xdebug.ini')->run();
-        // The git checkout includes a composer.lock, and running composer update
-        // on it fails for the first time.
-        $this->taskFilesystemStack()->remove('composer.lock')->run();
+      // Disable xdebug.
+      $this->taskExec('sed -i \'s/^zend_extension/;zend_extension/g\' /usr/local/etc/php/conf.d/xdebug.ini')->run();
 
-        $this->taskDeleteDir('vendor/behat/mink')->run();
-        // Composer often runs out of memory when installing drupal.
-        $this->taskComposerUpdate('php -d memory_limit=-1 /usr/local/bin/composer')
-          ->optimizeAutoloader()
-          ->run();
+      // The git checkout includes a composer.lock, and running composer update
+      // on it fails for the first time.
+      $this->taskFilesystemStack()->remove('composer.lock')->run();
 
-        // Preserve composer.lock as an artifact for future debugging.
-        $this->taskFilesystemStack()
-          ->copy('composer.json', 'artifacts/composer.json')
-          ->copy('composer.lock', 'artifacts/composer.lock')
-          ->run();
+      // Remove all core files and vendor.
+      $this->taskFilesystemStack()
+        ->taskDeleteDir('core')
+        ->taskDeleteDir('vendor')
+        ->run();
 
-        // Write drush status results to an artifact file.
-        $this->taskExec('vendor/bin/drush status > artifacts/core-stats.txt')->run();
-        $this->taskExec('cat artifacts/core-stats.txt')->run();
-        // Add php info to an artifact file.
-        $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
+      // Composer often runs out of memory when installing drupal.
+      $this->taskComposerUpdate('php -d memory_limit=-1 /usr/local/bin/composer')
+        ->optimizeAutoloader()
+        ->run();
+
+      // Preserve composer.lock as an artifact for future debugging.
+      $this->taskFilesystemStack()
+        ->copy('composer.json', 'artifacts/composer.json')
+        ->copy('composer.lock', 'artifacts/composer.lock')
+        ->run();
+
+      // Write drush status results to an artifact file.
+      $this->taskExec('vendor/bin/drush status > artifacts/core-stats.txt')
+        ->run();
+      $this->taskExec('cat artifacts/core-stats.txt')
+        ->run();
+
+      // Add php info to an artifact file.
+      $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
+
+      // Add composer version info to an artifact file.
+      $this->taskExec('composer show')
+        ->run();
+      $this->taskExec('composer show > /tmp/artifacts/composer-show.txt')
+        ->run();
     }
 
     /**
@@ -349,6 +371,7 @@ class RoboFile extends \Robo\Tasks
         return $this->taskPhpUnit('vendor/bin/phpunit')
           ->option('verbose')
           ->option('debug')
+          ->option('log-junit', '/tmp/artifacts/phpunit/phpunit.xml')
           ->configFile('core')
           ->group($module);
     }
@@ -401,6 +424,35 @@ class RoboFile extends \Robo\Tasks
         }
     }
 
+  /**
+   * Set the Drupal core version.
+   *
+   * @param int $drupalCoreVersion
+   *   The major version of Drupal required.
+   */
+  public function drupalVersion($drupalCoreVersion)
+  {
+    $config = json_decode(file_get_contents('composer.json'));
+
+    unset($config->require->{"drupal/core"});
+
+    switch ($drupalCoreVersion) {
+
+      case '8':
+        $config->require->{"drupal/core-composer-scaffold"} = '~8';
+        $config->require->{"drupal/core-recommended"} = '~8';
+        $config->require->{"drupal/core-dev"} = '~8';
+
+        // Add rules for testing apigee_edge_actions (only for D8).
+        $config->require->{"drupal/rules"} = "3.0.0-alpha6";
+
+      default:
+        break;
+    }
+
+    file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
+  }
+
     /**
      * Adds modules to the merge section.
      */
@@ -414,15 +466,11 @@ class RoboFile extends \Robo\Tasks
         "*" => "dist"
       ];
 
-      // Add apigee_edge dependencies.
-      $config->require->{"drupal/rules"} = "^3.0@alpha";
+      // Unset scripts that delete vendor test directories.
+      unset($config->scripts->{"post-package-install"});
+      unset($config->scripts->{"post-package-update"});
 
-      // The drupal image contains Drupal core v8.6.x. A request has been made
-      // for an updated version.
-      // See: <https://github.com/deviantintegral/drupal_tests/issues/55>
-      // Require drupal core via composer.
-      $config->require->{"drupal/core"} = "~8.8";
-      $config->require->{"drupal/core-recommended"} = "^8.8";
+
       // If you require core, you must not replace it.
       unset($config->replace);
       // You can't merge from a package that is required.
@@ -432,15 +480,10 @@ class RoboFile extends \Robo\Tasks
         }
       }
       $config->extra->{"merge-plugin"}->include = array_values($config->extra->{"merge-plugin"}->include);
-      // TODO Revert this when `andrewberry/drupal_tests` is updated to ~8.7.0.
 
       // We need Drupal\commerce_store\StoreCreationTrait for AddCreditProductAdminTest.php
       $config->require->{"drupal/commerce"} = "^2.16";
       $config->require->{"drupal/token"} = "~1.0";
-
-      // Add dependencies for phpunit tests.
-      $config->require->{"symfony/phpunit-bridge"} = "~5.0";
-      $config->require->{"mikey179/vfsstream"} = "^1.6";
 
       file_put_contents('composer.json', json_encode($config, JSON_PRETTY_PRINT));
     }
