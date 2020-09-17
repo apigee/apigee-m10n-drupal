@@ -111,7 +111,7 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
       'target_bundles' => NULL,
     ];
 
-    $this->selectionHandler = new AddCreditProductsSelection($configuration, NULL, NULL, \Drupal::entityManager(), \Drupal::moduleHandler(), \Drupal::currentUser());
+    $this->selectionHandler = new AddCreditProductsSelection($configuration, NULL, NULL, \Drupal::entityTypeManager(), \Drupal::moduleHandler(), \Drupal::currentUser());
   }
 
   /**

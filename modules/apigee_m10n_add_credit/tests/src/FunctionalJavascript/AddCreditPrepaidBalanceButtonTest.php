@@ -70,7 +70,7 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
     $this->product = $this->createCommerceProduct($this->createCommerceStore(), $variation);
 
     // Enable the add credit target field on the add to cart form.
-    $this->container->get('entity.manager')
+    $this->container->get('entity_type.manager')
       ->getStorage('entity_form_display')
       ->load('commerce_order_item.default.add_to_cart')
       ->setComponent(AddCreditConfig::TARGET_FIELD_NAME, [

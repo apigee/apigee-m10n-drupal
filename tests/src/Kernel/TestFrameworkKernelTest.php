@@ -163,7 +163,6 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
     static::assertNotEmpty($user->getEmail());
     static::assertNotEmpty($user->getDisplayName());
     static::assertNotEmpty($user->getAccountName());
-    static::assertNotEmpty($user->getUsername());
   }
 
 }
