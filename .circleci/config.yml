@@ -303,6 +303,9 @@ workflows:
       - run-code-sniffer:
           requires:
             - update-dependencies-8
+      - run-d9-check:
+          requires:
+            - update-dependencies-8
       - run-code-coverage:
           requires:
             - update-dependencies-8
