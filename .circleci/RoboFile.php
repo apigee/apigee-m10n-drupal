@@ -189,24 +189,24 @@ class RoboFile extends \Robo\Tasks
         ->run();
 
       // Composer often runs out of memory when installing drupal.
-      $this->taskComposerUpdate('php -d memory_limit=-1 /usr/local/bin/composer')
+      $this->taskComposerInstall('php -d memory_limit=-1 /usr/local/bin/composer')
         ->optimizeAutoloader()
         ->run();
 
       // Preserve composer.lock as an artifact for future debugging.
       $this->taskFilesystemStack()
-        ->copy('composer.json', 'artifacts/composer.json')
-        ->copy('composer.lock', 'artifacts/composer.lock')
+        ->copy('composer.json', '/tmp/artifacts/composer.json')
+        ->copy('composer.lock', '/tmp/artifacts/composer.lock')
         ->run();
 
       // Write drush status results to an artifact file.
-      $this->taskExec('vendor/bin/drush status > artifacts/core-stats.txt')
+      $this->taskExec('vendor/bin/drush status > /tmp/artifacts/core-stats.txt')
         ->run();
-      $this->taskExec('cat artifacts/core-stats.txt')
+      $this->taskExec('cat /tmp/artifacts/core-stats.txt')
         ->run();
 
       // Add php info to an artifact file.
-      $this->taskExec('php -i > artifacts/phpinfo.txt')->run();
+      $this->taskExec('php -i > /tmp/artifacts/phpinfo.txt')->run();
 
       // Add composer version info to an artifact file.
       $this->taskExec('composer show')
