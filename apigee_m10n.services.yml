@@ -47,13 +47,13 @@ services:
     class: Drupal\apigee_m10n\Entity\ParamConverter\RatePlanConverter
     tags:
       - { name: paramconverter }
-    arguments: ['@entity.manager', '@language_manager']
+    arguments: ['@entity_type.manager', '@entity.repository']
 
   paramconverter.entity.purchased_plan:
     class: Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter
     tags:
       - { name: paramconverter }
-    arguments: ['@entity.manager', '@language_manager']
+    arguments: ['@entity_type.manager', '@entity.repository']
 
   apigee_m10n.route_subscriber:
     class: Drupal\apigee_m10n\Routing\MonetizationRouteSubscriber

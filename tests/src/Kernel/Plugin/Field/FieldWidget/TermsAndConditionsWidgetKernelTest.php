@@ -49,7 +49,8 @@ class TermsAndConditionsWidgetKernelTest extends BaseWidgetKernelTest {
       'default_description' => 'lorem ipsum',
     ];
     $this->createField('node', 'page', $field_name, $field_type, $field_name);
-    entity_get_form_display('node', 'page', 'default')
+    \Drupal::service('entity_display.repository')
+      ->getFormDisplay('node', 'page', 'default')
       ->setComponent($field_name, [
         'type' => 'apigee_tnc_widget',
         'settings' => $settings,

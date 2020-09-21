@@ -151,7 +151,7 @@ class PurchasedPlanForm extends FieldableEdgeEntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     // Redirect to Rate Plan detail page on submit.
-    $form['#action'] = $this->getEntity()->getRatePlan()->url('purchase');
+    $form['#action'] = $this->getEntity()->getRatePlan()->toUrl('purchase')->toString();
     return $this->conflictForm($form, $form_state);
   }
 

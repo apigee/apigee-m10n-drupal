@@ -37,7 +37,7 @@ class TeamPurchasedPlanConverter extends PurchasedPlanConverter {
   public function convert($value, $definition, $name, array $defaults) {
     $entity_type_id = $this->getEntityTypeFromDefaults($definition, $name, $defaults);
     /** @var \Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage $storage */
-    $storage = $this->entityManager->getStorage($entity_type_id);
+    $storage = $this->entityTypeManager->getStorage($entity_type_id);
 
     // Get the team ID.
     $team = $defaults['team'] ?? NULL;

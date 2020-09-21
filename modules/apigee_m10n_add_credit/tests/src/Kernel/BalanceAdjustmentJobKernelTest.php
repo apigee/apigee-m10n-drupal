@@ -219,7 +219,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       ])
       ->queueMockResponse([
         'post-prepaid-balance-reports.csv.twig',
-      ]);;
+      ]);
 
     // Execute the job which will update the developer balance.
     $this->getExecutor()->call($job);

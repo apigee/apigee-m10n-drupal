@@ -25,7 +25,8 @@
   <rule ref="Drupal.Commenting.FunctionComment.TypeHintMissing">
     <severity>0</severity>
   </rule>
-  <rule ref="Drupal.Commenting.GenderNeutralComment.GenderNeutral">
+  <!-- Ignore long array declaration lines. -->
+  <rule ref="Drupal.Arrays.Array.LongLineDeclaration">
     <severity>0</severity>
   </rule>
 

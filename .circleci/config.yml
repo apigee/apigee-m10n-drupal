@@ -13,14 +13,16 @@
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
 
+version: 2.1
+
 defaults: &defaults
   docker:
     # specify the version you desire here (avoid latest except for testing)
-    - image: andrewberry/drupal_tests:0.4.0
+    - image: quay.io/deviantintegral/drupal_tests:0.5.0-drupal87
 
     - image: selenium/standalone-chrome-debug:3.14.0-beryllium
 
-    - image: mariadb:10.3
+    - image: mariadb:10.4
       environment:
         MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
@@ -33,6 +35,11 @@ defaults: &defaults
   # circleci CLI tool.
   # https://discuss.circleci.com/t/bug-circleci-build-command-ignores-checkout-path-config/13004
   working_directory: /var/www/html/modules/apigee_m10n
+
+  parameters:
+    core-version:
+      type: integer
+      default: 8
 
 # YAML does not support merging of lists. That means we can't have a default
 # 'steps' configuration, though we can have defaults for individual step
@@ -57,14 +64,18 @@ save_cache: &save_cache
 # composer patches.
 update_dependencies: &update_dependencies
   <<: *defaults
+
   steps:
+    - print:
+        message: Using Drupal core version << parameters.core-version >>
+
     - checkout
 
     - restore_cache: *restore_cache
 
     - run:
         working_directory: /var/www/html
-        command: modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
+        command: modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
 
     - save_cache: *save_cache
 
@@ -92,8 +103,8 @@ unit_kernel_tests: &unit_kernel_tests
         working_directory: /var/www/html
         command: &unit_kernel_tests_command |
           cp ./modules/apigee_m10n/.circleci/test.sh /var/www/html
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
-          ./test.sh apigee_m10n
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
+          ./test.sh apigee_m10n << parameters.core-version >>
 
     - store_test_results:
         path: /tmp/artifacts/phpunit
@@ -116,8 +127,8 @@ functional_tests: &functional_tests
         working_directory: /var/www/html
         command: &functional_tests_command |
           cp ./modules/apigee_m10n/.circleci/test-functional.sh /var/www/html
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
-          ./test-functional.sh apigee_m10n
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
+          ./test-functional.sh apigee_m10n << parameters.core-version >>
 
     - store_test_results:
         path: /tmp/artifacts/phpunit
@@ -140,8 +151,8 @@ functional_js_tests: &functional_js_tests
         working_directory: /var/www/html
         command: &functional_js_tests_command |
           cp ./modules/apigee_m10n/.circleci/test-functional-js.sh /var/www/html
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
-          ./test-functional-js.sh apigee_m10n
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
+          ./test-functional-js.sh apigee_m10n << parameters.core-version >>
 
     - store_test_results:
         path: /tmp/artifacts/phpunit
@@ -160,11 +171,8 @@ code_sniffer: &code_sniffer
     - run:
         working_directory: /var/www/html
         command: &code_sniffer_command |
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
-          vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-          vendor/bin/phpmd modules/apigee_m10n/src html cleancode,codesize,design,unusedcode --ignore-violations-on-exit --reportfile artifacts/phpmd/index.html
-          vendor/bin/phpmetrics --extensions=php,inc,module --report-html=artifacts/phpmetrics --git modules/apigee_m10n
-          vendor/bin/phpcs -s -n --colors --standard=modules/apigee_m10n/phpcs.xml.dist --report=junit --report-junit=artifacts/phpcs/phpcs.xml modules/apigee_m10n
+          cp ./modules/apigee_m10n/.circleci/code-sniffer.sh /var/www/html
+          ./code-sniffer.sh apigee_m10n
 
     - store_test_results:
         path: /var/www/html/artifacts/phpcs
@@ -188,6 +196,25 @@ code_coverage: &code_coverage
           ./code-coverage-stats.sh apigee_m10n
     - store_artifacts:
         path: /var/www/html/artifacts
+
+# Run D9 deprecation checks.
+d9_check: &d9_check
+  <<: *defaults
+  steps:
+    - attach_workspace:
+        at: /var/www/html
+
+    - checkout
+
+    - run:
+        working_directory: /var/www/html
+        command: |
+          ./d9.sh modules/apigee_m10n
+
+    - store_test_results:
+        path: /var/www/html/artifacts/d9
+    - store_artifacts:
+        path: /var/www/html/artifacts/d9
 
 # Run all tests.
 all_tests: &all_tests
@@ -214,8 +241,15 @@ all_tests: &all_tests
     - store_artifacts:
         path: /tmp/artifacts
 
+commands:
+  print:
+    parameters:
+      message:
+        type: string
+    steps:
+      - run: echo << parameters.message >>
+
 # Declare all of the jobs we should run.
-version: 2
 jobs:
   update-dependencies:
      <<: *update_dependencies
@@ -231,6 +265,8 @@ jobs:
      <<: *code_sniffer
   run-code-coverage:
      <<: *code_coverage
+  run-d9-check:
+    <<: *d9_check
 
 workflows:
   version: 2
@@ -238,20 +274,39 @@ workflows:
   # Declare a workflow that runs all of our jobs in parallel.
   test_and_lint:
     jobs:
-      - update-dependencies
+      - update-dependencies:
+          name: update-dependencies-<< matrix.core-version >>
+          matrix:
+            parameters:
+              core-version: [ 8 ]
       - run-unit-kernel-tests:
+          name: run-unit-kernel-tests-<< matrix.core-version >>
+          matrix:
+            parameters:
+              core-version: [ 8 ]
           requires:
-            - update-dependencies
+            - update-dependencies-<< matrix.core-version >>
       - run-functional-tests:
+          name: run-functional-tests-<< matrix.core-version >>
+          matrix:
+            parameters:
+              core-version: [ 8 ]
           requires:
-            - update-dependencies
+            - update-dependencies-<< matrix.core-version >>
       - run-functional-js-tests:
+          name: run-functional-js-tests-<< matrix.core-version >>
+          matrix:
+            parameters:
+              core-version: [ 8 ]
           requires:
-            - update-dependencies
+            - update-dependencies-<< matrix.core-version >>
       - run-code-sniffer:
           requires:
-            - update-dependencies
+            - update-dependencies-8
+      - run-d9-check:
+          requires:
+            - update-dependencies-8
       - run-code-coverage:
           requires:
-            - update-dependencies
-            - run-unit-kernel-tests
+            - update-dependencies-8
+            - run-unit-kernel-tests-8
