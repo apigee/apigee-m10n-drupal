@@ -172,7 +172,7 @@ code_sniffer: &code_sniffer
         working_directory: /var/www/html
         command: &code_sniffer_command |
           cp ./modules/apigee_m10n/.circleci/code-sniffer.sh /var/www/html
-          ./code-sniffer.sh apigee_m10n
+          ./code-sniffer.sh apigee_m10n 8
 
     - store_test_results:
         path: /var/www/html/artifacts/phpcs
@@ -192,8 +192,8 @@ code_coverage: &code_coverage
         working_directory: /var/www/html
         command: |
           sudo sed -i 's/^;zend_extension/zend_extension/g' /usr/local/etc/php/conf.d/xdebug.ini
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n
-          ./code-coverage-stats.sh apigee_m10n
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n 8
+          ./code-coverage-stats.sh apigee_m10n 8
     - store_artifacts:
         path: /var/www/html/artifacts
 
@@ -209,7 +209,7 @@ d9_check: &d9_check
     - run:
         working_directory: /var/www/html
         command: |
-          ./d9.sh modules/apigee_m10n
+          ./d9.sh apigee_m10n 8
 
     - store_test_results:
         path: /var/www/html/artifacts/d9
@@ -278,26 +278,26 @@ workflows:
           name: update-dependencies-<< matrix.core-version >>
           matrix:
             parameters:
-              core-version: [ 8 ]
+              core-version: [ 8, 9 ]
       - run-unit-kernel-tests:
           name: run-unit-kernel-tests-<< matrix.core-version >>
           matrix:
             parameters:
-              core-version: [ 8 ]
+              core-version: [ 8, 9 ]
           requires:
             - update-dependencies-<< matrix.core-version >>
       - run-functional-tests:
           name: run-functional-tests-<< matrix.core-version >>
           matrix:
             parameters:
-              core-version: [ 8 ]
+              core-version: [ 8, 9 ]
           requires:
             - update-dependencies-<< matrix.core-version >>
       - run-functional-js-tests:
           name: run-functional-js-tests-<< matrix.core-version >>
           matrix:
             parameters:
-              core-version: [ 8 ]
+              core-version: [ 8, 9 ]
           requires:
             - update-dependencies-<< matrix.core-version >>
       - run-code-sniffer:

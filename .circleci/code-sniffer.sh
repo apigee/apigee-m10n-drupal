@@ -4,7 +4,7 @@
 
 if [ ! -f dependencies_updated ]
 then
-  ./update-dependencies.sh $1
+  ./update-dependencies.sh $1 $2
 fi
 
 # Install dependencies and configure phpcs
