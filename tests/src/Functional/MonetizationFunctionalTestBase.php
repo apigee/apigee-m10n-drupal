@@ -34,6 +34,11 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'classy';
+
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = [
     'apigee_m10n_test',
     'apigee_mock_client',
