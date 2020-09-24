@@ -166,10 +166,18 @@ trait ApigeeMonetizationTestTrait {
       'weight' => 99,
       // Prepare for deleting the developer.
       'callback' => function () use ($account, $billing_type) {
-        $this->queueDeveloperResponse($account, NULL, $billing_type);
-        $this->queueDeveloperResponse($account, NULL, $billing_type);
-        // Delete it.
-        $account->delete();
+        try {
+          // Delete it.
+          $account->delete();
+        }
+        catch (\Exception $e) {
+          // We only care about deleting from Edge, do nothing if exception
+          // gets thrown if it couldn't delete remotely.
+        }
+        catch (\Error $e) {
+          // We only care about deleting from Edge, do nothing if exception
+          // gets thrown if it couldn't delete remotely.
+        }
       },
     ];
 

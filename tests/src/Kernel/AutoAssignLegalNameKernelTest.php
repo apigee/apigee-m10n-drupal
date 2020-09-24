@@ -73,7 +73,6 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
         'get_developer_terms_conditions' => [],
       ]);
     static::assertSame($this->developer->getEmail(), $dev->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
-
   }
 
 }
