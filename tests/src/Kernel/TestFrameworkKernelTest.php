@@ -103,7 +103,7 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
 
     $account = $this->container->get('entity_type.manager')->getStorage('user')->create([
       'mail' => $developer->getEmail(),
-      'name' => $developer->getUserName(),
+      'name' => $developer->getAccountName(),
       'first_name' => $developer->getFirstName(),
       'last_name' => $developer->getLastName(),
       'status' => ($developer->getStatus() == DeveloperInterface::STATUS_ACTIVE) ? 1 : 0,
@@ -120,7 +120,7 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
     static::assertSame($developer->getEmail(), $developer_array['email']);
     static::assertSame($developer->getFirstName(), $developer_array['firstName']);
     static::assertSame($developer->getLastName(), $developer_array['lastName']);
-    static::assertSame($developer->getUserName(), $developer_array['userName']);
+    static::assertSame($developer->getAccountName(), $developer_array['userName']);
     static::assertSame($developer->getStatus(), strtoupper($developer_array['status']));
   }
 

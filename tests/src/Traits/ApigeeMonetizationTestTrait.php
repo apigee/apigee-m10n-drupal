@@ -121,7 +121,7 @@ trait ApigeeMonetizationTestTrait {
     $rid = NULL;
     if ($permissions) {
       $rid = $this->createRole($permissions);
-      $this->assertTrue($rid, 'Role created');
+      $this->assertNotEmpty($rid, 'Role created');
     }
 
     $edit = [
@@ -151,7 +151,7 @@ trait ApigeeMonetizationTestTrait {
     // Save the user.
     $account->save();
 
-    $this->assertTrue($account->id(), 'User created.');
+    $this->assertNotEmpty($account->id());
     if (!$account->id()) {
       return NULL;
     }
