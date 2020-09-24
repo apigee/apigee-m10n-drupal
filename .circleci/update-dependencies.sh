@@ -10,6 +10,7 @@ if [[ ! -f dependencies_updated ]]; then
   robo drupal:version $2
   robo configure:m10n-dependencies
   robo update:dependencies
+  robo do:extra $2
 fi
 
 # Touch a flag so we know dependencies have been set. Otherwise, there is no
