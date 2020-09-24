@@ -112,7 +112,7 @@ For setting up PHPStorm to run tests with a click of a button, see:
 
 ### The API response mocking system
 
-The `apigee_mock_client` module included under `./tests` is responsible for faking API
+The `apigee_mock_api_client` module included with the `apigee_edge` module is responsible for faking API
 responses from the Apigee SDK. Tests are written to queue API responses for all API calls
 that will be made by the SDK connector. The response mocking system avoids the need for
 an actual Apigee organization credentials to contribute to this module. There are many

@@ -41,23 +41,9 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
    */
   protected static $modules = [
     'apigee_m10n_test',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'system',
   ];
-
-  /**
-   * The mock handler stack is responsible for serving queued api responses.
-   *
-   * @var \Drupal\apigee_mock_client\MockHandlerStack
-   */
-  protected $stack;
-
-  /**
-   * Whether actual integration tests are enabled.
-   *
-   * @var bool
-   */
-  protected $integration_enabled;
 
   /**
    * {@inheritdoc}
