@@ -535,7 +535,7 @@ class RoboFile extends \Robo\Tasks
 
         // Delete D8 only modules.
         $this->taskFilesystemStack()
-          ->taskDeleteDir('modules/apigee_edge/modules/apigee_edge_actions')
+          ->taskDeleteDir('modules/contrib/apigee_edge/modules/apigee_edge_actions')
           ->run();
       }
     }
