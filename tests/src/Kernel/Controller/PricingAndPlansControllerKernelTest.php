@@ -74,13 +74,13 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
         'message' => 'DeveloperId v1 does not exist in organization foo-org',
       ],
     ])->queueMockResponse([
-      'get_developer' => [
+      'get_developer_mint' => [
         'status_code' => 201,
       ],
     ])->queueMockResponse([
       // The call to save happens twice in a row because of `setStatus()`.
       // See: \Drupal\apigee_edge\Entity\Storage\DeveloperStorage::doSave()`.
-      'get_developer' => [
+      'get_developer_mint' => [
         'status_code' => 201,
       ],
     ]);

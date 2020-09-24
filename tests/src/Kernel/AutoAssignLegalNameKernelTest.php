@@ -66,7 +66,7 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
     $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse([
-        'developer' => ['developer' => $dev],
+        'developer_mint' => ['developer' => $dev],
         'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
         'get_package_rate_plan' => ['plan' => $rate_plan],
         'get_terms_conditions' => [],

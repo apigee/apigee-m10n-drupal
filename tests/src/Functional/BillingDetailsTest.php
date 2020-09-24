@@ -62,7 +62,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
   public function testBillingDetailsPageView() {
     $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
-      'developer' => [
+      'developer_mint' => [
         'mail'  => ['value' => $this->developer->getEmail()],
         'uuid' => ['value' => '123123123'],
         'first_name' => ['value' => 'First Name'],

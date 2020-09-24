@@ -45,6 +45,7 @@ use Drupal\apigee_m10n\EnvironmentVariable;
 use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
 use Drupal\key\Entity\Key;
 use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
+use Drupal\Tests\apigee_mock_api_client\Traits\ApigeeMockApiClientHelperTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -57,13 +58,9 @@ trait ApigeeMonetizationTestTrait {
   use ApigeeEdgeFunctionalTestTrait {
     createAccount as edgeCreateAccount;
   }
-
-  /**
-   * The mock handler stack is responsible for serving queued api responses.
-   *
-   * @var \Drupal\apigee_mock_client\MockHandlerStack
-   */
-  protected $stack;
+  use ApigeeMockApiClientHelperTrait {
+    ApigeeEdgeFunctionalTestTrait::createDeveloperApp insteadof ApigeeMockApiClientHelperTrait;
+  }
 
   /**
    * The SDK Connector client.
@@ -105,47 +102,11 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
-    $this->integration_enabled = !empty(getenv(EnvironmentVariable::APIGEE_INTEGRATION_ENABLE));
-    $this->stack               = $this->container->get('apigee_mock_client.mock_http_handler_stack');
-    $this->sdk_connector       = $this->container->get('apigee_edge.sdk_connector');
+    $this->apigeeTestHelperSetup();
+    $this->sdk_connector = $this->sdkConnector;
 
-    $this->initAuth();
-    // `::initAuth` has to happen before getting the controller factory.
+    // `::initAuth` in above has to happen before getting the controller factory.
     $this->controller_factory = $this->container->get('apigee_m10n.sdk_controller_factory');
-  }
-
-  /**
-   * Initialize SDK connector.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   */
-  protected function initAuth() {
-
-    // Create new Apigee Edge basic auth key.
-    $key = Key::create([
-      'id'           => 'apigee_m10n_test_auth',
-      'label'        => 'Apigee M10n Test Authorization',
-      'key_type'     => 'apigee_auth',
-      'key_provider' => 'apigee_edge_environment_variables',
-      'key_input'    => 'apigee_auth_input',
-    ]);
-
-    $key->save();
-
-    // Collect credentials from environment variables.
-    $fields = [];
-    foreach (array_keys($key->getKeyType()->getPluginDefinition()['multivalue']['fields']) as $field) {
-      $id = 'APIGEE_EDGE_' . strtoupper($field);
-      if ($value = getenv($id)) {
-        $fields[$id] = $value;
-      }
-    }
-    // Make sure the credentials persists for functional tests.
-    \Drupal::state()->set(TestEnvironmentVariablesKeyProvider::KEY_VALUE_STATE_ID, $fields);
-
-    $this->config('apigee_edge.auth')
-      ->set('active_key', 'apigee_m10n_test_auth')
-      ->save();
   }
 
   /**
@@ -495,7 +456,7 @@ trait ApigeeMonetizationTestTrait {
       $context['billing_type'] = $billing_type;
     }
 
-    $this->stack->queueMockResponse(['get_developer' => $context]);
+    $this->stack->queueMockResponse(['get_developer_mint' => $context]);
   }
 
   /**
