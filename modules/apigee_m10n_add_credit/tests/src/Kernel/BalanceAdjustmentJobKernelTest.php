@@ -71,7 +71,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     'file',
     'apigee_edge',
     'apigee_m10n',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'system',
     // Modules for this test.
     'apigee_m10n_add_credit',
@@ -170,7 +170,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame(19.99, $new_balance->getAmount());
 
     $this->assertNoClientError();
-    static::assertEmpty($this->stack->count());
+    static::assertEmpty($this->stack->responseCount());
 
     // Make sure no emails were sent.
     $emails = \Drupal::state()->get('system.test_mail_collector');
@@ -262,11 +262,11 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame($this->site_mail, $emails[0]['from']);
     static::assertSame('balance_adjustment_report', $emails[0]['key']);
     static::assertSame("Add Credit successfully applied to account ({$developer_mail}) from example site", $emails[0]['subject']);
-    static::assertContains("Adjustment applied to developer:  `{$developer_mail}`.", $emails[0]['body']);
-    static::assertContains('Existing credit added (' . date('F') . '):  `$19.99`', $emails[0]['body']);
-    static::assertContains('Amount Applied:                   `$19.99`.', $emails[0]['body']);
-    static::assertContains('New Balance:                      `$39.98`.', $emails[0]['body']);
-    static::assertContains('Expected New Balance:             `$39.98`.', $emails[0]['body']);
+    static::assertStringContainsString("Adjustment applied to developer:  `{$developer_mail}`.", $emails[0]['body']);
+    static::assertStringContainsString('Existing credit added (' . date('F') . '):  `$19.99`', $emails[0]['body']);
+    static::assertStringContainsString('Amount Applied:                   `$19.99`.', $emails[0]['body']);
+    static::assertStringContainsString('New Balance:                      `$39.98`.', $emails[0]['body']);
+    static::assertStringContainsString('Expected New Balance:             `$39.98`.', $emails[0]['body']);
   }
 
   /**
@@ -300,7 +300,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
         ],
       ])
       // Queue a developer balance response for the top up (POST).
-      ->append(new Response(415, [], ''));
+      ->addResponse(new Response(415, [], ''));
     $this->stack->queueMockResponse([
       'post-prepaid-balance-reports.csv.twig',
     ]);
@@ -323,13 +323,13 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
     static::assertSame($this->site_mail, $emails[0]['from']);
     static::assertSame('balance_adjustment_error_report', $emails[0]['key']);
     static::assertSame('Developer account add credit error from example site', $emails[0]['subject']);
-    static::assertContains('There was an error applying a credit to an account.', $emails[0]['body']);
+    static::assertStringContainsString('There was an error applying a credit to an account.', $emails[0]['body']);
     $nl = PHP_EOL;
-    static::assertContains("Calculation discrepancy applying adjustment to developer{$nl}`{$this->developer->getEmail()}`.", $emails[0]['body']);
-    static::assertContains('Existing credit added (' . date('F') . '):  `$19.99`', $emails[0]['body']);
-    static::assertContains('Amount Applied:                   `$19.99`.', $emails[0]['body']);
-    static::assertContains('New Balance:                      `Error retrieving the new balance.`.', $emails[0]['body']);
-    static::assertContains('Expected New Balance:             `$39.98`.', $emails[0]['body']);
+    static::assertStringContainsString("Calculation discrepancy applying adjustment to developer{$nl}`{$this->developer->getEmail()}`.", $emails[0]['body']);
+    static::assertStringContainsString('Existing credit added (' . date('F') . '):  `$19.99`', $emails[0]['body']);
+    static::assertStringContainsString('Amount Applied:                   `$19.99`.', $emails[0]['body']);
+    static::assertStringContainsString('New Balance:                      `Error retrieving the new balance.`.', $emails[0]['body']);
+    static::assertStringContainsString('Expected New Balance:             `$39.98`.', $emails[0]['body']);
   }
 
 }

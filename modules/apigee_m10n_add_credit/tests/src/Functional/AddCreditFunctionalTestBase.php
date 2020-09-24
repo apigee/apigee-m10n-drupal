@@ -43,7 +43,7 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     'file',
     'apigee_edge',
     'apigee_m10n',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'system',
     // Modules for this test.
     'apigee_m10n_add_credit',

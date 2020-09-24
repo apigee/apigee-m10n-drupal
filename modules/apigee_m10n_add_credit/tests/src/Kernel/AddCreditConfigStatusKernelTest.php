@@ -47,9 +47,10 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
     'field',
     'options',
     'path',
+    'path_alias',
     'apigee_edge',
     'apigee_m10n',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'system',
     // Modules for this test.
     'apigee_m10n_add_credit',
