@@ -246,6 +246,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->assertCssElementContains('h1.page-title', 'Order information');
 
     // Submit payment information.
+    $this->assertSession()->waitForElementVisible('css', '.test-wait', 1000);
     $this->submitForm([
       'payment_information[add_payment_method][payment_details][security_code]' => '123',
       'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => $this->developer->first_name->value,
@@ -262,6 +263,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
 
     // Finalize the payment.
     $this->queueSupportedCurrencyResponse();
+    $this->assertSession()->waitForElementVisible('css', '.test-wait', 1000);
     $this->submitForm([], 'Pay and complete purchase');
 
     $text = $valid ? 'Complete' : 'The minimum top up amount is $10.00 USD.';
