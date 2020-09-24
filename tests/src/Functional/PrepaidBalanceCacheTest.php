@@ -268,7 +268,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
    */
   protected function assertCacheIdsExist(array $cids) {
     foreach ($cids as $cid) {
-      $this->assertTrue($this->cacheBackend->get($cid));
+      $this->assertNotEmpty($this->cacheBackend->get($cid));
     }
   }
 
