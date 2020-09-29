@@ -141,6 +141,9 @@ class RoboFile extends \Robo\Tasks
         if (!empty($additional->{"require-dev"})) {
           foreach ($additional->{"require-dev"} as $key => $value) {
             if (!isset($config->{"require-dev"}->{$key})) {
+              if (!isset($config->{"require-dev"})) {
+                $config->{"require-dev"} = new \stdClass();
+              }
               $config->{"require-dev"}->{$key} = $value;
             }
           }
