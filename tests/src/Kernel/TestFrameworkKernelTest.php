@@ -19,10 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Apigee\Edge\Structure\AttributesProperty;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge\Entity\DeveloperInterface;
-use GuzzleHttp\Handler\MockHandler;
+use Drupal\apigee_mock_api_client\MockHandlerStack;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Http\Message\Authentication\AutoBasicAuth;
@@ -41,7 +40,7 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
   public function testServiceModification() {
     self::assertEquals(
       (string) $this->container->getDefinition('apigee_edge.sdk_connector')->getArgument(0),
-      'apigee_mock_client.mock_http_client_factory'
+      'apigee_mock_api_client.mock_http_client_factory'
     );
   }
 
@@ -55,7 +54,7 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
     }
 
     // Queue a response from the mock server.
-    $this->stack->append(new Response(200, [], "{\"status\": \"success\"}"));
+    $this->stack->addResponse(new Response(200, [], "{\"status\": \"success\"}"));
 
     // Execute a client call.
     $response = $this->sdk_connector->buildClient(new AutoBasicAuth())->get('/');
@@ -128,20 +127,20 @@ class TestFrameworkKernelTest extends MonetizationKernelTestBase {
    * Tests that the sdk client will be unaffected while integration is enabled.
    */
   public function testIntegrationToggle() {
-    $this->container->set('apigee_mock_client.mock_http_client_factory', NULL);
+    $this->container->set('apigee_mock_api_client.mock_http_client_factory', NULL);
     putenv('APIGEE_INTEGRATION_ENABLE=0');
     $handler = $this->container
-      ->get('apigee_mock_client.mock_http_client_factory')
+      ->get('apigee_mock_api_client.mock_http_client_factory')
       ->fromOptions([])
       ->getConfig('handler');
 
-    self::assertInstanceOf(MockHandler::class, $handler);
+    self::assertInstanceOf(MockHandlerStack::class, $handler);
 
-    $this->container->set('apigee_mock_client.mock_http_client_factory', NULL);
+    $this->container->set('apigee_mock_api_client.mock_http_client_factory', NULL);
     putenv('APIGEE_INTEGRATION_ENABLE=1');
 
     $handler = $this->container
-      ->get('apigee_mock_client.mock_http_client_factory')
+      ->get('apigee_mock_api_client.mock_http_client_factory')
       ->fromOptions([])
       ->getConfig('handler');
 

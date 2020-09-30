@@ -44,7 +44,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
     'apigee_edge',
     'apigee_m10n',
     'apigee_m10n_test',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'user',
     'system',
   ];

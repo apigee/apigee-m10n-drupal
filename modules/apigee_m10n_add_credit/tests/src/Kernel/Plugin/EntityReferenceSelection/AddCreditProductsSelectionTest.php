@@ -66,7 +66,7 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
     'file',
     'apigee_edge',
     'apigee_m10n',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'system',
 
     // Modules for this test.
@@ -85,7 +85,6 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->installSchema('system', ['sequence']);
     $this->installSchema('system', ['sequences']);
     $this->installEntitySchema('commerce_product');
     $this->installEntitySchema('user');
@@ -111,7 +110,17 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
       'target_bundles' => NULL,
     ];
 
-    $this->selectionHandler = new AddCreditProductsSelection($configuration, NULL, NULL, \Drupal::entityTypeManager(), \Drupal::moduleHandler(), \Drupal::currentUser());
+    $this->selectionHandler = new AddCreditProductsSelection(
+      $configuration,
+      NULL,
+      NULL,
+      \Drupal::entityTypeManager(),
+      \Drupal::moduleHandler(),
+      \Drupal::currentUser(),
+      \Drupal::service('entity_field.manager'),
+      \Drupal::service('entity_type.bundle.info'),
+      \Drupal::service('entity.repository')
+    );
   }
 
   /**

@@ -12,7 +12,7 @@
 {
     "developer": [
       {% for developer in developers %}
-        {% include 'developer.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% include 'developer-mint.json.twig' %}{{ loop.last ? '' : ',' }}
       {% endfor %}
     ],
     "totalRecords" : {{ developers|length }}

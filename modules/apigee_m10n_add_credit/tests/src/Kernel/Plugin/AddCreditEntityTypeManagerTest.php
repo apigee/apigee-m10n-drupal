@@ -57,7 +57,7 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
     'file',
     'apigee_edge',
     'apigee_m10n',
-    'apigee_mock_client',
+    'apigee_mock_api_client',
     'system',
 
     // Modules for this test.
@@ -75,7 +75,6 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $this->installSchema('system', ['sequence']);
     $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([

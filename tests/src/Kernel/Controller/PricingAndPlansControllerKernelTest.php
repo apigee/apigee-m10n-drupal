@@ -63,7 +63,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     ]);
 
     // Enable the Classy theme.
-    \Drupal::service('theme_handler')->install(['classy']);
+    \Drupal::service('theme_installer')->install(['classy']);
     $this->config('system.theme')->set('default', 'classy')->save();
 
     // User install is going to try to create a developer for the root user.
@@ -74,13 +74,13 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
         'message' => 'DeveloperId v1 does not exist in organization foo-org',
       ],
     ])->queueMockResponse([
-      'get_developer' => [
+      'get_developer_mint' => [
         'status_code' => 201,
       ],
     ])->queueMockResponse([
       // The call to save happens twice in a row because of `setStatus()`.
       // See: \Drupal\apigee_edge\Entity\Storage\DeveloperStorage::doSave()`.
-      'get_developer' => [
+      'get_developer_mint' => [
         'status_code' => 201,
       ],
     ]);

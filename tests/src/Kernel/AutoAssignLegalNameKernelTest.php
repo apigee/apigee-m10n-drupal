@@ -66,14 +66,13 @@ class AutoAssignLegalNameKernelTest extends MonetizationKernelTestBase {
     $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse([
-        'developer' => ['developer' => $dev],
+        'developer_mint' => ['developer' => $dev],
         'get_developer_subscriptions' => ['subscriptions' => [$subscription]],
         'get_package_rate_plan' => ['plan' => $rate_plan],
         'get_terms_conditions' => [],
         'get_developer_terms_conditions' => [],
       ]);
     static::assertSame($this->developer->getEmail(), $dev->getAttributeValue('MINT_DEVELOPER_LEGAL_NAME'));
-
   }
 
 }
