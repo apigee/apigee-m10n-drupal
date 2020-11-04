@@ -471,8 +471,8 @@ class RoboFile extends \Robo\Tasks
 
     switch ($drupalCoreVersion) {
       case '9':
-        $config->require->{"drupal/core-composer-scaffold"} = '^9';
-        $config->require->{"drupal/core-recommended"} = '^9';
+        $config->require->{"drupal/core-composer-scaffold"} = '^9@stable';
+        $config->require->{"drupal/core-recommended"} = '^9@stable';
         $config->require->{"drupal/core-dev"} = '^9';
 
         break;
