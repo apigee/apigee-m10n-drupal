@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -70,6 +71,13 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
   protected $messenger;
 
   /**
+   * The monetization service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
    * PurchasedPlanListBuilder constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -82,14 +90,17 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    *   Logger service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Messenger service.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The monetization service.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger, MessengerInterface $messenger) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger, MessengerInterface $messenger, MonetizationInterface $monetization) {
     parent::__construct($entity_type, $storage);
 
     $this->storage = $storage;
     $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger;
     $this->messenger = $messenger;
+    $this->monetization = $monetization;
   }
 
   /**
@@ -103,7 +114,8 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
       $entity_type_manager->getStorage($entity_type->id()),
       $entity_type_manager,
       $container->get('logger.channel.apigee_m10n'),
-      $container->get('messenger')
+      $container->get('messenger'),
+      $container->get('apigee_m10n.monetization')
     );
   }
 
