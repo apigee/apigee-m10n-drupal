@@ -57,9 +57,6 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
    *   developer is prepaid.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    if ($this->monetization->isOrganizationApigeeX()) {
-      return AccessResult::forbidden('ApigeeX Developer is not prepaid.');
-    }
     $user = $route_match->getParameter('user');
     if (!$this->monetization->isDeveloperPrepaid($user)) {
       return AccessResult::forbidden('Developer is not prepaid.');
