@@ -108,11 +108,11 @@ class PricingAndPlansController extends ControllerBase {
    */
   public function myPlans(): RedirectResponse {
     if ($this->monetization->isOrganizationApigeeX()) {
-    return $this->redirect(
-      'apigee_monetization.xplans',
-      ['user' => \Drupal::currentUser()->id()],
-      ['absolute' => TRUE]
-    );
+      return $this->redirect(
+        'apigee_monetization.xplans',
+        ['user' => \Drupal::currentUser()->id()],
+        ['absolute' => TRUE]
+      );
     }
     else {
       return $this->redirect(

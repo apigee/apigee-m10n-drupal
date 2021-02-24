@@ -474,6 +474,7 @@ class RoboFile extends \Robo\Tasks
         $config->require->{"drupal/core-composer-scaffold"} = '^9@stable';
         $config->require->{"drupal/core-recommended"} = '^9@stable';
         $config->require->{"drupal/core-dev"} = '^9';
+        $config->require->{"phpspec/prophecy-phpunit"} = '^2';
 
         break;
 
