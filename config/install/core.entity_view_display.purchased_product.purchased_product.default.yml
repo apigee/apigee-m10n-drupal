@@ -1,0 +1,41 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: purchased_product.purchased_product.default
+targetEntityType: purchased_product
+bundle: purchased_product
+mode: default
+content:
+  developer:
+    type: apigee_monetization_developer
+    weight: 0
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  endTime:
+    type: apigee_datestamp
+    weight: 3
+    region: content
+    label: above
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+    third_party_settings: {  }
+  startTime:
+    type: apigee_datestamp
+    weight: 2
+    region: content
+    label: above
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+    third_party_settings: {  }
+hidden:
+  createdAt: true
+  id: true
+  lastModifiedAt: true

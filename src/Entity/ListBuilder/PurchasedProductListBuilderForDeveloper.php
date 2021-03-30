@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2018 Google Inc.
+ * Copyright 2021 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -19,24 +19,26 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\Entity\PurchasedProduct;
+use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\apigee_m10n\Monetization;
+use Drupal\apigee_m10n\MonetizationInterface;
 
 /**
- * Defines implementation of a purchased plan listing page.
+ * Defines implementation of a purchased product listing page.
  *
  * @ingroup entity_api
  */
-class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
+class PurchasedProductListBuilderForDeveloper extends PurchasedProductListBuilder {
 
   /**
-   * The developer's user that is used to load purchased plans.
+   * The developer's user that is used to load purchased products.
    *
    * @var \Drupal\user\UserInterface
    */
@@ -46,6 +48,7 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
    * {@inheritdoc}
    */
   public function render(UserInterface $user = NULL) {
+
     // Return 404 if the user is not set and keep a compatible method signature.
     if (!($user instanceof UserInterface)) {
       // There is a `user: '^[1-9]+[0-9]*$'` requirement on the route that uses
@@ -71,13 +74,15 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    if ($this->monetization->isOrganizationApigeeX()) {
-      return AccessResult::forbidden('ApigeeX does not support purchased plan.');
+    $monetization = \Drupal::service('apigee_m10n.monetization');
+
+    if (!$monetization->isOrganizationApigeeX()) {
+      return AccessResult::forbidden('ApigeeX is not enabled.');
     }
     $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
-      $account->hasPermission('view any purchased_plan') ||
-      ($account->hasPermission('view own purchased_plan') && $account->id() === $user->id())
+      $account->hasPermission('view any purchased_product') ||
+      ($account->hasPermission('view own purchased_product') && $account->id() === $user->id())
     );
   }
 
@@ -85,27 +90,27 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
    * {@inheritdoc}
    */
   public function load() {
-    return PurchasedPlan::loadByDeveloperId($this->user->getEmail());
+    return PurchasedProduct::loadByDeveloperId($this->user->getEmail());
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function cancelUrl(PurchasedPlanInterface $purchased_plan) {
-    return $this->ensureDestination(Url::fromRoute('entity.purchased_plan.developer_cancel_form', [
+  protected function cancelUrl(PurchasedProductInterface $purchased_product) {
+    return $this->ensureDestination(Url::fromRoute('entity.purchased_product.developer_cancel_form', [
       'user' => $this->user->id(),
-      'purchased_plan' => $purchased_plan->id(),
+      'purchased_product' => $purchased_product->id(),
     ]));
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function ratePlanUrl(PurchasedPlanInterface $purchased_plan) {
-    return $this->ensureDestination(Url::fromRoute('entity.rate_plan.canonical', [
+  protected function ratePlanUrl(PurchasedProductInterface $purchased_product, $rateplanId) {
+    return $this->ensureDestination(Url::fromRoute('entity.xrate_plan.canonical', [
       'user' => $this->user->id(),
-      'product_bundle' => $purchased_plan->getRatePlan()->getProductBundleId(),
-      'rate_plan' => $purchased_plan->getRatePlan()->id(),
+      'xproduct' => $purchased_product->getApiproduct(),
+      'xrate_plan' => $rateplanId,
     ]));
   }
 

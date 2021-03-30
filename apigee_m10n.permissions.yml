@@ -34,14 +34,32 @@ view product_bundle:
 view product_bundle as anyone:
   title: 'View product bundles as any developer'
 
+view xproduct:
+  title: 'View apigeex product'
+
+view xproduct as anyone:
+  title: 'View apigeex product as any developer'
+
 view rate_plan:
   title: 'View rate plans'
 
 view rate_plan as anyone:
   title: 'View rate plans as any developer'
 
+view xrate_plan:
+  title: 'View apigeex rate plans'
+
+view xrate_plan as anyone:
+  title: 'View apigeex rate plans as any developer'
+
 purchase rate_plan:
   title: 'Purchase a rate plan'
 
 purchase rate_plan as anyone:
   title: 'Purchase a rate plan as any developer'
+
+purchase xrate_plan:
+  title: 'Purchase apigeex rate plan'
+
+purchase xrate_plan as anyone:
+  title: 'Purchase apigeex rate plan as any developer'

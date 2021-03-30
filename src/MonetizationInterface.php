@@ -31,6 +31,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\Entity\XRatePlanInterface;
 
 /**
  * Interface MonetizationInterface.
@@ -50,6 +51,8 @@ interface MonetizationInterface {
     'download prepaid balance reports',
     'view own billing details',
     'download own reports',
+    'view own purchased_product',
+    'update own purchased_product',
   ];
 
   /**
@@ -197,6 +200,19 @@ interface MonetizationInterface {
   public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool;
 
   /**
+   * Check if developer has subscribed to a plan.
+   *
+   * @param string $developer_id
+   *   Developer ID.
+   * @param \Drupal\apigee_m10n\Entity\XRatePlanInterface $xrate_plan
+   *   Rate plan entity.
+   *
+   * @return bool|null
+   *   Check if developer is subscribed to a plan.
+   */
+  public function isDeveloperAlreadySubscribedX(string $developer_id, XRatePlanInterface $xrate_plan): bool;
+
+  /**
    * Handles `hook_form_FORM_ID_alter` (user_admin_permissions) for this module.
    *
    * @param array $form
@@ -234,5 +250,13 @@ interface MonetizationInterface {
    *   True if developer is prepaid.
    */
   public function isDeveloperPrepaid(UserInterface $account): bool;
+
+  /**
+   * Returns true if current organization is ApigeeX, false if Apigee Edge.
+   *
+   * @return bool
+   *   True if organization is ApigeeX.
+   */
+  public function isOrganizationApigeeX(): bool;
 
 }

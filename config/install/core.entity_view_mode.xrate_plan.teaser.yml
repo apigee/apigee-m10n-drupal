@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: xrate_plan.teaser
+label: Teaser
+targetEntityType: xrate_plan
+cache: true

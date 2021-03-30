@@ -20,10 +20,13 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\ApiProductControllerInterface as ApixProductControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface as ApigeexRatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController as ApigeeXDeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface;
@@ -96,12 +99,28 @@ interface ApigeeSdkControllerFactoryInterface {
   public function apiPackageController(): ApiPackageControllerInterface;
 
   /**
+   * Creates an API xproduct SDK controller.
+   *
+   * @return \Apigee\Edge\Api\ApigeeeX\Controller\ApiProductControllerInterface
+   *   The SDK controller.
+   */
+  public function apixProductController(): ApixProductControllerInterface;
+
+  /**
    * Creates a rate plan controller.
    *
    * @return \Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface
    *   The controller.
    */
   public function ratePlanController($product_bundle_id): RatePlanControllerInterface;
+
+  /**
+   * Creates a rate plan controller.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface
+   *   The controller.
+   */
+  public function xratePlanController($product_bundle_id): ApigeexRatePlanControllerInterface;
 
   /**
    * Creates a developer accepted rate plan controller.
@@ -113,6 +132,17 @@ interface ApigeeSdkControllerFactoryInterface {
    *   A developer accepted rate plan controller.
    */
   public function developerAcceptedRatePlanController(string $developer_id): DeveloperAcceptedRatePlanController;
+
+  /**
+   * Creates a developer accepted rate plan controller.
+   *
+   * @param string $developer_id
+   *   The email or id of the developer.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController
+   *   A developer accepted rate plan controller.
+   */
+  public function developerAcceptedRatePlanxController(string $developer_id): ApigeexDeveloperAcceptedRatePlanController;
 
   /**
    * Creates terms and conditions controller.

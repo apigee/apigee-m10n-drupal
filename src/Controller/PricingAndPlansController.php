@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Controller;
 
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n\Form\RatePlanConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
@@ -48,20 +49,33 @@ class PricingAndPlansController extends ControllerBase {
   protected $controller_factory;
 
   /**
+   * The monetization service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
    * PricingAndPlansController constructor.
    *
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The monetization service.
    */
-  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory) {
+  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization) {
     $this->controller_factory = $sdk_controller_factory;
+    $this->monetization = $monetization;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('apigee_m10n.sdk_controller_factory'));
+    return new static(
+      $container->get('apigee_m10n.sdk_controller_factory'),
+      $container->get('apigee_m10n.monetization')
+    );
   }
 
   /**
@@ -76,6 +90,9 @@ class PricingAndPlansController extends ControllerBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+    if ($this->monetization->isOrganizationApigeeX()) {
+      return AccessResult::forbidden('ApigeeX does not have product bundles.');
+    }
     $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
       $account->hasPermission('view rate_plan as anyone') ||
@@ -90,11 +107,20 @@ class PricingAndPlansController extends ControllerBase {
    *   A redirect to the current user's product bundles page.
    */
   public function myPlans(): RedirectResponse {
-    return $this->redirect(
-      'apigee_monetization.plans',
-      ['user' => \Drupal::currentUser()->id()],
-      ['absolute' => TRUE]
-    );
+    if ($this->monetization->isOrganizationApigeeX()) {
+      return $this->redirect(
+        'apigee_monetization.xplans',
+        ['user' => \Drupal::currentUser()->id()],
+        ['absolute' => TRUE]
+      );
+    }
+    else {
+      return $this->redirect(
+        'apigee_monetization.plans',
+        ['user' => \Drupal::currentUser()->id()],
+        ['absolute' => TRUE]
+      );
+    }
   }
 
   /**

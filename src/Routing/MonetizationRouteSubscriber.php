@@ -41,12 +41,26 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
       "field_ui.field_storage_config_add_rate_plan",
       "entity.entity_form_display.rate_plan.default",
       "entity.entity_form_display.rate_plan.form_mode",
+      // XRate Plans.
+      "entity.field_config.xrate_plan_field_edit_form",
+      "entity.field_config.xrate_plan_storage_edit_form",
+      "entity.field_config.xrate_plan_field_delete_form",
+      "entity.xrate_plan.field_ui_fields",
+      "field_ui.field_storage_config_add_xrate_plan",
+      "entity.entity_form_display.xrate_plan.default",
+      "entity.entity_form_display.xrate_plan.form_mode",
       // Purchased plans.
       "entity.field_config.purchased_plan_field_edit_form",
       "entity.field_config.purchased_plan_storage_edit_form",
       "entity.field_config.purchased_plan_field_delete_form",
       "entity.purchased_plan.field_ui_fields",
       "field_ui.field_storage_config_add_purchased_plan",
+      // Purchased plans.
+      "entity.field_config.purchased_product_field_edit_form",
+      "entity.field_config.purchased_product_storage_edit_form",
+      "entity.field_config.purchased_product_field_delete_form",
+      "entity.purchased_product.field_ui_fields",
+      "field_ui.field_storage_config_add_purchased_product",
       // Product bundles.
       "entity.field_config.product_bundle_field_edit_form",
       "entity.field_config.product_bundle_storage_edit_form",
@@ -55,6 +69,14 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
       "field_ui.field_storage_config_add_product_bundle",
       "entity.entity_form_display.product_bundle.default",
       "entity.entity_form_display.product_bundle.form_mode",
+      // Product X.
+      "entity.field_config.xproduct_field_edit_form",
+      "entity.field_config.xproduct_storage_edit_form",
+      "entity.field_config.xproduct_field_delete_form",
+      "entity.xproduct.field_ui_fields",
+      "field_ui.field_storage_config_add_xproduct",
+      "entity.entity_form_display.xproduct.default",
+      "entity.entity_form_display.xproduct.form_mode",
     ];
 
     foreach ($routes_to_block as $route_id) {
