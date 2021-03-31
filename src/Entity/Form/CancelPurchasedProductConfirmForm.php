@@ -134,7 +134,7 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have successfully cancelled %label API Product', ['%label' => $this->entity->getApiProduct()]));
         Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_PRODUCT_CACHE_TAG]);
-        $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $this->entity->getCurrentOwnerId()]);
+        $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $this->entity->getOwnerId()]);
         // Clear the cache to reflect the changes on buy product page.
         $renderCache = \Drupal::service('cache.render');
         $renderCache->invalidateAll();

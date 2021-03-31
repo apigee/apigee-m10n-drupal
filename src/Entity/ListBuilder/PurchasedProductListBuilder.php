@@ -195,7 +195,9 @@ abstract class PurchasedProductListBuilder extends EntityListBuilder implements 
           'data' => $entity->getEndTime() ? $datetimeImmutable->setTimestamp($entity->getEndTime() / 1000)->setTimezone($utc)->format('m/d/Y') : NULL,
           'class' => ['purchased-plan-end-date'],
         ],
-        'operations'    => ['data' => $this->buildOperations($entity), 'class' => ['purchased-product-action'],
+        'operations' => [
+          'data' => $this->buildOperations($entity),
+          'class' => ['purchased-product-action'],
         ],
         'status' => [
           'data' => [
