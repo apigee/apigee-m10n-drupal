@@ -197,7 +197,7 @@ class Monetization implements MonetizationInterface {
     $developer_id = $account->getEmail();
 
     if (!isset($eligible_product_cache[$developer_id])) {
-      if($this->isOrganizationApigeeX()) {
+      if ($this->isOrganizationApigeeX()) {
         // Instantiate an instance of the m10n ApiProduct controller.
         $product_controller = new ApiXProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
         // Get a list of available products for the m10n developer.
@@ -216,8 +216,8 @@ class Monetization implements MonetizationInterface {
       return $product->id();
     }, $eligible_product_cache[$developer_id]);
 
-    if($this->isOrganizationApigeeX()) {
-      // Apigee X products are case sensitive
+    if ($this->isOrganizationApigeeX()) {
+      // Apigee X products are case sensitive.
       return in_array(($entity->id()), $product_ids)
         ? AccessResult::allowed()
         : AccessResult::forbidden('Product is not eligible for this developer');
@@ -454,7 +454,6 @@ class Monetization implements MonetizationInterface {
 
     return FALSE;
   }
-
 
   /**
    * {@inheritdoc}

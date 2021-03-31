@@ -316,9 +316,10 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
    * {@inheritdoc}
    */
   public function getOwner() {
+    $currentUserEmailId = $this->currentUser->getEmail();
     if (!isset($this->owner)) {
       $owner = $this->entityTypeManager()->getStorage('user')->loadByProperties([
-        'mail' => $this->getDeveloper()->getEmail(),
+        'mail' => $currentUserEmailId,
       ]);
       $this->owner = !empty($owner) ? reset($owner) : NULL;
     }

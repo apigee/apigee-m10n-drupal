@@ -43,16 +43,18 @@ interface MonetizationInterface {
    */
   const DEFAULT_AUTHENTICATED_PERMISSIONS = [
     'view rate_plan',
+    'view xrate_plan',
     'purchase rate_plan',
+    'purchase xrate_plan',
     'view own purchased_plan',
+    'view own purchased_product',
     'update own purchased_plan',
+    'update own purchased_product',
     'view own prepaid balance',
     'refresh own prepaid balance',
     'download prepaid balance reports',
     'view own billing details',
     'download own reports',
-    'view own purchased_product',
-    'update own purchased_product',
   ];
 
   /**
