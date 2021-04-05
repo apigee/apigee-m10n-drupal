@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a apigee revenueShareRates details.       
+ */
+#}
+
+<div class="rate-plan-detail">
+
+  <div class="rate-plan-detail__overview rate-plan-detail__list-wrapper">
+    <div class="revshare-rate rate-plan-rates__row">
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__operator">
+          <div class="field__label">{{ "Start"|t }}</div>
+          <div class="field__item">{{ detail.start }}</div>
+        </div>
+      </div>
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__currency">
+          <div class="field__label">{{ "End"|t }}</div>
+          <div class="field__item">{{ detail.end }}</div>
+        </div>
+      </div>
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__currency">
+          <div class="field__label">{{ "Share Percentage"|t }}</div>
+          <div class="field__item">{{ detail.sharePercentage }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

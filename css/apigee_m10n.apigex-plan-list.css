@@ -1,0 +1,28 @@
+
+/* Apigee X Rate plan entity */
+.xrate-plan .field {
+  margin-bottom: 1rem;
+}
+
+.xrate-plan .field--name-products > .field__label {
+  font-size: inherit;
+  font-weight: bold;
+}
+
+.xrate-plan .field--name-products .field__items {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.xrate-plan .field--name-products .field__item:not(:last-child)::after {
+  content: ',';
+  margin-right: 1ch;
+}
+
+/* Apigee X Rate plan entity, teaser specific */
+.xrate-plan--view-mode-teaser {
+  background-color: #f9f9f9;
+  border: 1px solid #e3e3e3;
+  margin: 20px 0;
+  padding: 20px;
+}
