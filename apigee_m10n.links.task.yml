@@ -4,10 +4,21 @@ apigee_m10n.settings.rate_plan:
   base_route: apigee_m10n.settings.rate_plan
   weight: -10
 
+apigee_m10n.settings.rate_plan_x:
+  route_name: apigee_m10n.settings.rate_plan_x
+  title: 'Rate plan X settings'
+  base_route: apigee_m10n.settings.rate_plan_x
+  weight: -10
+
 entity.product_bundle.collection:
   title: 'List'
   route_name: entity.product_bundle.collection
   base_route: apigee_m10n.settings.product_bundle
+
+entity.xproduct.collection:
+  title: 'List'
+  route_name: entity.xproduct.collection
+  base_route: apigee_m10n.settings.xproduct
 
 apigee_m10n.balance_and_plans:
   route_name: entity.purchased_plan.developer_collection
@@ -20,6 +31,18 @@ apigee_m10n.purchased_plans:
   base_route: entity.user.canonical
   parent_id: apigee_m10n.balance_and_plans
   weight: -2
+
+apigee_m10n.balance_and_product:
+  route_name: entity.purchased_product.developer_product_collection
+  title: 'Purchased API products'
+  base_route: entity.user.canonical
+
+apigee_m10n.purchased_product:
+  title: 'Purchased products'
+  route_name: entity.purchased_product.developer_product_collection
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_product
+  weight: -3
 
 apigee_m10n.billing:
   title: 'Prepaid balance'

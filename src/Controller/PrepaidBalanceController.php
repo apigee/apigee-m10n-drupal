@@ -61,6 +61,9 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
     if (!$this->monetization->isDeveloperPrepaid($user)) {
       return AccessResult::forbidden('Developer is not prepaid.');
     }
+    if ($this->monetization->isOrganizationApigeeX()) {
+      return AccessResult::forbidden('ApigeeX Developer is not prepaid.');
+    }
     return AccessResult::allowedIf(
       $account->hasPermission('view any prepaid balance') ||
       ($account->hasPermission('view own prepaid balance') && $account->id() === $user->id())

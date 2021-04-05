@@ -1,0 +1,38 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a apigee rate plan detail.
+ *
+ * Variables:
+ * - currencyCode:                  The three-letter currency code defined in ISO 4217.   
+ * - nanos:                         Number of nano (10^-9) units of the amount.
+ * - units:                         The whole units of the amount.
+ */
+#}
+
+<div class="rate-plan-detail">
+  <div class="rate-plan-detail__overview rate-plan-detail__list-wrapper">
+    <div class="revshare-rate rate-plan-rates__row">
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__operator">
+          <div class="field__label">{{ "Start"|t }}</div>
+          <div class="field__item">{{ detail.start }}</div>
+        </div>
+      </div>
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__currency">
+          <div class="field__label">{{ "End"|t }}</div>
+          <div class="field__item">{{ detail.end }}</div>
+        </div>
+      </div>
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__currency">
+          <div class="field__label">{{ "Fee"|t }}</div>
+          <div class="field__item">{{ fee_currency_code }}</div>
+          <div class="field__item">{{ fee_units }}</div>
+          <div class="field__item">{{ fee_nanos }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

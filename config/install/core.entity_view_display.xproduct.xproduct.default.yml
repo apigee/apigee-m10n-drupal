@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+id: xproduct.xproduct.default
+targetEntityType: xproduct
+bundle: xproduct
+mode: default
+content:
+  displayName:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  ratePlans:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+hidden:
+  description: true
+  displayName: true
+  id: true
+  name: true

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2018 Google Inc.
+ * Copyright 2021 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -19,11 +19,10 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
-use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
-use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n\Entity\ProductBundle;
-use Drupal\apigee_m10n\Form\RatePlanConfigForm;
+use Drupal\apigee_m10n\Entity\XProduct;
+use Drupal\apigee_m10n\Form\RatePlanXConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
@@ -37,9 +36,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Generates the pricing and plans page.
+ * Generates the Buy api page.
  */
-class PricingAndPlansController extends ControllerBase {
+class BuyApiController extends ControllerBase {
 
   /**
    * Service for instantiating SDK controllers.
@@ -49,33 +48,20 @@ class PricingAndPlansController extends ControllerBase {
   protected $controller_factory;
 
   /**
-   * The monetization service.
-   *
-   * @var \Drupal\apigee_m10n\MonetizationInterface
-   */
-  protected $monetization;
-
-  /**
-   * PricingAndPlansController constructor.
+   * BuyApiController constructor.
    *
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
-   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
-   *   The monetization service.
    */
-  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization) {
+  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory) {
     $this->controller_factory = $sdk_controller_factory;
-    $this->monetization = $monetization;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('apigee_m10n.sdk_controller_factory'),
-      $container->get('apigee_m10n.monetization')
-    );
+    return new static($container->get('apigee_m10n.sdk_controller_factory'));
   }
 
   /**
@@ -90,9 +76,6 @@ class PricingAndPlansController extends ControllerBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    if ($this->monetization->isOrganizationApigeeX()) {
-      return AccessResult::forbidden('ApigeeX does not have product bundles.');
-    }
     $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
       $account->hasPermission('view rate_plan as anyone') ||
@@ -101,30 +84,7 @@ class PricingAndPlansController extends ControllerBase {
   }
 
   /**
-   * Redirect to the users catalog page.
-   *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   A redirect to the current user's product bundles page.
-   */
-  public function myPlans(): RedirectResponse {
-    if ($this->monetization->isOrganizationApigeeX()) {
-      return $this->redirect(
-        'apigee_monetization.xplans',
-        ['user' => \Drupal::currentUser()->id()],
-        ['absolute' => TRUE]
-      );
-    }
-    else {
-      return $this->redirect(
-        'apigee_monetization.plans',
-        ['user' => \Drupal::currentUser()->id()],
-        ['absolute' => TRUE]
-      );
-    }
-  }
-
-  /**
-   * Gets a list of available product bundles for this user.
+   * Gets a list of available xproduct for this user.
    *
    * @param \Drupal\user\UserInterface $user
    *   The drupal user/developer.
@@ -135,24 +95,24 @@ class PricingAndPlansController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function catalogPage(UserInterface $user) {
+  public function xcatalogPage(UserInterface $user) {
     // A developer email is required.
     if (empty($user->getEmail())) {
       throw new NotFoundHttpException((string) $this->t("The user (@uid) doesn't have an email address.", ['@uid' => $user->id()]));
     }
 
     $rate_plans = [];
-    $subscription_handler = \Drupal::entityTypeManager()->getHandler('rate_plan', 'subscription_access');
+    $subscription_handler = \Drupal::entityTypeManager()->getHandler('xrate_plan', 'subscription_access');
 
-    // Load rate plans for each product bundle.
-    foreach (ProductBundle::getAvailableProductBundlesByDeveloper($user->getEmail()) as $product_bundle) {
-      /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface $product_bundle */
-      foreach ($product_bundle->get('ratePlans') as $rate_plan) {
+    // Load rate plans for each xproduct.
+    foreach (XProduct::getAvailablexProductByDeveloper($user->getEmail()) as $xproduct) {
+      /** @var \Drupal\apigee_m10n\Entity\XProductInterface $xproduct */
+      foreach ($xproduct->get('ratePlans') as $rate_plan) {
 
-        /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan_entity */
+        /** @var \Drupal\apigee_m10n\Entity\XRatePlanInterface $rate_plan_entity */
         $rate_plan_entity = $rate_plan->entity;
         if ($subscription_handler->access($rate_plan_entity, $user) == AccessResult::allowed()) {
-          $rate_plans["{$product_bundle->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
+          $rate_plans["{$xproduct->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
         }
       };
     }
@@ -163,7 +123,7 @@ class PricingAndPlansController extends ControllerBase {
   /**
    * Builds the page for a rate plan listing.
    *
-   * @param \Drupal\apigee_m10n\Entity\RatePlanInterface[] $plans
+   * @param \Drupal\apigee_m10n\Entity\XRatePlanInterface[] $plans
    *   A list of rate plans.
    *
    * @return array
@@ -186,8 +146,8 @@ class PricingAndPlansController extends ControllerBase {
     ];
 
     // Get the view mode from product bundle config.
-    $view_mode = ($view_mode = $this->config(RatePlanConfigForm::CONFIG_NAME)->get('catalog_view_mode')) ? $view_mode : 'default';
-    $view_builder = $this->entityTypeManager()->getViewBuilder('rate_plan');
+    $view_mode = ($view_mode = $this->config(RatePlanXConfigForm::CONFIG_NAME)->get('catalog_view_mode')) ? $view_mode : 'default';
+    $view_builder = $this->entityTypeManager()->getViewBuilder('xrate_plan');
 
     foreach ($plans as $id => $plan) {
       // TODO: Add a test for render cache.
@@ -195,6 +155,7 @@ class PricingAndPlansController extends ControllerBase {
       // Generate a build array using the view builder.
       $build['#children'][$id] = $view_builder->view($plan, $view_mode);
       $build['#children'][$id]['#theme_wrappers'] = ['container__pricing_and_plans__item' => ['#attributes' => ['class' => ['pricing-and-plans__item']]]];
+
     }
 
     return $build;
