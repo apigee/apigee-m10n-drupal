@@ -36,8 +36,6 @@ class XProductListBuilder extends EntityListBuilder {
       'title' => $this->t('Title'),
       'id' => $this->t('Id'),
       'description' => $this->t('Description'),
-      //'product' => $this->t('Products'),
-      //'status' => $this->t('Status'),
     ];
   }
 
@@ -49,19 +47,10 @@ class XProductListBuilder extends EntityListBuilder {
     // Build a list of product links.
 
     $product_links = [];
-    // ApiProducts is an entity reference field so we treat it as such.
-    // foreach ($entity->get('apiProducts') as $delta => $value) {
-    //   /** @var \Drupal\apigee_edge\Entity\ApiProduct $product */
-    //   $product = $value->entity;
-    //   $product_links[$delta] = $product->hasLinkTemplate('canonical') ? $product->toLink($product->label())->toString() : $product->label();
-    // }
-
     return [
       'title' => $entity->toLink($entity->label()),
       'id' => $entity->id(),
       'description' => $entity->getDescription(),
-      //'product' => $entity->toLink($entity->label())  ,
-      //'status' => "status",
     ];
   }
 
