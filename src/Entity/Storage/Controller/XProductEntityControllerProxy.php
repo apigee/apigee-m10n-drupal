@@ -25,7 +25,7 @@ use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Exception\InvalidOperationException;
 
 /**
- * xProduct storage controller proxy.
+ * XProduct storage controller proxy.
  */
 class XProductEntityControllerProxy extends MonetizationEntityControllerProxy implements XProductEntityControllerProxyInterface {
 

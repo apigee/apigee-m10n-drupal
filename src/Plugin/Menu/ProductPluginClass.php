@@ -21,6 +21,9 @@ namespace Drupal\apigee_m10n\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ * Represents a menu link for product switching between 4G and 5G.
+ */
 class ProductPluginClass extends MenuLinkDefault {
 
   /**
@@ -48,4 +51,5 @@ class ProductPluginClass extends MenuLinkDefault {
       return "entity.product_bundle.collection";
     }
   }
+
 }

@@ -21,6 +21,9 @@ namespace Drupal\apigee_m10n\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
 
+/**
+ * Represents a menu link for rate plans switching between 4G and 5G.
+ */
 class RatePlanPluginClass extends MenuLinkDefault {
 
   /**
@@ -35,4 +38,5 @@ class RatePlanPluginClass extends MenuLinkDefault {
       return "apigee_m10n.settings.rate_plan";
     }
   }
+
 }

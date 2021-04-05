@@ -78,4 +78,5 @@ class ConsumptionPricingRatesFieldItem extends FieldItemBase {
 
     return $values;
   }
+
 }

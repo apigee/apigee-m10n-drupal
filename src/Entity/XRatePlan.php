@@ -357,15 +357,15 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRatePlanXFee(): array {
-    return $this->decorated->getRatePlanXFee();
+  public function getRatePlanxFee(): array {
+    return $this->decorated->getRatePlanxFee();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setRatePlanXFee(RatePlanXFee ...$ratePlanXFee): void {
-    $this->decorated->setRatePlanXFee(...$ratePlanXFee);
+  public function setRatePlanxFee(RatePlanXFee ...$ratePlanXFee): void {
+    $this->decorated->setRatePlanxFee(...$ratePlanXFee);
   }
 
   /**
@@ -457,7 +457,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
    */
   public function getSetupFeesPriceValue() {
     $setupfee_rate = [];
-    $setupfee_details = $this->getRatePlanXFee();
+    $setupfee_details = $this->getRatePlanxFee();
 
     foreach ($setupfee_details as $key => $value) {
       $currencyCode = $value->getCurrencyCode();
