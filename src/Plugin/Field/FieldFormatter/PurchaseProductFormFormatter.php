@@ -108,7 +108,7 @@ class PurchaseProductFormFormatter extends FormatterBase implements ContainerFac
    */
   public static function defaultSettings() {
     return [
-      'label' => 'Purchase pla',
+      'label' => 'Purchase product',
     ];
   }
 
