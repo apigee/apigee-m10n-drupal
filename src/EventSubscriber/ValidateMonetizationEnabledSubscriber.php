@@ -67,7 +67,7 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
   public function validateMonetizationEnabled(GetResponseEvent $event) {
     /** @var \Symfony\Component\Routing\Route $current_route */
     if (($current_route = $event->getRequest()->get('_route_object')) && ($current_route->hasOption('_apigee_monetization_route'))) {
-      if (!$this->monetization->isMonetizationEnabled()) {
+      if (!$this->monetization->isMonetizationEnabled() && !$this->monetization->isOrganizationApigeeX()) {
         $this->messenger->addError(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE);
       }
     }

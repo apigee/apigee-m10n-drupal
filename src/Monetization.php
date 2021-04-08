@@ -539,6 +539,14 @@ class Monetization implements MonetizationInterface {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function isOrganizationApigeeX(): bool {
+    $org = $this->getOrganization();
+    return ($org && $org->getPropertyValue('features.hybrid.enabled') === 'true');
+  }
+
+  /**
    * Gets a list of Apigee monetization permissions.
    *
    * These permissions should only be applied to authenticated roles.
