@@ -292,7 +292,7 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
   public function getActiveRatePlans(): ?array {
     $activeRatePlanId = [];
     // Return all the active rate plan Id.
-    $activeRatePlans = XRatePlan::loadRatePlansByXProduct('-');
+    $activeRatePlans = XRatePlan::loadRatePlansByProduct('-');
     foreach ($activeRatePlans as $key => $value) {
       $activeRatePlanId[$value->decorated()->getApiProduct()] = $value->decorated()->id();
     }

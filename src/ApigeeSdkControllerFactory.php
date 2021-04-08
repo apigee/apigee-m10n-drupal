@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n;
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\ApigeeX\Controller\ApiProductController as ApixProductController;
 use Apigee\Edge\Api\ApigeeX\Controller\ApiProductControllerInterface as ApixProductControllerInterface;
-use Apigee\Edge\Api\ApigeeX\Controller\RatePlanController as ApigeeXRatePlanController;
+use Apigee\Edge\Api\ApigeeX\Controller\RatePlanController as ApigeexRatePlanController;
 use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface as ApigeexRatePlanControllerInterface;
 use Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController as ApigeexDeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;

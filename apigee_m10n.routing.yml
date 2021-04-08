@@ -193,6 +193,7 @@ entity.purchased_product.developer_product_collection:
     _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedProductListBuilderForDeveloper::access
   options:
     _apigee_monetization_route: TRUE
+    no_cache: 'TRUE'
 
 entity.rate_plan.canonical:
   path: /user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}

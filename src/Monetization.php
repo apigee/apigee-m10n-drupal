@@ -459,18 +459,7 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function isDeveloperAlreadySubscribedX(string $developer_id, XRatePlanInterface $rate_plan): bool {
-    // Use cached result if available.
-    // TODO: Handle purchased_product caching per developer on the storage level.
-    // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
-
-    $cid = "apigee_m10n:dev:purchased_products:{$developer_id}";
-    if ($cache = $this->cache->get($cid)) {
-      $purchases = $cache->data;
-    }
-    else {
-      $purchases = PurchasedProduct::loadByDeveloperId($developer_id);
-      $this->cache->set($cid, $purchases, strtotime('now + 5 minutes'));
-    }
+    $purchases = PurchasedProduct::loadByDeveloperId($developer_id);
 
     foreach ($purchases as $purchased_product) {
       if (($purchased_product->decorated()->getApiProduct() == $rate_plan->decorated()->getApiProduct()) && (empty($purchased_product->decorated()->getEndTime()))) {
