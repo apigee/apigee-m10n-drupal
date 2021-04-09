@@ -28,8 +28,7 @@
     "extra": {
         "patches": {
             "apigee/apigee-client-php": {
-                "Monetization for ApigeeX": "https://patch-diff.githubusercontent.com/raw/apigee/apigee-client-php/pull/130.diff",
-                "Purchase Product entity for ApigeeX": "https://patch-diff.githubusercontent.com/raw/apigee/apigee-client-php/pull/131.diff"
+                "Monetization for ApigeeX": "https://github.com/apigee/apigee-client-php/compare/2.x...feature-ngmint.patch"
             }
         }
     },
