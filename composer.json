@@ -29,8 +29,8 @@
         "patches": {
             "apigee/apigee-client-php": {
                 "Monetization for ApigeeX": "https://patch-diff.githubusercontent.com/raw/apigee/apigee-client-php/pull/130.diff"
-            },
-        },
+            }
+        }
     },
     "config": {
         "sort-packages": true
