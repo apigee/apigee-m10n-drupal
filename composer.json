@@ -25,6 +25,13 @@
         "phpmetrics/phpmetrics": "^2.5",
         "phpstan/phpstan": "0.12.42"
     },
+    "extra": {
+        "patches": {
+            "apigee/apigee-client-php": {
+                "Monetization for ApigeeX": "https://patch-diff.githubusercontent.com/raw/apigee/apigee-client-php/pull/130.diff"
+            },
+        },
+    },
     "config": {
         "sort-packages": true
     },
