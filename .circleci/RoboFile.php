@@ -510,6 +510,7 @@ class RoboFile extends \Robo\Tasks
       // Install apigee Edge from source.
       $config->config->{'preferred-install'} = (object) [
         "drupal/apigee_edge" => "source",
+        "apigee/apigee-client-php" => "source",
         "*" => "dist"
       ];
 
