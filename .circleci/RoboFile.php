@@ -148,13 +148,10 @@ class RoboFile extends \Robo\Tasks
             }
           }
         }
-        if (!empty($additional->{"extra"})) {
-          foreach ($additional->{"extra"} as $key => $value) {
-            if (!isset($config->{"extra"}->{$key})) {
-              if (!isset($config->{"extra"})) {
-                $config->{"extra"} = new \stdClass();
-              }
-              $config->{"extra"}->{$key} = $value;
+        if (!empty($additional->{"extra"}->{"patches"})) {
+          foreach ($additional->{"extra"}->{"patches"} as $key => $value) {
+            if (!isset($config->{"extra"}->{"patches"}->{$key})) {
+              $config->{"extra"}->{"patches"}->{$key} = $value;
             }
           }
         }
