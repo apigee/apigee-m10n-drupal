@@ -17,7 +17,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-  description:
+  displayName:
     type: string
     weight: 1
     region: content
@@ -95,8 +95,7 @@ content:
       label: 'Purchase Product'
     third_party_settings: {  }
 hidden:
-  displayName: true
-  endDate: true
+  description: true
   id: true
   name: true
   revenueShareType: true
