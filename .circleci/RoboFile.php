@@ -46,7 +46,7 @@ class RoboFile extends \Robo\Tasks
         // hand.
         $config = json_decode(file_get_contents('composer.json'));
         $config->extra->{"enable-patching"} = 'true';
-        $config->extra->{"patches"} = new \stdClass();
+        // $config->extra->{"patches"} = new \stdClass();
         unset($config->require->{"wikimedia/composer-merge-plugin"});
         $config->extra->{"drupal-scaffold"} = new \stdClass();
         $config->extra->{"drupal-scaffold"}->{"locations"} = (object) [
