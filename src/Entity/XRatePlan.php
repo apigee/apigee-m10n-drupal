@@ -164,7 +164,6 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
   protected static function propertyToBaseFieldTypeMap(): array {
     return [
       'name'            => 'string',
-      'description'     => 'string',
       'setupFees'       => 'apigee_price',
       'recurringFees'   => 'apigee_price',
       'consumptionFee'  => 'apigee_price',
@@ -197,7 +196,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $definitions */
     $definitions = parent::baseFieldDefinitions($entity_type);
-    $definitions['name']->setLabel(t('Rate Plan ID'));
+    $definitions['name']->setLabel(t('RatePlan ID'));
     $definitions['startTime']->setLabel(t('Active on'));
     $definitions['endTime']->setLabel(t('Expire on'));
     $definitions['feeFrequency']->setLabel(t('Recurring Fee Frequency'));
@@ -209,6 +208,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
       ->setDescription(t('The API product X the rate plan belongs to.'));
 
     $definitions['purchase']->setLabel(t('Purchase'));
+    $definitions['displayName']->setLabel(t('RatePlan'));
 
     return $definitions;
   }
@@ -563,7 +563,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
       $endOn = \Drupal::service('date.formatter')->format($endTime_seconds, 'custom', 'F j, Y', drupal_get_user_timezone());
     }
 
-    return $endOn ?? NULL;
+    return $endOn ?? "Never";
   }
 
 }
