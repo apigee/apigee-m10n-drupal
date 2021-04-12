@@ -20,6 +20,11 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\ApiProductController as ApixProductController;
+use Apigee\Edge\Api\ApigeeX\Controller\ApiProductControllerInterface as ApixProductControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\RatePlanController as ApigeexRatePlanController;
+use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface as ApigeexRatePlanControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController as ApigeexDeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
@@ -174,6 +179,20 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
+  public function apixProductController(): ApixProductControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new ApixProductController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function ratePlanController($product_bundle_id): RatePlanControllerInterface {
     if (empty($this->controllers[__FUNCTION__][$product_bundle_id])) {
       // Don't assume the bucket has been initialized.
@@ -191,12 +210,46 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
   /**
    * {@inheritdoc}
    */
+  public function xratePlanController($product_bundle_id): ApigeexRatePlanControllerInterface {
+    if (empty($this->controllers[__FUNCTION__][$product_bundle_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new rate plan controller.
+      $this->controllers[__FUNCTION__][$product_bundle_id] = new ApigeexRatePlanController(
+        $product_bundle_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$product_bundle_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function developerAcceptedRatePlanController(string $developer_id): DeveloperAcceptedRatePlanController {
     if (empty($this->controllers[__FUNCTION__][$developer_id])) {
       // Don't assume the bucket has been initialized.
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
       // Create a new balance controller.
       $this->controllers[__FUNCTION__][$developer_id] = new DeveloperAcceptedRatePlanController(
+        $developer_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$developer_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerAcceptedRatePlanxController(string $developer_id): ApigeexDeveloperAcceptedRatePlanController {
+    if (empty($this->controllers[__FUNCTION__][$developer_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$developer_id] = new ApigeexDeveloperAcceptedRatePlanController(
         $developer_id,
         $this->getOrganization(),
         $this->getClient()

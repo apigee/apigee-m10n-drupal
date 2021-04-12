@@ -4,6 +4,7 @@ system.admin_apigee_m10n:
   route_name: apigee_m10n.settings
 
 entity.product_bundle.collection:
+  class: Drupal\apigee_m10n\Plugin\Menu\ProductPluginClass
   title: 'Product bundles'
   route_name: entity.product_bundle.collection
   description: 'Manage product bundles.'
@@ -12,6 +13,7 @@ entity.product_bundle.collection:
 
 # This goes straight to display settings since there aren't any config items.
 apigee_m10n.settings.rate_plan:
+  class: Drupal\apigee_m10n\Plugin\Menu\RatePlanPluginClass
   title: 'Rate plans'
   route_name: apigee_m10n.settings.rate_plan
   description: 'Configure rate plans.'
@@ -26,6 +28,7 @@ apigee_m10n.settings.prepaid_balance:
   weight: 100
 
 apigee_m10n.settings.purchased_plan:
+  class: Drupal\apigee_m10n\Plugin\Menu\PurchasedProductPluginClass
   title: 'Rate plan purchases'
   route_name: entity.entity_view_display.purchased_plan.default
   description: 'Configure rate plan view display.'
@@ -33,6 +36,7 @@ apigee_m10n.settings.purchased_plan:
   weight: 100
 
 apigee_m10n.pricing_and_plans:
+  class: Drupal\apigee_m10n\Plugin\Menu\PlansPluginClass
   title: 'Pricing & plans'
   description: 'Pricing & plans.'
   route_name: apigee_monetization.my_plans

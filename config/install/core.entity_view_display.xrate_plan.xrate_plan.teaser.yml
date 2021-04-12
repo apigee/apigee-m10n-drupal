@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.xrate_plan.teaser
+  module:
+    - apigee_m10n
+id: xrate_plan.xrate_plan.teaser
+targetEntityType: xrate_plan
+bundle: xrate_plan
+mode: teaser
+content:
+  apiProduct:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: visually_hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+hidden:
+  description: true
+  displayName: true
+  id: true
+  name: true
+  setupFees: true
+  recurringFees: true
+  consumptionFee: true
+  ratePlanXFee: true
+  fixedRecurringFee: true
