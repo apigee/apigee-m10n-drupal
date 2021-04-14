@@ -378,9 +378,9 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view own purchased_plan' => 'View own purchased plans',
 
       // Purchased products.
-      'update any purchased_product' => 'Cancel any purchased products',
+      'update any purchased_product' => 'Cancel any purchased product',
       'update own purchased_product' => 'Cancel own purchased products',
-      'view any purchased_product' => 'View any purchased products',
+      'view any purchased_product' => 'View any purchased product',
       'view own purchased_product' => 'View own purchased products',
 
       // Billing.
