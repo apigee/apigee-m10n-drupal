@@ -544,7 +544,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
     $startTime_milliseconds = $this->getstartTime();
     if ($startTime_milliseconds) {
       $startTime_seconds = ($startTime_milliseconds / 1000);
-      $activeOn = \Drupal::service('date.formatter')->format($startTime_seconds, 'custom', 'F j, Y', drupal_get_user_timezone());
+      $activeOn = \Drupal::service('date.formatter')->format($startTime_seconds, 'custom', 'F j, Y', date_default_timezone_get());
     }
 
     return $activeOn ?? NULL;
@@ -560,7 +560,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
     $endTime_milliseconds = $this->getendTime();
     if ($endTime_milliseconds) {
       $endTime_seconds = ($endTime_milliseconds / 1000);
-      $endOn = \Drupal::service('date.formatter')->format($endTime_seconds, 'custom', 'F j, Y', drupal_get_user_timezone());
+      $endOn = \Drupal::service('date.formatter')->format($endTime_seconds, 'custom', 'F j, Y', date_default_timezone_get());
     }
 
     return $endOn ?? "Never";

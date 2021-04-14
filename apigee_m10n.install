@@ -75,3 +75,10 @@ function apigee_m10n_install() {
     user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
   }
 }
+
+/**
+ * Rebuild routes to mitigate issue of RouteNotFoundException.
+ */
+function apigee_m10n_update_8001() {
+  Drupal::service("router.builder")->rebuild();
+}
