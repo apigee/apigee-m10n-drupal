@@ -102,6 +102,9 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
     $test_product_name = $this->randomMachineName();
     $email = $this->randomMachineName() . '@example.com';
 
+    // Queue a response from the mock server.
+    $this->stack->queueMockResponse('get_organization');
+
     $entity = ApiProduct::create(['name' => $test_product_name]);
 
     $account = $this
