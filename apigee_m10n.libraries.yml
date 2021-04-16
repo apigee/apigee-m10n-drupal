@@ -2,6 +2,7 @@ rate_plan.entity_list:
   css:
     theme:
       css/apigee_m10n.plan-list.css: {}
+      css/apigee_m10n.apigex-plan-list.css: {}
 
 rate_plan.future_links_field:
   css:

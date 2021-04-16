@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a apigee fixed recurring fee details.
+ */
+#}
+
+<div class="rate-plan-detail">
+  <div class="rate-plan-detail__overview rate-plan-detail__list-wrapper">
+    <div class="revshare-rate rate-plan-rates__row">
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__operator">
+          <div class="field__label">{{ "Units"|t }}</div>
+          <div class="field__item">{{ detail.units }}</div>
+        </div>
+      </div>
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__currency">
+          <div class="field__label">{{ "Currency"|t }}</div>
+          <div class="field__item">{{ detail.currencyCode }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="revshare-rate rate-plan-rates__row">
+      <div class="rate-plan-rates__column">
+        <div class="field field--inline rate-plan-detail__overview__country">
+          <div class="field__label">{{ "Nanos"|t }}</div>
+          <div class="field__item">{{ detail.nanos }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
