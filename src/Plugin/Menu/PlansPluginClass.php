@@ -40,4 +40,17 @@ class PlansPluginClass extends MenuLinkDefault {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    $monetization = \Drupal::service('apigee_m10n.monetization');
+    if ($monetization->isOrganizationApigeeX()) {
+      return (string) 'Buy API';
+    }
+    else {
+      return (string) 'Pricing & plans';
+    }
+  }
+
 }
