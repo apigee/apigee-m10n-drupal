@@ -52,6 +52,7 @@ class AddCreditFunctionalJavascriptTestBase extends MonetizationFunctionalJavasc
     'commerce_store',
     'commerce',
     'user',
+    'field_ui',
   ];
 
 }
