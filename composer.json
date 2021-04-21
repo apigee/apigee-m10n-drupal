@@ -25,13 +25,6 @@
         "phpmetrics/phpmetrics": "^2.5",
         "phpstan/phpstan": "0.12.42"
     },
-    "extra": {
-        "patches": {
-            "apigee/apigee-client-php": {
-                "Monetization for ApigeeX": "https://github.com/apigee/apigee-client-php/compare/2.x...feature-ngmint.patch"
-            }
-        }
-    },
     "config": {
         "sort-packages": true
     },
