@@ -26,11 +26,20 @@ services:
   apigee_m10n.sdk_controller_proxy.product_bundle:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\ProductBundleEntityControllerProxy
 
+  apigee_m10n.sdk_controller_proxy.xproduct:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\XProductEntityControllerProxy
+
   apigee_m10n.sdk_controller_proxy.rate_plan:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\RatePlanSdkControllerProxy
 
+  apigee_m10n.sdk_controller_proxy.xrate_plan:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\XRatePlanSdkControllerProxy
+
   apigee_m10n.sdk_controller_proxy.purchased_plan:
     class: Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanSdkControllerProxy
+
+  apigee_m10n.sdk_controller_proxy.purchased_product:
+    class: Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanXSdkControllerProxy
 
   apigee_m10n.validate_monetization_enabled:
     class: Drupal\apigee_m10n\EventSubscriber\ValidateMonetizationEnabledSubscriber
@@ -49,8 +58,20 @@ services:
       - { name: paramconverter }
     arguments: ['@entity_type.manager', '@entity.repository']
 
+  paramconverter.entity.xrate_plan:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\XRatePlanConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity_type.manager', '@entity.repository']
+
   paramconverter.entity.purchased_plan:
     class: Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity_type.manager', '@entity.repository']
+
+  paramconverter.entity.purchased_product:
+    class: Drupal\apigee_m10n\Entity\ParamConverter\PurchasedProductConverter
     tags:
       - { name: paramconverter }
     arguments: ['@entity_type.manager', '@entity.repository']

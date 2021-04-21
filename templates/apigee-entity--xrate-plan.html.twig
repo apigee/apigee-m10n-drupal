@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a Apigee Rate Plan entity.
+ *
+ * This template uses Apigee Edge's default entity template, which can be found
+ * at apigee_edge/templates/apigee-entity.html.twig.
+ *
+ * @ingroup themeable
+ */
+#}
+
+{% embed 'apigee-entity.html.twig' %}
+  {% block content %}
+    {{ title_prefix }}
+    {%- if label and view_mode != 'full' -%}
+      <h2{{ title_attributes }}>
+        <a href="{{ url }}">{{ label }}</a>
+      </h2>
+    {%- endif -%}
+    {{ title_suffix }}
+
+    <div{{ content_attributes }}>
+      {{ content }}
+    </div>
+  {% endblock %}
+{% endembed %}

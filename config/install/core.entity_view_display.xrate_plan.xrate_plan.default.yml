@@ -1,0 +1,104 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - apigee_m10n
+    - link
+id: xrate_plan.xrate_plan.default
+targetEntityType: xrate_plan
+bundle: xrate_plan
+mode: default
+content:
+  apiProduct:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+  displayName:
+    type: string
+    weight: 1
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  setupFees:
+    type: apigee_price
+    weight: 2
+    region: content
+    label: inline
+    settings:
+      strip_trailing_zeroes: false
+      currency_display: symbol
+    third_party_settings: {  }
+  recurringFees:
+    type: apigee_price
+    weight: 3
+    region: content
+    label: inline
+    settings:
+      strip_trailing_zeroes: false
+      currency_display: symbol
+    third_party_settings: {  }
+  consumptionFee:
+    type: apigee_price
+    weight: 5
+    region: content
+    label: inline
+    settings:
+      strip_trailing_zeroes: false
+      currency_display: symbol
+    third_party_settings: {  }
+  feeFrequency:
+    type: string
+    weight: 4
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  consumptionPricingType:
+    type: string
+    weight: 7
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  startTime:
+    type: string
+    weight: 8
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  endTime:
+    type: string
+    weight: 9
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  paymentFundingModel:
+    type: string
+    weight: 10
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  purchase:
+    type: apigee_purchase_product_form
+    weight: 11
+    region: content
+    label: visually_hidden
+    settings:
+      label: 'Purchase Product'
+    third_party_settings: {  }
+hidden:
+  description: true
+  id: true
+  name: true
+  revenueShareType: true
+  currencyCode: true
+  billingPeriod: true
+  fixedFeeFrequency: true

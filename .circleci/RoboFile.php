@@ -148,6 +148,13 @@ class RoboFile extends \Robo\Tasks
             }
           }
         }
+        if (!empty($additional->{"extra"}->{"patches"})) {
+          foreach ($additional->{"extra"}->{"patches"} as $key => $value) {
+            if (!isset($config->{"extra"}->{"patches"}->{$key})) {
+              $config->{"extra"}->{"patches"}->{$key} = $value;
+            }
+          }
+        }
 
         file_put_contents('composer.json', json_encode($config));
     }
@@ -474,6 +481,7 @@ class RoboFile extends \Robo\Tasks
         $config->require->{"drupal/core-composer-scaffold"} = '^9@stable';
         $config->require->{"drupal/core-recommended"} = '^9@stable';
         $config->require->{"drupal/core-dev"} = '^9';
+        $config->require->{"phpspec/prophecy-phpunit"} = '^2';
 
         break;
 
@@ -502,6 +510,7 @@ class RoboFile extends \Robo\Tasks
       // Install apigee Edge from source.
       $config->config->{'preferred-install'} = (object) [
         "drupal/apigee_edge" => "source",
+        "apigee/apigee-client-php" => "source",
         "*" => "dist"
       ];
 

@@ -20,11 +20,32 @@ apigee_m10n.settings.rate_plan:
   options:
     _apigee_monetization_route: TRUE
 
+# This route is required for field UI routes to be attached to.
+apigee_m10n.settings.rate_plan_x:
+  path: /admin/config/apigee-monetization/rate-plan-x
+  defaults:
+    _form: \Drupal\apigee_m10n\Form\RatePlanXConfigForm
+    _title: Rate Plans X
+  requirements:
+    _permission: administer apigee monetization
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_m10n.settings.product_bundle:
   path: /admin/config/apigee-monetization/product-bundle
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
     _title: Product bundle settings
+  requirements:
+    _permission: administer apigee monetization
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n.settings.xproduct:
+  path: /admin/config/apigee-monetization/xproduct
+  defaults:
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
+    _title: Product X settings
   requirements:
     _permission: administer apigee monetization
   options:
@@ -50,11 +71,40 @@ apigee_m10n.settings.purchased_plan:
   options:
     _apigee_monetization_route: TRUE
 
+entity.entity_view_display.purchased_plan.default:
+  path: admin/config/apigee-monetization/purchased-plan-settings/display
+  defaults:
+    _title: Rate plan purchases
+  requirements:
+    _permission: administer apigee monetization
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n.settings.purchased_product:
+  path: /admin/config/apigee-monetization/purchased-product-settings
+  defaults:
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
+    _title: ApigeeX product purchase settings
+  requirements:
+    _permission: administer apigee monetization
+  options:
+    _apigee_monetization_route: TRUE
+
 entity.product_bundle.collection:
   path: /admin/config/apigee-monetization/product-bundle/list
   defaults:
     _entity_list: product_bundle
     _title: Product bundles
+  requirements:
+    _permission: administer apigee monetization
+  options:
+    _apigee_monetization_route: TRUE
+
+entity.xproduct.collection:
+  path: /admin/config/apigee-monetization/xproduct/list
+  defaults:
+    _entity_list: xproduct
+    _title: Product X
   requirements:
     _permission: administer apigee monetization
   options:
@@ -99,6 +149,16 @@ apigee_monetization.plans:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_monetization.xplans:
+  path: /user/{user}/xplans
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\BuyApiController::xcatalogPage
+    _title: "Buy APIs"
+  requirements:
+    _custom_access: \Drupal\apigee_m10n\Controller\BuyApiController::access
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_monetization.profile:
   path: /user/{user}/monetization/billing-details
   defaults:
@@ -132,6 +192,18 @@ entity.purchased_plan.developer_collection:
   options:
     _apigee_monetization_route: TRUE
 
+entity.purchased_product.developer_product_collection:
+  path: /user/{user}/monetization/purchased-product
+  defaults:
+    _controller: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedProductListBuilderForDeveloper::render
+    _title_callback: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedProductListBuilderForDeveloper::getPageTitle
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Entity\ListBuilder\PurchasedProductListBuilderForDeveloper::access
+  options:
+    _apigee_monetization_route: TRUE
+    no_cache: 'TRUE'
+
 entity.rate_plan.canonical:
   path: /user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}
   defaults:
@@ -149,6 +221,23 @@ entity.rate_plan.canonical:
         type: entity:rate_plan
         converter: paramconverter.entity.rate_plan
 
+entity.xrate_plan.canonical:
+  path: /user/{user}/monetization/xproduct/{xproduct}/plan/{xrate_plan}
+  defaults:
+    _entity_view: xrate_plan.full
+    _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _entity_developer_access: xrate_plan.view
+  options:
+    _apigee_monetization_route: TRUE
+    parameters:
+      user:
+        type: entity:user
+      xrate_plan:
+        type: entity:xrate_plan
+        converter: paramconverter.entity.xrate_plan
+
 entity.rate_plan.purchase:
   path: /user/{user}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase
   defaults:
@@ -157,6 +246,17 @@ entity.rate_plan.purchase:
   requirements:
     user: '^[1-9]+[0-9]*$'
     _entity_developer_access: rate_plan.purchase
+  options:
+    _apigee_monetization_route: TRUE
+
+entity.xrate_plan.purchase:
+  path: /user/{user}/monetization/xproduct/{xproduct}/plan/{xrate_plan}/purchase
+  defaults:
+    _controller: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanXController::purchaseForm
+    _title_callback: \Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanXController::title
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _entity_developer_access: xrate_plan.purchase
   options:
     _apigee_monetization_route: TRUE
 
@@ -176,3 +276,20 @@ entity.purchased_plan.developer_cancel_form:
       purchased_plan:
         type: entity:purchased_plan
         converter: paramconverter.entity.purchased_plan
+
+entity.purchased_product.developer_cancel_form:
+  path: /user/{user}/monetization/purchased-product/{purchased_product}/cancel
+  defaults:
+    _entity_form: purchased_product.cancel
+    _title_callback: \Drupal\Core\Entity\Controller\EntityController::title
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _entity_access: purchased_product.update
+  options:
+    _apigee_monetization_route: TRUE
+    parameters:
+      user:
+        type: entity:user
+      purchased_product:
+        type: entity:purchased_product
+        converter: paramconverter.entity.purchased_product
