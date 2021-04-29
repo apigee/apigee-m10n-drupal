@@ -39,13 +39,15 @@
  *   - endUnit:                     The rate is good until this nuber of units.
  *   - revshare:                    The revenue share percentage.
  * - entity:                     The rate plan entity.
+ * - apiproduct:                 The apiproduct details when rate plan has multiple apiproduct.
  */
 #}
 
 {% set title = detail.type == 'REVSHARE_RATECARD' ? "Rate card & revenue" : detail.type == 'REVSHARE' ? "Revenue" : "Rate card" %}
+{% set apiproductName = apiproduct.displayName ? 'for '|t ~ apiproduct.displayName %}
 
 <div class="rate-plan-detail">
-  <h2 class="rate-plan-detail__title">{{ title|t }}</h2>
+  <h2 class="rate-plan-detail__title">{{ title|t }} {{ apiproductName }}</h2>
   <div class="field field--inline rate-plan-detail__metering-type">
     <div class="field__label">{{ "Rate card is based on"|t }}</div>
     <div class="field__item">{{ detail.meteringType }}</div>
