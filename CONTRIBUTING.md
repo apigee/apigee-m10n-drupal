@@ -51,7 +51,7 @@ Create a new branch on Github.com in your fork for your fix, ex.: patch-1.
 Update your composer.json and install the module from your fork:
 ```bash
 cd [DRUPAL_ROOT]
-composer config repositories.forked-apigee_m10n vcs https://github.com/[YOUR-GITHUB-USERNAME]/apigee-edge-drupal
+composer config repositories.forked-apigee_m10n vcs https://github.com/[YOUR-GITHUB-USERNAME]/apigee-m10n-drupal
 ```
 
 It is important to require a branch/tag here that does not exist in the Drupal.org repo otherwise code
@@ -67,7 +67,7 @@ upstream then add Apigee repo as a remote (one time only):
 
 ```bash
 cd [DRUPAL_ROOT]/modules/contrib/apigee_m10n
-git remote add upstream https://github.com/apigee/apigee-edge-drupal.git
+git remote add upstream https://github.com/apigee/apigee-m10n-drupal.git
 git fetch upstream
 ```
 
