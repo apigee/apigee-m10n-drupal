@@ -14,14 +14,23 @@
   {% block content %}
     {{ title_prefix }}
     {%- if label and view_mode != 'full' -%}
+    {% set apiproductName = content.apiProduct|render|striptags %}
+
       <h2{{ title_attributes }}>
-        <a href="{{ url }}">{{ label }}</a>
+        <a href="{{ url }}">{{ apiproductName }}</a>
       </h2>
-    {%- endif -%}
+
+    {{ content|without('apiProduct') }}
+
+    <hr class="my-4">
+    {{ label }}
+
+    {%- else -%}
     {{ title_suffix }}
 
     <div{{ content_attributes }}>
       {{ content }}
     </div>
+    {%- endif -%}
   {% endblock %}
 {% endembed %}
