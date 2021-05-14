@@ -31,7 +31,7 @@ class RatePlanPluginClass extends MenuLinkDefault {
    */
   public function getRouteName() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
-    if ($monetization->isOrganizationApigeeX()) {
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
       return "apigee_m10n.settings.rate_plan_x";
     }
     else {
