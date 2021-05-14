@@ -271,14 +271,14 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
    */
   public function getStatus(): string {
     $org_timezone = $this->getRatePlan()->getOrganization()->getTimezone();
-    $today = new \DateTime('today', $org_timezone);
+    $today = (new \DateTimeImmutable('now'))->setTimezone($org_timezone);
 
-    // If rate plan ended before today, the status is ended.
+    // If rate plan ended before today or today, the status is ended.
     $plan_end_date = $this->getRatePlan()->getEndDate();
     if (!empty($plan_end_date) && $plan_end_date < $today) {
       return PurchasedPlanInterface::STATUS_ENDED;
     }
-    // If the developer ended the plan before today, the plan has ended.
+    // If the developer ended the plan before today or today, the plan has ended.
     $developer_plan_end_date = $this->getEndDate();
     if (!empty($developer_plan_end_date) && $developer_plan_end_date < $today) {
       return PurchasedPlanInterface::STATUS_ENDED;
