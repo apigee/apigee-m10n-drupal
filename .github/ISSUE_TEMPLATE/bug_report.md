@@ -31,3 +31,7 @@ Add any other context about the problem here.
 This can be the version you can see on admin/modules in Drupal or 
 the output of this command: `composer show`.  Add Drupal core and
 other version information if needed.
+
+## Endpoint Info
+Which endpoing are you connected to? Apigee Edge, Apigee X or Private cloud
+(Tip: you can find out by visiting /admin/config/apigee-edge/settings)
