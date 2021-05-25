@@ -184,7 +184,12 @@ class Monetization implements MonetizationInterface {
    */
   public function isMonetizationEnabled(): bool {
     $org = $this->getOrganization();
-    return ($org && $org->getPropertyValue('features.isMonetizationEnabled') === 'true');
+    if ($this->isOrganizationApigeeXorHybrid($org)) {
+      return ($org && TRUE === $org->getAddonsConfig()->getMonetizationConfig()->getEnabled());
+    }
+    else {
+      return ($org && $org->getPropertyValue('features.isMonetizationEnabled') === 'true');
+    }
   }
 
   /**
@@ -197,7 +202,7 @@ class Monetization implements MonetizationInterface {
     $developer_id = $account->getEmail();
 
     if (!isset($eligible_product_cache[$developer_id])) {
-      if ($this->isOrganizationApigeeX()) {
+      if ($this->isOrganizationApigeeXorHybrid()) {
         // Instantiate an instance of the m10n ApiProduct controller.
         $product_controller = new ApiXProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
         // Get a list of available products for the m10n developer.
@@ -216,7 +221,7 @@ class Monetization implements MonetizationInterface {
       return $product->id();
     }, $eligible_product_cache[$developer_id]);
 
-    if ($this->isOrganizationApigeeX()) {
+    if ($this->isOrganizationApigeeXorHybrid()) {
       // Apigee X products are case sensitive.
       return in_array(($entity->id()), $product_ids)
         ? AccessResult::allowed()
@@ -577,7 +582,15 @@ class Monetization implements MonetizationInterface {
    */
   public function isOrganizationApigeeX(): bool {
     $org = $this->getOrganization();
-    return ($org && $org->getPropertyValue('features.hybrid.enabled') === 'true');
+    return ($org && 'CLOUD' === $org->getRuntimeType());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isOrganizationApigeeXorHybrid(): bool {
+    $org = $this->getOrganization();
+    return ($org && ('CLOUD' === $org->getRuntimeType() || 'HYBRID' === $org->getRuntimeType()));
   }
 
   /**

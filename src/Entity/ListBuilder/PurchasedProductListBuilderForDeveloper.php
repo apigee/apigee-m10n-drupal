@@ -76,7 +76,7 @@ class PurchasedProductListBuilderForDeveloper extends PurchasedProductListBuilde
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
     $monetization = \Drupal::service('apigee_m10n.monetization');
 
-    if (!$monetization->isOrganizationApigeeX()) {
+    if (!$monetization->isOrganizationApigeeXorHybrid()) {
       return AccessResult::forbidden('ApigeeX is not enabled.');
     }
     $user = $route_match->getParameter('user');

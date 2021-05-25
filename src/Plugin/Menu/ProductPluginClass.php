@@ -31,7 +31,7 @@ class ProductPluginClass extends MenuLinkDefault {
    */
   public function getTitle() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
-    if ($monetization->isOrganizationApigeeX()) {
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
       return (string) 'API Product';
     }
     else {
@@ -44,7 +44,7 @@ class ProductPluginClass extends MenuLinkDefault {
    */
   public function getRouteName() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
-    if ($monetization->isOrganizationApigeeX()) {
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
       return "entity.xproduct.collection";
     }
     else {
