@@ -254,11 +254,19 @@ interface MonetizationInterface {
   public function isDeveloperPrepaid(UserInterface $account): bool;
 
   /**
-   * Returns true if current organization is ApigeeX, false if Apigee Edge.
+   * Returns true if current organization is ApigeeX, false if otherwise.
    *
    * @return bool
    *   True if organization is ApigeeX.
    */
   public function isOrganizationApigeeX(): bool;
+
+  /**
+   * Returns true if current organization is ApigeeX or Hybrid, false otherwise.
+   *
+   * @return bool
+   *   True if organization is ApigeeX or Hybrid.
+   */
+  public function isOrganizationApigeeXorHybrid(): bool;
 
 }

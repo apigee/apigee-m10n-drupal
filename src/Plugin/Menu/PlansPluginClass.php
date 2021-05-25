@@ -32,7 +32,7 @@ class PlansPluginClass extends MenuLinkDefault {
    */
   public function getTitle() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
-    if ($monetization->isOrganizationApigeeX()) {
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
       return (string) 'Buy API';
     }
     else {
@@ -45,7 +45,7 @@ class PlansPluginClass extends MenuLinkDefault {
    */
   public function getDescription() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
-    if ($monetization->isOrganizationApigeeX()) {
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
       return (string) 'Buy API';
     }
     else {
