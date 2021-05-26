@@ -94,11 +94,14 @@ class RatePlanAccessControlHandler extends EntityAccessControlHandlerBase implem
     // If rate plan is a developer rate plan, and the assigned developer is
     // different from account, deny access.
     if ($rate_plan instanceof DeveloperRatePlanInterface) {
-      if ($developer = $rate_plan->getDeveloper()) {
+      $developer = $rate_plan->getDeveloper();
+      if ($developer) {
         return AccessResult::allowedIf($account->getEmail() === $developer->getEmail())
           ->andIf(AccessResult::allowedIfHasPermission($account, "$operation rate_plan"));
       }
-      return AccessResult::forbidden("User {$developer->getEmail()} cannot view developer rate plan.");
+      else {
+        return AccessResult::forbidden("Missing developer refernece on {$rate_plan->id()} rate plan, {$operation} is not allowed.");
+      }
     }
 
     return $access->andIf(AccessResult::allowedIfHasPermission($account, "$operation rate_plan"));
