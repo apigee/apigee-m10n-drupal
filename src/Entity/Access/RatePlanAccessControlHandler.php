@@ -100,7 +100,7 @@ class RatePlanAccessControlHandler extends EntityAccessControlHandlerBase implem
           ->andIf(AccessResult::allowedIfHasPermission($account, "$operation rate_plan"));
       }
       else {
-        return AccessResult::forbidden("Missing developer refernece on {$rate_plan->id()} rate plan, {$operation} is not allowed.");
+        return AccessResult::forbidden("Missing developer reference on {$rate_plan->id()} rate plan, {$operation} is not allowed.");
       }
     }
 
