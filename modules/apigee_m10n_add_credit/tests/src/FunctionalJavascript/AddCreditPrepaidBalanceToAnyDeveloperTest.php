@@ -36,18 +36,18 @@ use Drupal\Core\Url;
 class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavascriptTestBase {
 
   /**
-   * A developer user.
+   * An account user.
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $developer;
+  protected $accountUser;
 
   /**
-   * An another developer user.
+   * An account admin user.
    *
    * @var \Drupal\user\UserInterface
    */
-  protected $developer2;
+  protected $accountAdmin;
 
   /**
    * A test product.
@@ -62,7 +62,7 @@ class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavas
   protected function setUp() {
     parent::setUp();
 
-    $this->developer = $this->signIn([
+    $this->accountUser = $this->signIn([
       'view own prepaid balance',
       'add credit to own developer prepaid balance',
     ]);
@@ -91,7 +91,7 @@ class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavas
    * Tests the add credit prepaid balance for any developer.
    */
   public function testAddCreditToAnyDeveloper() {
-    $this->developer2 = $this->signIn([
+    $this->accountAdmin = $this->signIn([
       'view any prepaid balance',
       'add credit to any developer prepaid balance',
     ]);
@@ -100,21 +100,21 @@ class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavas
     $this->warmOrganizationCache();
 
     // Load authenticated developer.
-    $this->queueDeveloperResponse($this->developer);
+    $this->queueDeveloperResponse($this->accountUser);
     $this->queueMockResponses([
       'get-prepaid-balances',
       'get-supported-currencies',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.billing', [
-      'user' => $this->developer->id(),
+      'user' => $this->accountUser->id(),
     ]));
     $this->click('.add-credit--usd.dropbutton a');
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->assertCssElementContains('.ui-dialog-title', $this->product->label());
     $this->assertCssElementContains(
       'select[name="' . AddCreditConfig::TARGET_FIELD_NAME . '"]',
-      "{$this->developer->get('first_name')->value} {$this->developer->get('last_name')->value}"
+      "{$this->accountUser->get('first_name')->value} {$this->accountUser->get('last_name')->value}"
     );
 
     $this->assertCount(
