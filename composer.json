@@ -11,7 +11,7 @@
         "drupal/apigee_edge": "^1.22",
         "drupal/core": "^8 || ^9",
         "drupal/requirement": "~1.0",
-        "apigee/apigee-client-php": "^2.0.7"
+        "apigee/apigee-client-php": "^2.0.8"
     },
     "require-dev": {
         "apigee/apigee-mock-client-php": "^1.0",
@@ -24,13 +24,6 @@
         "phpmd/phpmd": "2.8.2",
         "phpmetrics/phpmetrics": "^2.5",
         "phpstan/phpstan": "0.12.42"
-    },
-    "extra": {
-        "patches": {
-            "apigee/apigee-client-php": {
-                "Fix for issue 264": "https://patch-diff.githubusercontent.com/raw/apigee/apigee-client-php/pull/142.patch"
-            }
-        }
     },
     "config": {
         "sort-packages": true

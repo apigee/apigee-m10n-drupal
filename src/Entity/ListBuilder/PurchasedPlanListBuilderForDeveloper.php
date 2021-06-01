@@ -71,7 +71,7 @@ class PurchasedPlanListBuilderForDeveloper extends PurchasedPlanListBuilder {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    if ($this->monetization->isOrganizationApigeeX()) {
+    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
       return AccessResult::forbidden('ApigeeX does not support purchased plan.');
     }
     $user = $route_match->getParameter('user');

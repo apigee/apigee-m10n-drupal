@@ -31,7 +31,7 @@ class PurchasedProductPluginClass extends MenuLinkDefault {
    */
   public function getRouteName() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
-    if ($monetization->isOrganizationApigeeX()) {
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
       return "entity.entity_view_display.purchased_product.default";
     }
     else {
