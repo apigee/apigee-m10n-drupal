@@ -90,7 +90,7 @@ class PricingAndPlansController extends ControllerBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    if ($this->monetization->isOrganizationApigeeX()) {
+    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
       return AccessResult::forbidden('ApigeeX does not have product bundles.');
     }
     $user = $route_match->getParameter('user');
@@ -107,7 +107,7 @@ class PricingAndPlansController extends ControllerBase {
    *   A redirect to the current user's product bundles page.
    */
   public function myPlans(): RedirectResponse {
-    if ($this->monetization->isOrganizationApigeeX()) {
+    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
       return $this->redirect(
         'apigee_monetization.xplans',
         ['user' => \Drupal::currentUser()->id()],

@@ -92,7 +92,9 @@ class RatePlanDetailsFormatter extends FormatterBase {
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Apigee\Edge\Api\Monetization\Structure\RatePlanDetail $detail */
     $detail = $item->value;
+
     $all_rates = $detail->getRatePlanRates();
+
     // Get only rate card entries.
     $ratecard_rates = array_filter($all_rates, function ($rate) {
       return ($rate instanceof RatePlanRateRateCard);
@@ -126,6 +128,14 @@ class RatePlanDetailsFormatter extends FormatterBase {
       '@duration_type' => strtolower($freemium_duration === 1 ? $freemium_type : $freemium_type . 's'),
     ]);
 
+    // Get the apiproduct details.
+    $apiproduct_info = '';
+    if ($apiproduct_info = $detail->getProduct()) {
+      foreach ($apiproduct_info as $value) {
+        $apiproduct_info = $value;
+      }
+    }
+
     return [
       '#theme' => 'rate_plan_detail',
       '#detail' => $detail,
@@ -133,6 +143,7 @@ class RatePlanDetailsFormatter extends FormatterBase {
       '#revshare_rates' => $revshare_rates,
       '#free_quantity' => !empty((string) $free_quantity) ? $free_quantity : NULL,
       '#entity' => $item->getEntity(),
+      '#apiproduct' => $apiproduct_info,
       '#attached' => ['library' => ['apigee_m10n/rate_plan.details_field']],
     ];
   }

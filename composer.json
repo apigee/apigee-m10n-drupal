@@ -11,7 +11,7 @@
         "drupal/apigee_edge": "^1.22",
         "drupal/core": "^8 || ^9",
         "drupal/requirement": "~1.0",
-        "apigee/apigee-client-php": "^2.0.7"
+        "apigee/apigee-client-php": "^2.0.8"
     },
     "require-dev": {
         "apigee/apigee-mock-client-php": "^1.0",
