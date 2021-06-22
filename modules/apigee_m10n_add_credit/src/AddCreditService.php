@@ -21,6 +21,8 @@ namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\Entity\Form\PurchasedProductForm;
+use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\apigee_m10n_add_credit\Form\AddCreditAddToCartForm;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowBase;
@@ -293,9 +295,27 @@ class AddCreditService implements AddCreditServiceInterface {
       // Add a custom validation handler to check for add credit products.
       array_unshift($form['#validate'], [static::class, 'checkoutFormReviewValidate']);
     }
+
     // Add links to add credit to the account.
     if (($form_object = $form_state->getFormObject())
       && $form_object instanceof PurchasedPlanForm
+      && !empty($form["insufficient_balance"])
+    ) {
+      foreach (Element::children($form["insufficient_balance"]) as $currency_id) {
+        $purchased_plan = $form_object->getEntity();
+        if ($add_credit_url = $this->getAddCreditUrl($currency_id, $purchased_plan->getOwner())) {
+          $form["insufficient_balance"][$currency_id]['add_credit_link'] = [
+            '#type' => 'link',
+            '#title' => $this->t('Add credit'),
+            '#url' => $add_credit_url,
+          ];
+        }
+      }
+    }
+
+    // Add links to add credit to the account.
+    if (($form_object = $form_state->getFormObject())
+      && $form_object instanceof PurchasedProductForm
       && !empty($form["insufficient_balance"])
     ) {
       foreach (Element::children($form["insufficient_balance"]) as $currency_id) {
@@ -348,16 +368,26 @@ class AddCreditService implements AddCreditServiceInterface {
     foreach ($currencies as $currency) {
       $currency_id = strtolower($currency->getCurrencyCode());
       if (empty($build['table']['#rows'][$currency_id])) {
-        $build['table']['#rows'][$currency_id] = [
-          'class' => ["apigee-balance-row-{$currency_id}"],
-          'data' => [
+        // Checking if org is ApigeeX and adding the coloums which can be fetched from the api.
+        if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+          $data = [
+            'currency' => $currency->getCurrencyCode(),
+            'current_balance' => $this->t('There is no balance available.'),
+          ];
+        }
+        else {
+          $data = [
             'currency' => $currency->getCurrencyCode(),
             'previous_balance' => $this->t('There is no balance available.'),
             'credit' => '',
             'usage' => '',
             'tax' => '',
             'current_balance' => '',
-          ],
+          ];
+        }
+        $build['table']['#rows'][$currency_id] = [
+          'class' => ["apigee-balance-row-{$currency_id}"],
+          'data' => $data,
         ];
       }
     }
@@ -447,6 +477,22 @@ class AddCreditService implements AddCreditServiceInterface {
 
     // Add the "Add credit" link.
     if ($url = $this->getAddCreditUrl($purchased_plan->getRatePlan()->getCurrency()->id(), user_load_by_mail($purchased_plan->getDeveloper()->getEmail()))) {
+      $arguments['@link'] = Link::fromTextAndUrl('Add credit', $url)->toString();
+      $message = $this->t("{$original_message} @link", $arguments, $options);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function purchasedProductInsufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedProductInterface $purchased_product) {
+    // Shows insufficient balance error with add credit link for ApigeeX purchase product.
+    $arguments = $message->getArguments();
+    $options = $message->getOptions();
+    $original_message = $message->getUntranslatedString();
+
+    // Add the "Add credit" link.
+    if ($url = $this->getAddCreditUrl(strtolower($purchased_product->getRatePlan()->getCurrencyCode()), user_load_by_mail($purchased_product->getDeveloper()->getEmail()))) {
       $arguments['@link'] = Link::fromTextAndUrl('Add credit', $url)->toString();
       $message = $this->t("{$original_message} @link", $arguments, $options);
     }

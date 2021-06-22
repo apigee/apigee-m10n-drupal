@@ -51,11 +51,25 @@ apigee_m10n.billing:
   parent_id: apigee_m10n.balance_and_plans
   weight: -1
 
+apigee_m10n.balance_and_product.billing:
+  title: 'Prepaid balance'
+  route_name: apigee_monetization.xbilling
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_product
+  weight: -1
+
 apigee_m10n.profile:
   title: 'Billing Details'
   route_name: apigee_monetization.profile
   base_route: entity.user.canonical
   parent_id: apigee_m10n.balance_and_plans
+  weight: 0
+
+apigee_m10n.balance_and_product.xprofile:
+  title: 'Billing Details'
+  route_name: apigee_monetization.xprofile
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_product
   weight: 0
 
 apigee_m10n.reports:
@@ -70,3 +84,14 @@ apigee_m10n.settings.prepaid_balance:
   route_name: apigee_m10n.settings.prepaid_balance
   base_route: apigee_m10n.settings.prepaid_balance
   weight: -10
+
+apigee_m10n.settings.preferences:
+  title: 'Prepaid preferences'
+  route_name: apigee_m10n.settings.preferences
+  base_route: apigee_m10n.settings.preferences
+  weight: -10
+
+apigee_m10n.userbillingtype:
+  route_name: apigee_monetization.userbillingtype
+  title: 'Set User Billing Type'
+  base_route: entity.user.canonical
