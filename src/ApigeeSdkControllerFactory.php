@@ -160,7 +160,7 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
 
     if (empty($this->controllers[__FUNCTION__])) {
       // Create a new developer controller.
-      $this->controllers[__FUNCTION__] = new DeveloperBillingTypeController($developer_id,$this->getOrganization(), $this->getClient());
+      $this->controllers[__FUNCTION__] = new DeveloperBillingTypeController($developer_id, $this->getOrganization(), $this->getClient());
     }
     return $this->controllers[__FUNCTION__];
   }
