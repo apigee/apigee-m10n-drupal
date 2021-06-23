@@ -23,6 +23,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\Form\PrepaidPreferenceConfigForm;
+use Drupal\apigee_edge\Entity\Developer;
 
 /**
  * Implements hook_ENTITY_TYPE_access().
@@ -65,7 +67,6 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
         'revshare_rates' => NULL,
         'free_quantity' => NULL,
         'entity' => NULL,
-        'apiproduct' => NULL,
       ],
       'template' => 'rate-plan-detail',
     ],
@@ -149,3 +150,11 @@ function apigee_m10n_purchased_plan_create_access(AccountInterface $account, arr
   $access = AccessResult::allowedIf(isset($context['rate_plan']) && $context['rate_plan'] instanceof RatePlanInterface);
   return $access->andIf($context['rate_plan']->access('purchase', $account, TRUE));
 }
+
+function apigee_m10n_default_billingType_alter(Developer $user) {
+  $default_billingtype = \Drupal::config(PrepaidPreferenceConfigForm::CONFIG_NAME)->get('billing.billingtype');
+  if ('0' != $default_billingtype)  {
+    \Drupal::service('apigee_m10n.monetization')->updateBillingType($user->getEmail() , $default_billingtype);
+  }
+}
+

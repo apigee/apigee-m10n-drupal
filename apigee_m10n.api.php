@@ -20,8 +20,11 @@
  */
 
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
+use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * @file
@@ -47,6 +50,19 @@ function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterf
 }
 
 /**
+ * Alters the prepaid balance page.
+ *
+ * @param array $build
+ *   A renderable array representing the page.
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The prepaid balance owner entity.
+ *
+ * @see \Drupal\apigee_m10n\Controller\PrepaidBalanceXControllerBase::render()
+ */
+function hook_default_billingType_alter(Developer $account) {
+}
+
+/**
  * Alters the insufficient balance error message.
  *
  * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
@@ -57,6 +73,19 @@ function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterf
  * @see \Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm::save()
  */
 function hook_apigee_m10n_insufficient_balance_error_message_alter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan) {
+}
+
+/**
+ * Alters the insufficient balance error message.
+ *
+ * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
+ *   A translatable error message.
+ * @param \Drupal\apigee_m10n\Entity\PurchasedProductInterface $purchased_product
+ *   The failed purchased product.
+ *
+ * @see \Drupal\apigee_m10n\Entity\Form\PurchasedProductForm::save()
+ */
+function hook_apigee_m10n_insufficient_balance_error_purchased_product_message_alter(TranslatableMarkup &$message, PurchasedProductInterface $purchased_product) {
 }
 
 /**

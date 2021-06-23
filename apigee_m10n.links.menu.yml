@@ -27,6 +27,13 @@ apigee_m10n.settings.prepaid_balance:
   parent: system.admin_apigee_m10n
   weight: 100
 
+apigee_m10n.settings.preferences:
+  title: 'Prepaid preferences'
+  route_name: apigee_m10n.settings.preferences
+  description: 'Configure prepaid preferences.'
+  parent: system.admin_apigee_m10n
+  weight: 100
+
 apigee_m10n.settings.purchased_plan:
   class: Drupal\apigee_m10n\Plugin\Menu\PurchasedProductPluginClass
   title: 'Rate plan purchases'
