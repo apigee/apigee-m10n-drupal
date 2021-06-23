@@ -52,9 +52,7 @@ function hook_apigee_m10n_prepaid_balance_list_alter(array &$build, EntityInterf
 /**
  * Alters the prepaid balance page.
  *
- * @param array $build
- *   A renderable array representing the page.
- * @param \Drupal\Core\Entity\EntityInterface $entity
+ * @param \Drupal\apigee_edge\Entity\Developer $account
  *   The prepaid balance owner entity.
  *
  * @see \Drupal\apigee_m10n\Controller\PrepaidBalanceXControllerBase::render()
