@@ -55,6 +55,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->assertNoClientError();
 
     $this->createStore();
+
+    $this->warmOrganizationCache();
   }
 
   /**
