@@ -67,6 +67,7 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
     $this->product = $this->createCommerceProduct($this->createCommerceStore(), $variation);
 
     $this->createCommercePaymentGateway();
+    $this->warmOrganizationCache();
   }
 
   /**
