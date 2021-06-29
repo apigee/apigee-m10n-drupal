@@ -409,6 +409,9 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view xrate_plan as anyone' => 'View apigeex rate plans as any developer',
       'purchase xrate_plan' => 'Purchase apigeex rate plan',
       'purchase xrate_plan as anyone' => 'Purchase apigeex rate plan as any developer',
+
+      // Update billing type of a user, only given to admin.
+      'update any billing type' => 'Update any billing type',
     ];
 
     // Sort both for comparison.
