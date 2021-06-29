@@ -25,6 +25,13 @@
         "phpmetrics/phpmetrics": "^2.5",
         "phpstan/phpstan": "0.12.42"
     },
+    "extra": {
+        "patches": {
+            "apigee/apigee-client-php": {
+                "ApigeeX billingtype": "https://patch-diff.githubusercontent.com/raw/divya-intelli/apigee-client-php/pull/2.diff"
+            }
+        }
+    },
     "config": {
         "sort-packages": true
     },
