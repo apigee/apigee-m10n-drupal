@@ -285,7 +285,7 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
 
     // If developer is prepaid, check for sufficient balance to purchase to the
     // rate plan.
-    if ($developer_billing_type && $developer_billing_type['billingType']->getbillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
+    if ($developer_billing_type && $developer_billing_type->getbillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
       $prepaid_balances = [];
       foreach ($this->monetization->getDeveloperPrepaidBalancesX($user) as $prepaid_balance) {
         $prepaid_balances[$prepaid_balance->getBalance()->getCurrencyCode()] = $prepaid_balance->getBalance()->getUnits() + $prepaid_balance->getBalance()->getNanos();

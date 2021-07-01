@@ -592,8 +592,8 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function getBillingtype(UserInterface $user): array {
-    return $this->sdkControllerFactory->developerBillingTypeController($user->getEmail())->getAllBillingDetails();
+  public function getBillingtype(UserInterface $user): ?string {
+    return $this->sdkControllerFactory->developerBillingTypeController($user->getEmail())->getAllBillingDetails()->getbillingType();
   }
 
   /**
