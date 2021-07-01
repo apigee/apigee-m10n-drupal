@@ -26,24 +26,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\UserInterface;
-use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n\Form\PrepaidPreferenceConfigForm;
+use Drupal\apigee_m10n\Form\GeneralSettingsConfigForm;
 
 /**
  * Provides a form to edit developer profile information.
  */
 class BillingTypeForm extends FormBase {
-
-  /**
-   * Developer.
-   *
-   * @var \Drupal\apigee_edge\Entity\Developer
-   */
-  protected $developer;
 
   /**
    * Logger Factory.
@@ -118,6 +110,11 @@ class BillingTypeForm extends FormBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
+
+    if (!$this->monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('Only accessible for ApigeeX organization');
+    }
+
     $user = $route_match->getParameter('user');
     try {
       $developer_billingtype = $this->monetization->getBillingtype($user);
@@ -125,8 +122,6 @@ class BillingTypeForm extends FormBase {
     catch (\Exception $e) {
       return AccessResult::forbidden('Developer does not exist.');
     }
-
-    $developer_billingtype = $developer_billingtype['billingType']->getbillingType();
 
     if ($developer_billingtype) {
       return AccessResult::forbidden('Billing type for this developer is already set');
@@ -148,7 +143,8 @@ class BillingTypeForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
-    $default_billing_type = \Drupal::config(PrepaidPreferenceConfigForm::CONFIG_NAME)->get('billing.billingtype');
+    $this->messenger->addWarning($this->t('This setting can not be changed after you set the billing type.'));
+    $default_billing_type = \Drupal::config(GeneralSettingsConfigForm::CONFIG_NAME)->get('billing.billingtype');
     $billingType = ['postpaid' => 'Postpaid' , 'prepaid' => 'Prepaid'];
 
     $form['billingtype'] = [

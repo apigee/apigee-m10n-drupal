@@ -22,22 +22,32 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
- * Config form for prepaid preferences.
+ * Config form for general setting.
  */
-class PrepaidPreferenceConfigForm extends ConfigFormBase {
+class GeneralSettingsConfigForm extends ConfigFormBase {
 
   /**
    * The config named used by this form.
    */
-  const CONFIG_NAME = 'apigee_m10n.prepaid_preference.config';
+  const CONFIG_NAME = 'apigee_m10n.general_settings.config';
+
+  /**
+   * Apigee Monetization base service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, MonetizationInterface $monetization) {
     parent::__construct($config_factory);
+    $this->monetization = $monetization;
   }
 
   /**
@@ -45,8 +55,25 @@ class PrepaidPreferenceConfigForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('apigee_m10n.monetization')
     );
+  }
+
+  /**
+   * Checks if ApigeeX org.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if the org id ApigeeX.
+   */
+  public function access() {
+
+    if (!$this->monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('Only accessible for ApigeeX organization');
+    }
+    else {
+      return AccessResult::allowed();
+    }
   }
 
   /**
@@ -60,7 +87,7 @@ class PrepaidPreferenceConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'prepaid_preference_config_form';
+    return 'general_settings_config_form';
   }
 
   /**
@@ -69,10 +96,10 @@ class PrepaidPreferenceConfigForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(static::CONFIG_NAME);
 
-    $billingType = ['Null' , 'POSTPAID' => 'Postpaid' , 'PREPAID' => 'Prepaid'];
+    $billingType = ['Not Specified', 'POSTPAID' => 'Postpaid' , 'PREPAID' => 'Prepaid'];
 
     $form['billing'] = [
-      '#title' => $this->t('Billing Type'),
+      '#title' => $this->t('General Settings'),
       '#type' => 'details',
       '#open' => TRUE,
     ];
@@ -82,7 +109,7 @@ class PrepaidPreferenceConfigForm extends ConfigFormBase {
       '#title' => $this->t('Billing Type'),
       '#default_value' => $config->get('billing.billingtype'),
       '#options' => $billingType,
-      '#description' => $this->t('Select a billing type that the user be added to.'),
+      '#description' => $this->t('Select default billing type for users signing up for the portal.'),
     ];
 
     return parent::buildForm($form, $form_state);

@@ -14,7 +14,6 @@ use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n\Form\PrepaidPreferenceConfigForm;
 
 /**
  * Defines a confirmation form to confirm updating of developer billing type.
@@ -98,8 +97,6 @@ class ConfirmUpdateForm extends ConfirmFormBase {
     catch (\Exception $e) {
       return AccessResult::forbidden('Developer does not exist.');
     }
-
-    $developer_billingtype = $developer_billingtype['billingType']->getbillingType();
 
     if ($developer_billingtype) {
       return AccessResult::forbidden('Billing type for this developer is already set');

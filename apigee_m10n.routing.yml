@@ -61,6 +61,17 @@ apigee_m10n.settings.prepaid_balance:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_m10n.settings.generalsettings:
+  path: /admin/config/apigee-monetization/general/settings
+  defaults:
+    _form: \Drupal\apigee_m10n\Form\GeneralSettingsConfigForm
+    _title: General Settings
+  requirements:
+    _permission: administer apigee monetization
+    _custom_access: \Drupal\apigee_m10n\Form\GeneralSettingsConfigForm::access
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_m10n.settings.purchased_plan:
   path: /admin/config/apigee-monetization/purchased-plan-settings
   defaults:
@@ -298,7 +309,7 @@ apigee_monetization.userbillingtype:
   path: /user/{user}/monetization/user-billingtype
   defaults:
     _form: \Drupal\apigee_m10n\Form\BillingTypeForm
-    _title: Set User Billing Type
+    _title: Billing Type
   requirements:
     user: '^[1-9]+[0-9]*$'
     _custom_access: \Drupal\apigee_m10n\Form\BillingTypeForm::access
@@ -317,13 +328,3 @@ apigee_monetization.userbillingtype.confirm:
   options:
     _apigee_monetization_route: TRUE
     no_cache: 'TRUE'
-
-apigee_m10n.settings.preferences:
-  path: /admin/config/apigee-monetization/preferences
-  defaults:
-    _form: \Drupal\apigee_m10n\Form\PrepaidPreferenceConfigForm
-    _title: Prepaid preferences
-  requirements:
-    _permission: administer apigee monetization
-  options:
-    _apigee_monetization_route: TRUE
