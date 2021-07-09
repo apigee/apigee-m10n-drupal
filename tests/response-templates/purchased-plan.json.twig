@@ -23,7 +23,7 @@
     "created": "{{ purchased_plan.created|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
     "developer": {% include 'monetization-developer.json.twig' with {"developer": purchased_plan.developer } %},
     {% if purchased_plan.endDate %}
-        "endDate": "{{ purchased_plan.endDate|date('Y-m-d h:m:s') }}",
+        "endDate": "{{ purchased_plan.endDate|date('Y-m-d 00:00:00') }}",
     {% endif %}
     "id": "{{ purchased_plan.id|default("4321dcba-1234abcd") }}",
     "nextCycleStartDate": "{{ purchased_plan.nextCycleStartDate|date('Y-m-d h:m:s')|default('2018-07-26 00:00:00') }}",
