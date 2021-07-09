@@ -111,7 +111,8 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
     // Ending the plan by setting the end date as today.
-    $end_date = new \DateTimeImmutable('today', new \DateTimeZone($this->orgDefaultTimezone));
+    $end_date = $purchased_plan->getStartDate();
+    $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
     $this->warmOrganizationCache();
@@ -206,7 +207,8 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
     // Ending the plan by setting the end date as today.
-    $end_date = new \DateTimeImmutable('today', new \DateTimeZone($this->orgDefaultTimezone));
+    $end_date = $purchased_plan->getStartDate();
+    $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
     $this->warmOrganizationCache();
