@@ -569,7 +569,7 @@ class Monetization implements MonetizationInterface {
         return FALSE;
       }
 
-      $billing_type = $developer['billingType']->getbillingType();
+      $billing_type = $developer->getbillingType();
 
       if ($cacheExpiration < 0) {
         $this->cache->set($cid, $billing_type);
@@ -586,14 +586,14 @@ class Monetization implements MonetizationInterface {
    * {@inheritdoc}
    */
   public function updateBillingtype(string $developer_email, string $billingtype): DeveloperBillingType {
-    return $this->sdkControllerFactory->developerBillingTypeController($developer_email)->updateBillingType($default_billingtype);
+    return $this->sdkControllerFactory->developerBillingTypeController($developer_email)->updateBillingType($billingtype);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getBillingtype(UserInterface $user): array {
-    return $this->sdkControllerFactory->developerBillingTypeController($user->getEmail())->getAllBillingDetails();
+  public function getBillingtype(UserInterface $user): ?string {
+    return $this->sdkControllerFactory->developerBillingTypeController($user->getEmail())->getAllBillingDetails()->getbillingType();
   }
 
   /**

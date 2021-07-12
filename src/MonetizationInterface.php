@@ -297,10 +297,10 @@ interface MonetizationInterface {
    * @param \Drupal\user\UserInterface $user
    *   The developer account.
    *
-   * @return array
-   *   Billing type array.
+   * @return string|null
+   *   Billing type.
    */
-  public function getBillingtype(UserInterface $user): array;
+  public function getBillingtype(UserInterface $user): ?string;
 
   /**
    * Returns true if current organization is ApigeeX, false if otherwise.

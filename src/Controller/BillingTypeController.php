@@ -60,7 +60,7 @@ class BillingTypeController extends ControllerBase {
   }
 
   /**
-   * Checks current users access to Billing Profile page.
+   * Checks current users access to Billing type page.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
    *   The current route match.
@@ -77,6 +77,10 @@ class BillingTypeController extends ControllerBase {
     }
     catch (\Exception $e) {
       return AccessResult::forbidden('Developer does not exist.');
+    }
+
+    if (!$this->monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('Only accessible for ApigeeX organization.');
     }
 
     return AccessResult::allowedIf(
@@ -101,7 +105,7 @@ class BillingTypeController extends ControllerBase {
     $build = [
       '#type' => 'Page',
       '#prefix' => 'Billing Type : ',
-      '#markup' => $developer_billing_type['billingType']->getbillingType(),
+      '#markup' => $developer_billing_type,
     ];
     return $build;
   }
