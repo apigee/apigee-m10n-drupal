@@ -27,12 +27,15 @@ use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController as ApigeeXDeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperBillingTypeController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperPrepaidBalanceControllerInterface as ApigeeXDeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyControllerInterface as ApigeeXSupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
 use Drupal\user\UserInterface;
 
@@ -70,6 +73,28 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The controller.
    */
   public function developerBalanceController(UserInterface $developer): DeveloperPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates a ApigeeX developer prepaid balance controller.
+   *
+   * @param \Drupal\user\UserInterface $developer
+   *   The developer drupal user.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\DeveloperPrepaidBalanceControllerInterface
+   *   The controller.
+   */
+  public function developerBalancexController(UserInterface $developer): ApigeexDeveloperPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates a ApigeeX developer billing type controller.
+   *
+   * @param string $developer_id
+   *   The developer email address.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\DeveloperBillingTypeController
+   *   The controller.
+   */
+  public function developerBillingTypeController(string $developer_id): DeveloperBillingTypeController;
 
   /**
    * Creates a company prepaid balance controller.
@@ -159,6 +184,14 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The controller.
    */
   public function supportedCurrencyController(): SupportedCurrencyControllerInterface;
+
+  /**
+   * Creates a supported currency controller.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyControllerInterface
+   *   The controller.
+   */
+  public function supportedCurrencyxController(): ApigeeXSupportedCurrencyControllerInterface;
 
   /**
    * Creates a prepaid balance reports controller.
