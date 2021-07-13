@@ -298,7 +298,7 @@ interface MonetizationInterface {
    *   The developer account.
    *
    * @return string|null
-   *   Billing types.
+   *   Billing type.
    */
   public function getBillingtype(UserInterface $user): ?string;
 

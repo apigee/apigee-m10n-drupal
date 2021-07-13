@@ -569,7 +569,7 @@ class Monetization implements MonetizationInterface {
         return FALSE;
       }
 
-      $billing_type = $developer['billingType']->getbillingType();
+      $billing_type = $developer->getbillingType();
 
       if ($cacheExpiration < 0) {
         $this->cache->set($cid, $billing_type);

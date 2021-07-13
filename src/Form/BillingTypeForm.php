@@ -26,6 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\user\UserInterface;
+use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
@@ -36,6 +37,13 @@ use Drupal\apigee_m10n\Form\GeneralSettingsConfigForm;
  * Provides a form to edit developer profile information.
  */
 class BillingTypeForm extends FormBase {
+
+  /**
+   * Developer.
+   *
+   * @var \Drupal\apigee_edge\Entity\Developer
+   */
+  protected $developer;
 
   /**
    * Logger Factory.

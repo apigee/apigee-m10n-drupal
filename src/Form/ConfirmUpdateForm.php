@@ -124,8 +124,7 @@ class ConfirmUpdateForm extends ConfirmFormBase {
       $developer_billing_type = $this->monetization->updateBillingtype($this->user->getEmail(), $this->billingtype_selected);
       $this->messenger->addStatus($this->t('Billing type of the user is saved.'));
       $form_state->setRedirect('entity.user.edit_form', ['user' => $this->user->id()]);
-      $renderCache = \Drupal::service('cache.render');
-      $renderCache->invalidateAll();
+      drupal_flush_all_caches();
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());

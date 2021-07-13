@@ -22,7 +22,7 @@ namespace Drupal\apigee_m10n\Plugin\Menu;
 use Drupal\Core\Menu\MenuLinkDefault;
 
 /**
- * Defines the class for switching general settings form.
+ * Defines the class for entity admin form switching.
  */
 class GeneralSettingsPluginClass extends MenuLinkDefault {
 
@@ -32,10 +32,10 @@ class GeneralSettingsPluginClass extends MenuLinkDefault {
   public function isEnabled() {
     $monetization = \Drupal::service('apigee_m10n.monetization');
     if ($monetization->isOrganizationApigeeXorHybrid()) {
-      return True;
+      return TRUE;
     }
     else {
-      return False;
+      return FALSE;
     }
   }
 
