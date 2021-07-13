@@ -24,6 +24,7 @@ use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
+use Apigee\Edge\Api\ApigeeX\Entity\DeveloperBillingType;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -100,6 +101,19 @@ interface MonetizationInterface {
    *   The balance list or null if no balances are available.
    */
   public function getDeveloperPrepaidBalances(UserInterface $developer, \DateTimeImmutable $billingDate): ?array;
+
+  /**
+   * Get's the prepaid balance for a developer.
+   *
+   * Takes in a developer mail address and returns an array of prepaid balances.
+   *
+   * @param \Drupal\user\UserInterface $developer
+   *   The developer user.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Entity\PrepaidBalanceInterface[]
+   *   The balance list or empty array if no balances are available.
+   */
+  public function getDeveloperPrepaidBalancesX(UserInterface $developer): ?array;
 
   /**
    * Get's the prepaid balance for a team.
@@ -252,6 +266,41 @@ interface MonetizationInterface {
    *   True if developer is prepaid.
    */
   public function isDeveloperPrepaid(UserInterface $account): bool;
+
+  /**
+   * Returns true if developer billing type is prepaid, false if postpaid.
+   *
+   * @param \Drupal\user\UserInterface $account
+   *   The developer account.
+   *
+   * @return bool
+   *   True if developer is prepaid.
+   */
+  public function isDeveloperPrepaidX(UserInterface $account): bool;
+
+  /**
+   * Updates the billing type of the developer.
+   *
+   * @param string $developer_email
+   *   The developer email ID.
+   * @param string $billingtype
+   *   The developer billing type.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Entity\DeveloperBillingType
+   *   Billing type entity.
+   */
+  public function updateBillingtype(string $developer_email, string $billingtype): DeveloperBillingType;
+
+  /**
+   * Returns the billing type of the developer.
+   *
+   * @param \Drupal\user\UserInterface $user
+   *   The developer account.
+   *
+   * @return string|null
+   *   Billing type.
+   */
+  public function getBillingtype(UserInterface $user): ?string;
 
   /**
    * Returns true if current organization is ApigeeX, false if otherwise.

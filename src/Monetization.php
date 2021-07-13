@@ -23,6 +23,8 @@ use Apigee\Edge\Api\Management\Entity\OrganizationInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\ApigeeX\Controller\ApiProductController as ApiXProductController;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\PrepaidBalanceControllerInterface as PrepaidBalanceXControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\DeveloperBillingType;
 use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
@@ -246,6 +248,14 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
+  public function getDeveloperPrepaidBalancesX(UserInterface $developer): ?array {
+    $balance_controller = $this->sdkControllerFactory->developerBalancexController($developer);
+    return $this->getPrepaidBalancesX($balance_controller);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getCompanyPrepaidBalances(CompanyInterface $company, \DateTimeImmutable $billingDate): ?array {
     $balance_controller = $this->sdkControllerFactory->companyBalanceController($company);
     return $this->getPrepaidBalances($balance_controller, $billingDate);
@@ -416,10 +426,41 @@ class Monetization implements MonetizationInterface {
   }
 
   /**
+   * Gets the prepaid balances.
+   *
+   * Uses a prepaid balance controller to return prepaid balances for a
+   * specified month and year.
+   *
+   * @param \Apigee\Edge\Api\ApigeeX\Controller\PrepaidBalanceXControllerInterface $balance_controller
+   *   The balance controller.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Entity\PrepaidBalanceInterface[]|null
+   *   The balance list or null if no balances are available.
+   */
+  protected function getPrepaidBalancesX(PrepaidBalanceXControllerInterface $balance_controller): ?array {
+
+    try {
+      $result = $balance_controller->getPrepaidBalance();
+    }
+    catch (\Exception $e) {
+      $this->messenger->addWarning($e->getMessage());
+      $this->logger->warning('Unable to retrieve prepaid balances: ' . $e->getMessage());
+      return NULL;
+    }
+
+    return $result;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getSupportedCurrencies(): ?array {
-    return $this->sdkControllerFactory->supportedCurrencyController()->getEntities();
+    if ($this->isOrganizationApigeeXorHybrid()) {
+      return $this->sdkControllerFactory->supportedCurrencyxController()->getEntities();
+    }
+    else {
+      return $this->sdkControllerFactory->supportedCurrencyController()->getEntities();
+    }
   }
 
   /**
@@ -502,6 +543,57 @@ class Monetization implements MonetizationInterface {
     }
 
     return $billing_type == 'PREPAID';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isDeveloperPrepaidX(UserInterface $account): bool {
+
+    // Use cached result if available.
+    $cid = "apigee_m10n:dev:billing_type:{$account->getEmail()}";
+
+    if ($cache = $this->cache->get($cid)) {
+      $billing_type = $cache->data;
+    }
+    else {
+      $config = \Drupal::service('config.factory');
+      $cacheExpiration = $config->get('apigee_edge.developer_settings')->get('cache_expiration');
+      /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperInterface $developer */
+      try {
+        $developer = $this->sdkControllerFactory->developerBillingTypeController($account->getEmail())->getAllBillingDetails();
+      }
+      catch (\Exception $e) {
+        $this->messenger->addError($e->getMessage());
+        $this->logger->warning('Unable to retrieve billing type: ' . $e->getMessage());
+        return FALSE;
+      }
+
+      $billing_type = $developer->getbillingType();
+
+      if ($cacheExpiration < 0) {
+        $this->cache->set($cid, $billing_type);
+      }
+      elseif ($cacheExpiration > 0) {
+        $this->cache->set($cid, $billing_type, strtotime('now + ' . $cacheExpiration . ' seconds'));
+      }
+    }
+
+    return $billing_type == 'PREPAID';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateBillingtype(string $developer_email, string $billingtype): DeveloperBillingType {
+    return $this->sdkControllerFactory->developerBillingTypeController($developer_email)->updateBillingType($billingtype);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBillingtype(UserInterface $user): ?string {
+    return $this->sdkControllerFactory->developerBillingTypeController($user->getEmail())->getAllBillingDetails()->getbillingType();
   }
 
   /**
