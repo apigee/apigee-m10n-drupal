@@ -61,6 +61,17 @@ apigee_m10n.settings.prepaid_balance:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_m10n.settings.generalsettings:
+  path: /admin/config/apigee-monetization/general/settings
+  defaults:
+    _form: \Drupal\apigee_m10n\Form\GeneralSettingsConfigForm
+    _title: General Settings
+  requirements:
+    _permission: administer apigee monetization
+    _custom_access: \Drupal\apigee_m10n\Form\GeneralSettingsConfigForm::access
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_m10n.settings.purchased_plan:
   path: /admin/config/apigee-monetization/purchased-plan-settings
   defaults:
