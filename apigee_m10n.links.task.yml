@@ -70,3 +70,14 @@ apigee_m10n.settings.prepaid_balance:
   route_name: apigee_m10n.settings.prepaid_balance
   base_route: apigee_m10n.settings.prepaid_balance
   weight: -10
+
+apigee_m10n.userbillingtype:
+  title: 'Billing Type'
+  route_name: apigee_monetization.userbillingtype
+  base_route: entity.user.canonical
+
+apigee_m10n.settings.generalsettings:
+  title: 'General Settings'
+  route_name: apigee_m10n.settings.generalsettings
+  base_route: apigee_m10n.settings.generalsettings
+  weight: -10
