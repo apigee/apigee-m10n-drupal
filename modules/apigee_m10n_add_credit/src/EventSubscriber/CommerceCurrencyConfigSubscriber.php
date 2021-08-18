@@ -95,8 +95,9 @@ class CommerceCurrencyConfigSubscriber implements EventSubscriberInterface {
   public function onCurrencySave(ConfigCrudEvent $event) {
     $config = $event->getConfig();
 
-    // Excecuted when currency is saved.
-    if (strpos($config->getName(), 'commerce_price.commerce_currency') !== FALSE) {
+    // Excecuted when new currency is saved.
+    // For new currencies orginal data is empty array.
+    if (!$config->getOriginal() && strpos($config->getName(), 'commerce_price.commerce_currency') !== FALSE) {
       if ($this->monetization->isOrganizationApigeeXorHybrid()) {
         $raw_data = $config->getRawData();
         $currencyCode = $raw_data['currencyCode'];
