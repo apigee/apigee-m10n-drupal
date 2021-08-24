@@ -154,7 +154,7 @@ class PricingAndPlansController extends ControllerBase {
     }
 
     // Add a warning on Plans and packages page for Administrators.
-    if (\Drupal::currentUser()->hasPermission('Administer Apigee Monetization')) {
+    if (\Drupal::currentUser()->hasPermission('administer apigee monetization')) {
       $this->messenger->addWarning('This page will not list plans with a start date in the future. If you are expecting a package to be available, please verify your start date in the Apigee.');
     }
 
