@@ -42,15 +42,6 @@ content:
       strip_trailing_zeroes: false
       currency_display: symbol
     third_party_settings: {  }
-  consumptionFee:
-    type: apigee_price
-    weight: 5
-    region: content
-    label: inline
-    settings:
-      strip_trailing_zeroes: false
-      currency_display: symbol
-    third_party_settings: {  }
   feeFrequency:
     type: string
     weight: 4
@@ -60,7 +51,7 @@ content:
     third_party_settings: {  }
   consumptionPricingType:
     type: string
-    weight: 7
+    weight: 5
     region: content
     label: inline
     settings: {  }
@@ -94,11 +85,33 @@ content:
     settings:
       label: 'Purchase Product'
     third_party_settings: {  }
+  consumptionPricingRates:
+    type: apigee_rate_plan_consumption_rates
+    weight: 6
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  revenueShareRates:
+    type: apigee_rate_plan_revenue_rates
+    weight: 8
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  revenueShareType:
+    type: string
+    weight: 7
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
 hidden:
   description: true
   id: true
   name: true
-  revenueShareType: true
   currencyCode: true
   billingPeriod: true
   fixedFeeFrequency: true
+  consumptionFee: true
