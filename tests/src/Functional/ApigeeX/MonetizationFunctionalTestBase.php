@@ -17,17 +17,17 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n\Functional\Apigeex;
+namespace Drupal\Tests\apigee_m10n\Functional\ApigeeX;
 
-use Drupal\Tests\apigee_m10n\Traits\Apigeex\ApigeexTestTrait;
+use Drupal\Tests\apigee_m10n\Traits\ApigeeX\ApigeeMonetizationTestTrait;
 use Drupal\Tests\BrowserTestBase;
 
 /**
  * A base class for functional tests.
  */
-class MonetizationApigeexFunctionalTestBase extends BrowserTestBase {
+class MonetizationFunctionalTestBase extends BrowserTestBase {
 
-  use ApigeexTestTrait {
+  use ApigeeMonetizationTestTrait {
     setUp as baseSetUp;
   }
 

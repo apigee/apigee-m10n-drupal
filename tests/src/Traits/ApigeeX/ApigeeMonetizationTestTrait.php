@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n\Traits\Apigeex;
+namespace Drupal\Tests\apigee_m10n\Traits\ApigeeX;
 
 use Apigee\Edge\Api\Management\Entity\DeveloperInterface;
 use Apigee\Edge\Api\ApigeeX\Entity\ApiProduct as ApigeexApiProduct;
@@ -48,7 +48,7 @@ use Drupal\user\UserInterface;
 /**
  * Setup helpers for hybrid tests.
  */
-trait ApigeexTestTrait {
+trait ApigeeMonetizationTestTrait {
 
   use AccountProphecyTrait;
   use ApigeeEdgeFunctionalTestTrait {
