@@ -101,11 +101,11 @@ class ConsumptionPricingRatesFormatter extends FormatterBase {
     $multipleConsumptionText = '';
     $singleConsumptionText = '';
     if (empty($fee_start) && empty($fee_end)) {
-      $singleConsumptionText = $fee_currency_code . ' ' .($fee_units + $fee_nanos);
+      $singleConsumptionText = $fee_currency_code . ' ' . ($fee_units + $fee_nanos);
     }
     else {
-      $endUnitStr = $fee_end ? 'up to'  : '';
-      $start = $fee_start ?  $fee_start  : 0;
+      $endUnitStr = $fee_end ? 'up to' : '';
+      $start = $fee_start ? $fee_start : 0;
       $multiple_consumption_template = 'Greater than @start @endUnitStr @end';
       // Build the "Consumption text".
       $multipleConsumptionText = $this->t($multiple_consumption_template, [
@@ -114,7 +114,6 @@ class ConsumptionPricingRatesFormatter extends FormatterBase {
         '@end' => $fee_end,
       ]);
     }
-
 
     return [
       '#theme' => 'rate_plan_consumption_rates',

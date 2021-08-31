@@ -100,8 +100,8 @@ class RevenueShareRatesFormatter extends FormatterBase {
       $singleShareText = $revenueSharePercentage;
     }
     else {
-      $endUnitStr = $end ? 'up to'  : '';
-      $start = $start ?  $start  : 0;
+      $endUnitStr = $end ? 'up to' : '';
+      $start = $start ? $start : 0;
       $multipleShareTextTemplate = 'Greater than @start @endUnitStr @end';
       // Build the "Consumption te" text.
       $multipleShareText = $this->t($multipleShareTextTemplate, [
@@ -110,7 +110,6 @@ class RevenueShareRatesFormatter extends FormatterBase {
         '@end' => $end,
       ]);
     }
-
 
     return [
       '#theme' => 'rate_plan_revenue_rates',
