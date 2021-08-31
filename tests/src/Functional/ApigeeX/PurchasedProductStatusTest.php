@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n\Functional\Apigeex;
+namespace Drupal\Tests\apigee_m10n\Functional\ApigeeX;
 
 use Drupal\Core\Url;
 
@@ -27,7 +27,7 @@ use Drupal\Core\Url;
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
-class PurchasedProductStatusTest extends MonetizationApigeexFunctionalTestBase {
+class PurchasedProductStatusTest extends MonetizationFunctionalTestBase {
 
   /**
    * Drupal user.

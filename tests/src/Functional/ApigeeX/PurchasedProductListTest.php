@@ -17,7 +17,7 @@
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-namespace Drupal\Tests\apigee_m10n\Functional\Apigeex;
+namespace Drupal\Tests\apigee_m10n\Functional\ApigeeX;
 
 use Drupal\Core\Url;
 
@@ -27,7 +27,7 @@ use Drupal\Core\Url;
  * @group apigee_m10n
  * @group apigee_m10n_functional
  */
-class PurchasedProductListTest extends MonetizationApigeexFunctionalTestBase {
+class PurchasedProductListTest extends MonetizationFunctionalTestBase {
 
   /**
    * Drupal user.
@@ -87,7 +87,6 @@ class PurchasedProductListTest extends MonetizationApigeexFunctionalTestBase {
     // Make sure user has access to the page.
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('Connection error');
-
 
     $default_timezone = new \DateTimeZone($this->org_default_timezone);
     $datetimeImmutable = new \DateTimeImmutable();
