@@ -28,6 +28,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\commerce_price\Entity\Currency;
 
 /**
  * Class AddCreditConfigForm.
@@ -168,45 +169,90 @@ class AddCreditConfigForm extends ConfigFormBase {
       ];
     }
 
-    // Build row for each currency.
-    foreach ($supported_currencies as $currency) {
-      $currency_code = strtoupper($currency->getId());
-      /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
-      $product = $products_config[$currency->id()] ?? NULL;
+    if (!$this->monetization->isOrganizationApigeeXorHybrid()) {
+      // Build row for each currency.
+      foreach ($supported_currencies as $currency) {
+        $currency_code = strtoupper($currency->getId());
+        /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
+        $product = $products_config[$currency->id()] ?? NULL;
 
-      $form['products_container']['products'][$currency->id()] = [
-        'name' => ['#markup' => $currency->getDisplayName()],
-        'currency' => ['#markup' => $currency_code],
-        'product_id' => [
-          '#type' => 'entity_autocomplete',
-          '#target_type' => 'commerce_product',
-          '#selection_handler' => 'apigee_m10n_add_credit:products',
-          '#maxlength' => NULL,
-          '#default_value' => $product,
-          '#placeholder' => $this->t('Select a product for the @code currency', [
-            '@code' => $currency_code,
-          ]),
-        ],
-      ];
+        $form['products_container']['products'][$currency->id()] = [
+          'name' => ['#markup' => $currency->getDisplayName()],
+          'currency' => ['#markup' => $currency_code],
+          'product_id' => [
+            '#type' => 'entity_autocomplete',
+            '#target_type' => 'commerce_product',
+            '#selection_handler' => 'apigee_m10n_add_credit:products',
+            '#maxlength' => NULL,
+            '#default_value' => $product,
+            '#placeholder' => $this->t('Select a product for the @code currency', [
+              '@code' => $currency_code,
+            ]),
+          ],
+        ];
 
-      // Add operations to edit the product if set.
-      $form['products_container']['products'][$currency->id()]['operations'] = $product ? [
-        '#type' => 'operations',
-        '#links' => [
-          'edit' => [
-            'title' => $this->t('Edit product'),
-            'url' => $product->toUrl('edit-form', ['query' => $destination]),
+        // Add operations to edit the product if set.
+        $form['products_container']['products'][$currency->id()]['operations'] = $product ? [
+          '#type' => 'operations',
+          '#links' => [
+            'edit' => [
+              'title' => $this->t('Edit product'),
+              'url' => $product->toUrl('edit-form', ['query' => $destination]),
+            ],
           ],
-        ],
-        '#attributes' => [
-          'class' => [
-            'edit',
-            'edit--' . $currency->id(),
+          '#attributes' => [
+            'class' => [
+              'edit',
+              'edit--' . $currency->id(),
+            ],
           ],
-        ],
-      ] : [
-        '#markup' => '',
-      ];
+        ] : [
+          '#markup' => '',
+        ];
+      }
+    }
+    elseif ($this->monetization->isOrganizationApigeeXorHybrid()) {
+
+      foreach (Currency::loadMultiple() as $currency) {
+        $currency_code = $currency->getCurrencyCode();
+
+        /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
+        $product = $products_config[strtolower($currency_code)] ?? NULL;
+
+        $form['products_container']['products'][strtolower($currency_code)] = [
+          'name' => ['#markup' => $currency->getName()],
+          'currency' => ['#markup' => $currency_code],
+          'product_id' => [
+            '#type' => 'entity_autocomplete',
+            '#target_type' => 'commerce_product',
+            '#selection_handler' => 'apigee_m10n_add_credit:products',
+            '#maxlength' => NULL,
+            '#default_value' => $product,
+            '#placeholder' => $this->t('Select a product for the @code currency', [
+              '@code' => $currency_code,
+            ]),
+          ],
+        ];
+
+        // Add operations to edit the product if set.
+        $form['products_container']['products'][strtolower($currency_code)]['operations'] = $product ? [
+          '#type' => 'operations',
+          '#links' => [
+            'edit' => [
+              'title' => $this->t('Edit product'),
+              'url' => $product->toUrl('edit-form', ['query' => $destination]),
+            ],
+          ],
+          '#attributes' => [
+            'class' => [
+              'edit',
+              'edit--' . $currency_code,
+            ],
+          ],
+        ] : [
+          '#markup' => '',
+        ];
+      }
     }
 
     // Use the site default if an email hasn't been saved.
