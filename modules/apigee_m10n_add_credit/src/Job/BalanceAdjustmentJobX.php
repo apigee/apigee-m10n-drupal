@@ -133,7 +133,8 @@ class BalanceAdjustmentJobX extends EdgeJob {
 
       try {
         // Top up by the adjustment amount.
-        $controller->topUpBalance($units, $nanos, $currency_code);
+        $transaction_id = !empty($this->order->getOrderNumber()) ? $this->order->getOrderNumber() : $this->order->id();
+        $controller->topUpBalance($units, $nanos, $currency_code, $transaction_id);
 
         // The data returned from `topUpBalance` doesn't get us the new top up
         // total so we have to grab that from the balance controller again.
