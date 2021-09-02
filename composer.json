@@ -28,8 +28,9 @@
     "extra": {
         "patches": {
             "apigee/apigee-client-php": {
-                "ApigeeX billingtype": "https://patch-diff.githubusercontent.com/raw/divya-intelli/apigee-client-php/pull/3.diff",
-                "ApigeeX prepaid balance": "https://patch-diff.githubusercontent.com/raw/divya-intelli/apigee-client-php/pull/5.diff"
+                "ApigeeX billingtype": "https://patch-diff.githubusercontent.com/raw/divya-intelli/apigee-client-php/pull/5.diff",
+                "ApigeeX supported currency": "https://patch-diff.githubusercontent.com/raw/divya-intelli/apigee-client-php/pull/4.diff",
+                "ApigeeX prepaid balance": "https://patch-diff.githubusercontent.com/raw/divya-intelli/apigee-client-php/pull/3.diff"
             }
         }
     },

@@ -315,3 +315,27 @@ entity.purchased_product.developer_cancel_form:
       purchased_product:
         type: entity:purchased_product
         converter: paramconverter.entity.purchased_product
+
+apigee_monetization.userbillingtype:
+  path: /user/{user}/monetization/user-billingtype
+  defaults:
+    _form: \Drupal\apigee_m10n\Form\BillingTypeForm
+    _title: Billing Type
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Form\BillingTypeForm::access
+  options:
+    _apigee_monetization_route: TRUE
+    no_cache: 'TRUE'
+
+apigee_monetization.userbillingtype.confirm:
+  path: /user/{user}/monetization/{billingtype}/confirm
+  defaults:
+    _form: \Drupal\apigee_m10n\Form\ConfirmUpdateForm
+    _title: 'Confirm Update'
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Form\ConfirmUpdateForm::access
+  options:
+    _apigee_monetization_route: TRUE
+    no_cache: 'TRUE'
