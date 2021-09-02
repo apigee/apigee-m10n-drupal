@@ -37,6 +37,20 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
   protected $developer;
 
   /**
+   * A product bundle.
+   *
+   * @var \Drupal\apigee_m10n\Entity\ProductBundleInterface
+   */
+  protected $productBundle;
+
+  /**
+   * A rate plan.
+   *
+   * @var \Drupal\apigee_m10n\Entity\RatePlanInterface
+   */
+  protected $ratePlan;
+
+  /**
    * The default org timezone.
    *
    * @var string
@@ -59,6 +73,9 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $this->developer = $this->createAccount([]);
 
     $this->drupalLogin($this->developer);
+
+    $this->productBundle = $this->createProductBundle();
+    $this->ratePlan = $this->createRatePlan($this->productBundle);
   }
 
   /**
@@ -67,9 +84,7 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testPurchasedPlanActiveStatus() {
-    $product_bundle = $this->createProductBundle();
-    $rate_plan = $this->createRatePlan($product_bundle);
-    $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
     $this->warmOrganizationCache();
     $this->stack
@@ -93,12 +108,11 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testPurchasedPlanEndedStatus() {
-    $product_bundle = $this->createProductBundle();
-    $rate_plan = $this->createRatePlan($product_bundle);
-    $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
     // Ending the plan by setting the end date as today.
-    $end_date = new \DateTimeImmutable('today', new \DateTimeZone($this->orgDefaultTimezone));
+    $end_date = $purchased_plan->getStartDate();
+    $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
     $this->warmOrganizationCache();
@@ -123,9 +137,7 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testPurchasedPlanGetFutureStatus() {
-    $product_bundle = $this->createProductBundle();
-    $rate_plan = $this->createRatePlan($product_bundle);
-    $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
     // Purchased plan with future date.
     $start_date = new \DateTimeImmutable('today +2 day', new \DateTimeZone($this->orgDefaultTimezone));
@@ -145,6 +157,112 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     // Checking my purchased plans table columns.
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Future');
 
+  }
+
+  /**
+   * Tests for `My Plans - Active plans with timezone different than Apigee's timezone`.
+   *
+   * @throws \Exception
+   */
+  public function testActivePurchasedPlanWithChangedTimezone() {
+    $original_timezone = date_default_timezone_get();
+    $currentTimezone = 'Australia/Sydney';
+    // We change the timezone before we would do anything else to ensure
+    // any subsequent calls as working properly.
+    date_default_timezone_set($currentTimezone);
+
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
+
+    $this->warmOrganizationCache();
+    $this->stack
+      ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
+
+    $this->drupalGet(Url::fromRoute('entity.purchased_plan.developer_collection', [
+      'user' => $this->developer->id(),
+    ]));
+    // Make sure user has access to the page.
+    $this->assertSession()->responseNotContains('Access denied');
+    $this->assertSession()->responseNotContains('Connection error');
+
+    // Checking my purchased plans table columns.
+    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Active');
+
+    // Restoring the original timezone.
+    date_default_timezone_set($original_timezone);
+
+  }
+
+  /**
+   * Tests for `My Plans - Expired plan with timezone different than Apigee's timezone`.
+   *
+   * @throws \Exception
+   */
+  public function testExpiredPurchasedPlanWithChangedTimezone() {
+    $original_timezone = date_default_timezone_get();
+    $currentTimezone = 'Australia/Sydney';
+    // We change the timezone before we would do anything else to ensure
+    // any subsequent calls as working properly.
+    date_default_timezone_set($currentTimezone);
+
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
+
+    // Ending the plan by setting the end date as today.
+    $end_date = $purchased_plan->getStartDate();
+    $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
+    $purchased_plan->setEndDate($end_date);
+
+    $this->warmOrganizationCache();
+    $this->stack
+      ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
+
+    $this->drupalGet(Url::fromRoute('entity.purchased_plan.developer_collection', [
+      'user' => $this->developer->id(),
+    ]));
+    // Make sure user has access to the page.
+    $this->assertSession()->responseNotContains('Access denied');
+    $this->assertSession()->responseNotContains('Connection error');
+
+    // Checking my purchased plans table columns.
+    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Ended');
+
+    // Restoring the original timezone.
+    date_default_timezone_set($original_timezone);
+  }
+
+  /**
+   * Tests for `My Plans - Future plan with timezone different than Apigee's timezone`.
+   *
+   * @throws \Exception
+   */
+  public function testFuturePurchasedPlanWithChangedTimezone() {
+    $original_timezone = date_default_timezone_get();
+    $currentTimezone = 'Australia/Sydney';
+    // We change the timezone before we would do anything else to ensure
+    // any subsequent calls as working properly.
+    date_default_timezone_set($currentTimezone);
+
+    $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
+
+    // Purchased plan with future date.
+    $start_date = new \DateTimeImmutable('today +2 day', new \DateTimeZone($this->orgDefaultTimezone));
+    $purchased_plan->setStartDate($start_date);
+
+    $this->warmOrganizationCache();
+    $this->stack
+      ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
+
+    $this->drupalGet(Url::fromRoute('entity.purchased_plan.developer_collection', [
+      'user' => $this->developer->id(),
+    ]));
+    // Make sure user has access to the page.
+    $this->assertSession()->responseNotContains('Access denied');
+    $this->assertSession()->responseNotContains('Connection error');
+
+    // Checking my purchased plans table columns.
+    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Future');
+
+    // Restoring the original timezone.
+    date_default_timezone_set($original_timezone);
   }
 
 }
