@@ -134,7 +134,7 @@ function apigee_m10n_user_agent_string_alter() {
     $m10_module_info = $infoParser->parse(\Drupal::service('module_handler')->getModule('apigee_m10n')->getPathname());
   
     if (!isset($m10_module_info['version'])) {
-      $m10_module_info['version'] = '8.x-1.x-dev';
+      $m10_module_info['version'] = '2.x-dev';
     }
     $m10_module_info = $m10_module_info['name'] . '/' . $m10_module_info['version'];
 
