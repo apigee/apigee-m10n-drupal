@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\requirement\Plugin\RequirementBase;
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 
 /**
  * Check that the "Add credit" product type has been configured.
@@ -137,6 +138,21 @@ class AddCreditProductType extends RequirementBase {
       $component['label'] = 'hidden';
       $display->setComponent('variations', $component)
         ->save();
+
+      // For ApigeeX, Commerce product variation manage display changes.
+      if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+        $view_mode = EntityViewDisplay::create([
+          'targetEntityType' => 'commerce_product_variation',
+          'bundle' => $variation_type->id(),
+          'mode' => 'default',
+          'status' => TRUE,
+        ]);
+        $view_mode->save();
+        $view_mode->setComponent('title', ['weight' => 1, 'label' => 'hidden'])
+          ->removeComponent('list_price')
+          ->removeComponent('price')
+          ->save();
+      }
     }
   }
 
