@@ -147,6 +147,12 @@ class AddCreditService implements AddCreditServiceInterface {
           ->setTranslatable(TRUE)
           ->setDisplayConfigurable('form', TRUE)
           ->setDisplayConfigurable('view', TRUE);
+
+        // For ApigeeX , by default enable the price range field.
+        if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+          $fields['apigee_price_range']->setDisplayOptions('form', ['weight' => 1]);
+        }
+
         break;
 
       case 'commerce_order_item':
@@ -447,6 +453,11 @@ class AddCreditService implements AddCreditServiceInterface {
         foreach ($build['table']['#rows'] as $currency_id => &$row) {
           if (empty($row['data']['operations'])) {
             $row['data']['operations']['data'] = ['#markup' => ''];
+          }
+          elseif (isset($row['#attributes']['class'])) {
+            $row['data']['operations']['data']['#links']['add_credit']['url'] = \Drupal\Core\Url::fromRoute('<current>');
+            $row['data']['operations']['data']['#links']['add_credit']['title'] = $this->t('Add credit**');
+            $row['data']['operations']['data']['#links']['add_credit']['attributes']['class'][] = $row['#attributes']['class'];
           }
         }
 
