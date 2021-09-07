@@ -98,10 +98,6 @@ class ConfirmUpdateForm extends ConfirmFormBase {
       return AccessResult::forbidden('Developer does not exist.');
     }
 
-    /*if ($developer_billingtype) {
-      return AccessResult::forbidden('Billing type for this developer is already set');
-    }*/
-
     return AccessResult::allowedIf(
       $account->hasPermission('update any billing type')
     );

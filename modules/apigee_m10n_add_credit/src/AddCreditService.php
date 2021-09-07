@@ -455,7 +455,7 @@ class AddCreditService implements AddCreditServiceInterface {
             $row['data']['operations']['data'] = ['#markup' => ''];
           }
           elseif (isset($row['#attributes']['class'])) {
-            $row['data']['operations']['data']['#links']['add_credit']['url'] = \Drupal\Core\Url::fromRoute('<current>');
+            $row['data']['operations']['data']['#links']['add_credit']['url'] = Url::fromRoute('<current>');
             $row['data']['operations']['data']['#links']['add_credit']['title'] = $this->t('Add credit**');
             $row['data']['operations']['data']['#links']['add_credit']['attributes']['class'][] = $row['#attributes']['class'];
           }

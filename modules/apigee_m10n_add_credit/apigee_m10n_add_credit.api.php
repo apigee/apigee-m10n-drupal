@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-
 use Drupal\apigee_edge\Entity\Developer;
 
 /**
@@ -32,15 +31,14 @@ use Drupal\apigee_edge\Entity\Developer;
  * @{
  */
 
-
- /**
-  * Sets the billing type.
-  *
-  * @param \Drupal\apigee_edge\Entity\Developer $account
-  *   The prepaid balance owner entity.
-  */
- function hook_default_billingType_alter(Developer $account) {
- }
+/**
+ * Sets the billing type.
+ *
+ * @param \Drupal\apigee_edge\Entity\Developer $account
+ *   The prepaid balance owner entity.
+ */
+function hook_default_billingType_alter(Developer $account) {
+}
 
 /**
  * @} End of "addtogroup hooks".

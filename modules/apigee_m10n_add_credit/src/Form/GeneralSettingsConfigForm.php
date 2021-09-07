@@ -133,11 +133,11 @@ class GeneralSettingsConfigForm extends ConfigFormBase {
     $form['time']['note'] = [
       '#markup' => $this->t('<div class="apigee-add-credit-notification-note"><div class="label">@note</div><div>@description</div></div>', [
         '@note' => 'Note:',
-        '@description' => "Apigee backend API for credit balance doen't allow frequent top-ups,
+        '@description' => "Apigee backend API for credit balance doesn't allow frequent top-ups,
                           and hence in line with the same,
                           the portal also disables the add credit option for a fixed period.
-                          If you want to change the above value, please make sure the changes fits well with the backend API guarantees."
-,
+                          If you want to change the above value, please make sure the changes
+                          fits well with the backend API guarantees.",
       ]),
     ];
 
