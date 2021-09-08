@@ -133,13 +133,3 @@ function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_purchased
 function apigee_m10n_add_credit_help($route_name, RouteMatchInterface $route_match) {
   return \Drupal::service('apigee_m10n.add_credit')->help($route_name, $route_match);
 }
-
-/**
- * Implements hook_default_billingType_alter().
- */
-function apigee_m10n_add_credit_default_billingType_alter(Developer $user) {
-  // Added default billing type to postpaid.
-  $default_billingtype = \Drupal::config(GeneralSettingsConfigForm::CONFIG_NAME)->get('billing.billingtype');
-  $default_billingtype = $default_billingtype ? $default_billingtype : 'postpaid';
-  \Drupal::service('apigee_m10n.monetization')->updateBillingType($user->getEmail() , strtoupper($default_billingtype));
-}
