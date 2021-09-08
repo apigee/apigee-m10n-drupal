@@ -26,8 +26,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm;
-use Drupal\apigee_edge\Entity\Developer;
 
 /**
  * Implements hook_mail().
