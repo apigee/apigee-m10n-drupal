@@ -95,6 +95,25 @@ class ConsumptionPricingRatesFormatter extends FormatterBase {
     $fee_currency_code = $fee_details->getCurrencyCode();
     $fee_units = $fee_details->getUnits();
     $fee_nanos = $fee_details->getNanos();
+    $fee_start = $detail->getStart();
+    $fee_end = $detail->getEnd();
+
+    $multipleConsumptionText = '';
+    $singleConsumptionText = '';
+    if (empty($fee_start) && empty($fee_end)) {
+      $singleConsumptionText = $fee_currency_code . ' ' . ($fee_units + $fee_nanos);
+    }
+    else {
+      $endUnitStr = $fee_end ? 'up to' : '';
+      $start = $fee_start ? $fee_start : 0;
+      $multiple_consumption_template = 'Greater than @start @endUnitStr @end';
+      // Build the "Consumption text".
+      $multipleConsumptionText = $this->t($multiple_consumption_template, [
+        '@start' => $start,
+        '@endUnitStr' => $endUnitStr,
+        '@end' => $fee_end,
+      ]);
+    }
 
     return [
       '#theme' => 'rate_plan_consumption_rates',
@@ -102,6 +121,8 @@ class ConsumptionPricingRatesFormatter extends FormatterBase {
       '#fee_currency_code' => $fee_currency_code,
       '#fee_units' => $fee_units,
       '#fee_nanos' => $fee_nanos,
+      '#multipleConsumptionText' => $multipleConsumptionText,
+      '#singleConsumptionText' => $singleConsumptionText,
       '#entity' => $item->getEntity(),
       '#attached' => ['library' => ['apigee_m10n/rate_plan.details_field']],
     ];
