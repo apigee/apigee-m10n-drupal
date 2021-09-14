@@ -141,8 +141,6 @@ trait ApigeeMonetizationTestTrait {
       $edit['mail'] = "{$edit['name']}@example.com";
     }
 
-    $this->warmOrganizationCache();
-
     $account = User::create($edit);
 
     $billing_type = empty($attributes['billing_type']) ? NULL : $attributes['billing_type'];

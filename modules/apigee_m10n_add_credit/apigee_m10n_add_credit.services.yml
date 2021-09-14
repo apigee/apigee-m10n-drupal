@@ -27,9 +27,3 @@ services:
     tags:
       - { name: event_subscriber }
 
-  apigee_m10n_add_credit.developer_default_billing:
-    class: Drupal\apigee_m10n_add_credit\AddCreditDeveloperBillingType
-    public: false
-    decorates: apigee_edge.converter.user_developer
-    decoration_priority: 0
-    arguments: ['@apigee_m10n_add_credit.developer_default_billing.inner', '@apigee_m10n.monetization']
