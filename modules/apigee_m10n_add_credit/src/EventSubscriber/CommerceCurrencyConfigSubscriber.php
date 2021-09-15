@@ -64,17 +64,6 @@ class CommerceCurrencyConfigSubscriber implements EventSubscriberInterface {
 
   /**
    * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('apigee_m10n.monetization'),
-    );
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @return array
    *   The event to listen, and the methods to be executed.
@@ -106,41 +95,54 @@ class CommerceCurrencyConfigSubscriber implements EventSubscriberInterface {
         // Fetch the default store enabled to store the product.
         $default_store = $store_storage->loadDefault();
 
-        $variation = $this->entityTypeManager
-          ->getStorage('commerce_product_variation')
-          ->create([
-            'type' => 'add_credit',
-            'sku' => "ADD-CREDIT-{$currencyCode}",
-            'title' => $currencyCode,
-            'status' => 1,
-            'price' => new Price(1, $currencyCode),
-          ]);
-        $variation->set('apigee_price_range', [
-          'minimum' => 1,
-          'maximum' => 999,
-          'default' => 1,
-          'currency_code' => $currencyCode,
-        ]);
-        $variation->save();
+        // Get the product_variation type.
+        $variation_type_storage = $this->entityTypeManager
+          ->getStorage('commerce_product_variation_type');
+        $variation_type = $variation_type_storage->load('add_credit');
 
-        // Create an add credit product for this currency.
-        $product = $this->entityTypeManager->getStorage('commerce_product')
-          ->create([
-            'title' => $currencyCode,
-            'type' => 'add_credit',
-            'stores' => [$default_store->id()],
-            'variations' => [$variation],
-            AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME => 1,
+        if ($variation_type) {
+          $variation = $this->entityTypeManager
+            ->getStorage('commerce_product_variation')
+            ->create([
+              'type' => 'add_credit',
+              'sku' => "ADD-CREDIT-{$currencyCode}",
+              'title' => $currencyCode,
+              'status' => 1,
+              'price' => new Price(1, $currencyCode),
+            ]);
+          $variation->set('apigee_price_range', [
+            'minimum' => 1,
+            'maximum' => 999,
+            'default' => 1,
+            'currency_code' => $currencyCode,
           ]);
-        $product->save();
+          $variation->save();
+        }
+        // Get the product type.
+        $product_type_storage = $this->entityTypeManager
+          ->getStorage('commerce_product_type');
+        $product_type = $product_type_storage->load('add_credit');
 
-        // Save config.
-        $this->configFactory
-          ->getEditable(AddCreditConfig::CONFIG_NAME)
-          ->set('products.' . strtolower($currencyCode), [
-            'product_id' => $product->id(),
-          ])
-          ->save();
+        if ($product_type) {
+          // Create an add credit product for this currency.
+          $product = $this->entityTypeManager->getStorage('commerce_product')
+            ->create([
+              'title' => $currencyCode,
+              'type' => 'add_credit',
+              'stores' => [$default_store->id()],
+              'variations' => [$variation],
+              AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME => 1,
+            ]);
+          $product->save();
+
+          // Save config.
+          $this->configFactory
+            ->getEditable(AddCreditConfig::CONFIG_NAME)
+            ->set('products.' . strtolower($currencyCode), [
+              'product_id' => $product->id(),
+            ])
+            ->save();
+        }
       }
     }
   }

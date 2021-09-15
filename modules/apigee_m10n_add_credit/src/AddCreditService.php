@@ -152,6 +152,7 @@ class AddCreditService implements AddCreditServiceInterface {
         if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
           $fields['apigee_price_range']->setDisplayOptions('form', ['weight' => 1]);
         }
+
         break;
 
       case 'commerce_order_item':
@@ -452,6 +453,11 @@ class AddCreditService implements AddCreditServiceInterface {
         foreach ($build['table']['#rows'] as $currency_id => &$row) {
           if (empty($row['data']['operations'])) {
             $row['data']['operations']['data'] = ['#markup' => ''];
+          }
+          elseif (isset($row['#attributes']['class'])) {
+            $row['data']['operations']['data']['#links']['add_credit']['url'] = Url::fromRoute('<current>');
+            $row['data']['operations']['data']['#links']['add_credit']['title'] = $this->t('Add credit**');
+            $row['data']['operations']['data']['#links']['add_credit']['attributes']['class'][] = $row['#attributes']['class'];
           }
         }
 

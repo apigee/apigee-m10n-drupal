@@ -29,6 +29,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -82,6 +83,13 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
   protected $moduleHandler;
 
   /**
+   * Drupal core messenger service (for adding flash messages).
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * BillingController constructor.
    *
    * @param \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector
@@ -94,13 +102,16 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
    *   The current user.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Drupal core messenger service (for adding flash messages).
    */
-  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user, ModuleHandlerInterface $module_handler) {
+  public function __construct(SDKConnectorInterface $sdk_connector, MonetizationInterface $monetization, FormBuilderInterface $form_builder, AccountInterface $current_user, ModuleHandlerInterface $module_handler, MessengerInterface $messenger) {
     $this->sdk_connector = $sdk_connector;
     $this->monetization = $monetization;
     $this->currentUser = $current_user;
     $this->formBuilder = $form_builder;
     $this->moduleHandler = $module_handler;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -112,7 +123,8 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
       $container->get('apigee_m10n.monetization'),
       $container->get('form_builder'),
       $container->get('current_user'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('messenger')
     );
   }
 
@@ -153,11 +165,29 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
         'keys' => [static::getCacheId($this->entity, 'prepaid_balances')],
       ],
     ];
+
+    // Convert wait time to miliseconds as the last credited time is miliseconds.
+    $wait_time_in_miliseconds = \Drupal::config('apigee_m10n_add_credit.general_settings.config')->get('wait_time') * 1000;
+    $utc = new \DateTimeZone('UTC');
+    $currentTimestamp = (new \DateTimeImmutable())->setTimezone($utc);
+    $currentTimestamp = ($currentTimestamp->getTimestamp() . $currentTimestamp->format('v'));
+    $time_to_wait = '';
     foreach ($this->getDataFromCache($this->entity, 'prepaid_balances', [$this, 'load']) as $balance) {
 
       /** @var \Apigee\Edge\Api\ApigeeX\Entity\PrepaidBalanceInterface $balance */
       if ($row = $this->buildRow($balance)) {
         $build['table']['#rows'][strtolower($balance->getBalance()->getCurrencyCode())] = $row;
+
+        $time_to_wait = $balance->getlastCreditTime() + $wait_time_in_miliseconds;
+        if ($time_to_wait > $currentTimestamp) {
+          $build['table']['#rows'][strtolower($balance->getBalance()->getCurrencyCode())]['#attributes']['class'] = 'disable-add-credit';
+          $seconds = floor(($time_to_wait - $currentTimestamp) / 1000);
+          $minutes = floor(($seconds / 60) % 60);
+          // If wait time set is less than 60 seconds, then the text is shown.
+          // minutes+1 is added to avoid showing seconds.
+          $minutes = ($wait_time_in_miliseconds <= 60000) ? "few seconds" : $minutes + 1 . ' mins';
+          $this->messenger->addWarning($this->t('**Add credit is disabled for @mins ', ['@mins' => $minutes]));
+        }
       }
     }
 
