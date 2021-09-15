@@ -48,6 +48,8 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->warmOrganizationCache();
+
     $this->signInAsAdmin();
 
     $this->assertNoClientError();
