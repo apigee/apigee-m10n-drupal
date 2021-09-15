@@ -99,13 +99,11 @@ class BillingTypeController extends ControllerBase {
    *   The billing type array.
    */
   public function myBillingType(UserInterface $user) {
-
     $developer_billing_type = $this->monetization->getBillingtype($user);
-
     $build = [
       '#type' => 'Page',
       '#prefix' => 'Billing Type : ',
-      '#markup' => $developer_billing_type,
+      '#markup' => $developer_billing_type ? $developer_billing_type : 'Not Specified (Defaults to Postpaid)',
     ];
     return $build;
   }
