@@ -27,13 +27,12 @@
   Drupal.behaviors.apigee_m10n_add_credit_price = {
     attach: function attach(context) {
       var self = this;
-      $('.two_decimal_price div input').on('keypress',function (event) {
-        if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
-            event.preventDefault();
-        }
-        var input = $(this).val();
-        if ((input.indexOf('.') != -1) && (input.substring(input.indexOf('.')).length > 2)) {
-            event.preventDefault();
+      $(".two_decimal_price div input").keyup(function(){
+      var number = ($(this).val().split('.'));
+        if (number[1].length > 2)
+        {
+          var price = parseFloat($(this).val());
+          $(this).val(price.toFixed(2));
         }
       });
     },
