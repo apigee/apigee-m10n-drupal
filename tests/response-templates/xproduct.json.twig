@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ *   Apigee X Product include file. Use this whenever a package is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'xproduct.json.twig' %} @endcode
+ *
+ * Variables:
+ * - product: The X product.
+ *   - id: ID of the API product.
+ *   - description: Description of API product.
+ *   - displayName: User-friendly display name of the API product.
+ *   - name: Name of the API product.
+ */
+#}
+{
+    "id" : "{{ package.name|default('All about the Foo.') }}",
+    "description" : "{{ package.description|default('All about the Foo.') }}",
+    "displayName" : "{{ package.name|default('The Foo') }}",
+    "name" : "{{ package.name|default('Foo') }}",
+    "approvalType": "auto",
+    "attributes": [
+        {
+            "name": "access",
+            "value": "public"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ *   - GET /v1/organizations/{org}/apiproducts
+ *   - GET /v1/organizations/{org}/developers/{developer}/apiproducts
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - packages: The packages to include.
+ */
+#}
+{
+    "apiProduct" : [
+        {% for package in xproducts %}
+            {% include 'package.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ]
+}
