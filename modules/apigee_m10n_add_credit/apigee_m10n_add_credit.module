@@ -136,16 +136,15 @@ function apigee_m10n_add_credit_help($route_name, RouteMatchInterface $route_mat
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function apigee_m10n_add_credit_user_insert(UserInterface $account) {
+function apigee_m10n_add_credit_user_presave(UserInterface $account) {
   // Check if org is ApigeeX.
   if (TRUE === \Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
-    // Load mint developer
-    $developer = Developer::load($account->getEmail());
-    if ($developer) {
+    // Check if new user and add the billing type.
+    if ($account->isNew()) {
       $default_billingtype = \Drupal::config(GeneralSettingsConfigForm::CONFIG_NAME)->get('billing.billingtype');
-      $default_billingtype = $default_billingtype ? $default_billingtype : 'postpaid';
+      $default_billingtype = $default_billingtype ? $default_billingtype : 'POSTPAID';
       \Drupal::service('apigee_m10n.monetization')->updateBillingType($account->getEmail(), strtoupper($default_billingtype));
     }
   }
