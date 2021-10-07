@@ -360,6 +360,10 @@ class AddCreditService implements AddCreditServiceInterface {
       if ($product->get(AddCreditConfig::ADD_CREDIT_ENABLED_FIELD_NAME)->value) {
         $form['unit_price']['widget'][0]['amount']['#title'] = t('Amount to be added to your account balance');
       }
+      if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+        $form['unit_price']['widget'][0]['amount']['#attributes']['class'][] = 'two_decimal_price';
+        $form['unit_price']['widget'][0]['amount']['#attached']['library'][] = 'apigee_m10n_add_credit/add_credit_price';
+      }
     }
   }
 
