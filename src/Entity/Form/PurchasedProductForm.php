@@ -43,14 +43,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PurchasedProductForm extends FieldableEdgeEntityForm {
 
   /**
-   * Developer legal name attribute name.
-   */
-  public const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
-
-  /**
    * Insufficient funds API error code.
    */
-  public const INSUFFICIENT_FUNDS_ERROR = 'keymanagement.service.developer_usage_exceeds_balance';
+  public const INSUFFICIENT_FUNDS_ERROR = 'mint.service.developer_usage_exceeds_balance';
   public const DEVELOPER_WALLET_DOES_NOT_EXIST = 'keymanagement.service.developer_wallet_does_not_exist';
 
   public const MY_PURCHASES_PRODUCT_CACHE_TAG = 'apigee_my_purchased_products';
@@ -227,7 +222,7 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
     catch (\Exception $e) {
       $client_error = $e->getPrevious();
 
-      if (($client_error instanceof ServerErrorException && $client_error->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) || ($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::DEVELOPER_WALLET_DOES_NOT_EXIST)) {
+      if (($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) || ($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::DEVELOPER_WALLET_DOES_NOT_EXIST)) {
 
         $rate_plan = $this->getEntity()->getRatePlan();
         $minimum_amount = $rate_plan->getSetupFeesPriceValue();
