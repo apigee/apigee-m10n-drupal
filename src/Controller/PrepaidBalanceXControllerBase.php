@@ -186,7 +186,8 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
           // If wait time set is less than 60 seconds, then the text is shown.
           // minutes+1 is added to avoid showing seconds.
           $minutes = ($wait_time_in_miliseconds <= 60000) ? "few seconds" : $minutes + 1 . ' mins';
-          $this->messenger->addWarning($this->t('**Add credit is disabled for @mins ', ['@mins' => $minutes]));
+          $this->messenger->addWarning($this->t('**Add credit is disabled for @mins for currency @currency ', ['@mins' => $minutes, '@currency' => $balance->getBalance()->getCurrencyCode()]));
+
         }
       }
     }
