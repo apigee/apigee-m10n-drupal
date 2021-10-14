@@ -166,10 +166,10 @@ class ConfirmUpdateForm extends ConfirmFormBase {
     // Fetch the billing type of the developer.
     $original = $this->monetization->getBillingtype($this->user);
     if ('prepaid' == strtolower($original) && 'postpaid' == strtolower($this->billingtype_selected)) {
-      return $this->t('Once you change the prepaid developer to postpaid, their existing prepaid balance will appear as a credit transaction.<br>Please ensure this is taken into account when calculating amount due.');
+      return $this->t('If the developer billing type is changed from "prepaid" to "postpaid," any existing prepaid balance will be treated as a credit transaction when calculating amounts due.');
     }
     elseif (('postpaid' == strtolower($original) || !($original))&& 'prepaid' == strtolower($this->billingtype_selected)) {
-      return $this->t('When you change a developer from postpaid to prepaid, please inform them to top-up their balance, to ensure their API calls are not blocked because of insufficient balance.');
+      return $this->t('If the developer billing type is changed from "postpaid" to "prepaid," developers should perform a balance top-up to ensure that API calls are not blocked due to an insufficient balance.');
     }
     elseif (!($original) && 'postpaid' == strtolower($this->billingtype_selected)) {
       return $this->t('The billing type will to switched to Postpaid.');
