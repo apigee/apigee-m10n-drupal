@@ -148,12 +148,12 @@ class BillingTypeForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
     $billingType = ['postpaid' => 'Postpaid' , 'prepaid' => 'Prepaid'];
-
+    $developer_billingtype = $this->monetization->getBillingtype($user);
     $form['billingtype'] = [
       '#type' => 'radios',
       '#title' => $this->t('Billing Type'),
       '#options' => $billingType,
-      '#default_value' => 'postpaid',
+      '#default_value' => $developer_billingtype ? strtolower($developer_billingtype) : 'postpaid',
       '#description' => $this->t('Select the billing type for the user.'),
     ];
 
