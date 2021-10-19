@@ -29,8 +29,6 @@ use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
  */
 class RatePlanRenderTest extends MonetizationKernelTestBase {
 
-  use RatePlanDetailsKernelTestAssertionTrait;
-
   /**
    * Test rate plan.
    *
