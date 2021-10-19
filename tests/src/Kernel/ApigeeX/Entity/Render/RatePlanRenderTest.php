@@ -20,7 +20,6 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Entity\Render;
 
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
-use Drupal\Tests\apigee_m10n\Traits\ApigeeX\RatePlanDetailsKernelTestAssertionTrait;
 
 /**
  * Performs functional tests on drupal_render().
