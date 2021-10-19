@@ -108,14 +108,6 @@ class ConfirmUpdateForm extends ConfirmFormBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    $user = $this->user;
-    try {
-      $developer_billingtype = $this->monetization->getBillingtype($user);
-    }
-    catch (\Exception $e) {
-      return AccessResult::forbidden('Developer does not exist.');
-    }
-
     return AccessResult::allowedIf(
       $account->hasPermission('update any billing type')
     );
@@ -164,7 +156,24 @@ class ConfirmUpdateForm extends ConfirmFormBase {
    */
   public function getQuestion() {
 
-    return $this->t('Are you sure you want to change the billing type for user %email?', ['%email' => $this->user->getEmail()]);
+    return $this->t('Are you sure you want to change the billing type for user- %email?', ['%email' => $this->user->getEmail()]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDescription() {
+    // Fetch the billing type of the developer.
+    $original = $this->monetization->getBillingtype($this->user);
+    if ('prepaid' == strtolower($original) && 'postpaid' == strtolower($this->billingtype_selected)) {
+      return $this->t('If the developer billing type is changed from "prepaid" to "postpaid," any existing prepaid balance will be treated as a credit transaction when calculating amounts due.');
+    }
+    elseif (('postpaid' == strtolower($original) || !($original))&& 'prepaid' == strtolower($this->billingtype_selected)) {
+      return $this->t('If the developer billing type is changed from "postpaid" to "prepaid," developers should perform a balance top-up to ensure that API calls are not blocked due to an insufficient balance.');
+    }
+    elseif (!($original) && 'postpaid' == strtolower($this->billingtype_selected)) {
+      return $this->t('The billing type will to switched to Postpaid.');
+    }
   }
 
 }

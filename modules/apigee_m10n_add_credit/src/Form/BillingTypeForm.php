@@ -165,6 +165,11 @@ class BillingTypeForm extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Save changes'),
       '#button_type' => 'primary',
+      '#states' => [
+        'disabled' => [
+          ':input[name="billingtype"]' => ['value' => strtolower($developer_billingtype)],
+        ]
+      ]
     ];
     return $form;
   }
