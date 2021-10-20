@@ -8,10 +8,10 @@
         "ext-bcmath": "*",
         "cweagans/composer-patches": "~1.6",
         "commerceguys/intl": "~1.0",
-        "drupal/apigee_edge": "^1.22",
+        "drupal/apigee_edge": "^2.0.0",
         "drupal/core": "^8 || ^9",
         "drupal/requirement": "~1.0",
-        "apigee/apigee-client-php": "^2.0.8"
+        "apigee/apigee-client-php": "^2.0.12"
     },
     "require-dev": {
         "apigee/apigee-mock-client-php": "^1.0",
@@ -24,13 +24,6 @@
         "phpmd/phpmd": "2.8.2",
         "phpmetrics/phpmetrics": "^2.5",
         "phpstan/phpstan": "0.12.42"
-    },
-    "extra": {
-        "patches": {
-            "apigee/apigee-client-php": {
-                "ApigeeX phase2": "https://github.com/apigee/apigee-client-php/compare/2.x...feature-ngmint-phase2.patch"
-            }
-        }
     },
     "config": {
         "sort-packages": true
