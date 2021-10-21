@@ -24,6 +24,7 @@ use Drupal\apigee_edge\JobExecutor;
 use Drupal\apigee_edge\SDKConnectorInterface;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
+use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJobX;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\state_machine\Event\WorkflowTransitionEvent;
@@ -101,12 +102,22 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
 
     foreach ($totals as ['target' => $target, 'amount' => $amount]) {
       if (!empty((double) $amount->getNumber())) {
-        // Use a custom adjustment type because it can support a credit or a debit.
-        $job = new BalanceAdjustmentJob($target, new Adjustment([
-          'type' => 'apigee_balance',
-          'label' => 'Apigee balance adjustment',
-          'amount' => $amount,
-        ]), $order);
+        if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+          // Use a custom adjustment type because it can support a credit or a debit.
+          $job = new BalanceAdjustmentJobX($target, new Adjustment([
+            'type' => 'apigee_balance',
+            'label' => 'Apigee balance adjustment',
+            'amount' => $amount,
+          ]), $order);
+        }
+        else {
+          // Use a custom adjustment type because it can support a credit or a debit.
+          $job = new BalanceAdjustmentJob($target, new Adjustment([
+            'type' => 'apigee_balance',
+            'label' => 'Apigee balance adjustment',
+            'amount' => $amount,
+          ]), $order);
+        }
 
         // Save and execute the job.
         $this->getExecutor()->call($job);

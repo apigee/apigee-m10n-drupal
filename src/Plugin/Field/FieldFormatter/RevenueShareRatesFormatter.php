@@ -90,10 +90,33 @@ class RevenueShareRatesFormatter extends FormatterBase {
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Apigee\Edge\Api\ApigeeX\Structure\RevenueShareRates $detail */
     $detail = $item->value;
+    $revenueSharePercentage = $detail->getSharePercentage();
+    $start = $detail->getStart();
+    $end = $detail->getEnd();
+
+    $singleShareText = '';
+    $multipleShareText = '';
+    if (empty($start) && empty($end)) {
+      $singleShareText = $revenueSharePercentage;
+    }
+    else {
+      $endUnitStr = $end ? 'up to' : '';
+      $start = $start ? $start : 0;
+      $multipleShareTextTemplate = 'Greater than @start @endUnitStr @end';
+      // Build the "Consumption te" text.
+      $multipleShareText = $this->t($multipleShareTextTemplate, [
+        '@start' => $start,
+        '@endUnitStr' => $endUnitStr,
+        '@end' => $end,
+      ]);
+    }
 
     return [
       '#theme' => 'rate_plan_revenue_rates',
       '#detail' => $detail,
+      '#revenueSharePercentage' => $revenueSharePercentage,
+      '#singleShareText' => $singleShareText,
+      '#multipleShareText' => $multipleShareText,
       '#entity' => $item->getEntity(),
       '#attached' => ['library' => ['apigee_m10n/rate_plan.details_field']],
     ];

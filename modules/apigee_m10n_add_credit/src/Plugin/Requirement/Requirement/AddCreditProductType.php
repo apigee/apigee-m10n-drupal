@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\requirement\Plugin\RequirementBase;
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 
 /**
  * Check that the "Add credit" product type has been configured.
@@ -58,6 +59,42 @@ class AddCreditProductType extends RequirementBase {
     /* @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
     $display_repository = \Drupal::service('entity_display.repository');
 
+    $order_type_id = '';
+    if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+      // Get or create the number pattern.
+      $number_pattern_storage = $this->getEntityTypeManager()
+        ->getStorage('commerce_number_pattern');
+      $number_pattern = $number_pattern_storage->load('add_credit');
+
+      if (!$number_pattern) {
+        $number_pattern = $number_pattern_storage->create([
+          'status' => 1,
+          'id' => 'add_credit',
+          'label' => 'Add credit',
+          'targetEntityType' => 'commerce_order',
+          'configuration' => ['pattern' => '[commerce_order:uuid]-[pattern:number]']
+        ]);
+        $number_pattern->save();
+      }
+
+      // Get or create the order type.
+      $order_type_storage = $this->getEntityTypeManager()
+        ->getStorage('commerce_order_type');
+      $order_type = $order_type_storage->load('add_credit');
+
+      if (!$order_type) {
+        $order_type = $order_type_storage->create([
+          'status' => 1,
+          'id' => 'add_credit',
+          'label' => 'Add credit',
+          'workflow' => 'order_default',
+          'numberPattern' => $number_pattern->id(),
+        ]);
+        $order_type->save();
+      }
+      $order_type_id = $order_type->id();
+    }
+
     // Get or create the order item type.
     $order_item_type_storage = $this->getEntityTypeManager()
       ->getStorage('commerce_order_item_type');
@@ -68,7 +105,7 @@ class AddCreditProductType extends RequirementBase {
         'status' => 1,
         'id' => 'add_credit',
         'label' => 'Add credit',
-        'orderType' => 'default',
+        'orderType' => $order_type_id ? $order_type_id : 'default',
         'purchasableEntityType' => 'commerce_product_variation',
       ]);
       $order_item_type->save();
@@ -137,6 +174,21 @@ class AddCreditProductType extends RequirementBase {
       $component['label'] = 'hidden';
       $display->setComponent('variations', $component)
         ->save();
+
+      // For ApigeeX, Commerce product variation manage display changes.
+      if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+        $view_mode = EntityViewDisplay::create([
+          'targetEntityType' => 'commerce_product_variation',
+          'bundle' => $variation_type->id(),
+          'mode' => 'default',
+          'status' => TRUE,
+        ]);
+        $view_mode->save();
+        $view_mode->setComponent('title', ['weight' => 1, 'label' => 'hidden'])
+          ->removeComponent('list_price')
+          ->removeComponent('price')
+          ->save();
+      }
     }
   }
 
