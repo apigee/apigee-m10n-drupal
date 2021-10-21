@@ -91,6 +91,8 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
         'fee_currency_code' => NULL,
         'fee_units' => NULL,
         'fee_nanos' => NULL,
+        'multipleConsumptionText' => NULL,
+        'singleConsumptionText' => NULL,
         'entity' => NULL,
       ],
       'template' => 'rate-plan-consumption-rates',
@@ -98,6 +100,9 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'rate_plan_revenue_rates' => [
       'variables' => [
         'detail' => NULL,
+        'revenueSharePercentage' => NULL,
+        'singleShareText' => NULL,
+        'multipleShareText' => NULL,
         'entity' => NULL,
       ],
       'template' => 'rate-plan-revenue-rates',
