@@ -28,14 +28,14 @@ trait RevenueShareTypePropertyAwareDecoratorTrait {
    * {@inheritdoc}
    */
   public function getRevenueShareType(): ?string {
-    return $this->decorated->getBillingPeriod();
+    return $this->decorated->getRevenueShareType();
   }
 
   /**
    * {@inheritdoc}
    */
   public function setRevenueShareType(string $revenueShareType): void {
-    $this->decorated->setBillingPeriod($revenueShareType);
+    $this->decorated->setRevenueShareType($revenueShareType);
   }
 
 }
