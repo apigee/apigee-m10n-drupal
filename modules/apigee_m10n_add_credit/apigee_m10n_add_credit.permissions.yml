@@ -3,3 +3,6 @@ permission_callbacks:
 
 view add credit log:
   title: 'View Add Credit Log'
+
+update any billing type:
+  title: 'Update any billing type'

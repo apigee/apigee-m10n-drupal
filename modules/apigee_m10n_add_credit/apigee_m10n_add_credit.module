@@ -19,12 +19,16 @@
  */
 
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\apigee_edge\Entity\Developer;
+use Drupal\user\UserInterface;
+use Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm;
 
 /**
  * Implements hook_mail().
@@ -118,8 +122,30 @@ function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_message_a
 }
 
 /**
+ * Implements hook_apigee_m10n_insufficient_balance_error_purchased_product_message_alter().
+ */
+function apigee_m10n_add_credit_apigee_m10n_insufficient_balance_error_purchased_product_message_alter(TranslatableMarkup &$message, PurchasedProductInterface $purchased_product) {
+  return \Drupal::service('apigee_m10n.add_credit')->purchasedProductInsufficientBalanceErrorMessageAlter($message, $purchased_product);
+}
+
+/**
  * Implements hook_help().
  */
 function apigee_m10n_add_credit_help($route_name, RouteMatchInterface $route_match) {
   return \Drupal::service('apigee_m10n.add_credit')->help($route_name, $route_match);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function apigee_m10n_add_credit_user_presave(UserInterface $account) {
+  // Check if org is ApigeeX.
+  if (TRUE === \Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+    // Check if new user and add the billing type.
+    if ($account->isNew()) {
+      $default_billingtype = \Drupal::config(GeneralSettingsConfigForm::CONFIG_NAME)->get('billing.billingtype');
+      $default_billingtype = $default_billingtype ? $default_billingtype : 'POSTPAID';
+      \Drupal::service('apigee_m10n.monetization')->updateBillingType($account->getEmail(), strtoupper($default_billingtype));
+    }
+  }
 }
