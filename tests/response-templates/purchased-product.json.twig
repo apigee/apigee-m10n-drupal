@@ -24,5 +24,6 @@
         "endTime": "{{ purchased_product.endTime }}",
     {% endif %}
     "createdAt":            "{{ purchased_product.startTime }}",
-    "lastModifiedAt":       "{{ purchased_product.startTime }}"
+    "lastModifiedAt":       "{{ purchased_product.startTime }}",
+    "developer": {% include 'monetization-developer.json.twig' with {"developer": purchased_product.developer } %}
 }
