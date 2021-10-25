@@ -34,7 +34,7 @@ apigee_m10n.purchased_plans:
 
 apigee_m10n.balance_and_product:
   route_name: entity.purchased_product.developer_product_collection
-  title: 'Purchased API products'
+  title: 'Manage Subscriptions'
   base_route: entity.user.canonical
 
 apigee_m10n.purchased_product:
@@ -51,11 +51,25 @@ apigee_m10n.billing:
   parent_id: apigee_m10n.balance_and_plans
   weight: -1
 
+apigee_m10n.balance_and_product.billing:
+  title: 'Prepaid balance'
+  route_name: apigee_monetization.xbilling
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_product
+  weight: -1
+
 apigee_m10n.profile:
   title: 'Billing Details'
   route_name: apigee_monetization.profile
   base_route: entity.user.canonical
   parent_id: apigee_m10n.balance_and_plans
+  weight: 0
+
+apigee_m10n.balance_and_product.xprofile:
+  title: 'Billing Details'
+  route_name: apigee_monetization.xprofile
+  base_route: entity.user.canonical
+  parent_id: apigee_m10n.balance_and_product
   weight: 0
 
 apigee_m10n.reports:

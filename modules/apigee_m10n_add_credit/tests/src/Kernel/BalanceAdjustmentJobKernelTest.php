@@ -90,6 +90,8 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->warmOrganizationCache();
+
     $this->installSchema('system', ['sequences']);
     $this->installSchema('apigee_edge', ['apigee_edge_job']);
     $this->installSchema('user', ['users_data']);

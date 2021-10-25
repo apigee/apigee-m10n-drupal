@@ -1,6 +1,6 @@
 # Apigee Monetization Drupal module
 
-The Apigee Monetization module enables you to integrate Drupal 8 with Apigee Edge Monetization features. You must have
+The Apigee Monetization module enables you to integrate Drupal with Apigee Edge Monetization features. You must have
 an Apigee Edge organization with [monetization enabled](https://docs.apigee.com/api-platform/monetization/enabling-monetization-organization)
 to use this module.
 
@@ -55,4 +55,4 @@ Development is happening in our [GitHub repository](https://github.com/apigee/ap
 
 ## Support
 
-This project, which integrates Drupal 8 with Apigee Edge, is supported by Google.
+This project, which integrates Drupal with Apigee Edge, is supported by Google.
