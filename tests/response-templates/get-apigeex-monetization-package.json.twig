@@ -13,7 +13,7 @@
 {
     "apiProduct" : [
         {% for package in xproducts %}
-            {% include 'package.json.twig' %}{{ loop.last ? '' : ',' }}
+            {% include 'xproduct.json.twig' %}{{ loop.last ? '' : ',' }}
         {% endfor %}
     ]
 }

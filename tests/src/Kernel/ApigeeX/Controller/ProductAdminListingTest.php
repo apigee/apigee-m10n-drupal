@@ -135,8 +135,8 @@ class ProductAdminListingTest extends MonetizationKernelTestBase {
     foreach ($this->xproducts as $i => $xproduct) {
       $xproducts[$i] = $xproduct->decorated();
     }
-    $this->stack->queueMockResponse(['get-apigeex-monetization-package' => ['xproducts' => $xproducts]]);
-    $this->stack->queueMockResponse(['get-apigeex-monetization-package' => ['xproducts' => $xproducts]]);
+    $this->stack->queueMockResponse(['get_apigeex_monetization_package' => ['xproducts' => $xproducts]]);
+    $this->stack->queueMockResponse(['get_apigeex_monetization_package' => ['xproducts' => $xproducts]]);
 
     $request = Request::create(Url::fromRoute('entity.xproduct.collection')->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
