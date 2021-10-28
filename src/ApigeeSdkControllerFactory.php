@@ -25,6 +25,7 @@ use Apigee\Edge\Api\ApigeeX\Controller\ApiProductControllerInterface as ApixProd
 use Apigee\Edge\Api\ApigeeX\Controller\RatePlanController as ApigeexRatePlanController;
 use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface as ApigeexRatePlanControllerInterface;
 use Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController as ApigeexDeveloperAcceptedRatePlanController;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperBillingTypeController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
@@ -35,12 +36,16 @@ use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperPrepaidBalanceController as ApigeexDeveloperPrepaidBalanceController;
+use Apigee\Edge\Api\ApigeeX\Controller\DeveloperPrepaidBalanceControllerInterface as ApigeexDeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperReportDefinitionControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyController as ApigeeXSupportedCurrencyController;
+use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyControllerInterface as ApigeeXSupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\TermsAndConditionsControllerInterface;
@@ -128,6 +133,36 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       );
     }
     return $this->controllers[__FUNCTION__][$developer_email];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerBalancexController(UserInterface $developer): ApigeexDeveloperPrepaidBalanceControllerInterface {
+    $developer_email = $developer->getEmail();
+    if (empty($this->controllers[__FUNCTION__][$developer_email])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$developer_email] = new ApigeexDeveloperPrepaidBalanceController(
+        $developer_email,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$developer_email];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function developerBillingTypeController(string $developer_id): DeveloperBillingTypeController {
+
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new developer controller.
+      $this->controllers[__FUNCTION__] = new DeveloperBillingTypeController($developer_id, $this->getOrganization(), $this->getClient());
+    }
+    return $this->controllers[__FUNCTION__];
   }
 
   /**
@@ -265,6 +300,20 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
     if (empty($this->controllers[__FUNCTION__])) {
       // Create a new org controller.
       $this->controllers[__FUNCTION__] = new SupportedCurrencyController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportedCurrencyxController(): ApigeeXSupportedCurrencyControllerInterface {
+    if (empty($this->controllers[__FUNCTION__])) {
+      // Create a new org controller.
+      $this->controllers[__FUNCTION__] = new ApigeeXSupportedCurrencyController(
         $this->getOrganization(),
         $this->getClient()
       );

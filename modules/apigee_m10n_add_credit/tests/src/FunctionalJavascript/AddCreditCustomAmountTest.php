@@ -50,6 +50,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->warmOrganizationCache();
+
     $this->developer = $this->signInAsAdmin();
 
     $this->assertNoClientError();
