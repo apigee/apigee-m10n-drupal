@@ -130,6 +130,17 @@ apigee_monetization.billing:
   options:
     _apigee_monetization_route: TRUE
 
+apigee_monetization.xbilling:
+  path: /user/{user}/monetization/xbilling
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\PrepaidBalanceXController::prepaidBalancePage
+    _title: Prepaid balance
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Controller\PrepaidBalanceXController::access
+  options:
+    _apigee_monetization_route: TRUE
+
 apigee_monetization.my_plans:
   path: /plans
   defaults:
@@ -167,6 +178,17 @@ apigee_monetization.profile:
   requirements:
     user: '^[1-9]+[0-9]*$'
     _custom_access: \Drupal\apigee_m10n\Form\BillingDetailsForm::access
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_monetization.xprofile:
+  path: /user/{user}/monetization/xbilling-details
+  defaults:
+    _controller: \Drupal\apigee_m10n\Controller\BillingTypeController::myBillingType
+    _title: Billing Details
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n\Controller\BillingTypeController::access
   options:
     _apigee_monetization_route: TRUE
 

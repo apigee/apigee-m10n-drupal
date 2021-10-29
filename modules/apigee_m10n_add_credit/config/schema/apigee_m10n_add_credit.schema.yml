@@ -69,3 +69,17 @@ field.value.add_credit_target_entity:
     target_type:
       type: string
       label: 'Entity type'
+
+apigee_m10n_add_credit.general_settings.config:
+  type: config_object
+  label: 'General settings'
+  mapping:
+    billing:
+      type: mapping
+      mapping:
+        billingtype:
+          type: string
+          label: 'Billing Type'
+    wait_time:
+      type: integer
+      label: 'How much time to wait till the next topup balance.'
