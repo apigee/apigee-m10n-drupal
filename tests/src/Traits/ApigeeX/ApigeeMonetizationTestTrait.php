@@ -32,6 +32,7 @@ use Drupal\apigee_m10n\Entity\XProduct;
 use Drupal\apigee_m10n\Entity\XProductInterface;
 use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
 use Drupal\apigee_edge\UserDeveloperConverterInterface;
+use Drupal\apigee_edge\Plugin\EdgeKeyTypeInterface;
 use Drupal\apigee_m10n\Entity\XRatePlan;
 use Drupal\apigee_m10n\Entity\XRatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedProduct;
@@ -93,11 +94,39 @@ trait ApigeeMonetizationTestTrait {
   protected $org_default_timezone = 'America/Los_Angeles';
 
   /**
+   * Instance type for hybrid test case.
+   *
+   * @var string
+   */
+  protected $instance_type_hybrid = 'APIGEE_EDGE_INSTANCE_TYPE=' . EdgeKeyTypeInterface::INSTANCE_TYPE_HYBRID;
+
+  /**
+   * Instance type for public test case.
+   *
+   * @var string
+   */
+  protected $instance_type_public = 'APIGEE_EDGE_INSTANCE_TYPE=' . EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC;
+
+  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
+    // Switching instance type, endpoint and organization to hybrid.
+    $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
+    if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
+      $hybrid_endpoint = 'APIGEE_EDGE_ENDPOINT=' . getenv('APIGEE_EDGE_HYBRID_ENDPOINT');
+      $organization = 'APIGEE_EDGE_ORGANIZATION=' . getenv('APIGEE_EDGE_HYBRID_ORGANIZATION');
+
+      putenv('TEMP_HYBRID_ENDPOINT=' . getenv('APIGEE_EDGE_ENDPOINT'));
+      putenv('TEMP_HYBRID_ORGANIZATION=' . getenv('APIGEE_EDGE_ORGANIZATION'));
+
+      putenv($organization);
+      putenv($hybrid_endpoint);
+      putenv($this->instance_type_hybrid);
+    }
+
     $this->apigeeTestHelperSetup();
     $this->sdk_connector = $this->sdkConnector;
 
@@ -523,6 +552,20 @@ trait ApigeeMonetizationTestTrait {
       if (!empty($errors)) {
         throw new \Exception('Errors found while processing the cleanup queue', 0, reset($errors));
       }
+    }
+    // Reversing to public instance.
+    $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
+    if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_HYBRID) {
+      $endpoint = 'APIGEE_EDGE_HYBRID_ENDPOINT=' . getenv('APIGEE_EDGE_ENDPOINT');
+      $organization = 'APIGEE_EDGE_HYBRID_ORGANIZATION=' . getenv('APIGEE_EDGE_ORGANIZATION');
+
+      // Rolling back the original values.
+      putenv('APIGEE_EDGE_ENDPOINT=' . getenv('TEMP_HYBRID_ENDPOINT'));
+      putenv('APIGEE_EDGE_ORGANIZATION=' . getenv('TEMP_HYBRID_ORGANIZATION'));
+
+      putenv($organization);
+      putenv($endpoint);
+      putenv($this->instance_type_public);
     }
   }
 
