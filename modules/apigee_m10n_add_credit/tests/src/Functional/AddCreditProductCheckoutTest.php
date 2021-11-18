@@ -53,6 +53,8 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->warmOrganizationCache();
+
     // Create the developer account.
     $this->developer = $this->signIn(['add credit to own developer prepaid balance']);
     $this->assertNoClientError();
