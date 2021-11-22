@@ -81,6 +81,7 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
       'system',
     ]);
     $this->installEntitySchema('user');
+    $this->installEntitySchema('path_alias');
     $this->installEntitySchema('commerce_store');
     $this->installEntitySchema('commerce_product');
   }
