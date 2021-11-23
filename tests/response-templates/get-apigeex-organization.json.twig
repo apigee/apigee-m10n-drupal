@@ -1,0 +1,50 @@
+{#
+/**
+ * @file
+ *   GET /v1/organizations/{org}
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - org_name:              The name of the org.
+ * - monetization_enabled:  (string) "true"|"false" Whether monetizaiton is enabled.
+ * - runtimeType:  (string) "CLOUD"|"HYBRID" Define which runtimetype.
+ */
+#}
+{
+    "name": "{{ org_name|default('example') }}",
+    "createdAt": "1565122730074",
+    "lastModifiedAt": "1605211956230",
+    "environments": [
+        "drupal8",
+        "ga",
+        "integrated-portal"
+    ],
+    "properties": {
+        "property": [
+            {
+                "name": "features.hybrid.enabled",
+                "value": "true"
+            },
+            {
+                "name": "features.mart.connect.enabled",
+                "value": "true"
+            },
+            {
+                "name": "features.isMonetizationEnabled",
+                "value": "{{ monetization_enabled|default('false') }}"
+            }
+        ]
+    },
+    "analyticsRegion": "us-west1",
+    "runtimeType": "{{ runtimeType|default('HYBRID') }}",
+    "subscriptionType": "PAID",
+    "projectId": "arungopal-165620",
+    "state": "ACTIVE",
+    "billingType": "SUBSCRIPTION",
+    "addonsConfig": {
+        "monetizationConfig": {
+            "enabled": {{ monetization_enabled|default('false') }}
+        }
+    }
+}

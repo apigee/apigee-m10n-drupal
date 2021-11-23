@@ -1,0 +1,11 @@
+{#
+/**
+ * @file
+ *   GET /v1/organizations/{org}/developers/{developer}/monetizationConfig
+ *
+ * Response Code: 200
+ */
+#}
+{
+    "billingType": "{{ billingType | default('PREPAID') }}"
+}

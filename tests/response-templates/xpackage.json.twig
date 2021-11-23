@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ *   Package include file. Use this whenever a package is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'xpackage.json.twig' %} @endcode
+ *
+ * Variables:
+ * - package: The API Package.
+ *   - id: ID of the API product.
+ *   - description: Description of API product.
+ *   - displayName: User-friendly display name of the API product.
+ *   - name: Name of the API product.
+ */
+#}
+{
+    "description":  "{{ product.description|default('All about the Foo.') }}",
+    "displayName":  "{{ product.displayName|default('The Foo') }}",
+    "id":           "{{ product.id|default('foo-id') }}",
+    "name":         "{{ product.name|default('Foo') }}"
+}
