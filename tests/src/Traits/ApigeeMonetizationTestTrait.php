@@ -487,6 +487,53 @@ trait ApigeeMonetizationTestTrait {
   }
 
   /**
+   * Helper function to queue up a product packages and plan.
+   */
+  protected function queuePackagesAndPlansResponse() {
+    $integration_enabled = !empty(getenv(EnvironmentVariable::APIGEE_INTEGRATION_ENABLE));
+    if ($integration_enabled) {
+      return;
+    }
+
+    // Set up product bundles and plans for the developer.
+    $rate_plans = [];
+    /** @var \Drupal\apigee_m10n\Entity\ProductBundleInterface[] $product_bundles */
+    $product_bundles = [
+      $this->createProductBundle(),
+      $this->createProductBundle(),
+    ];
+
+    // Some of the entities referenced will be loaded from the API unless we
+    // warm the static cache with them.
+    $entity_static_cache = \Drupal::service('entity.memory_cache');
+
+    // Create a random number of rate plans for each product bundle.
+    foreach ($product_bundles as $product_bundle) {
+      // Warm the static cache for each product bundle.
+      $entity_static_cache->set("values:product_bundle:{$product_bundle->id()}", $product_bundle);
+      // Warm the static cache for each product bundle product.
+      foreach ($product_bundle->decorated()->getApiProducts() as $product) {
+        $entity_static_cache->set("values:api_product:{$product->id()}", ApiProduct::create([
+          'id' => $product->id(),
+          'name' => $product->getName(),
+          'displayName' => $product->getDisplayName(),
+          'description' => $product->getDescription(),
+        ]));
+      }
+      $rate_plans[$product_bundle->id()] = [];
+      for ($i = rand(1, 3); $i > 0; $i--) {
+        $rate_plans[$product_bundle->id()][] = $this->createRatePlan($product_bundle);
+      }
+    }
+
+    // Queue the product bundle response.
+    $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
+    foreach ($rate_plans as $product_bundle_id => $plans) {
+      $this->stack->queueMockResponse(['get_monetization_package_plans' => ['plans' => $plans]]);
+    }
+  }
+
+  /**
    * Helper for testing element text matches by css selector.
    *
    * @param string $selector
