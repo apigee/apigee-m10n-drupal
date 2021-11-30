@@ -94,39 +94,16 @@ trait ApigeeMonetizationTestTrait {
   protected $org_default_timezone = 'America/Los_Angeles';
 
   /**
-   * Instance type for hybrid test case.
-   *
-   * @var string
-   */
-  protected $instance_type_hybrid = 'APIGEE_EDGE_INSTANCE_TYPE=' . EdgeKeyTypeInterface::INSTANCE_TYPE_HYBRID;
-
-  /**
-   * Instance type for public test case.
-   *
-   * @var string
-   */
-  protected $instance_type_public = 'APIGEE_EDGE_INSTANCE_TYPE=' . EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC;
-
-  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
-    // Switching instance type, endpoint and organization to hybrid.
+    // Skipping the test if instance type is Public.
     $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
     if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
-      $hybrid_endpoint = 'APIGEE_EDGE_ENDPOINT=' . getenv('APIGEE_EDGE_HYBRID_ENDPOINT');
-      $organization = 'APIGEE_EDGE_ORGANIZATION=' . getenv('APIGEE_EDGE_HYBRID_ORGANIZATION');
-
-      putenv('TEMP_HYBRID_ENDPOINT=' . getenv('APIGEE_EDGE_ENDPOINT'));
-      putenv('TEMP_HYBRID_ORGANIZATION=' . getenv('APIGEE_EDGE_ORGANIZATION'));
-
-      putenv($organization);
-      putenv($hybrid_endpoint);
-      putenv($this->instance_type_hybrid);
+      $this->markTestSkipped('This test suite is expecting a HYBRID instance type.');
     }
-
     $this->apigeeTestHelperSetup();
     $this->sdk_connector = $this->sdkConnector;
 
@@ -552,20 +529,6 @@ trait ApigeeMonetizationTestTrait {
       if (!empty($errors)) {
         throw new \Exception('Errors found while processing the cleanup queue', 0, reset($errors));
       }
-    }
-    // Reversing to public instance.
-    $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
-    if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_HYBRID) {
-      $endpoint = 'APIGEE_EDGE_HYBRID_ENDPOINT=' . getenv('APIGEE_EDGE_ENDPOINT');
-      $organization = 'APIGEE_EDGE_HYBRID_ORGANIZATION=' . getenv('APIGEE_EDGE_ORGANIZATION');
-
-      // Rolling back the original values.
-      putenv('APIGEE_EDGE_ENDPOINT=' . getenv('TEMP_HYBRID_ENDPOINT'));
-      putenv('APIGEE_EDGE_ORGANIZATION=' . getenv('TEMP_HYBRID_ORGANIZATION'));
-
-      putenv($organization);
-      putenv($endpoint);
-      putenv($this->instance_type_public);
     }
   }
 
