@@ -80,9 +80,9 @@ update_dependencies: &update_dependencies
         working_directory: /var/www/html
         command: |
           INSTANCE_TYPE=<< parameters.instance-type >>;
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
 
     - run:
         working_directory: /var/www/html
@@ -115,9 +115,9 @@ unit_kernel_tests: &unit_kernel_tests
         working_directory: /var/www/html
         command: |
           INSTANCE_TYPE=<< parameters.instance-type >>;
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
 
     - run:
         working_directory: /var/www/html
@@ -148,9 +148,9 @@ functional_tests: &functional_tests
         working_directory: /var/www/html
         command: |
           INSTANCE_TYPE=<< parameters.instance-type >>;
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
 
     - run:
         working_directory: /var/www/html
@@ -181,9 +181,9 @@ functional_js_tests: &functional_js_tests
         working_directory: /var/www/html
         command: |
           INSTANCE_TYPE=<< parameters.instance-type >>;
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
-          if [[ $INSTANCE_TYPE = "hybrid" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
 
     - run:
         working_directory: /var/www/html
@@ -317,13 +317,13 @@ workflows:
           matrix:
             parameters:
               core-version: [ 8, 9 ]
-              instance-type: [ public, hybrid ]
+              instance-type: [ edge, apigeex ]
       - run-unit-kernel-tests:
           name: run-unit-kernel-tests-<< matrix.core-version >> << matrix.instance-type >>
           matrix:
             parameters:
               core-version: [ 8, 9 ]
-              instance-type: [ public, hybrid ]
+              instance-type: [ edge, apigeex ]
           requires:
             - update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
       - run-functional-tests:
@@ -331,7 +331,7 @@ workflows:
           matrix:
             parameters:
               core-version: [ 8, 9 ]
-              instance-type: [ public, hybrid ]
+              instance-type: [ edge, apigeex ]
           requires:
             - update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
       - run-functional-js-tests:
@@ -339,28 +339,28 @@ workflows:
           matrix:
             parameters:
               core-version: [ 8, 9 ]
-              instance-type: [ public, hybrid ]
+              instance-type: [ edge, apigeex ]
           requires:
             - update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
       - run-code-sniffer:
           name: run-code-sniffer
           matrix:
             parameters:
-              instance-type: [ public ]
+              instance-type: [ edge ]
           requires:
             - update-dependencies-8 << matrix.instance-type >>
       - run-d9-check:
           name: run-d9-check
           matrix:
             parameters:
-              instance-type: [ public ]
+              instance-type: [ edge ]
           requires:
             - update-dependencies-8 << matrix.instance-type >>
       - run-code-coverage:
           name: run-code-coverage
           matrix:
             parameters:
-              instance-type: [ public ]
+              instance-type: [ edge ]
           requires:
             - update-dependencies-8 << matrix.instance-type >>
             - run-unit-kernel-tests-8 << matrix.instance-type >>
