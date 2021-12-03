@@ -1,0 +1,18 @@
+{#
+/**
+ * @file
+ *   - GET /v1/organizations/{org}/apiproducts/-/rateplans?expand=true
+ *
+ * Response Code: 200
+ *
+ * Variables:
+  * - plans: A list of plans for this package. @see: `rate-plan-apigeex.json.twig`
+ */
+#}
+{
+    "ratePlans": [
+        {% for plan in plans %}
+            {% include 'rate-plan-apigeex.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ]
+}
