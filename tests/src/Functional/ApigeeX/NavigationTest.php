@@ -71,7 +71,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $session = $this->assertSession();
     $session->linkExists('Buy API');
     $session->linkExists('My account');
-    $session->linkExists('Purchased API products');
+    $session->linkExists('Manage Subscriptions');
 
     $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Buy API');
     $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
@@ -92,8 +92,8 @@ class NavigationTest extends MonetizationFunctionalTestBase {
       ]
     ]);
 
-    // Check the manage Purchased API products link.
-    $this->clickLink('Purchased API products');
+    // Check the manage Manage Subscriptions link.
+    $this->clickLink('Manage Subscriptions');
   }
 
 }

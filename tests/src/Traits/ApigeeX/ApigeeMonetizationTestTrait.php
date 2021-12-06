@@ -32,6 +32,7 @@ use Drupal\apigee_m10n\Entity\XProduct;
 use Drupal\apigee_m10n\Entity\XProductInterface;
 use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
 use Drupal\apigee_edge\UserDeveloperConverterInterface;
+use Drupal\apigee_edge\Plugin\EdgeKeyTypeInterface;
 use Drupal\apigee_m10n\Entity\XRatePlan;
 use Drupal\apigee_m10n\Entity\XRatePlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedProduct;
@@ -98,6 +99,12 @@ trait ApigeeMonetizationTestTrait {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function setUp() {
+    // Skipping the test if instance type is Public.
+    $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
+    if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
+      $this->markTestSkipped('This test suite is expecting a HYBRID instance type.');
+    }
+
     $this->apigeeTestHelperSetup();
     $this->sdk_connector = $this->sdkConnector;
 
