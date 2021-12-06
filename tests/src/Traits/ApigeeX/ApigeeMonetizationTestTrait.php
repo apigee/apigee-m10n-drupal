@@ -104,6 +104,7 @@ trait ApigeeMonetizationTestTrait {
     if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
       $this->markTestSkipped('This test suite is expecting a HYBRID instance type.');
     }
+
     $this->apigeeTestHelperSetup();
     $this->sdk_connector = $this->sdkConnector;
 
@@ -299,8 +300,9 @@ trait ApigeeMonetizationTestTrait {
 
     switch ($type) {
       case XRatePlanInterface::TYPE_DEVELOPER:
+        $this->stack->queueMockResponse('access_token');
         $this->stack->queueMockResponse(['rate_plan_apigeex' => ['plan' => $properties]]);
-        $xrate_plan = XRatePlan::loadById($xproduct->id(), $properties['id']);
+        $xrate_plan = XRatePlan::loadById($xproduct->id(), $properties['name']);
         break;
 
       default:
@@ -360,6 +362,10 @@ trait ApigeeMonetizationTestTrait {
     $purchased_product = PurchasedProduct::create([
       'name'            => strtolower($this->randomMachineName()),
       'apiproduct'      => $xrate_plan->getApiProduct(),
+      'developer' => new Developer([
+        'email' => $user->getEmail(),
+        'name' => $user->getDisplayName(),
+      ]),
       'startTime'       => $start_time
     ]);
 

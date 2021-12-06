@@ -90,7 +90,7 @@ class PurchasedProductListTest extends MonetizationFunctionalTestBase {
 
     $default_timezone = new \DateTimeZone($this->org_default_timezone);
     $datetimeImmutable = new \DateTimeImmutable();
-    $start_time = $datetimeImmutable->setTimestamp($purchased_product->getStartTime() / 1000)->setTimezone($default_timezone)->format('m/d/Y');
+    $start_time = $datetimeImmutable->setTimestamp($purchased_product->getStartTime() / 1000)->format('m/d/Y');
 
     // Checking my purchased plans table columns.
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Active');
