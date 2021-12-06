@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ *   Purchased product include file. Use this whenever a developer accepted rate plan is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'subscriptions.json.twig' %} @endcode
+ */
+#}
+{
+    "name":                 "{{ purchased_product.name|default('Foo') }}",
+    "apiproduct":           "{{ purchased_product.apiproduct }}",
+    "startTime":            "{{ purchased_product.startTime }}",
+    "createdAt":            "{{ purchased_product.startTime }}",
+    "lastModifiedAt":       "{{ purchased_product.startTime }}"
+}

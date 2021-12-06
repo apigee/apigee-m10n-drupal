@@ -44,7 +44,7 @@
     "billingType": "SUBSCRIPTION",
     "addonsConfig": {
         "monetizationConfig": {
-            "enabled": true
+            "enabled": {{ monetization_enabled|default('false') }}
         }
     }
 }
