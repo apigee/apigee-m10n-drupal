@@ -96,7 +96,6 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $setUpFee = $rate_plan->getSetupFeesPriceValue();
     $recurringFee = $rate_plan->getRecurringFeesPriceValue();
-    $consumptionFee = $rate_plan->getConsumptionFeePriceValue();
     $feeFrequency = $rate_plan->getfeeFrequencyFormat();
 
     // Rate Plan.
@@ -108,8 +107,6 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->assertCssElementText(".xrate-plan .field--name-setupfees .field__item", $price_formatter->format($setUpFee[0]['amount'], $setUpFee[0]['currency_code']));
     $this->assertCssElementText(".xrate-plan .field--name-feefrequency .field__label", 'Recurring Fee Frequency');
     $this->assertCssElementText(".xrate-plan .field--name-feefrequency .field__item", $feeFrequency);
-    $this->assertCssElementText(".xrate-plan .field--name-consumptionfee .field__label", 'Consumption Fee');
-    $this->assertCssElementText(".xrate-plan .field--name-consumptionfee .field__item", $price_formatter->format($consumptionFee[0]['amount'], $consumptionFee[0]['currency_code']));
 
     // Pricing Type.
     $this->assertCssElementText(".xrate-plan .field--name-consumptionpricingtype .field__label", 'Consumption Pricing Type');
