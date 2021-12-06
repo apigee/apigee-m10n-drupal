@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ *   Developer
+ *
+ * Variables:
+ * - developer: The user account for the developer.
+ * - org_name: The name of the organization.
+ * - billing_type: the billing type, defaults to "PREPAID".
+ */
+#}
+{
+    "email"             : "{{ developer.mail.value }}",
+    "firstName"         : "{{ developer.first_name.value }}",
+    "lastName"          : "{{ developer.last_name.value }}",
+    "userName"          : "{{ developer.name.value }}",
+    "developerId"       : "{{ developer.uuid.value }}",
+    "organizationName"  : "{{ org_name }}",
+    "status"            : "active",
+    "createdAt"         : "1537547358558",
+    "lastModifiedAt"    : "1537547358558"
+}

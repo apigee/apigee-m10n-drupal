@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ *   Purchased product include file. Use this whenever a developer accepted rate plan is a part of an object.
+ *
+ * Usage:
+ *   @code {% include 'purchased_product.json.twig' %} @endcode
+ *
+ * Variables:
+ * - purchased_product: The `purchased_product` Drupal entity.
+ *   - created:              Date the rate plan was created.
+ *   - endDate:              End date of the rate plan in UTC.
+ *   - id:                   ID of the developer rate plan.
+ *   - ratePlan:             The `rate_plan` Drupal entity.
+ *   - startTime:            Start date and time for the rate plan in UTC. Uses the following format: <code>YYYY-MM-DD HH:mm:ss</code>. If you do not specify a timestamp (not recommended), 00:00:00 (midnight) is used by default.
+ */
+#}
+{
+    "id":                   "{{ purchased_product.name|default("4321dcba-1234abcd") }}",
+    "name":                 "{{ purchased_product.name|default('Foo') }}",
+    "apiproduct":           "{{ purchased_product.apiproduct }}",
+    "startTime":            "{{ purchased_product.startTime }}",
+    {% if purchased_product.endTime %}
+        "endTime": "{{ purchased_product.endTime }}",
+    {% endif %}
+    "createdAt":            "{{ purchased_product.startTime }}",
+    "lastModifiedAt":       "{{ purchased_product.startTime }}"
+}
