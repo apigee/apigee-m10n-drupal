@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ *   GET /v1/organizations/{org}/developers/{developerId}/balance
+ *
+ * Response Code: 200
+ */
+#}
+{
+    "wallets": [
+        {
+            "balance": {
+                "currencyCode": "AUD",
+                "units": "{{ current_units_aud | default('30') }}",
+                "nanos": {{ current_nano_aud | default('560000000') }}
+            },
+            "lastCreditTime": "1633595340380"
+        },
+        {
+            "balance": {
+                "currencyCode": "USD",
+                "units": "{{ current_units_usd | default('67') }}",
+                "nanos": {{ current_nano_usd | default('760000000') }}
+            },
+            "lastCreditTime": "1633595391277"
+        }
+    ]
+}

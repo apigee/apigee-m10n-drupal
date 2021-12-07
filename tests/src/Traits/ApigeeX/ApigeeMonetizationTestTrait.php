@@ -427,6 +427,18 @@ trait ApigeeMonetizationTestTrait {
     }
 
     $this->stack->queueMockResponse(['get_developer_apigeex' => $context]);
+    if ($billing_type) {
+      $this->stack->queueMockResponse([
+        'post-apigeex-billing-type' => [
+          "billingType" => $billing_type,
+        ],
+      ]);
+      $this->stack->queueMockResponse([
+        'get-apigeex-billing-type' => [
+          "billingType" => $billing_type,
+        ],
+      ]);
+    }
   }
 
   /**
@@ -576,6 +588,24 @@ trait ApigeeMonetizationTestTrait {
     catch (UnsupportedDriverActionException $exception) {
       $this->markTestSkipped($exception->getMessage());
     }
+  }
+
+  /**
+   * Set the billing type of the user.
+   *
+   * @throws \Exception
+   */
+  protected function setBillingType(UserInterface $user, $billingType = 'PREPAID') {
+    $this->queueApigeexDeveloperResponse($user);
+
+    \Drupal::service('apigee_m10n.monetization')->updateBillingtype($user->getEmail(), $billingType);
+
+    $this->queueApigeexDeveloperResponse($user);
+    $this->stack->queueMockResponse([
+      'get-apigeex-billing-type' => [
+        "billingType" => $billingType,
+      ],
+    ]);
   }
 
 }
