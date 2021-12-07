@@ -96,41 +96,8 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
 
     // Before finalizing the payment, we have to add a couple of responses to
     // the queue.
-    // $this->stack
-    //   ->queueMockResponse([
-    //     'get-supported-currencies' => [
-    //       'currencies' => [
-    //         new SupportedCurrency([
-    //           "description" => "United States Dollars",
-    //           "displayName" => "United States Dollars",
-    //           "id" => "usd",
-    //           "minimumTopupAmount" => 11.0000,
-    //           "name" => "USD",
-    //           "status" => "ACTIVE",
-    //           "virtualCurrency" => FALSE,
-    //         ]),
-    //       ],
-    //     ],
-    //   ])
-    //   // We should now have no existing balance .
-    //   ->queueMockResponse(['get_prepaid_balances_empty'])
-    //   // Queue a developer balance response for the top up (POST).
-    //   ->queueMockResponse(['post_developer_balances' => ['amount' => $amount]])
-    //   // Queue an updated balance response.
-    //   ->queueMockResponse([
-    //     'get_prepaid_balances' => [
-    //       'amount_usd' => $amount,
-    //       'topups_usd' => $amount,
-    //       'current_usage_usd' => '0',
-    //     ],
-    //   ])
-    //   ->queueMockResponse([
-    //     'post-prepaid-balance-reports.csv.twig',
-    //   ]);
+
     $this->warmApigeexOrganizationCache();
-
-
-
 
     $this->stack
       ->queueMockResponse([
@@ -148,52 +115,23 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
           ],
         ],
       ])
-      // ->queueMockResponse([
-      //   'get-apigeex-prepaid-balances-empty',
-      // ])
       ->queueMockResponse([
-          'post-apigeex-prepaid-balance',
-        ])
+        'post-apigeex-prepaid-balance',
+      ])
       ->queueMockResponse([
         'get-apigeex-prepaid-balances' => [
           "current_units_usd" => $amount,
           "current_nano_usd" => "000000000",
         ],
       ]);
-     $this->queueApigeexDeveloperResponse($developer);
-
-    // $this->queueApigeexDeveloperResponse($developer);
-
-    // $this->stack->queueMockResponse([
-    //       'post-apigeex-prepaid-balance',
-    //     ]);
-    // $this->queueApigeexDeveloperResponse($developer);
-
-    // $this->stack->queueMockResponse([
-    //   'get-apigeex-prepaid-balances' => [
-    //     "current_units_usd" => $amount,
-    //     "current_nano_usd" => "000000000",
-    //   ],
-    // ]);
-    // $this->queueApigeexDeveloperResponse($developer);
-    //   $this->stack->queueMockResponse(['get-apigeex-billing-type']);
+    $this->queueApigeexDeveloperResponse($developer);
 
     // Finalize the payment.
     $this->submitForm([], 'Pay and complete purchase');
 
-
     $this->assertCssElementContains('h1.page-title', 'Complete');
     $this->assertCssElementContains('div.checkout-complete', 'Your order number is 1.');
     $this->assertCssElementContains('div.checkout-complete', 'You can view your order on your account page when logged in.');
-
-    // Load all jobs.
-    // $query = \Drupal::database()->select('apigee_edge_job', 'j')->fields('j');
-    // $jobs = $query->execute()->fetchAllAssoc('id');
-    // static::assertCount(1, $jobs);
-
-    // /** @var \Drupal\apigee_edge\Job $job */
-    // $job = unserialize(reset($jobs)->job);
-    // static::assertSame(Job::FINISHED, $job->getStatus());
 
     // The new balance will be re-read so queue the response.
     $this->stack->queueMockResponse([
@@ -204,7 +142,6 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     ]);
     $new_balance = \Drupal::service('apigee_m10n.sdk_controller_factory')
       ->developerBalancexController($developer);
-      print_r($new_balance);
 
     static::assertSame((double) $amount, $new_balance->getAmount());
   }
