@@ -44,7 +44,7 @@ class GeneralSettingsConfigFormTest extends AddCreditFunctionalTestBase {
    *
    * @throws \Exception
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->warmApigeexOrganizationCache();
