@@ -98,7 +98,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function setUp() {
+  public function setUp(): void {
     // Skipping the test if instance type is Public.
     $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
     if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
