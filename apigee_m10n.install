@@ -79,7 +79,7 @@ function apigee_m10n_install() {
 /**
  * Diable payment funding field from view display.
  */
-function apigee_m10n_update_9002(&$sandbox) {
+function apigee_m10n_update_8201(&$sandbox) {
   $display_repository = \Drupal::service('entity_display.repository');
   // Get the default view display for xrateplan.
   $view_display = $display_repository->getViewDisplay('xrate_plan', 'xrate_plan', 'default');
