@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity\Form;
 
 use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Apigee\Edge\Exception\ClientErrorException;
+use Apigee\Edge\Exception\ServerErrorException;
 use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityForm;
@@ -42,14 +43,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PurchasedProductForm extends FieldableEdgeEntityForm {
 
   /**
-   * Developer legal name attribute name.
-   */
-  public const LEGAL_NAME_ATTR = 'MINT_DEVELOPER_LEGAL_NAME';
-
-  /**
    * Insufficient funds API error code.
    */
-  public const INSUFFICIENT_FUNDS_ERROR = 'mint.insufficientFunds';
+  public const INSUFFICIENT_FUNDS_ERROR = 'mint.service.developer_usage_exceeds_balance';
+  public const DEVELOPER_WALLET_DOES_NOT_EXIST = 'keymanagement.service.developer_wallet_does_not_exist';
 
   public const MY_PURCHASES_PRODUCT_CACHE_TAG = 'apigee_my_purchased_products';
 
@@ -174,6 +171,10 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
 
     $form = parent::buildForm($form, $form_state);
 
+    // We can't alter the form in the form() method because the actions buttons
+    // get added on buildForm().
+    $this->insufficientFundsWorkflow($form, $form_state);
+
     return $form;
   }
 
@@ -220,7 +221,103 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
     }
     catch (\Exception $e) {
       $client_error = $e->getPrevious();
-      $this->messenger->addError($e->getMessage());
+
+      if (($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::INSUFFICIENT_FUNDS_ERROR) || ($client_error instanceof ClientErrorException && $client_error->getEdgeErrorCode() === static::DEVELOPER_WALLET_DOES_NOT_EXIST)) {
+
+        $rate_plan = $this->getEntity()->getRatePlan();
+        $minimum_amount = $rate_plan->getSetupFeesPriceValue();
+        $minimum_amount = reset($minimum_amount);
+
+        $currency_id = $rate_plan->getCurrencyCode();
+
+        $amount_formatted = $this->monetization->formatCurrency($minimum_amount['amount'], $currency_id);
+        $insufficient_funds_error_message = $this->t('You have insufficient funds to purchase plan %plan. @adenndum', [
+          '%plan' => $rate_plan->label(),
+          '%amount' => $amount_formatted,
+          '@adenndum' => $this->t('To purchase this plan you are required to add at least %amount to your account.', ['%amount' => $amount_formatted]),
+        ]);
+        $purchased_product = $this->getEntity();
+        $this->moduleHandler->alter('apigee_m10n_insufficient_balance_error_purchased_product_message', $insufficient_funds_error_message, $purchased_product);
+        $this->messenger->addError($insufficient_funds_error_message);
+      }
+      else {
+        $this->messenger->addError($e->getMessage());
+      }
+    }
+  }
+
+  /**
+   * Insufficient funds workflow.
+   *
+   * Handles the "add credit" link and purchase button status on purchase rate plan forms.
+   *
+   * @param array $form
+   *   The form to alter.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state.
+   *
+   * @throws \Exception
+   */
+  protected function insufficientFundsWorkflow(array &$form, FormStateInterface $form_state) {
+    // Check if insufficient_funds_workflow is disabled, and do nothing if so.
+    if (!$this->config->get(PrepaidBalanceConfigForm::CONFIG_NAME)->get('enable_insufficient_funds_workflow') !== TRUE) {
+      return;
+    }
+
+    /* @var \Drupal\apigee_m10n\Entity\PurchasedProduct $purchased_product */
+    $purchased_product = $form_state->getFormObject()->getEntity();
+    $rate_plan = $purchased_product->getRatePlan();
+    $user = $purchased_product->getOwner();
+
+    /* @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdk */
+    $sdk = \Drupal::service('apigee_m10n.sdk_controller_factory');
+    try {
+      $developer_billing_type = $sdk->developerBillingTypeController($user->getEmail())->getAllBillingDetails();
+    }
+    catch (\Exception $e) {
+      $developer_billing_type = NULL;
+    }
+
+    // If developer is prepaid, check for sufficient balance to purchase to the
+    // rate plan.
+    if ($developer_billing_type && $developer_billing_type->getbillingType() == LegalEntityInterface::BILLING_TYPE_PREPAID) {
+      $prepaid_balances = [];
+      foreach ($this->monetization->getDeveloperPrepaidBalancesX($user) as $prepaid_balance) {
+        $prepaid_balances[$prepaid_balance->getBalance()->getCurrencyCode()] = $prepaid_balance->getBalance()->getUnits() + $prepaid_balance->getBalance()->getNanos();
+      }
+
+      // Minimum balance needed is at least the setup fee.
+      // @see https://docs.apigee.com/api-platform/monetization/create-rate-plans.html#rateplanops
+      $setup_fee = $rate_plan->getRatePlanxFee();
+
+      $min_balance_needed = 0;
+
+      foreach ($setup_fee as $key => $value) {
+        $nanos = $value->getNanos() ?? 0;
+        $units = $value->getUnits() ?? 0;
+        $min_balance_needed = $units + $nanos;
+      }
+
+      $currency_id = $rate_plan->getCurrencyCode();
+
+      $prepaid_balances[$currency_id] = $prepaid_balances[$currency_id] ?? 0;
+
+      if ($min_balance_needed > $prepaid_balances[$currency_id]) {
+        $form['insufficient_balance'] = [
+          '#type' => 'container',
+        ];
+
+        $form['insufficient_balance'][strtolower($currency_id)] = [
+          'message' => [
+            '#type' => 'html_tag',
+            '#tag' => 'p',
+            '#value' => $this->t('You have insufficient funds to purchase this rate plan.'),
+          ],
+        ];
+
+        $form['startDate']['#access'] = FALSE;
+        $form['actions']['submit']['#access'] = FALSE;
+      }
     }
   }
 

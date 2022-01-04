@@ -1,5 +1,7 @@
+<?php
+
 /*
- * Copyright 2018 Google Inc.
+ * Copyright 2021 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -14,28 +16,27 @@
  * with this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-.apigee-m10n-prepaid-balance-wrapper {
-  position: relative;
-}
 
-.apigee-m10n-prepaid-balance-wrapper > table > caption {
-  padding-top: 20px;
-}
+namespace Drupal\apigee_m10n_add_credit\Plugin\Menu;
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+use Drupal\Core\Menu\MenuLinkDefault;
 
-.apigee-m10n-prepaid-balance-wrapper .prepaid-balance-refresh-form .form-submit {
-  margin-right: 0;
-}
+/**
+ * Defines the class for entity admin form switching.
+ */
+class GeneralSettingsPluginClass extends MenuLinkDefault {
 
-.disable-add-credit{
-  pointer-events: none;
-  cursor: not-allowed;
-  opacity: 0.65;
-  filter: alpha(opacity=65);
-  box-shadow: none;
+  /**
+   * {@inheritdoc}
+   */
+  public function isEnabled() {
+    $monetization = \Drupal::service('apigee_m10n.monetization');
+    if ($monetization->isOrganizationApigeeXorHybrid()) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
+  }
+
 }

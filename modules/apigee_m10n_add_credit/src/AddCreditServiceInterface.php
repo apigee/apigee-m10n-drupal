@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit;
 
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -204,5 +205,18 @@ interface AddCreditServiceInterface {
    *   The altered message.
    */
   public function insufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedPlanInterface $purchased_plan);
+
+  /**
+   * Handles `hook_apigee_m10n_insufficient_balance_error_purchased_product_message_alter`.
+   *
+   * @param \Drupal\Core\StringTranslation\TranslatableMarkup $message
+   *   The original message.
+   * @param \Drupal\apigee_m10n\Entity\PurchasedProductInterface $purchased_product
+   *   The failed purchased_product.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The altered message.
+   */
+  public function purchasedProductInsufficientBalanceErrorMessageAlter(TranslatableMarkup &$message, PurchasedProductInterface $purchased_product);
 
 }

@@ -20,3 +20,10 @@ services:
   plugin.manager.apigee_add_credit_entity_type:
     class: Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManager
     parent: default_plugin_manager
+
+  apigee_m10n_add_credit.commerce_currency_subscriber:
+    class: Drupal\apigee_m10n_add_credit\EventSubscriber\CommerceCurrencyConfigSubscriber
+    arguments: ['@config.factory', '@entity_type.manager', '@apigee_m10n.monetization']
+    tags:
+      - { name: event_subscriber }
+
