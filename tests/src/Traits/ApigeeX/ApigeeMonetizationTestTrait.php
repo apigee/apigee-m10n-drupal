@@ -98,7 +98,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function setUp() {
+  public function setUp(): void {
     // Skipping the test if instance type is Public.
     $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
     if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
@@ -576,6 +576,24 @@ trait ApigeeMonetizationTestTrait {
     catch (UnsupportedDriverActionException $exception) {
       $this->markTestSkipped($exception->getMessage());
     }
+  }
+
+  /**
+   * Set the billing type of the user.
+   *
+   * @throws \Exception
+   */
+  protected function setBillingType(UserInterface $user, $billingType = 'PREPAID') {
+    $this->queueApigeexDeveloperResponse($user);
+
+    \Drupal::service('apigee_m10n.monetization')->updateBillingtype($user->getEmail(), $billingType);
+
+    $this->queueApigeexDeveloperResponse($user);
+    $this->stack->queueMockResponse([
+      'get-apigeex-billing-type' => [
+        "billingType" => $billingType,
+      ],
+    ]);
   }
 
 }
