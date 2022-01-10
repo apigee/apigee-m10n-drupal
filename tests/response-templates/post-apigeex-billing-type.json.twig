@@ -6,9 +6,9 @@
  * Response Code: 200
  *
  * Variables:
- * - amount: The USD amount for the total balance.
+ * - billingType: The billing type.
  */
 #}
 {
-    "billingType": "PREPAID"
+    "billingType": "{{ billingType | default('PREPAID') }}"
 }
