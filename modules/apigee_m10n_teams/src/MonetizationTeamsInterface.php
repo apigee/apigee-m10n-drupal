@@ -26,6 +26,7 @@ use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryI
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 
 /**
  * Interface for the `apigee_m10n.teams` service.
@@ -100,6 +101,19 @@ interface MonetizationTeamsInterface {
    *   The access result or null for non-team routes.
    */
   public function purchasedPlanAccess(EntityInterface $entity, $operation, AccountInterface $account);
+
+  /**
+   * Check if team has already subscribed to the rate plan.
+   *
+   * @param string $team_id
+   *   Team ID.
+   * @param \Drupal\apigee_m10n_teams\Entity\TeamsRatePlan $rate_plan
+   *   Rate plan entity.
+   *
+   * @return bool|null
+   *   Check if team is subscribed to a plan.
+   */
+  public function isTeamAlreadySubscribed(string $team_id, TeamsRatePlan $rate_plan): bool;
 
   /**
    * Check if company accepted latest terms and conditions.

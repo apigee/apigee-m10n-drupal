@@ -131,6 +131,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
       ->view($rate_plan, 'default');
 
     // Rate plans as rendered.
+    $this->stack->queueMockResponse(['get_company_purchased_plans']);
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
     // Check the entity label.
