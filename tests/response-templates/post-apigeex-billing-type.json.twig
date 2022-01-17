@@ -1,0 +1,14 @@
+{#
+/**
+ * @file
+ *   PUT /v1/organizations/{org}/developers/{developer}/monetizationConfig
+ *
+ * Response Code: 200
+ *
+ * Variables:
+ * - billingType: The billing type.
+ */
+#}
+{
+    "billingType": "{{ billingType | default('PREPAID') }}"
+}
