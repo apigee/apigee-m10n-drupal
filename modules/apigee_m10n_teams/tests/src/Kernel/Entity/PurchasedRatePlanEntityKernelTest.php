@@ -229,6 +229,9 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
     ]);
     static::assertSame("/teams/{$this->team->id()}/monetization/product-bundle/{$this->product_bundle->id()}/plan/{$this->rate_plan->id()}/purchase", $url->toString());
 
+    $this->stack
+      ->queueMockResponse(['get_company_purchased_plans' => ['purchased_plans' => [$this->purchased_plan->decorated()]]]);
+
     $request = Request::create($url->toString(), 'GET');
     $response = $this->container->get('http_kernel')->handle($request);
 

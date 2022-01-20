@@ -35,6 +35,7 @@ use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Generates the pricing and plans page.
@@ -56,16 +57,26 @@ class PricingAndPlansController extends ControllerBase {
   protected $monetization;
 
   /**
+   * The Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * PricingAndPlansController constructor.
    *
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface $sdk_controller_factory
    *   The SDK controller factory.
    * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
    *   The monetization service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
    */
-  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization) {
+  public function __construct(ApigeeSdkControllerFactoryInterface $sdk_controller_factory, MonetizationInterface $monetization, MessengerInterface $messenger) {
     $this->controller_factory = $sdk_controller_factory;
     $this->monetization = $monetization;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -74,7 +85,8 @@ class PricingAndPlansController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('apigee_m10n.sdk_controller_factory'),
-      $container->get('apigee_m10n.monetization')
+      $container->get('apigee_m10n.monetization'),
+      $container->get('messenger')
     );
   }
 
@@ -139,6 +151,11 @@ class PricingAndPlansController extends ControllerBase {
     // A developer email is required.
     if (empty($user->getEmail())) {
       throw new NotFoundHttpException((string) $this->t("The user (@uid) doesn't have an email address.", ['@uid' => $user->id()]));
+    }
+
+    // Add a warning on Plans and packages page for Administrators.
+    if ($this->currentUser()->hasPermission('administer apigee monetization')) {
+      $this->messenger->addWarning('This page will not list plans with a start date in the future. If you are expecting a package to be available, please verify your start date in the Apigee.');
     }
 
     $rate_plans = [];

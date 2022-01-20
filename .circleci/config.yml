@@ -40,6 +40,8 @@ defaults: &defaults
     core-version:
       type: integer
       default: 8
+    instance-type:
+      type: string
 
 # YAML does not support merging of lists. That means we can't have a default
 # 'steps' configuration, though we can have defaults for individual step
@@ -74,8 +76,17 @@ update_dependencies: &update_dependencies
     - restore_cache: *restore_cache
 
     - run:
+        name: "Setup environment variables for HYBRID instance type"
         working_directory: /var/www/html
-        command: modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
+        command: |
+          INSTANCE_TYPE=<< parameters.instance-type >>;
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+
+    - run:
+        working_directory: /var/www/html
+        command: modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >> << parameters.instance-type >>
 
     - save_cache: *save_cache
 
@@ -100,11 +111,20 @@ unit_kernel_tests: &unit_kernel_tests
     - checkout
 
     - run:
+        name: "Setup environment variables for HYBRID instance type"
+        working_directory: /var/www/html
+        command: |
+          INSTANCE_TYPE=<< parameters.instance-type >>;
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+
+    - run:
         working_directory: /var/www/html
         command: &unit_kernel_tests_command |
           cp ./modules/apigee_m10n/.circleci/test.sh /var/www/html
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
-          ./test.sh apigee_m10n << parameters.core-version >>
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n  << parameters.core-version >> << parameters.instance-type >>
+          ./test.sh apigee_m10n  << parameters.core-version >> << parameters.instance-type >>
 
     - store_test_results:
         path: /tmp/artifacts/phpunit
@@ -124,11 +144,20 @@ functional_tests: &functional_tests
     - checkout
 
     - run:
+        name: "Setup environment variables for HYBRID instance type"
+        working_directory: /var/www/html
+        command: |
+          INSTANCE_TYPE=<< parameters.instance-type >>;
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+
+    - run:
         working_directory: /var/www/html
         command: &functional_tests_command |
           cp ./modules/apigee_m10n/.circleci/test-functional.sh /var/www/html
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
-          ./test-functional.sh apigee_m10n << parameters.core-version >>
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >> << parameters.instance-type >>
+          ./test-functional.sh apigee_m10n  << parameters.core-version >> << parameters.instance-type >>
 
     - store_test_results:
         path: /tmp/artifacts/phpunit
@@ -148,11 +177,20 @@ functional_js_tests: &functional_js_tests
     - checkout
 
     - run:
+        name: "Setup environment variables for HYBRID instance type"
+        working_directory: /var/www/html
+        command: |
+          INSTANCE_TYPE=<< parameters.instance-type >>;
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_INSTANCE_TYPE=hybrid' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION' >> $BASH_ENV; fi
+          if [[ $INSTANCE_TYPE = "apigeex" ]]; then echo 'export APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT' >> $BASH_ENV; fi
+
+    - run:
         working_directory: /var/www/html
         command: &functional_js_tests_command |
           cp ./modules/apigee_m10n/.circleci/test-functional-js.sh /var/www/html
-          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >>
-          ./test-functional-js.sh apigee_m10n << parameters.core-version >>
+          modules/apigee_m10n/.circleci/update-dependencies.sh apigee_m10n << parameters.core-version >> << parameters.instance-type >>
+          ./test-functional-js.sh apigee_m10n  << parameters.core-version >> << parameters.instance-type >>
 
     - store_test_results:
         path: /tmp/artifacts/phpunit
@@ -275,38 +313,54 @@ workflows:
   test_and_lint:
     jobs:
       - update-dependencies:
-          name: update-dependencies-<< matrix.core-version >>
+          name: update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
           matrix:
             parameters:
               core-version: [ 8, 9 ]
+              instance-type: [ edge, apigeex ]
       - run-unit-kernel-tests:
-          name: run-unit-kernel-tests-<< matrix.core-version >>
+          name: run-unit-kernel-tests-<< matrix.core-version >> << matrix.instance-type >>
           matrix:
             parameters:
               core-version: [ 8, 9 ]
+              instance-type: [ edge, apigeex ]
           requires:
-            - update-dependencies-<< matrix.core-version >>
+            - update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
       - run-functional-tests:
-          name: run-functional-tests-<< matrix.core-version >>
+          name: run-functional-tests-<< matrix.core-version >> << matrix.instance-type >>
           matrix:
             parameters:
               core-version: [ 8, 9 ]
+              instance-type: [ edge, apigeex ]
           requires:
-            - update-dependencies-<< matrix.core-version >>
+            - update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
       - run-functional-js-tests:
-          name: run-functional-js-tests-<< matrix.core-version >>
+          name: run-functional-js-tests-<< matrix.core-version >> << matrix.instance-type >>
           matrix:
             parameters:
               core-version: [ 8, 9 ]
+              instance-type: [ edge, apigeex ]
           requires:
-            - update-dependencies-<< matrix.core-version >>
+            - update-dependencies-<< matrix.core-version >> << matrix.instance-type >>
       - run-code-sniffer:
+          name: run-code-sniffer
+          matrix:
+            parameters:
+              instance-type: [ edge ]
           requires:
-            - update-dependencies-8
+            - update-dependencies-8 << matrix.instance-type >>
       - run-d9-check:
+          name: run-d9-check
+          matrix:
+            parameters:
+              instance-type: [ edge ]
           requires:
-            - update-dependencies-8
+            - update-dependencies-8 << matrix.instance-type >>
       - run-code-coverage:
+          name: run-code-coverage
+          matrix:
+            parameters:
+              instance-type: [ edge ]
           requires:
-            - update-dependencies-8
-            - run-unit-kernel-tests-8
+            - update-dependencies-8 << matrix.instance-type >>
+            - run-unit-kernel-tests-8 << matrix.instance-type >>
