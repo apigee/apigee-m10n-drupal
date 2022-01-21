@@ -427,6 +427,7 @@ trait ApigeeMonetizationTestTrait {
     }
 
     $this->stack->queueMockResponse(['get_developer_apigeex' => $context]);
+
     if ($billing_type) {
       $this->stack->queueMockResponse([
         'post-apigeex-billing-type' => [

@@ -10,7 +10,7 @@
     "wallets": [
         {
             "balance": {
-                "currencyCode": "AUD",
+                "currencyCode": "{{ currency_code | default('AUD') }}",
                 "units": "{{ current_units_aud | default('30') }}",
                 "nanos": {{ current_nano_aud | default('560000000') }}
             },
@@ -18,7 +18,7 @@
         },
         {
             "balance": {
-                "currencyCode": "USD",
+                "currencyCode": "{{ currency_code | default('USD') }}",
                 "units": "{{ current_units_usd | default('67') }}",
                 "nanos": {{ current_nano_usd | default('760000000') }}
             },

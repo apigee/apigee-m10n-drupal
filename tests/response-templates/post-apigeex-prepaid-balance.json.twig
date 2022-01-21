@@ -12,9 +12,9 @@
 {
     "transactionAmount":
         {
-            "currencyCode":"USD",
-            "units":"9",
-            "nanos":0
+            "currencyCode":"{{ currency_code | default('USD') }}",
+            "units": "{{ current_units_usd | default('12') }}",
+            "nanos": "{{ current_nano_usd | default('000000000') }}"
         },
     "transactionId":"79943dfd-bb13-42ab-b8c9-04f5f73f6290-40w"
 }
