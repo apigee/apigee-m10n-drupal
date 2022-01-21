@@ -377,12 +377,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view any purchased_plan' => 'View any purchased plan',
       'view own purchased_plan' => 'View own purchased plans',
 
-      // Purchased products.
-      'update any purchased_product' => 'Cancel any purchased product',
-      'update own purchased_product' => 'Cancel own purchased products',
-      'view any purchased_product' => 'View any purchased product',
-      'view own purchased_product' => 'View own purchased products',
-
       // Billing.
       'refresh any prepaid balance' => 'Refresh any prepaid balance',
       'refresh own prepaid balance' => 'Refresh own prepaid balance',
@@ -404,11 +398,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'purchase rate_plan as anyone' => 'Purchase a rate plan as any developer',
       'download any reports' => 'Download any reports',
       'download own reports' => 'Download own reports',
-      // XRate Plans.
-      'view xrate_plan' => 'View apigeex rate plans',
-      'view xrate_plan as anyone' => 'View apigeex rate plans as any developer',
-      'purchase xrate_plan' => 'Purchase apigeex rate plan',
-      'purchase xrate_plan as anyone' => 'Purchase apigeex rate plan as any developer',
     ];
 
     // Sort both for comparison.
