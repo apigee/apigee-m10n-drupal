@@ -372,6 +372,7 @@ trait ApigeeMonetizationTestTrait {
     // Warm the purchased_plan.
     $this->stack->queueMockResponse('access_token');
     $this->stack->queueMockResponse(['purchased_product' => ['purchased_product' => $purchased_product]]);
+    $purchased_product->user = $user;
     $purchased_product->save();
 
     // Warm the cache for this purchased_plan.

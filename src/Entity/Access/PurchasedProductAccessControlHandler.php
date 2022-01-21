@@ -19,6 +19,8 @@
 
 namespace Drupal\apigee_m10n\Entity\Access;
 
+use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -27,11 +29,12 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\entity\EntityAccessControlHandlerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Access controller for the xrate_plan entity.
  */
-class XRatePlanAccessControlHandler extends EntityAccessControlHandlerBase implements EntityHandlerInterface {
+class PurchasedProductAccessControlHandler extends EntityAccessControlHandlerBase implements EntityHandlerInterface {
 
   /**
    * The entity type manager.
@@ -41,16 +44,26 @@ class XRatePlanAccessControlHandler extends EntityAccessControlHandlerBase imple
   protected $entityTypeManager;
 
   /**
+   * Route match object.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
    * Constructs an access control handler instance.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match object.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(EntityTypeInterface $entity_type, EntityTypeManagerInterface $entityTypeManager, RouteMatchInterface $route_match) {
     parent::__construct($entity_type);
     $this->entityTypeManager = $entityTypeManager;
+    $this->routeMatch = $route_match;
   }
 
   /**
@@ -59,7 +72,8 @@ class XRatePlanAccessControlHandler extends EntityAccessControlHandlerBase imple
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('current_route_match')
     );
   }
 
@@ -67,21 +81,15 @@ class XRatePlanAccessControlHandler extends EntityAccessControlHandlerBase imple
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\apigee_m10n\Entity\XRatePlanInterface $entity */
+    /** @var \Drupal\apigee_m10n\Entity\PurchasedProductnterface $entity */
+    $access = parent::checkAccess($entity, $operation, $account);
+    $user = $this->routeMatch->getParameter('user');
 
-    // Allow access if user has permission `view/purchase rate_plan`.
     return AccessResult::allowedIf(
-      $account->hasPermission("$operation rate_plan as anyone") ||
-      ($account->hasPermission("$operation rate_plan") && $account->id() === $entity->getOwnId())
+      $account->hasPermission('update any purchased_plan') ||
+      ($account->hasPermission('update own purchased_plan') && $account->id() === $user->id())
     );
 
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    return AccessResult::forbidden('Rate plans cannot be created via the developer portal.');
   }
 
 }

@@ -341,6 +341,16 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
   }
 
   /**
+   * Get's user id.
+   *
+   * @return string
+   *   Returns user id.
+   */
+  public function getOwnId() {
+    return $this->getUser()->id();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getCacheContexts() {

@@ -110,9 +110,7 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
       'view product_bundle',
       'view xproduct',
       'view own purchased_plan',
-      'view own purchased_product',
       'view rate_plan',
-      'view xrate_plan',
     ]);
     // Create user 3 as a user with no permissions.
     $this->accounts['no_access'] = $this->createAccount();

@@ -58,7 +58,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   public function testNavigation() {
     $this->developer = $this->createAccount([
       'view xproduct',
-      'view own purchased_product'
+      'view own purchased_plan'
     ]);
     // Warm the ApigeeX organization.
     $this->warmApigeexOrganizationCache();

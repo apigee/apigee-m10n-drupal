@@ -215,7 +215,7 @@ class XProduct extends FieldableEdgeEntityBase implements XProductInterface {
       if (!$admin_access) {
         // Check access for each rate plan since the user is not an admin.
         $rate_plans = array_filter($rate_plans, function ($rate_plan) use ($rate_plan_access_handler) {
-          return $rate_plan_access_handler->access($rate_plan, 'view');
+          return \Drupal::currentUser()->hasPermission('view rate_plan');
         });
       }
       $this->ratePlans = array_values($rate_plans);

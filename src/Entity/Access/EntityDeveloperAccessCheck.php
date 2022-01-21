@@ -47,7 +47,10 @@ class EntityDeveloperAccessCheck implements AccessInterface {
       if ($entity instanceof EntityInterface) {
         $access = $entity->access($operation, $account, TRUE);
         $user = $route_match->getParameter('user');
-
+        // Need to check to keep the permissions for 4g and 5g same.
+        if ($entity_type == 'xrate_plan' && ($operation == 'purchase' || $operation == 'view')) {
+          $entity_type = 'rate_plan';
+        }
         return $access->andIf(AccessResult::allowedIf(
           $account->hasPermission("{$operation} $entity_type as anyone") ||
           ($account->hasPermission("{$operation} {$entity_type}") && $account->id() === $user->id())

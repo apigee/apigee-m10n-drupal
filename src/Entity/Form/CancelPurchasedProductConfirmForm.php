@@ -26,7 +26,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Drupal\Core\Cache\Cache;
-use Drupal\apigee_edge\Entity\Developer;
 
 /**
  * Cancel entity form for `purchased_product` entities.
@@ -129,6 +128,8 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
+    $this->entity->user = $this->routeMatch->getParameter('user');
 
     try {
       if ($this->entity->save()) {
