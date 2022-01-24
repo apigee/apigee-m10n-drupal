@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2021 Google Inc.
+ * Copyright 2022 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -19,8 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity\Access;
 
-use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
-use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -32,7 +30,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
- * Access controller for the xrate_plan entity.
+ * Access controller for the purchased product entity.
  */
 class PurchasedProductAccessControlHandler extends EntityAccessControlHandlerBase implements EntityHandlerInterface {
 
