@@ -70,13 +70,6 @@ content:
     label: inline
     settings: {  }
     third_party_settings: {  }
-  paymentFundingModel:
-    type: string
-    weight: 10
-    region: content
-    label: inline
-    settings: {  }
-    third_party_settings: {  }
   purchase:
     type: apigee_purchase_product_form
     weight: 11
@@ -115,3 +108,4 @@ hidden:
   billingPeriod: true
   fixedFeeFrequency: true
   consumptionFee: true
+  paymentFundingModel: true

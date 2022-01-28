@@ -132,18 +132,18 @@ function apigee_m10n_form_user_admin_permissions_alter(&$form, FormStateInterfac
 }
 
 /**
- * Implements hook_user_agent_string_alter().
+ * Implements hook_apigee_edge_user_agent_string_alter().
  */
-function apigee_m10n_user_agent_string_alter() {
+function apigee_m10n_apigee_edge_user_agent_string_alter(&$user_agent_parts) {
     $infoParser = new InfoParser();
     $m10_module_info = $infoParser->parse(\Drupal::service('module_handler')->getModule('apigee_m10n')->getPathname());
   
     if (!isset($m10_module_info['version'])) {
       $m10_module_info['version'] = '2.x-dev';
     }
-    $m10_module_info = $m10_module_info['name'] . '/' . $m10_module_info['version'];
 
-    return $m10_module_info;
+    // m10 module info at beginning of the array.
+    array_unshift($user_agent_parts , $m10_module_info['name'] . '/' . $m10_module_info['version']);
 }
 
 /**
