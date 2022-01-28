@@ -113,8 +113,8 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $this->assertCssElementText(".xrate-plan .field--name-consumptionpricingtype .field__item", $rate_plan->getConsumptionPricingType());
 
     // Payment model.
-    $this->assertCssElementText(".xrate-plan .field--name-paymentfundingmodel .field__label", 'Payment Funding Model');
-    $this->assertCssElementText(".xrate-plan .field--name-paymentfundingmodel .field__item", $rate_plan->getPaymentFundingModel());
+    $this->assertCssElementNotContains(".xrate-plan", 'Payment Funding Model');
+    $this->assertCssElementNotContains(".xrate-plan", $rate_plan->getPaymentFundingModel());
   }
 
 }
