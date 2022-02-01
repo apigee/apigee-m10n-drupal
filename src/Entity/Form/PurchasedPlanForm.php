@@ -398,7 +398,7 @@ class PurchasedPlanForm extends FieldableEdgeEntityForm {
 
     $plan_items = [];
     foreach ($overlaps as $plan_id => $overlapping_products) {
-      list($id, $name) = explode('|', $plan_id);
+      [$id, $name] = explode('|', $plan_id);
       $plan_item = [
         'data' => $name,
         'children' => [],
