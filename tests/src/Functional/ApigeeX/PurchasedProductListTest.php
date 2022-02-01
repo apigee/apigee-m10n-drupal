@@ -88,9 +88,9 @@ class PurchasedProductListTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('Connection error');
 
-    $default_timezone = new \DateTimeZone($this->org_default_timezone);
+    $default_timezone = new \DateTimeZone('UTC');
     $datetimeImmutable = new \DateTimeImmutable();
-    $start_time = $datetimeImmutable->setTimestamp($purchased_product->getStartTime() / 1000)->format('m/d/Y');
+    $start_time = $datetimeImmutable->setTimezone($default_timezone)->setTimestamp($purchased_product->getStartTime() / 1000)->format('m/d/Y');
 
     // Checking my purchased plans table columns.
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status', 'Active');
