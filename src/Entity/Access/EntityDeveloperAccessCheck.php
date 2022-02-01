@@ -37,7 +37,7 @@ class EntityDeveloperAccessCheck implements AccessInterface {
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
     // Split the entity type and the operation.
     $requirement = $route->getRequirement('_entity_developer_access');
-    list($entity_type, $operation) = explode('.', $requirement);
+    [$entity_type, $operation] = explode('.', $requirement);
     $parameters = $route_match->getParameters();
 
     // Make sure the entity is available.

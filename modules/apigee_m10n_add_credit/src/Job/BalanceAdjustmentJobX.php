@@ -116,7 +116,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
 
     $currency_code = $adjustment->getAmount()->getCurrencyCode();
 
-    list($units, $decimal) = explode('.', $adjustment->getAmount()->getNumber());
+    [$units, $decimal] = explode('.', $adjustment->getAmount()->getNumber());
     $nanos = ('0.' . $decimal) * pow(10, 9);
 
     // Grab the current balances.
