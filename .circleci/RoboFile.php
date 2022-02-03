@@ -491,8 +491,7 @@ class RoboFile extends \Robo\Tasks
         $config->require->{"drupal/core-dev"} = '~8';
 
         // Add rules for testing apigee_edge_actions (only for D8).
-        $config->require->{"drupal/rules"} = "3.0.0-alpha6";
-        $config->require->{"drupal/typed_data"} = "1.0.0-beta1 as 1.x-dev";
+        $config->require->{"drupal/rules"} = "3.0.0-alpha7";
 
       default:
         break;
