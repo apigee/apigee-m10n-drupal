@@ -186,7 +186,7 @@ class Monetization implements MonetizationInterface {
    */
   public function isMonetizationEnabled(): bool {
     $org = $this->getOrganization();
-    if ($this->isOrganizationApigeeXorHybrid($org)) {
+    if ($this->isOrganizationApigeeXorHybrid($org) && $org->getAddonsConfig() && $org->getAddonsConfig()->getMonetizationConfig()) {
       return ($org && TRUE === $org->getAddonsConfig()->getMonetizationConfig()->getEnabled());
     }
     else {
