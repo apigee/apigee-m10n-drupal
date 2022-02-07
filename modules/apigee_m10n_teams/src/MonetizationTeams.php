@@ -183,6 +183,29 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
+  public function isTeamAlreadySubscribed(string $team_id, TeamsRatePlan $rate_plan): bool {
+    // Use cached result if available.
+    // See: \Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage::loadByTeamId()
+    $cid = "apigee_m10n_teams:dev:team_purchased_plans:{$team_id}";
+    if ($cache = \Drupal::cache()->get($cid)) {
+      $teamPurchases = $cache->data;
+    }
+    else {
+      $teamPurchases = TeamsPurchasedPlan::loadByTeamId($team_id);
+      \Drupal::cache()->set($cid, $teamPurchases, strtotime('now + 5 minutes'));
+    }
+    foreach ($teamPurchases as $team_purchased_plan) {
+      if ($team_purchased_plan->getRatePlan()->id() == $rate_plan->id() && $team_purchased_plan->isActive()) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     if ($team = $this->currentTeam()) {
       // Get the access result.

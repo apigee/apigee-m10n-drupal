@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ *   GET /v1/organizations/{org}/developers/{developer_email}/subscriptions
+ *
+ * Response Code: 200
+ */
+#}
+{
+    "developerSubscriptions": [
+        {% for purchased_product in purchased_products %}
+            {% include 'purchased-product.json.twig' %}{{ loop.last ? '' : ',' }}
+        {% endfor %}
+    ]
+}
