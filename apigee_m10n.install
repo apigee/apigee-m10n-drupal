@@ -63,6 +63,42 @@ function apigee_m10n_requirements($phase) {
     }
   }
 
+  // Should not be able to install if organization is not monetized.
+  if ($phase === 'install') {
+    $message = t("Apigee Monetization module functionality is not available for the organization used.");
+    $monetized = TRUE;
+
+    try {
+      /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
+      $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
+      $org_controller = \Drupal::service('apigee_edge.controller.organization');
+      /* @var \Apigee\Edge\Api\Management\Entity\Organization $organization */
+      $organization = $org_controller->load($sdk_connector->getOrganization());
+
+      // Check if org is ApigeeX.
+      if ($organization && ('CLOUD' === $organization->getRuntimeType() || 'HYBRID' === $organization->getRuntimeType())) {
+        if (!$organization->getAddonsConfig() || !$organization->getAddonsConfig()->getMonetizationConfig() || (FALSE === $organization->getAddonsConfig()->getMonetizationConfig()->getEnabled())) {
+          $monetized = FALSE;
+        }
+      }
+      elseif ($organization && !$organization->getPropertyValue('features.isMonetizationEnabled')) {
+        $monetized = FALSE;
+      }
+    }
+    catch (\Exception $exception) {
+      // If not able to connect to Apigee Edge.
+      $monetized = FALSE;
+    }
+
+    if (FALSE === $monetized) {
+      $requirements['apigee_monetization_not_supported'] = [
+        'title' => t('Apigee Monetization'),
+        'description' => $message,
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+  }
+
   return $requirements;
 }
 
