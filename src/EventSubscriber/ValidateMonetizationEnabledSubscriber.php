@@ -23,7 +23,7 @@ use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -61,10 +61,10 @@ class ValidateMonetizationEnabledSubscriber implements EventSubscriberInterface 
   /**
    * If monetization isn't enabled alert the user.
    *
-   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
    *   The event.
    */
-  public function validateMonetizationEnabled(GetResponseEvent $event) {
+  public function validateMonetizationEnabled(RequestEvent $event) {
     /** @var \Symfony\Component\Routing\Route $current_route */
     if (($current_route = $event->getRequest()->get('_route_object')) && ($current_route->hasOption('_apigee_monetization_route'))) {
       if (!$this->monetization->isMonetizationEnabled()) {
