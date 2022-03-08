@@ -134,7 +134,7 @@ trait ApigeeMonetizationTestTrait {
       'first_name' => $this->randomMachineName(),
       'last_name' => $this->randomMachineName(),
       'name' => $this->randomMachineName(),
-      'pass' => \user_password(),
+      'pass' => \Drupal::service('password_generator')->generate(),
       'status' => $status,
     ];
     if ($rid) {

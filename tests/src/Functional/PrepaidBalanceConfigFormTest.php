@@ -70,9 +70,9 @@ class PrepaidBalanceConfigFormTest extends MonetizationFunctionalTestBase {
 
     // Check if config were saved.
     $config = $this->config(PrepaidBalanceConfigForm::CONFIG_NAME);
-    $this->assertEqual(1800, $config->get('cache.max_age'));
+    $this->assertEquals(1800, $config->get('cache.max_age'));
     $this->assertFalse($config->get('enable_insufficient_funds_workflow'));
-    $this->assertEqual(24, $config->get('max_statement_history_months'));
+    $this->assertEquals(24, $config->get('max_statement_history_months'));
   }
 
 }
