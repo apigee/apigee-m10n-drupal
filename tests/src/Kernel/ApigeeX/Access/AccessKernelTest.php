@@ -63,6 +63,13 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   protected $xproduct;
 
   /**
+   * A rate plan.
+   *
+   * @var \Drupal\apigee_m10n\Entity\XRatePlanInterface
+   */
+  protected $xrate_plan;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {

@@ -50,7 +50,7 @@ use Drupal\Core\Session\AccountProxyInterface;
  *   ),
  *   handlers = {
  *     "storage"             = "Drupal\apigee_m10n\Entity\Storage\PurchasedProductStorage",
- *     "access"              = "Drupal\apigee_m10n\Entity\Access\PurchasedProductAccessControlHandler",
+ *     "access"              = "Drupal\apigee_m10n\Entity\Access\PurchasedProductUpdateAccessControlHandler",
  *     "permission_provider" = "Drupal\apigee_m10n\Entity\Permissions\PurchasedProductPermissionProvider",
  *     "list_builder"        = "Drupal\apigee_m10n\Entity\ListBuilder\PurchasedProductListBuilder",
  *     "form" = {
