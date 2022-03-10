@@ -79,21 +79,13 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     $this->developer = $this->createAccount(
       [
         'view rate_plan',
-        'view xrate_plan',
         'purchase rate_plan',
-        'purchase xrate_plan',
       ]
     );
     $this->setCurrentUser($this->developer);
 
-    $this->user = $this->createAccount(
-      [
-        'view rate_plan',
-        'view xrate_plan',
-        'purchase rate_plan',
-        'purchase xrate_plan',
-      ]
-    );
+    // Create use without the permission.
+    $this->user = $this->createAccount();
 
     $this->stack->reset();
     // Warm the ApigeeX organization.
@@ -122,8 +114,8 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     $this->accessControlHandler->resetCache();
     $this->assertTrue($plan->access('view', $this->developer, TRUE)->isAllowed());
     $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
-    $this->assertTrue($plan->access('view', $this->user, TRUE)->isAllowed());
-    $this->assertTrue($plan->access('purchase', $this->developer, TRUE)->isAllowed());
+    $this->assertFalse($plan->access('view', $this->user, TRUE)->isAllowed());
+    $this->assertFalse($plan->access('purchase', $this->user, TRUE)->isAllowed());
   }
 
 }

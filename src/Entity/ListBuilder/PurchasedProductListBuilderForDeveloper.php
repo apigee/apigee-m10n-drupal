@@ -81,8 +81,8 @@ class PurchasedProductListBuilderForDeveloper extends PurchasedProductListBuilde
     }
     $user = $route_match->getParameter('user');
     return AccessResult::allowedIf(
-      $account->hasPermission('view any purchased_product') ||
-      ($account->hasPermission('view own purchased_product') && $account->id() === $user->id())
+      $account->hasPermission('view any purchased_plan') ||
+      ($account->hasPermission('view own purchased_plan') && $account->id() === $user->id())
     );
   }
 

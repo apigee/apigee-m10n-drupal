@@ -89,7 +89,7 @@ class PurchaseProductFormFormatterKernelTest extends MonetizationKernelTestBase 
     $this->storeToken();
 
     $this->developer = $this->createAccount([
-      'view own purchased_product',
+      'view own purchased_plan',
     ]);
     $this->setCurrentUser($this->developer);
 

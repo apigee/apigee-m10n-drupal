@@ -65,8 +65,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $this->developer = $this->createAccount(
       [
-        'view rate_plan',
-        'view xrate_plan'
+        'view rate_plan'
       ]);
     $this->setCurrentUser($this->developer);
 

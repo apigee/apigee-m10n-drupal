@@ -46,20 +46,9 @@ view rate_plan:
 view rate_plan as anyone:
   title: 'View rate plans as any developer'
 
-view xrate_plan:
-  title: 'View apigeex rate plans'
-
-view xrate_plan as anyone:
-  title: 'View apigeex rate plans as any developer'
-
 purchase rate_plan:
   title: 'Purchase a rate plan'
 
 purchase rate_plan as anyone:
   title: 'Purchase a rate plan as any developer'
 
-purchase xrate_plan:
-  title: 'Purchase apigeex rate plan'
-
-purchase xrate_plan as anyone:
-  title: 'Purchase apigeex rate plan as any developer'

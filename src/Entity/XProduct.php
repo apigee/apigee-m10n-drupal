@@ -207,7 +207,7 @@ class XProduct extends FieldableEdgeEntityBase implements XProductInterface {
   public function getRatePlans() {
     if (!isset($this->ratePlans)) {
       // Get the access control handler for rate plans.
-      $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('rate_plan');
+      $rate_plan_access_handler = $this->entityTypeManager()->getAccessControlHandler('xrate_plan');
       $admin_access = \Drupal::currentUser()->hasPermission('administer apigee monetization');
 
       $rate_plans = XRatePlan::loadRatePlansByProduct($this->id());

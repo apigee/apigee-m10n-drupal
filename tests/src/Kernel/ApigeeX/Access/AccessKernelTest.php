@@ -82,9 +82,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'user',
     ]);
 
-    // Spend the user with ID = 1 to avoid so we are going just on permissions.
-    $this->createAccount();
-
     // An admin.
     $admin = $this->createAccount(array_keys(\Drupal::service('user.permissions')->getPermissions()));
     $this->administrator = new UserSession([
@@ -102,6 +99,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'roles' => $developer->getRoles(),
       'mail' => $developer->getEmail(),
     ]);
+    $this->setCurrentUser($this->developer);
 
     // Anonymous.
     $this->anonymous = new AnonymousUserSession();
@@ -114,8 +112,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->stack->reset();
     $this->xrate_plan = $this->createRatePlan($this->xproduct);
     $this->stack->reset();
-
-    $this->prophesizeCurrentUser([]);
   }
 
   /**
@@ -287,13 +283,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $expected_permissions = [
       // Admin permission.
       'administer apigee monetization' => 'Administer Apigee Monetization',
-      // Purchased products.
-      'update any purchased_product' => 'Cancel any purchased product',
-      'update own purchased_product' => 'Cancel own purchased products',
       'update any purchased_plan' => 'Cancel any purchased plan',
       'update own purchased_plan' => 'Cancel own purchased plans',
-      'view any purchased_product' => 'View any purchased product',
-      'view own purchased_product' => 'View own purchased products',
       'view any purchased_plan' => 'View any purchased plan',
       'view own purchased_plan' => 'View own purchased plans',
       // Billing.
@@ -310,13 +301,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       // XProduct.
       'view xproduct' => 'View apigeex product',
       'view xproduct as anyone' => 'View apigeex product as any developer',
-      // XRate Plans.
-      'view xrate_plan' => 'View apigeex rate plans',
       'view rate_plan' => 'View rate plans',
       'view rate_plan as anyone' => 'View rate plans as any developer',
-      'view xrate_plan as anyone' => 'View apigeex rate plans as any developer',
-      'purchase xrate_plan' => 'Purchase apigeex rate plan',
-      'purchase xrate_plan as anyone' => 'Purchase apigeex rate plan as any developer',
       'purchase rate_plan' => 'Purchase a rate plan',
       'purchase rate_plan as anyone' => 'Purchase a rate plan as any developer',
       'download any reports' => 'Download any reports',

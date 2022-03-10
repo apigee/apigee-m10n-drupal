@@ -65,7 +65,7 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    $this->getPurchasedProductControllerByDeveloperId($entity->getDeveloperEmail())->updateSubscription($entity);
+    $this->getPurchasedProductControllerByDeveloperId($entity->user->getEmail())->updateSubscription($entity);
   }
 
   /**

@@ -22,6 +22,7 @@ use Apigee\Edge\Exception\ApiException;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\RoleInterface;
+use Drupal\user\Entity\Role;
 
 /**
  * @file
@@ -120,4 +121,32 @@ function apigee_m10n_update_8201(&$sandbox) {
   // Get the default view display for xrateplan.
   $view_display = $display_repository->getViewDisplay('xrate_plan', 'xrate_plan', 'default');
   $view_display->removeComponent('paymentFundingModel')->save();
+}
+
+/**
+ * Revoke the permission added for ApigeeX.
+ */
+function apigee_m10n_update_8202(&$sandbox) {
+  $roles = Role::loadMultiple();
+  $updatePermissions = [
+    "view own purchased_product" => "view own purchased_plan",
+    "view any purchased_product" => "view any purchased_plan",
+    "update own purchased_product" => "update own purchased_plan",
+    "update any purchased_product" => "update any purchased_plan",
+    "view xrate_plan" => "view rate_plan",
+    "view xrate_plan as anyone" => "view rate_plan as anyone",
+    "purchase xrate_plan" => "purchase rate_plan",
+    "purchase xrate_plan as anyone" => "purchase rate_plan as anyone"
+  ];
+  foreach ($roles as $rid) {
+    $role_permissions = $rid->getPermissions();
+    foreach ($updatePermissions as $new_permission => $old_permission) {
+      if (in_array($new_permission, $role_permissions)) {
+      $rid->revokePermission($new_permission)->save();
+      $rid->grantPermission($old_permission)->save();
+      }
+    }
+  }
+  // Clear all caches.
+  drupal_flush_all_caches();
 }
