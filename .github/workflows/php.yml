@@ -1,4 +1,4 @@
-  name: test_and_lint
+name: test_and_lint
 env:
   SIMPLETEST_DB: "sqlite://localhost//tmp/test.sqlite"
   SIMPLETEST_BASE_URL: "http://127.0.0.1:8000"  
