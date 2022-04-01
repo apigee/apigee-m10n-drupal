@@ -72,9 +72,12 @@ jobs:
         composer config --no-plugins allow-plugins.wikimedia/composer-merge-plugin true
         composer config --no-plugins allow-plugins.composer/package-versions-deprecated true
         composer config --no-plugins allow-plugins.cweagans/composer-patches true
+        composer config preferred-install."drupal/apigee_edge" source
+        composer config preferred-install."apigee/apigee-client-php" source
         composer require --dev drush/drush
         composer config minimum-stability dev
-        composer require drupal/rules:3.0.0-alpha7
+        composer require drupal/commerce:^2.16
+        composer require drupal/token:~1.0
         composer require wikimedia/composer-merge-plugin
         composer config --json extra.merge-plugin.require '["modules/contrib/apigee_m10n/composer.json"]'
         composer update --with-all-dependencies --ignore-platform-req=php
