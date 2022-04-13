@@ -104,21 +104,16 @@ jobs:
         cd drupal
         cp modules/contrib/apigee_m10n/phpcs.xml.dist .
         vendor/bin/phpcs --standard=./phpcs.xml.dist modules/contrib/apigee_m10n -p -s -n --colors
-        export APIGEE_EDGE_INSTANCE_TYPE = "hybrid"
-        export APIGEE_EDGE_ORGANIZATION = $APIGEE_EDGE_HYBRID_ORGANIZATION
-        export APIGEE_EDGE_ENDPOINT = $APIGEE_EDGE_HYBRID_ENDPOINT
-        export APIGEE_EDGE_ACCOUNT_JSON_KEY = $APIGEE_EDGE_ACCOUNT_JSON_KEY
-      env:
         # Setting environment variables to run Apigee X tests
-        APIGEE_EDGE_INSTANCE_TYPE: "hybrid"
-        APIGEE_EDGE_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
-        APIGEE_EDGE_ENDPOINT: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
-        APIGEE_EDGE_ACCOUNT_JSON_KEY: ${{ secrets.APIGEE_EDGE_ACCOUNT_JSON_KEY }}
+        echo "APIGEE_EDGE_INSTANCE_TYPE=hybrid" >> $GITHUB_ENV
+        echo "APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION" >> $GITHUB_ENV
+        echo "APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT" >> $GITHUB_ENV
  
     - name: "PHPUnit unit"
       run: |
         cd drupal
         echo $APIGEE_EDGE_INSTANCE_TYPE
+        echo $APIGEE_EDGE_ORGANIZATION
         vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
 
     - name: "PHPUnit kernel"
