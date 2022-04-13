@@ -27,7 +27,7 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal-core }} | ${{ instance-type }}"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal-core }} | ${{ matrix.instance-type }}"
     strategy:
       fail-fast: false
       matrix:
