@@ -99,7 +99,7 @@ jobs:
         vendor/bin/drush rs 8000 &
 
     - name: "PHPCS"
-      if: ${{ matrix.instance-type == "apigeex" }}
+      if: ${{ matrix.instance-type == 'apigeex' }}
       run: |
         cd drupal
         cp modules/contrib/apigee_m10n/phpcs.xml.dist .
