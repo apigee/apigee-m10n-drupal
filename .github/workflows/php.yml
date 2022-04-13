@@ -27,7 +27,7 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal-core }}"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal-core }} | ${{ instance-type }}"
     strategy:
       fail-fast: false
       matrix:
@@ -38,6 +38,9 @@ jobs:
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
           - "9.2.x"
+        instance-type:
+          - "basic"
+          - "apigeex"
 #        include:
 #           - php-version: "8.1"
 #             drupal-core: "10.0.x-dev"
@@ -96,11 +99,16 @@ jobs:
         vendor/bin/drush rs 8000 &
 
     - name: "PHPCS"
+      if: ${{ matrix.instance-type == "apigeex" }}
       run: |
         cd drupal
         cp modules/contrib/apigee_m10n/phpcs.xml.dist .
         vendor/bin/phpcs --standard=./phpcs.xml.dist modules/contrib/apigee_m10n -p -s -n --colors
-
+        # Setting environment variables to run Apigee X tests
+        APIGEE_EDGE_INSTANCE_TYPE: "hybrid"
+        APIGEE_EDGE_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
+        APIGEE_EDGE_ENDPOINT: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
+ 
     - name: "PHPUnit unit"
       run: |
         cd drupal
