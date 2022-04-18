@@ -90,14 +90,6 @@ jobs:
         composer update --with-all-dependencies
         composer require --dev phpspec/prophecy-phpunit:^2
 
-    # Install drupal using minimal installation profile and enable the module.
-    - name: Install Drupal
-      run: |
-        cd drupal   
-        php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
-        vendor/bin/drush en apigee_m10n -y
-        vendor/bin/drush rs 8000 &
-
     - name: "PHPCS"
       if: ${{ matrix.instance-type == 'apigeex' }}
       run: |
@@ -109,10 +101,18 @@ jobs:
         echo "APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION" >> $GITHUB_ENV
         echo "APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT" >> $GITHUB_ENV
  
-#    - name: "PHPUnit unit"
-#      run: |
-#        cd drupal
-#        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
+    # Install drupal using minimal installation profile and enable the module.
+    - name: Install Drupal
+      run: |
+        cd drupal   
+        php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
+        # vendor/bin/drush en apigee_m10n -y
+        vendor/bin/drush rs 8000 &
+
+    - name: "PHPUnit unit"
+      run: |
+        cd drupal
+        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
 
     - name: "PHPUnit kernel"
       run: |
@@ -141,5 +141,3 @@ jobs:
       with:
         name: html-output-artifact
         path: drupal/sites/simpletest/browser_output/*
-
-        
