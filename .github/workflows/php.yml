@@ -31,7 +31,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        experimental: [false]
         php-version:
           # - "7.4"
           - "8.0"
@@ -42,10 +41,9 @@ jobs:
         instance-type:
           - "basic"
           - "apigeex"
-#        include:
-#           - php-version: "8.1"
-#             drupal-core: "10.0.x-dev"
-#             experimental: true
+        include:
+           - php-version: "8.1"
+             drupal-core: "10.0.x-dev"
 
     steps:
 
@@ -130,7 +128,7 @@ jobs:
     - name: "PHPUnit functional javascript"
       run: |
         cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional-javascript
+        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure
 
     - name: "PHPUnit functional"
       run: |
@@ -141,5 +139,5 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v3
       with:
-        name: browser-output-artifact
+        name: browser-output-${{ matrix.php-version }}-${{ matrix.drupal-core }}-${{ matrix.instance-type }}-artifact
         path: drupal/sites/simpletest/browser_output/*
