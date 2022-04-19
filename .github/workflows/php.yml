@@ -33,13 +33,12 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.3"
           # - "7.4"
-          # - "8.0"
+          - "8.0"
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
-          # - "9.2.x"
-          - "9.3.x"
+          - "9.2.x"
+          # - "9.3.x"
         instance-type:
           - "basic"
           - "apigeex"
@@ -139,7 +138,8 @@ jobs:
         vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional
         
     - name: Artifacts
+      if: failure()
       uses: actions/upload-artifact@v3
       with:
-        name: html-output-artifact
+        name: browser-output-artifact
         path: drupal/sites/simpletest/browser_output/*
