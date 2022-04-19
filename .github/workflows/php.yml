@@ -53,7 +53,7 @@ jobs:
     - name: "Install PHP"
       uses: "shivammathur/setup-php@v2"
       with:
-        coverage: "none"
+        coverage: xdebug
         php-version: "${{ matrix.php-version }}"
         tools: composer:v2
         extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv, opcache, imagick
