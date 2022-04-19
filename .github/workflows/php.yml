@@ -43,7 +43,7 @@ jobs:
           - "apigeex"
         include:
            - php-version: "8.1"
-             drupal-core: "10.0.x-dev"
+             drupal-core: "10.0.x"
 
     steps:
 
@@ -108,15 +108,15 @@ jobs:
         # vendor/bin/drush en apigee_m10n -y
         vendor/bin/drush rs 8000 &
 
-    - name: "PHPUnit unit"
-      run: |
-        cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
+    #- name: "PHPUnit unit"
+    #  run: |
+    #    cd drupal
+    #    vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
 
-    - name: "PHPUnit kernel"
-      run: |
-        cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite kernel
+    #- name: "PHPUnit kernel"
+    #  run: |
+    #    cd drupal
+    #    vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite kernel
 
     - uses: nanasess/setup-chromedriver@v1
 
@@ -128,7 +128,7 @@ jobs:
     - name: "PHPUnit functional javascript"
       run: |
         cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure
+        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure modules/contrib/apigee_m10n/modules/apigee_m10n_add_credit/tests/src/FunctionalJavascript/ApigeeX
 
     - name: "PHPUnit functional"
       run: |
