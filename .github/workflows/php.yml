@@ -138,7 +138,7 @@ jobs:
     - name: "PHPUnit functional javascript"
       run: |
         cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure modules/contrib/apigee_m10n/modules/apigee_m10n_add_credit/tests/src/FunctionalJavascript/ApigeeX/AddCreditCustomAmountTest.php
+        vendor/bin/phpunit -c core  --debug --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure modules/contrib/apigee_m10n/modules/apigee_m10n_add_credit/tests/src/FunctionalJavascript/ApigeeX/AddCreditCustomAmountTest.php
 
     - name: "PHPUnit functional"
       run: |
