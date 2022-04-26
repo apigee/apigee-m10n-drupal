@@ -314,6 +314,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'title[0][value]' => $title,
       'variations[form][0][sku][0][value]' => 'SKU-PRODUCT',
       'variations[form][0][price][0][number]' => $value,
+      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => 10.00,
     ], 'Save');
 
     $this->assertSession()->pageTextContains(t($message, [

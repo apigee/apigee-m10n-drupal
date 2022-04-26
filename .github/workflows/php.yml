@@ -1,7 +1,7 @@
 name: test_and_lint
 env:
   SIMPLETEST_DB: "sqlite://localhost//tmp/test.sqlite"
-  SIMPLETEST_BASE_URL: "http://127.0.0.1:8000"  
+  SIMPLETEST_BASE_URL: "http://127.0.0.1:8000"
   APIGEE_EDGE_AUTH_TYPE: ${{ secrets.APIGEE_EDGE_AUTH_TYPE }}
   APIGEE_EDGE_ORGANIZATION: ${{ secrets.APIGEE_EDGE_ORGANIZATION }}
   APIGEE_EDGE_USERNAME: ${{ secrets.APIGEE_EDGE_USERNAME }}
@@ -9,6 +9,9 @@ env:
   APIGEE_EDGE_INSTANCE_TYPE: ${{ secrets.APIGEE_EDGE_INSTANCE_TYPE }}
   APIGEE_INTEGRATION_ENABLE: ${{ secrets.APIGEE_INTEGRATION_ENABLE }}
   APIGEE_EDGE_ENDPOINT: ${{ secrets.APIGEE_EDGE_ENDPOINT }}
+  APIGEE_EDGE_ACCOUNT_JSON_KEY: ${{ secrets.APIGEE_EDGE_ACCOUNT_JSON_KEY }}
+  APIGEE_EDGE_HYBRID_ENDPOINT: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
+  APIGEE_EDGE_HYBRID_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
   SYMFONY_DEPRECATIONS_HELPER: "disabled"
   BROWSERTEST_OUTPUT_DIRECTORY: "sites/simpletest/browser_output"
   BROWSERTEST_OUTPUT_BASE_URL: ""
@@ -16,37 +19,38 @@ env:
   
 on:
   push:
-
+  pull_request_target:
   pull_request:
-    branches: [ 2.x ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
     
-    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal-core }}"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal-core }} | ${{ matrix.instance-type }}"
     strategy:
       fail-fast: false
       matrix:
-        experimental: [false]
         php-version:
           - "7.4"
           - "8.0"
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
           - "9.2.x"
-#        include:
-#           - php-version: "8.1"
-#             drupal-core: "10.0.x-dev"
-#             experimental: true
+          - "9.3.x"
+        instance-type:
+          - "Edge"
+          - "X"
+        #include:
+        #   - php-version: "8.1"
+        #     drupal-core: "10.0.x"
 
     steps:
 
     - name: "Install PHP"
       uses: "shivammathur/setup-php@v2"
       with:
-        coverage: "none"
+        coverage: xdebug
         php-version: "${{ matrix.php-version }}"
         tools: composer:v2
         extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv, opcache, imagick
@@ -85,19 +89,30 @@ jobs:
         composer update --with-all-dependencies
         composer require --dev phpspec/prophecy-phpunit:^2
 
+    - name: "PHPCS and setting up Apigee X environment"
+      if: ${{ matrix.instance-type == 'X' }}
+      run: |
+        cd drupal
+        cp modules/contrib/apigee_m10n/phpcs.xml.dist .
+        vendor/bin/phpcs --standard=./phpcs.xml.dist modules/contrib/apigee_m10n -p -s -n --colors
+        # Setting environment variables to run Apigee X tests
+        echo "APIGEE_EDGE_INSTANCE_TYPE=hybrid" >> $GITHUB_ENV
+        echo "APIGEE_EDGE_ORGANIZATION=$APIGEE_EDGE_HYBRID_ORGANIZATION" >> $GITHUB_ENV
+        echo "APIGEE_EDGE_ENDPOINT=$APIGEE_EDGE_HYBRID_ENDPOINT" >> $GITHUB_ENV
+        composer show > composer-show.txt
+ 
+    - name: Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: composer-${{ matrix.php-version }}-${{ matrix.drupal-core }}-${{ matrix.instance-type }}-artifact
+        path: drupal/composer.*
+        
     # Install drupal using minimal installation profile and enable the module.
     - name: Install Drupal
       run: |
         cd drupal   
         php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
-        vendor/bin/drush en apigee_m10n -y
         vendor/bin/drush rs 8000 &
-
-    - name: "PHPCS"
-      run: |
-        cd drupal
-        cp modules/contrib/apigee_m10n/phpcs.xml.dist .
-        vendor/bin/phpcs --standard=./phpcs.xml.dist modules/contrib/apigee_m10n -p -s -n --colors
 
     - name: "PHPUnit unit"
       run: |
@@ -107,7 +122,6 @@ jobs:
     - name: "PHPUnit kernel"
       run: |
         cd drupal
-        rm -rf modules/contrib/apigee_m10n/modules/apigee_m10n_actions
         vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite kernel
 
     - uses: nanasess/setup-chromedriver@v1
@@ -120,9 +134,16 @@ jobs:
     - name: "PHPUnit functional javascript"
       run: |
         cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure
+        vendor/bin/phpunit -c core  --debug --verbose --color --group apigee_m10n --testsuite functional-javascript
 
     - name: "PHPUnit functional"
       run: |
         cd drupal
-        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional --stop-on-failure
+        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite functional
+        
+    - name: Artifacts
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: browser-output-${{ matrix.php-version }}-${{ matrix.drupal-core }}-${{ matrix.instance-type }}-artifact
+        path: drupal/sites/simpletest/browser_output/*
