@@ -4,14 +4,11 @@ env:
   SIMPLETEST_BASE_URL: "http://127.0.0.1:8000"
   APIGEE_EDGE_AUTH_TYPE: ${{ secrets.APIGEE_EDGE_AUTH_TYPE }}
   APIGEE_EDGE_ORGANIZATION: ${{ secrets.APIGEE_EDGE_ORGANIZATION }}
-  #APIGEE_EDGE_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
   APIGEE_EDGE_USERNAME: ${{ secrets.APIGEE_EDGE_USERNAME }}
   APIGEE_EDGE_PASSWORD: ${{ secrets.APIGEE_EDGE_PASSWORD }}
   APIGEE_EDGE_INSTANCE_TYPE: ${{ secrets.APIGEE_EDGE_INSTANCE_TYPE }}
-  # APIGEE_EDGE_INSTANCE_TYPE: 'hybrid'
   APIGEE_INTEGRATION_ENABLE: ${{ secrets.APIGEE_INTEGRATION_ENABLE }}
   APIGEE_EDGE_ENDPOINT: ${{ secrets.APIGEE_EDGE_ENDPOINT }}
-  #APIGEE_EDGE_ENDPOINT: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
   APIGEE_EDGE_ACCOUNT_JSON_KEY: ${{ secrets.APIGEE_EDGE_ACCOUNT_JSON_KEY }}
   APIGEE_EDGE_HYBRID_ENDPOINT: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
   APIGEE_EDGE_HYBRID_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
@@ -22,8 +19,8 @@ env:
   
 on:
   push:
-  #pull_request_target:
-  #pull_request:
+  pull_request_target:
+  pull_request:
 
 jobs:
   build:
@@ -36,14 +33,14 @@ jobs:
       matrix:
         php-version:
           - "7.4"
-          #- "8.0"
+          - "8.0"
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
-          #- "9.2.x"
-          - "9.3.x"
+          - "9.2.x"
+          - "9.4.x"
         instance-type:
-          #- "basic"
-          - "apigeex"
+          - "Edge"
+          - "X"
         #include:
         #   - php-version: "8.1"
         #     drupal-core: "10.0.x"
@@ -92,8 +89,8 @@ jobs:
         composer update --with-all-dependencies
         composer require --dev phpspec/prophecy-phpunit:^2
 
-    - name: "PHPCS"
-      if: ${{ matrix.instance-type == 'apigeex' }}
+    - name: "PHPCS and setting up Apigee X environment"
+      if: ${{ matrix.instance-type == 'X' }}
       run: |
         cd drupal
         cp modules/contrib/apigee_m10n/phpcs.xml.dist .
@@ -115,18 +112,17 @@ jobs:
       run: |
         cd drupal   
         php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
-        # vendor/bin/drush en apigee_m10n -y
         vendor/bin/drush rs 8000 &
 
-    #- name: "PHPUnit unit"
-    #  run: |
-    #    cd drupal
-    #    vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
+    - name: "PHPUnit unit"
+      run: |
+        cd drupal
+        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit
 
-    #- name: "PHPUnit kernel"
-    #  run: |
-    #    cd drupal
-    #    vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite kernel
+    - name: "PHPUnit kernel"
+      run: |
+        cd drupal
+        vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite kernel
 
     - uses: nanasess/setup-chromedriver@v1
 
@@ -138,7 +134,7 @@ jobs:
     - name: "PHPUnit functional javascript"
       run: |
         cd drupal
-        vendor/bin/phpunit -c core  --debug --verbose --color --group apigee_m10n --testsuite functional-javascript --stop-on-failure modules/contrib/apigee_m10n/modules/apigee_m10n_add_credit/tests/src/FunctionalJavascript/ApigeeX/AddCreditCustomAmountTest.php
+        vendor/bin/phpunit -c core  --debug --verbose --color --group apigee_m10n --testsuite functional-javascript
 
     - name: "PHPUnit functional"
       run: |
