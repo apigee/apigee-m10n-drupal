@@ -53,7 +53,6 @@ class AddCreditFunctionalJavascriptTestBase extends MonetizationFunctionalJavasc
     'commerce',
     'user',
     'field_ui',
-    'apigee_edge_debug'
   ];
 
 }
