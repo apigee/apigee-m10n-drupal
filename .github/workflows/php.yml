@@ -51,7 +51,7 @@ jobs:
     steps:
 
     - name: "Install PHP"
-      uses: "shivammathur/setup-php@v2"
+      uses: "shivammathur/setup-php@verbose"
       with:
         coverage: xdebug
         php-version: "${{ matrix.php-version }}"
