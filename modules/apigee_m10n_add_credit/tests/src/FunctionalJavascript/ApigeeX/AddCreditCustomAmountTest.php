@@ -293,35 +293,6 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   }
 
   /**
-   * Make sure that the price field does not break if price range is not used.
-   *
-   * @param mixed $value
-   *   The value for the price field.
-   * @param string $message
-   *   The expected message.
-   *
-   * @throws \Behat\Mink\Exception\ResponseTextException
-   *
-   * @dataProvider providerPriceField
-   */
-  public function testPriceFieldOnDefaultProduct($value, string $message) {
-    $this->enableProductVariationsField();
-
-    $this->drupalGet('product/add/default');
-
-    $title = 'Name of product';
-    $this->submitForm([
-      'title[0][value]' => $title,
-      'variations[form][0][sku][0][value]' => 'SKU-PRODUCT',
-      'variations[form][0][price][0][number]' => $value,
-    ], 'Save');
-
-    $this->assertSession()->pageTextContains(t($message, [
-      '@title' => $title,
-    ]));
-  }
-
-  /**
    * Provides data to self::testPriceRangeFieldValidation().
    */
   public function providerPriceRange() {
