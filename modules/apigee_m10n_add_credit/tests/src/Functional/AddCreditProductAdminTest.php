@@ -37,7 +37,7 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
    *
    * @throws \Exception
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->warmOrganizationCache();

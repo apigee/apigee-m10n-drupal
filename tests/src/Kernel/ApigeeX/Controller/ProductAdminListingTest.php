@@ -61,7 +61,7 @@ class ProductAdminListingTest extends MonetizationKernelTestBase {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');

@@ -98,7 +98,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function setUp(): void {
+  protected function setUp(): void {
     // Skipping the test if instance type is Public.
     $instance_type = getenv('APIGEE_EDGE_INSTANCE_TYPE');
     if (!empty($instance_type) && $instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_PUBLIC) {
@@ -526,7 +526,7 @@ trait ApigeeMonetizationTestTrait {
   /**
    * Performs cleanup tasks after each individual test method has been run.
    */
-  protected function tearDown() {
+  protected function tearDown(): void {
     if (!empty($this->cleanup_queue)) {
       $errors = [];
       // Sort all callbacks by weight. Lower weights will be executed first.

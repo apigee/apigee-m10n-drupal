@@ -48,7 +48,7 @@ class ApigeeSdkControllerFactoryKernelTest extends MonetizationKernelTestBase {
    *
    * @throws \Exception
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->controller_factory = $this->container->get('apigee_m10n.sdk_controller_factory');

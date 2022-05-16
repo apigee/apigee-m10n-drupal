@@ -32,7 +32,7 @@ class RatePlanConfigFormTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installConfig('apigee_m10n');

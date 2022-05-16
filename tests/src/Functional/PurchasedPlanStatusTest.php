@@ -65,7 +65,7 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // If the user doesn't have the "view own purchased_plan" permission, they

@@ -47,7 +47,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @throws \Exception
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->warmOrganizationCache();

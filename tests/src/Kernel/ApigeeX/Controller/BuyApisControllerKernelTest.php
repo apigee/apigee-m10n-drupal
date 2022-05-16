@@ -48,7 +48,7 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');

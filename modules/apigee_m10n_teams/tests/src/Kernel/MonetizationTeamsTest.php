@@ -98,7 +98,7 @@ class MonetizationTeamsTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */

@@ -52,7 +52,7 @@ class PrepaidBalanceReportsDownloadFunctionalTest extends MonetizationFunctional
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->account = $this->createAccount([

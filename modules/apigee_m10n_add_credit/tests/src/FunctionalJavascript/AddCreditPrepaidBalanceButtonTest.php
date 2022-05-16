@@ -52,7 +52,7 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->developer = $this->signIn([
