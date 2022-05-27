@@ -188,11 +188,11 @@ abstract class PurchasedProductListBuilder extends EntityListBuilder implements 
           'class' => ['purchased-plan-rate-plan'],
         ],
         'start_date' => [
-          'data' => $datetimeImmutable->setTimestamp($entity->getStartTime() / 1000)->setTimezone($utc)->format('m/d/Y'),
+          'data' => $datetimeImmutable->setTimestamp((int) ($entity->getStartTime() / 1000))->setTimezone($utc)->format('m/d/Y'),
           'class' => ['purchased-plan-start-date'],
         ],
         'end_date' => [
-          'data' => $entity->getEndTime() ? $datetimeImmutable->setTimestamp($entity->getEndTime() / 1000)->setTimezone($utc)->format('m/d/Y') : NULL,
+          'data' => $entity->getEndTime() ? $datetimeImmutable->setTimestamp((int) ($entity->getEndTime() / 1000))->setTimezone($utc)->format('m/d/Y') : NULL,
           'class' => ['purchased-plan-end-date'],
         ],
         'operations' => [
