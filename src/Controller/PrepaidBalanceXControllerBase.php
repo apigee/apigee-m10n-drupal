@@ -182,7 +182,7 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
         if ($time_to_wait > $currentTimestamp) {
           $build['table']['#rows'][strtolower($balance->getBalance()->getCurrencyCode())]['#attributes']['class'] = 'disable-add-credit';
           $seconds = floor(($time_to_wait - $currentTimestamp) / 1000);
-          $minutes = floor(($seconds / 60) % 60);
+          $minutes = ((int) ($seconds / 60) % 60);
           // If wait time set is less than 60 seconds, then the text is shown.
           // minutes+1 is added to avoid showing seconds.
           $minutes = ($wait_time_in_miliseconds <= 60000) ? "few seconds" : $minutes + 1 . ' mins';
