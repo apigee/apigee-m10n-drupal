@@ -553,7 +553,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
   public function getstartTimeFormat() {
     $startTime_milliseconds = $this->getstartTime();
     if ($startTime_milliseconds) {
-      $startTime_seconds = ($startTime_milliseconds / 1000);
+      $startTime_seconds = (int) ($startTime_milliseconds / 1000);
       $activeOn = \Drupal::service('date.formatter')->format($startTime_seconds, 'custom', 'F j, Y', date_default_timezone_get());
     }
 
@@ -569,7 +569,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
   public function getendTimeFormat() {
     $endTime_milliseconds = $this->getendTime();
     if ($endTime_milliseconds) {
-      $endTime_seconds = ($endTime_milliseconds / 1000);
+      $endTime_seconds = (int) ($endTime_milliseconds / 1000);
       $endOn = \Drupal::service('date.formatter')->format($endTime_seconds, 'custom', 'F j, Y', date_default_timezone_get());
     }
 
