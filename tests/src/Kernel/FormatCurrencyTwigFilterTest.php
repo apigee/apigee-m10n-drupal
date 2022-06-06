@@ -49,7 +49,7 @@ class FormatCurrencyTwigFilterTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->monetization = $this->container->get('apigee_m10n.monetization');

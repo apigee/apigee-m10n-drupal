@@ -48,7 +48,7 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create new Apigee Edge basic auth key.

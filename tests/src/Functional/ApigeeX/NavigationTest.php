@@ -42,7 +42,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->placeBlock('system_menu_block:main', ['region' => 'primary_menu']);

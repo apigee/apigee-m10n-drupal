@@ -37,7 +37,7 @@ class RatePlanStorageTest extends MonetizationKernelTestBase {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Setup for creating a user.

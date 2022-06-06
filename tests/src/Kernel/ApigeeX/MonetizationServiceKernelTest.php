@@ -45,7 +45,7 @@ class MonetizationServiceKernelTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // Install the anonymous user role.
     $this->installConfig('user');

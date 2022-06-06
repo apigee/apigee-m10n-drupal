@@ -69,7 +69,7 @@ class MonetizationKernelTestBase extends KernelTestBase {
    *
    * @throws \Exception
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installConfig(['apigee_edge', 'apigee_m10n']);

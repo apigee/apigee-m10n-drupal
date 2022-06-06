@@ -59,7 +59,7 @@ class TeamRatePlanAccessControlHandlerTest extends MonetizationTeamsKernelTestBa
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');

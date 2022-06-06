@@ -80,7 +80,7 @@ class MonetizationDeveloperFormatterKernelTest extends MonetizationKernelTestBas
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('user');

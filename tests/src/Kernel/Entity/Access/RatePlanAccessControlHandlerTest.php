@@ -59,7 +59,7 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp():void {
     parent::setUp();
 
     // Setup for creating a user.

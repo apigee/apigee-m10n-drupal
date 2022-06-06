@@ -69,7 +69,7 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
    *
    * @throws \Exception
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('system', ['sequences']);

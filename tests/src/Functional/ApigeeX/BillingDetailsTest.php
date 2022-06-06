@@ -44,7 +44,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
    * @throws \Twig_Error_Runtime
    * @throws \Twig_Error_Syntax
    */
-  public function setUp(): void {
+  protected function setUp(): void {
     parent::setUp();
 
     // If the user doesn't have the "view any monetization billing details"
