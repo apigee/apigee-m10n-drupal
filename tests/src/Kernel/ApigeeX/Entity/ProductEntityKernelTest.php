@@ -55,7 +55,7 @@ class ProductEntityKernelTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Get pre-configured token storage service for testing.

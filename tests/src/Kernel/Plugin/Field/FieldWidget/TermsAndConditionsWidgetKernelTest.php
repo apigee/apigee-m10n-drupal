@@ -33,7 +33,7 @@ class TermsAndConditionsWidgetKernelTest extends BaseWidgetKernelTest {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp():void {
     parent::setUp();
 
     $this->warmTnsCache();

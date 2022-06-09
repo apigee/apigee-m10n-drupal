@@ -48,7 +48,7 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installEntitySchema('team_member_role');

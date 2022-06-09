@@ -50,7 +50,7 @@ class AddCreditProductCheckoutTest extends AddCreditFunctionalTestBase {
    *
    * @throws \Exception
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->warmOrganizationCache();
