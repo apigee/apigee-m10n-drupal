@@ -22,14 +22,14 @@ namespace Drupal\apigee_m10n\TwigExtension;
 /**
  * Provides a Twig extension to format currency.
  */
-class FormatCurrencyTwigExtension extends \Twig_Extension {
+class FormatCurrencyTwigExtension extends \Twig\Extension\AbstractExtension {
 
   /**
    * {@inheritdoc}
    */
   public function getFilters() {
     return [
-      new \Twig_SimpleFilter('apigee_m10n_format_currency', [$this, 'formatCurrency']),
+      new \Twig\TwigFilter('apigee_m10n_format_currency', [$this, 'formatCurrency']),
     ];
   }
 
