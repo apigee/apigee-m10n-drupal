@@ -1,0 +1,3 @@
+billing:
+  billingtype: 'postpaid'
+wait_time: 300

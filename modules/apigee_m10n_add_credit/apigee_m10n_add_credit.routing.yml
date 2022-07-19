@@ -7,3 +7,38 @@ apigee_m10n_add_credit.settings.add_credit:
     _permission: 'access administration pages'
   options:
     _apigee_monetization_route: TRUE
+
+apigee_m10n_add_credit.settings.generalsettings:
+  path: /admin/config/apigee-monetization/general/settings
+  defaults:
+    _form: \Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm
+    _title: General Settings
+  requirements:
+    _permission: administer apigee monetization
+    _custom_access: \Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm::access
+  options:
+    _apigee_monetization_route: TRUE
+
+apigee_m10n_add_credit.userbillingtype:
+  path: /user/{user}/monetization/user-billingtype
+  defaults:
+    _form: \Drupal\apigee_m10n_add_credit\Form\BillingTypeForm
+    _title: Billing Type
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n_add_credit\Form\BillingTypeForm::access
+  options:
+    _apigee_monetization_route: TRUE
+    no_cache: 'TRUE'
+
+apigee_m10n_add_credit.userbillingtype.confirm:
+  path: /user/{user}/monetization/{billingtype}/confirm
+  defaults:
+    _form: \Drupal\apigee_m10n_add_credit\Form\ConfirmUpdateForm
+    _title: 'Confirm Update'
+  requirements:
+    user: '^[1-9]+[0-9]*$'
+    _custom_access: \Drupal\apigee_m10n_add_credit\Form\ConfirmUpdateForm::access
+  options:
+    _apigee_monetization_route: TRUE
+    no_cache: 'TRUE'

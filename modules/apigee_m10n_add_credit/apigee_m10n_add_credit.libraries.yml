@@ -7,3 +7,7 @@ settings:
   css:
     theme:
       css/apigee_m10n_add_credit.settings.css: {}
+
+add_credit_price:
+  js:
+    js/apigee_m10n_add_credit.add_credit.js: {}

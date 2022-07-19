@@ -21,6 +21,8 @@
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Extension\InfoParser;
+use Drupal\Core\Extension\InfoParserInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 
@@ -89,6 +91,8 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
         'fee_currency_code' => NULL,
         'fee_units' => NULL,
         'fee_nanos' => NULL,
+        'multipleConsumptionText' => NULL,
+        'singleConsumptionText' => NULL,
         'entity' => NULL,
       ],
       'template' => 'rate-plan-consumption-rates',
@@ -96,6 +100,9 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
     'rate_plan_revenue_rates' => [
       'variables' => [
         'detail' => NULL,
+        'revenueSharePercentage' => NULL,
+        'singleShareText' => NULL,
+        'multipleShareText' => NULL,
         'entity' => NULL,
       ],
       'template' => 'rate-plan-revenue-rates',
@@ -122,6 +129,21 @@ function apigee_m10n_theme($existing, $type, $theme, $path) {
  */
 function apigee_m10n_form_user_admin_permissions_alter(&$form, FormStateInterface $form_state, $form_id) {
   \Drupal::service('apigee_m10n.monetization')->formUserAdminPermissionsAlter($form, $form_state, $form_id);
+}
+
+/**
+ * Implements hook_user_agent_string_alter().
+ */
+function apigee_m10n_user_agent_string_alter() {
+    $infoParser = new InfoParser();
+    $m10_module_info = $infoParser->parse(\Drupal::service('module_handler')->getModule('apigee_m10n')->getPathname());
+  
+    if (!isset($m10_module_info['version'])) {
+      $m10_module_info['version'] = '2.x-dev';
+    }
+    $m10_module_info = $m10_module_info['name'] . '/' . $m10_module_info['version'];
+
+    return $m10_module_info;
 }
 
 /**
