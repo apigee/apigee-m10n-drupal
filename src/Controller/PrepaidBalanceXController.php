@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2018 Google Inc.
+ * Copyright 2021 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -28,30 +28,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
  * Controller for team balances.
  */
-class PrepaidBalanceController extends PrepaidBalanceControllerBase {
-
-  /**
-   * Redirect to the user's prepaid balances page.
-   *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   *   Gets a redirect to the users's balance page.
-   */
-  public function myRedirect(): RedirectResponse {
-    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
-      return $this->redirect(
-        'apigee_monetization.xbilling',
-        ['user' => $this->currentUser->id()],
-        ['absolute' => TRUE]
-      );
-    }
-    else {
-      return $this->redirect(
-        'apigee_monetization.billing',
-        ['user' => $this->currentUser->id()],
-        ['absolute' => TRUE]
-      );
-    }
-  }
+class PrepaidBalanceXController extends PrepaidBalanceXControllerBase {
 
   /**
    * Checks current users access and if developer is prepaid.
@@ -67,12 +44,12 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
     $user = $route_match->getParameter('user');
-    if (!$this->monetization->isDeveloperPrepaid($user)) {
+
+    if (!$this->monetization->isDeveloperPrepaidX($user)) {
       return AccessResult::forbidden('Developer is not prepaid.');
     }
-
-    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
-      return AccessResult::forbidden('Not accessible for ApigeeX organization');
+    if (!$this->monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('Only accessible for ApigeeX organization');
     }
     return AccessResult::allowedIf(
       $account->hasPermission('view any prepaid balance') ||
@@ -111,15 +88,8 @@ class PrepaidBalanceController extends PrepaidBalanceControllerBase {
   /**
    * {@inheritdoc}
    */
-  protected function canAccessDownloadReport() {
-    return $this->currentUser->hasPermission('download prepaid balance reports');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function load() {
-    return ($list = $this->monetization->getDeveloperPrepaidBalances($this->entity, new \DateTimeImmutable('now'))) ? $list : [];
+    return ($list = $this->monetization->getDeveloperPrepaidBalancesX($this->entity)) ? $list : [];
   }
 
 }

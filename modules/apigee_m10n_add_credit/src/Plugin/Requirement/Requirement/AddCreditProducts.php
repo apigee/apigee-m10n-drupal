@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
 use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
+use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyController as ApigeeXSupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use Drupal\apigee_m10n\ApigeeEdgeSdkConnectorTrait;
@@ -111,7 +112,12 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
       $organization_id = $this->getApigeeEdgeSdkConnector()->getOrganization();
       $client = $this->getApigeeEdgeSdkConnector()->getClient();
 
-      $supported_currency_controller = new SupportedCurrencyController($organization_id, $client);
+      if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+        $supported_currency_controller = new ApigeeXSupportedCurrencyController($organization_id, $client);
+      }
+      else {
+        $supported_currency_controller = new SupportedCurrencyController($organization_id, $client);
+      }
 
       // Filter out currencies with products.
       $this->supportedCurrencies = array_filter($supported_currency_controller->getEntities(), function (SupportedCurrencyInterface $currency) {
