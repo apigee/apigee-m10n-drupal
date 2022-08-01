@@ -12,7 +12,6 @@ env:
   APIGEE_EDGE_ACCOUNT_JSON_KEY: ${{ secrets.APIGEE_EDGE_ACCOUNT_JSON_KEY }}
   APIGEE_EDGE_HYBRID_ENDPOINT: ${{ secrets.APIGEE_EDGE_HYBRID_ENDPOINT }}
   APIGEE_EDGE_HYBRID_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
-  SYMFONY_DEPRECATIONS_HELPER: "disabled"
   BROWSERTEST_OUTPUT_DIRECTORY: "sites/simpletest/browser_output"
   BROWSERTEST_OUTPUT_BASE_URL: ""
   MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", { "chromeOptions": { "w3c": false } }, "http://127.0.0.1:9515/wd/hub"]'
@@ -20,6 +19,8 @@ env:
 on:
   push:
   pull_request_target:
+  schedule:
+    - cron: '00 01 * * *'
 
 jobs:
   build:
@@ -50,6 +51,12 @@ jobs:
         #     drupal-core: "10.0.x"
 
     steps:
+
+    - name: Disable deprecations check for PR
+      if: github.event_name != 'schedule'
+      run: |
+        echo "Disable deprecations check"
+        echo "SYMFONY_DEPRECATIONS_HELPER='disabled'" >> $GITHUB_ENV
 
     - name: "Install PHP"
       uses: "shivammathur/setup-php@v2"
