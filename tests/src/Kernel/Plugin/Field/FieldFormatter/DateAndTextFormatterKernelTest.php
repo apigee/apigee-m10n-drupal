@@ -59,7 +59,7 @@ class DateAndTextFormatterKernelTest extends MonetizationKernelTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'system',
     'field',
     'text',
