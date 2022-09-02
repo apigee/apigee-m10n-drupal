@@ -37,7 +37,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['block'];
+  protected static $modules = ['block'];
 
   /**
    * {@inheritdoc}
