@@ -36,7 +36,7 @@ class MonetizationTeamsKernelTestBase extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'key',
     'user',
     'apigee_edge',

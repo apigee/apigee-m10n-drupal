@@ -45,7 +45,7 @@ abstract class BaseWidgetKernelTest extends MonetizationKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['user', 'system', 'field', 'text', 'filter', 'node'];
+  protected static $modules = ['user', 'system', 'field', 'text', 'filter', 'node'];
 
   /**
    * {@inheritdoc}

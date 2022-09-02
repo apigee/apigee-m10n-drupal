@@ -41,7 +41,7 @@ class TeamsEntityOverrideTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'key',
     'user',
     'apigee_edge',

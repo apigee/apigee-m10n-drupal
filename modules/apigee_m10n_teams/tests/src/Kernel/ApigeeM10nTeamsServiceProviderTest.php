@@ -37,7 +37,7 @@ class ApigeeM10nTeamsServiceProviderTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'key',
     'user',
     'apigee_edge',
