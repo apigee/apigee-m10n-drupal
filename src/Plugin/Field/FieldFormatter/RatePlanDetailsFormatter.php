@@ -106,8 +106,8 @@ class RatePlanDetailsFormatter extends FormatterBase {
 
     // The logic for the free quantity is a little complicated for the template.
     $free_quantity_template = '';
-    $freemium_unit = $item->getEntity()->getFreemiumUnit();
-    $freemium_duration = $item->getEntity()->getFreemiumDuration();
+    $freemium_unit = $item->getEntity()->getFreemiumUnit() ?? '';
+    $freemium_duration = $item->getEntity()->getFreemiumDuration() ?? '';
     $freemium_type = $item->getEntity()->getFreemiumDurationType();
 
     if (!empty($freemium_unit) && !empty($freemium_duration) && !empty($freemium_type)) {
@@ -139,8 +139,8 @@ class RatePlanDetailsFormatter extends FormatterBase {
     return [
       '#theme' => 'rate_plan_detail',
       '#detail' => $detail,
-      '#ratecard_rates' => $ratecard_rates,
-      '#revshare_rates' => $revshare_rates,
+      '#ratecard_rates' => $ratecard_rates ?? '',
+      '#revshare_rates' => $revshare_rates ?? '',
       '#free_quantity' => !empty((string) $free_quantity) ? $free_quantity : NULL,
       '#entity' => $item->getEntity(),
       '#apiproduct' => $apiproduct_info,

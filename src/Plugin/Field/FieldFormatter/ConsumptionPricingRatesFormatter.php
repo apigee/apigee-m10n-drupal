@@ -96,7 +96,7 @@ class ConsumptionPricingRatesFormatter extends FormatterBase {
     $fee_units = $fee_details->getUnits();
     $fee_nanos = $fee_details->getNanos();
     $fee_start = $detail->getStart();
-    $fee_end = $detail->getEnd();
+    $fee_end = $detail->getEnd() ?? '';
 
     $multipleConsumptionText = '';
     $singleConsumptionText = '';

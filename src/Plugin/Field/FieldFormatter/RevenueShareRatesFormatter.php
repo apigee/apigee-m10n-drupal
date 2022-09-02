@@ -90,9 +90,9 @@ class RevenueShareRatesFormatter extends FormatterBase {
   protected function viewValue(FieldItemInterface $item) {
     /** @var \Apigee\Edge\Api\ApigeeX\Structure\RevenueShareRates $detail */
     $detail = $item->value;
-    $revenueSharePercentage = $detail->getSharePercentage();
+    $revenueSharePercentage = $detail->getSharePercentage() ?? '';
     $start = $detail->getStart();
-    $end = $detail->getEnd();
+    $end = $detail->getEnd() ?? '';
 
     $singleShareText = '';
     $multipleShareText = '';
