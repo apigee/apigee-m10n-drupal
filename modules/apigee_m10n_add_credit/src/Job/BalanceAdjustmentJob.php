@@ -212,7 +212,7 @@ class BalanceAdjustmentJob extends EdgeJob {
       // Re-add empty values to message context.
       $message_context = $message_context + $all_placeholders;
       // Add the report text to the message context.
-      $message_context['report_text'] = $report_text;
+      $message_context['@report_text'] = $report_text;
 
       // If there were any errors or exceptions, they still need to be thrown.
       if (isset($thrown)) {

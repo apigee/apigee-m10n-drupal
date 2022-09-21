@@ -108,14 +108,14 @@ class AddCreditService implements AddCreditServiceInterface {
       case 'balance_adjustment_report':
         $options = ['langcode' => $message['langcode']];
         $message['subject'] = $this->t('Add Credit successfully applied to account (@email@team_name) from @site', $params, $options);
-        $message['body'][0] = $this->t($params['report_text'], $params, $options);
+        $message['body'][0] = $this->t($params['@report_text'], $params, $options);
         break;
 
       case 'balance_adjustment_error_report':
         $options = ['langcode' => $message['langcode']];
         $params['@site'] = $this->config->get('system.site')->get('name');
         $message['subject'] = $this->t('Developer account add credit error from @site', $params, $options);
-        $body = "There was an error applying a credit to an account. \n\r\n\r" . $params['report_text'] . "\n\r\n\r@error";
+        $body = "There was an error applying a credit to an account. \n\r\n\r" . $params['@report_text'] . "\n\r\n\r@error";
         $message['body'][0] = $this->t($body, $params, $options);
         break;
 
