@@ -69,11 +69,13 @@
   <!-- Filter for coverage reports. -->
   <filter>
     <whitelist processUncoveredFilesFromWhitelist="true">
-      <directory>../modules/apigee_m10n</directory>
+      <directory>../modules/contrib/apigee_m10n</directory>
       <!-- By definition test classes have no tests. -->
       <exclude>
-        <directory>../modules/apigee_m10n/tests</directory>
-        <directory>../modules/apigee_m10n/test_modules</directory>
+        <directory>../modules/contrib/apigee_m10n/tests</directory>
+        <directory>../modules/contrib/apigee_m10n/modules/apigee_m10n_teams/tests</directory>
+        <directory>../modules/contrib/apigee_m10n/modules/apigee_m10n_add_credit/tests</directory>
+        <directory>../modules/contrib/apigee_m10n/test_modules</directory>
       </exclude>
     </whitelist>
   </filter>
