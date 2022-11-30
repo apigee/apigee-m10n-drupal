@@ -86,7 +86,6 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
   public function testPurchasedPlanActiveStatus() {
     $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
-    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
@@ -115,7 +114,6 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
-    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
@@ -143,7 +141,6 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $start_date = new \DateTimeImmutable('today +2 day', new \DateTimeZone($this->orgDefaultTimezone));
     $purchased_plan->setStartDate($start_date);
 
-    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
@@ -173,7 +170,6 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
 
     $purchased_plan = $this->createPurchasedPlan($this->developer, $this->ratePlan);
 
-    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
@@ -211,7 +207,6 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
-    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 
@@ -247,7 +242,6 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
     $start_date = new \DateTimeImmutable('today +2 day', new \DateTimeZone($this->orgDefaultTimezone));
     $purchased_plan->setStartDate($start_date);
 
-    $this->warmOrganizationCache();
     $this->stack
       ->queueMockResponse(['get_developer_purchased_plans' => ['purchased_plans' => [$purchased_plan]]]);
 

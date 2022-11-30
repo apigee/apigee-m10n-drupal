@@ -58,7 +58,6 @@ class PricingAndPlansFunctionalTest extends MonetizationFunctionalTestBase {
     $this->accountUser = $this->createAccount(['view rate_plan']);
     $this->drupalLogin($this->accountUser);
 
-    $this->warmOrganizationCache();
     $this->queuePackagesAndPlansResponse();
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.plans', [
@@ -74,7 +73,6 @@ class PricingAndPlansFunctionalTest extends MonetizationFunctionalTestBase {
     $this->accountAdmin = $this->createAccount(['view rate_plan', 'administer apigee monetization']);
     $this->drupalLogin($this->accountAdmin);
 
-    $this->warmOrganizationCache();
     $this->queuePackagesAndPlansResponse();
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.plans', [

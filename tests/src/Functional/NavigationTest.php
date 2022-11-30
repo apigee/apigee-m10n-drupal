@@ -76,7 +76,6 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $this->assertCssElementContains('.block-menu.navigation.menu--main ', 'Pricing & plans');
     $this->assertCssElementContains('.block-menu.navigation.menu--account', 'My account');
 
-    $this->warmOrganizationCache();
     $product_bundle = $this->createProductBundle();
     $rate_plan = $this->createRatePlan($product_bundle);
     $purchased_plan = $this->createPurchasedPlan($this->developer, $rate_plan);

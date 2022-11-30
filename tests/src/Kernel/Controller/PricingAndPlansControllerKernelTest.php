@@ -131,8 +131,6 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
    * Tests the plan controller response.
    */
   public function testControllerResponse() {
-    // Queue up a monetized org response.
-    $this->stack->queueMockResponse('get_monetized_org');
     // Warm the cache for the monetized org check.
     \Drupal::service('apigee_m10n.monetization')->isMonetizationEnabled();
 
@@ -149,7 +147,6 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
    * displayed on the page.
    */
   public function testPlansFiltering() {
-    $this->warmOrganizationCache();
 
     $rate_plans = [];
     $product_bundles = [

@@ -121,7 +121,6 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
     $this->rate_plan = $this->createRatePlan($this->product_bundle);
     $this->purchased_plan = $this->createTeamPurchasedPlan($this->team, $this->rate_plan);
 
-    $this->warmOrganizationCache();
     $this->warmTnsCache();
     $this->warmTeamTnsCache($this->team);
   }

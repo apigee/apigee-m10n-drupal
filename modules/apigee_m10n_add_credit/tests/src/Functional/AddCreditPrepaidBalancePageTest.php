@@ -73,7 +73,6 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
    * @covers \Drupal\apigee_m10n_add_credit\AddCreditService::apigeeM10nPrepaidBalanceListAlter
    */
   public function testAddCreditButtonForCurrency() {
-    $this->warmOrganizationCache();
 
     // Configure an add credit product for USD.
     // There should be an add credit button for usd but NOT for aud.

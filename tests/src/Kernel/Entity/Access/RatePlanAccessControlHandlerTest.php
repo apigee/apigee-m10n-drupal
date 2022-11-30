@@ -72,7 +72,7 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     $this->installEntitySchema('user');
     $this->accessControlHandler = $this->container->get('entity_type.manager')
       ->getAccessControlHandler('rate_plan');
-
+    $this->warmOrganizationCache();
     // Create root user.
     $this->createUser();
 

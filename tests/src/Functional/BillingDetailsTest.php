@@ -47,6 +47,8 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
   protected function setUp(): void {
     parent::setUp();
 
+    $this->warmOrganizationCache();
+
     // If the user doesn't have the "view any monetization billing details"
     // permission, they should get access denied.
     $this->developer = $this->createAccount([]);
@@ -60,7 +62,6 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
    * @throws \Exception
    */
   public function testBillingDetailsPageView() {
-    $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
       'developer_mint' => [
         'mail'  => ['value' => $this->developer->getEmail()],
