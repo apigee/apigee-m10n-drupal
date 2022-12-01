@@ -122,7 +122,6 @@ trait ApigeeMonetizationTestTrait {
    */
   protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = '', $attributes = []): ?UserInterface {
     $rid = NULL;
-    $this->warmApigeexOrganizationCache();
     if ($permissions) {
       $rid = $this->createRole($permissions);
       $this->assertNotEmpty($rid, 'Role created');
