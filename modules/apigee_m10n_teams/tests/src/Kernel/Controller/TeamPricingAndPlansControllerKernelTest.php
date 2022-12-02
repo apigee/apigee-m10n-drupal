@@ -135,9 +135,6 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
       }
     }
 
-    // Queue up a monetized org response.
-    $this->stack->queueMockResponse('get_monetized_org');
-
     // Queue the product bundle response.
     $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
     foreach ($rate_plans as $product_bundle_id => $plans) {

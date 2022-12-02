@@ -58,6 +58,8 @@ trait AddCreditFunctionalTestTrait {
       ->set('billing.billingtype', strtolower($billingType))
       ->save();
 
+    $this->warmApigeexOrganizationCache();
+
     $account = $this->createAccount($permissions, TRUE, '', ['billing_type' => strtoupper($billingType)]);
     $this->drupalLogin($account);
     return $account;

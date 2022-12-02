@@ -125,6 +125,7 @@ trait ApigeeMonetizationTestTrait {
    */
   protected function createAccount(array $permissions = [], bool $status = TRUE, string $prefix = '', $attributes = []): ?UserInterface {
     $rid = NULL;
+    $this->warmOrganizationCache();
     if ($permissions) {
       $rid = $this->createRole($permissions);
       $this->assertNotEmpty($rid, 'Role created');
@@ -233,6 +234,7 @@ trait ApigeeMonetizationTestTrait {
    */
   protected function createProductBundle(): ProductBundleInterface {
     $products = [];
+
     for ($i = rand(1, 4); $i > 0; $i--) {
       $products[] = $this->createProduct();
     }

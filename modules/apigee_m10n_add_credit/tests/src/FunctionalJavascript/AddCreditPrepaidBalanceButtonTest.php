@@ -55,6 +55,7 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
   protected function setUp(): void {
     parent::setUp();
 
+    $this->warmOrganizationCache();
     $this->developer = $this->signIn([
       'view own prepaid balance',
       'add credit to own developer prepaid balance',
@@ -86,7 +87,6 @@ class AddCreditPrepaidBalanceButtonTest extends AddCreditFunctionalJavascriptTes
   public function testAddCreditButton() {
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
 
-    $this->warmOrganizationCache();
     $this->queueDeveloperResponse($this->developer);
     $this->queueMockResponses([
       'get-prepaid-balances',

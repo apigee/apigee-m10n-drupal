@@ -62,6 +62,7 @@ class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavas
   protected function setUp(): void {
     parent::setUp();
 
+    $this->warmOrganizationCache();
     $this->accountUser = $this->signIn([
       'view own prepaid balance',
       'add credit to own developer prepaid balance',
@@ -97,7 +98,6 @@ class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavas
     ]);
 
     $this->setAddCreditProductForCurrencyId($this->product, 'usd');
-    $this->warmOrganizationCache();
 
     // Load authenticated developer.
     $this->queueDeveloperResponse($this->accountUser);
