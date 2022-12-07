@@ -55,4 +55,12 @@ interface XRatePlanSdkControllerProxyInterface extends EdgeEntityControllerInter
    */
   public function loadById(string $product_bundle_id, string $id): EntityInterface;
 
+  /**
+   * Loads all rate plans.
+   *
+   * @return array|null
+   *   A list of rate plans keyed by ID.
+   */
+  public function loadAllRatePlans(): array;
+
 }

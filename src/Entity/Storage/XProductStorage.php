@@ -163,4 +163,20 @@ class XProductStorage extends EdgeEntityStorageBase implements XProductStorageIn
     return $entities;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function loadProducts($id) {
+    $entities = [];
+    $ids = [$id];
+    $xproduct = $this->getFromPersistentCache($ids);
+    // Return the cached entity.
+    if (isset($xproduct[$id])) {
+      return $xproduct[$id];
+    }
+
+    return $this->loadAll();
+
+  }
+
 }

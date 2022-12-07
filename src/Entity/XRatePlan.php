@@ -203,7 +203,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
 
     // The API products are many-to-one.
     $definitions['apiProduct']->setCardinality(1)
-      ->setSetting('target_type', 'api_product')
+      ->setSetting('target_type', 'xproduct')
       ->setLabel(t('Product'))
       ->setDescription(t('The API product X the rate plan belongs to.'));
 
@@ -574,6 +574,15 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
     }
 
     return $endOn ?? "Never";
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function loadAll(): array {
+    return XRatePlan::filterActiveRatePlans(\Drupal::entityTypeManager()
+      ->getStorage(static::ENTITY_TYPE_ID)
+      ->loadAll());
   }
 
 }

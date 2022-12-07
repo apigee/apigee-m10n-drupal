@@ -53,6 +53,7 @@ class XRatePlanConverter extends EntityConverter implements ParamConverterInterf
       $storage = $this->entityTypeManager->getStorage('xrate_plan');
       // The rate plan value should already be validated so just load it.
       $entity = $storage->loadById($xproduct_id, $value);
+      $this->entityTypeManager->getStorage('xproduct')->loadProducts($xproduct_id);
     }
     catch (EntityStorageException $ex) {
       throw new ParamNotConvertedException('Unable to load rate plan X.', 404, $ex);

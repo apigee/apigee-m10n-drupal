@@ -44,6 +44,7 @@ interface MonetizationInterface {
    */
   const DEFAULT_AUTHENTICATED_PERMISSIONS = [
     'view rate_plan',
+    'view xproduct',
     'purchase rate_plan',
     'view own purchased_plan',
     'update own purchased_plan',

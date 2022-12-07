@@ -89,6 +89,10 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder($rate_plan->getEntityTypeId());
     $build = $view_builder->view($rate_plan, 'default');
+
+    // Warm the ApigeeX organization.
+    $this->warmApigeexOrganizationCache();
+
     $this->setRawContent((string) \Drupal::service('renderer')->renderRoot($build));
 
     $this->assertLinkByHref($rate_plan->toUrl()->toString(), 0, 'The display name links to the rate plan.');
