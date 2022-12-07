@@ -211,7 +211,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       ]
     );
     static::assertTrue($xproduct_route->access($this->administrator));
-    static::assertFalse($xproduct_route->access($this->developer));
+    static::assertTrue($xproduct_route->access($this->developer));
     static::assertFalse($xproduct_route->access($this->anonymous));
 
     // Developer route as Admin.
