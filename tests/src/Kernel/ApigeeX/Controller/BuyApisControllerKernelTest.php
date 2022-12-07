@@ -103,7 +103,7 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
     $this->accounts['anon'] = User::load(0);
     $this->accounts['admin'] = User::load(1);
     // Assume admin has no purchased plans initially.
-    //$this->warmPurchasedProductCache($this->accounts['admin']);
+    $this->warmPurchasedProductCache($this->accounts['admin']);
 
     // Create user 2 as a developer.
     $this->accounts['developer'] = $this->createAccount([
@@ -173,7 +173,7 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
 
     // Queue the X product response.
     $this->stack->queueMockResponse(['get_monetization_apigeex_plans' => ['plans' => $rate_plans]]);
-    $this->stack->queueMockResponse(['get_apigeex_monetization_package'=> ['xproducts' => $xproducts]]);
+    $this->stack->queueMockResponse(['get_apigeex_monetization_package' => ['xproducts' => $xproducts]]);
     // Test the controller output for a user that can purchase plans for others
     // but not subscribe to other developers plans.
     $this->setCurrentUser($this->accounts['admin']);
@@ -293,7 +293,7 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
 
     // Queue the X product response.
     $this->stack->queueMockResponse(['get_monetization_apigeex_plans' => ['plans' => $rate_plans]]);
-    $this->stack->queueMockResponse(['get_apigeex_monetization_package'=> ['xproducts' => $xproducts]]);
+    $this->stack->queueMockResponse(['get_apigeex_monetization_package' => ['xproducts' => $xproducts]]);
     // Test the controller output for a user with plans.
     $this->setCurrentUser($user);
     $request = Request::create(Url::fromRoute('apigee_monetization.xplans', ['user' => $user->id()])
@@ -308,27 +308,28 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
     $rate_plan_css_index = 1;
     $product = [];
     foreach ($rate_plans as $rate_plan) {
-        $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .xrate-plan";
-        // Check the rate plan x products.
-        foreach ($xproducts as $xproduct) {
-          $product = $xproduct->decorated();
-          if ($product->getName() == $rate_plan->getApiProduct()) {
-            // Check the plan name.
-            $this->assertCssElementText("{$prefix} h2 a", $product->getDisplayName());
-          }
+      $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .xrate-plan";
+      // Check the rate plan x products.
+      foreach ($xproducts as $xproduct) {
+        $product = $xproduct->decorated();
+        if ($product->getName() == $rate_plan->getApiProduct()) {
+          // Check the plan name.
+          $this->assertCssElementText("{$prefix} h2 a", $product->getDisplayName());
         }
-        // Make sure undesired field are not shown.
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-displayname"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-id"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-setupfees"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-recurringfees"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-paymentfundingmodel"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-endtime"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-starttime"));
+      }
+      // Make sure undesired field are not shown.
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-displayname"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-id"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-setupfees"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-recurringfees"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-paymentfundingmodel"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-endtime"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-starttime"));
 
-        $rate_plan_css_index++;
+      $rate_plan_css_index++;
     }
     // Clear cache as rate plan is cached.
     drupal_flush_all_caches();
   }
+
 }

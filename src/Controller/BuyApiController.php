@@ -105,7 +105,7 @@ class BuyApiController extends ControllerBase {
     $rate_plans = [];
     $subscription_handler = \Drupal::entityTypeManager()->getHandler('xrate_plan', 'subscription_access');
 
-    // Get the active rate plans of the organization
+    // Get the active rate plans of the organization.
     $all_ratePlans = XRatePlan::loadAll();
 
     foreach ($all_ratePlans as $rate_plan) {
