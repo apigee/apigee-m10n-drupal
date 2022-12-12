@@ -144,4 +144,23 @@ class XRatePlanSdkControllerProxy implements XRatePlanSdkControllerProxyInterfac
     return $controller_cache[$product_bundle_id];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function loadAllRatePlans(): array {
+    // Call xproduct when rate plan is called.
+    XProduct::loadAll();
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface[] $rate_plans */
+    $rate_plans = [];
+
+    // Get all rate plans for the organization.
+    $plans = $this->loadRatePlansByProduct('-');
+    foreach ($plans as $plan) {
+      // Key rate plans by their ID.
+      $rate_plans[$plan->id()] = $plan;
+    }
+
+    return $rate_plans;
+  }
+
 }

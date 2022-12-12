@@ -15,7 +15,7 @@ content:
     region: content
     label: inline
     settings:
-      link: true
+      link: false
     third_party_settings: {  }
   displayName:
     type: string

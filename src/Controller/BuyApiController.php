@@ -22,6 +22,7 @@ namespace Drupal\apigee_m10n\Controller;
 use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\apigee_m10n\Entity\XProduct;
+use Drupal\apigee_m10n\Entity\XRatePlan;
 use Drupal\apigee_m10n\Form\RatePlanXConfigForm;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Access\AccessResult;
@@ -104,17 +105,13 @@ class BuyApiController extends ControllerBase {
     $rate_plans = [];
     $subscription_handler = \Drupal::entityTypeManager()->getHandler('xrate_plan', 'subscription_access');
 
-    // Load rate plans for each xproduct.
-    foreach (XProduct::getAvailablexProductByDeveloper($user->getEmail()) as $xproduct) {
-      /** @var \Drupal\apigee_m10n\Entity\XProductInterface $xproduct */
-      foreach ($xproduct->get('ratePlans') as $rate_plan) {
+    // Get the active rate plans of the organization.
+    $all_ratePlans = XRatePlan::loadAll();
 
-        /** @var \Drupal\apigee_m10n\Entity\XRatePlanInterface $rate_plan_entity */
-        $rate_plan_entity = $rate_plan->entity;
-        if ($subscription_handler->access($rate_plan_entity, $user) == AccessResult::allowed()) {
-          $rate_plans["{$xproduct->id()}:{$rate_plan->target_id}"] = $rate_plan->entity;
-        }
-      };
+    foreach ($all_ratePlans as $rate_plan) {
+      if ($subscription_handler->access($rate_plan, $user) == AccessResult::allowed()) {
+        $rate_plans["{$rate_plan->id()}"] = $rate_plan;
+      }
     }
 
     return $this->buildPage($rate_plans);

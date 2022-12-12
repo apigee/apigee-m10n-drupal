@@ -203,4 +203,37 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
     return $this->controller_proxy;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function loadAll(): array {
+    $cid = 'values:xrateplan';
+    $rate_plans = $this->cacheBackend->get($cid);
+    if ($rate_plans && $rate_plans->data) {
+      return $rate_plans->data;
+    }
+    $entities = [];
+    $this->withController(function (XRatePlanSdkControllerProxyInterface $controller) use (&$entities, $cid) {
+      $sdk_entities = $controller->loadAllRatePlans();
+
+      foreach ($sdk_entities as $id => $entity) {
+        try {
+          // Filter out rate plans with invalid Ids.
+          if ($this->isValidId($entity->id())) {
+            $drupal_entity = $this->createNewInstance($entity);
+            $entities[$drupal_entity->id()] = $drupal_entity;
+          }
+        }
+        catch (InvalidRatePlanIdException $exception) {
+          watchdog_exception('apigee_m10n', $exception);
+          $this->cacheBackend->delete($cid);
+        }
+      }
+      // Cache the entity for 5 mins.
+      $this->cacheBackend->set($cid, $entities, time() + 299);
+    });
+
+    return $entities;
+  }
+
 }

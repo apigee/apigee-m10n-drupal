@@ -134,13 +134,6 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
    * Tests the plan controller response.
    */
   public function testControllerResponse() {
-    $this->stack->reset();
-    // Warm the ApigeeX organization.
-    $this->warmApigeexOrganizationCache();
-
-    // Warm the cache for the monetized org check.
-    \Drupal::service('apigee_m10n.monetization')->isMonetizationEnabled();
-    $this->stack->reset();
     $this->assertPlansNoAccess($this->accounts['anon']);
     $this->assertPlansNoAccess($this->accounts['no_access']);
     $this->assertPlansPage($this->accounts['developer']);
@@ -154,10 +147,6 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
    * displayed on the page.
    */
   public function testPlansFiltering() {
-    $this->stack->reset();
-    // Warm the ApigeeX organization.
-    $this->warmApigeexOrganizationCache();
-
     // Set up X product and plans for the developer.
     $rate_plans = [];
     /** @var \Drupal\apigee_m10n\Entity\XProductInterface[] $xproducts */
@@ -175,18 +164,16 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
     foreach ($xproducts as $xproduct) {
       // Warm the static cache for each product.
       $entity_static_cache->set("values:xproduct:{$xproduct->id()}", $xproduct);
+      $this->stack->reset();
       // Warm the static cache for each product.
       $rate_plans[$xproduct->decorated()->id()] = [];
       $rate_plans[$xproduct->decorated()->id()]['standard'] = $this->createRatePlan($xproduct, RatePlanInterface::TYPE_STANDARD);
-      $this->stack->reset();
       $this->assertSame(StandardRatePlan::class, get_class($rate_plans[$xproduct->decorated()->id()]['standard']->decorated()));
     }
 
     // Queue the X product response.
+    $this->stack->queueMockResponse(['get_monetization_apigeex_plans' => ['plans' => $rate_plans]]);
     $this->stack->queueMockResponse(['get_apigeex_monetization_package' => ['xproducts' => $xproducts]]);
-    foreach ($rate_plans as $product_bundle_id => $plans) {
-      $this->stack->queueMockResponse(['get_monetization_apigeex_plans' => ['plans' => $plans]]);
-    }
     // Test the controller output for a user that can purchase plans for others
     // but not subscribe to other developers plans.
     $this->setCurrentUser($this->accounts['admin']);
@@ -200,7 +187,7 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
     $this->assertTitle('Buy APIs | ');
     foreach ($rate_plans as $product_bundle_id => $plans) {
-      $this->assertText($plans['standard']->label());
+      $this->assertSame(StandardRatePlan::class, get_class($plans['standard']->decorated()));
     }
   }
 
@@ -301,18 +288,12 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
       ]));
       $this->stack->reset();
       $rate_plans[$xproduct->id()] = [];
-      for ($i = rand(1, 3); $i > 0; $i--) {
-        $rate_plans[$xproduct->id()][] = $this->createRatePlan($xproduct);
-        $this->stack->reset();
-      }
+      $rate_plans[$xproduct->id()] = $this->createRatePlan($xproduct);
     }
 
     // Queue the X product response.
+    $this->stack->queueMockResponse(['get_monetization_apigeex_plans' => ['plans' => $rate_plans]]);
     $this->stack->queueMockResponse(['get_apigeex_monetization_package' => ['xproducts' => $xproducts]]);
-    foreach ($rate_plans as $product_bundle_id => $plans) {
-      $this->stack->queueMockResponse(['get_monetization_apigeex_plans' => ['plans' => $plans]]);
-    }
-
     // Test the controller output for a user with plans.
     $this->setCurrentUser($user);
     $request = Request::create(Url::fromRoute('apigee_monetization.xplans', ['user' => $user->id()])
@@ -325,31 +306,30 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
     $this->assertTitle('Buy APIs | ');
     $rate_plan_css_index = 1;
-    foreach ($rate_plans as $product_bundle_id => $plan_list) {
-      foreach ($plan_list as $rate_plan) {
-        $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .xrate-plan";
-
-        // Check the rate plan x products.
-        foreach ($xproducts as $xproduct) {
-          $product = $xproduct->decorated();
-          if ($product->getName() == $rate_plan->getApiProduct()) {
-            // Check the plan name.
-            $this->assertCssElementText("{$prefix} h2 a", $product->getDisplayName());
-          }
+    $product = [];
+    foreach ($rate_plans as $rate_plan) {
+      $prefix = ".pricing-and-plans > .pricing-and-plans__item:nth-child({$rate_plan_css_index}) > .xrate-plan";
+      // Check the rate plan x products.
+      foreach ($xproducts as $xproduct) {
+        $product = $xproduct->decorated();
+        if ($product->getName() == $rate_plan->getApiProduct()) {
+          // Check the plan name.
+          $this->assertCssElementText("{$prefix} h2 a", $product->getDisplayName());
         }
-
-        // Make sure undesired field are not shown.
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-displayname"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-id"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-setupfees"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-recurringfees"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-paymentfundingmodel"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-endtime"));
-        static::assertEmpty($this->cssSelect("{$prefix} .field--name-starttime"));
-
-        $rate_plan_css_index++;
       }
+      // Make sure undesired field are not shown.
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-displayname"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-id"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-setupfees"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-recurringfees"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-paymentfundingmodel"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-endtime"));
+      static::assertEmpty($this->cssSelect("{$prefix} .field--name-starttime"));
+
+      $rate_plan_css_index++;
     }
+    // Clear cache as rate plan is cached.
+    drupal_flush_all_caches();
   }
 
 }

@@ -67,4 +67,12 @@ interface XRatePlanInterface extends MonetizationXRatePlanInterface, FieldableEd
    */
   public function getPurchase():? array;
 
+  /**
+   * Load all active rate plan.
+   *
+   * @return array|null
+   *   An array of active rate plan.
+   */
+  public static function loadAll(): array;
+
 }

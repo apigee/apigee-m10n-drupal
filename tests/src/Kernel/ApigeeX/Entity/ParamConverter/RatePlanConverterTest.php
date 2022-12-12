@@ -88,6 +88,7 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
     }
 
     // Tests rate plan not found exception.
+    $this->stack->reset();
     $plan_id = $this->randomMachineName();
     $request = Request::create(Url::fromRoute('entity.xrate_plan.canonical', [
       'user' => $developer->id(),

@@ -77,4 +77,12 @@ interface XRatePlanStorageInterface {
    */
   public function isValidId(string $id): bool;
 
+  /**
+   * Loads all the rate plans.
+   *
+   * @return array|null
+   *   The rate plan.
+   */
+  public function loadAll(): array;
+
 }
