@@ -104,9 +104,9 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
       'system',
     ]);
 
-    // Enable the Classy theme.
-    \Drupal::service('theme_installer')->install(['classy']);
-    $this->config('system.theme')->set('default', 'classy')->save();
+    // Enable the Olivero theme.
+    \Drupal::service('theme_installer')->install(['olivero']);
+    $this->config('system.theme')->set('default', 'olivero')->save();
 
     $this->team_role_storage = \Drupal::entityTypeManager()->getStorage('team_role');
 

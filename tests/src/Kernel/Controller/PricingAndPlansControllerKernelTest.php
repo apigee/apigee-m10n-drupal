@@ -62,9 +62,9 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
       'apigee_m10n',
     ]);
 
-    // Enable the Classy theme.
-    \Drupal::service('theme_installer')->install(['classy']);
-    $this->config('system.theme')->set('default', 'classy')->save();
+    // Enable the Olivero theme.
+    \Drupal::service('theme_installer')->install(['olivero']);
+    $this->config('system.theme')->set('default', 'olivero')->save();
 
     // User install is going to try to create a developer for the root user.
     $this->stack->queueMockResponse([

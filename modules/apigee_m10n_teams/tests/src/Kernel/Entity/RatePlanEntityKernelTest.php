@@ -82,9 +82,9 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
       'system',
     ]);
 
-    // Enable the Classy theme.
-    \Drupal::service('theme_installer')->install(['classy']);
-    $this->config('system.theme')->set('default', 'classy')->save();
+    // Enable the Olivero theme.
+    \Drupal::service('theme_installer')->install(['olivero']);
+    $this->config('system.theme')->set('default', 'olivero')->save();
 
     // Makes sure the new user isn't root.
     $this->createAccount();
