@@ -34,7 +34,7 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'olivero';
 
   /**
    * {@inheritdoc}
