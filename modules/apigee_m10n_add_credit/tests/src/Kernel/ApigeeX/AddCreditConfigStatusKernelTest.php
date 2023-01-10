@@ -112,7 +112,7 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
   protected function checkAddCreditRequirements() {
 
     $module_handler = \Drupal::moduleHandler();
-    $module_handler->loadInclude('apigee_m10n_add_credit');
+    $module_handler->loadInclude('apigee_m10n_add_credit', 'install');
 
     $requirements = apigee_m10n_add_credit_requirements('runtime');
     return $requirements['add_credit_products'] ?? NULL;
