@@ -60,9 +60,9 @@ class BuyApisControllerKernelTest extends MonetizationKernelTestBase {
       'apigee_m10n',
     ]);
 
-    // Enable the Olivero theme.
-    \Drupal::service('theme_installer')->install(['olivero']);
-    $this->config('system.theme')->set('default', 'olivero')->save();
+    // Enable the Stark theme.
+    \Drupal::service('theme_installer')->install(['stark']);
+    $this->config('system.theme')->set('default', 'stark')->save();
 
     // Get pre-configured token storage service for testing.
     $this->storeToken();

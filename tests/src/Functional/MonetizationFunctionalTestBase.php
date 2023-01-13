@@ -34,7 +34,7 @@ class MonetizationFunctionalTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'olivero';
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}

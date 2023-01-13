@@ -67,9 +67,9 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
 
     $this->rate_plan = $this->createRatePlan($this->createProductBundle());
 
-    // Enable the Olivero theme.
-    \Drupal::service('theme_installer')->install(['olivero']);
-    $this->config('system.theme')->set('default', 'olivero')->save();
+    // Enable the Stark theme.
+    \Drupal::service('theme_installer')->install(['stark']);
+    $this->config('system.theme')->set('default', 'stark')->save();
   }
 
   /**
