@@ -66,9 +66,9 @@ class TeamPricingAndPlansControllerKernelTest extends MonetizationTeamsKernelTes
       'apigee_m10n',
     ]);
 
-    // Enable the Stark theme.
-    \Drupal::service('theme_installer')->install(['stark']);
-    $this->config('system.theme')->set('default', 'stark')->save();
+    // Enable the Olivero theme.
+    \Drupal::service('theme_installer')->install(['olivero']);
+    $this->config('system.theme')->set('default', 'olivero')->save();
 
     // Makes sure the new user isn't root.
     $this->createAccount();

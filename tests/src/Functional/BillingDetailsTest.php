@@ -81,7 +81,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
     $this->assertSession()->responseNotContains('Access denied');
     $this->assertSession()->responseNotContains('Connection error');
     $this->assertSame($this->developer->getEmail(), $this->getSession()->getPage()->findById('edit-legal-company-name')->getValue());
-    $this->assertCssElementContains('#edit-billing .fieldset-wrapper', 'PREPAID');
+    $this->assertCssElementContains('#edit-billing div', 'PREPAID');
   }
 
 }

@@ -81,7 +81,7 @@ class BillingDetailsTest extends MonetizationFunctionalTestBase {
 
     $this->assertSession()->responseNotContains('Connection error');
 
-    $this->assertCssElementContains('.region-content', 'PREPAID');
+    $this->assertCssElementContains('#content', 'PREPAID');
 
   }
 
