@@ -92,9 +92,9 @@ class NavigationTest extends MonetizationFunctionalTestBase {
     $session->linkExists('Purchased plans');
     $session->linkExists('Prepaid balance');
     $session->linkExists('Billing Details');
-    $this->assertCssElementContains('nav.tabs', 'Purchased plans');
-    $this->assertCssElementContains('nav.tabs', 'Prepaid balance');
-    $this->assertCssElementContains('nav.tabs', 'Billing Details');
+    $this->assertCssElementContains('nav[aria-labelledby="secondary-tabs-title"] li:nth-of-type(1) a', 'Purchased plans');
+    $this->assertCssElementContains('nav[aria-labelledby="secondary-tabs-title"] li:nth-of-type(2) a', 'Prepaid balance');
+    $this->assertCssElementContains('nav[aria-labelledby="secondary-tabs-title"] li:nth-of-type(3) a', 'Billing Details');
   }
 
 }
