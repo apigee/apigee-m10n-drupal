@@ -158,6 +158,9 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
       $definitions[$field_name]->setDisplayConfigurable('form', FALSE);
     }
 
+    // Set the target_type for ratePlan base field.
+    $definitions['ratePlan']->setSetting('target_type', 'rate_plan');
+
     return $definitions;
   }
 
