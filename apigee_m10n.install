@@ -158,7 +158,7 @@ function apigee_m10n_update_8202(&$sandbox) {
 function apigee_m10n_update_8203(&$sandbox) {
 
   $display_repository = \Drupal::service('entity_display.repository');
-  // Get the default view display for xrateplan.
+  // Get the default view display for xrateplan .
   $view_display = $display_repository->getViewDisplay('xrate_plan', 'xrate_plan', 'default');
   if ($component = $view_display->getComponent('apiProduct')) {
     $settings = [
