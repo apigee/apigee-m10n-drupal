@@ -21,20 +21,20 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\AcceptedRatePlan;
 use Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlan;
-use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface;
+use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
-use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
-use Drupal\apigee_m10n\Entity\XRatePlanInterface as DrupalRatePlanInterface;
-use Drupal\apigee_m10n\Entity\Property\EndTimePropertyAwareDecoratorTrait;
-use Drupal\apigee_m10n\Entity\Property\StartTimePropertyAwareDecoratorTrait;
-use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
-use Drupal\apigee_m10n\Entity\Property\ApiProductPropertyAwareDecoratorTrait;
 use Apigee\Edge\Entity\Property\NamePropertyAwareTrait;
+use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
+use Drupal\apigee_m10n\Entity\Property\ApiProductPropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\EndTimePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\Property\StartTimePropertyAwareDecoratorTrait;
+use Drupal\apigee_m10n\Entity\XRatePlanInterface as DrupalRatePlanInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
-use Drupal\Core\Session\AccountProxyInterface;
 
 /**
  * Defines the `purchased_product` entity class.

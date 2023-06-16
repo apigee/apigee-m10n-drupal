@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
-use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyController as ApigeeXSupportedCurrencyController;
+use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface;
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use Drupal\apigee_m10n\ApigeeEdgeSdkConnectorTrait;

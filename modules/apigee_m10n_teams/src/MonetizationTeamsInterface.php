@@ -24,9 +24,9 @@ namespace Drupal\apigee_m10n_teams;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 
 /**
  * Interface for the `apigee_m10n.teams` service.

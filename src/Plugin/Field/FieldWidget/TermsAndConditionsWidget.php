@@ -19,15 +19,15 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldWidget;
 
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'apigee_tnc_widget' widget.

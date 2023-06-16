@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\requirement\Plugin\RequirementBase;
-use Drupal\Core\Entity\Entity\EntityViewDisplay;
 
 /**
  * Check that the "Add credit" product type has been configured.

@@ -7,16 +7,16 @@
 
 namespace Drupal\apigee_m10n_add_credit\EventSubscriber;
 
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\commerce_price\Price;
 use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\commerce_price\Price;
-use Drupal\apigee_m10n\MonetizationInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class CommerceCurrencyConfigSubscriber.
