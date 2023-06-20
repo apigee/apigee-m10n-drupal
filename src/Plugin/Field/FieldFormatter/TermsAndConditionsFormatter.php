@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Plugin implementation of the 'apigee_tnc_default' formatter.

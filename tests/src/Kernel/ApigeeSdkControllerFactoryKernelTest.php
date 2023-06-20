@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
+use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\RatePlanControllerInterface;
-use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
 use Drupal\user\UserInterface;
 

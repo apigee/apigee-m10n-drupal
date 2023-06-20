@@ -21,15 +21,15 @@ namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Monetization;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
-use Drupal\Core\Field\FormatterBase;
-use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\apigee_m10n\Monetization;
 
 /**
  * Plugin implementation of the 'apigee_purchase_plan_form' formatter.
