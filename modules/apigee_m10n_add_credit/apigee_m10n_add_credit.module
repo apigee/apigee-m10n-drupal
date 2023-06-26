@@ -94,9 +94,9 @@ function apigee_m10n_add_credit_field_info_alter(&$info) {
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function apigee_m10n_add_credit_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function apigee_m10n_add_credit_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   \Drupal::service('apigee_m10n.add_credit')->fieldWidgetFormAlter($element, $form_state, $context);
 }
 
