@@ -136,7 +136,7 @@ interface AddCreditServiceInterface {
   public function fieldInfoAlter(&$info);
 
   /**
-   * Handles `hook_field_widget_form_alter` for the `apigee_m10n_add_credit` module.
+   * Handles `hook_field_widget_single_element_form_alter` for the `apigee_m10n_add_credit` module.
    *
    * @param array $element
    *   The field widget form element as constructed by
