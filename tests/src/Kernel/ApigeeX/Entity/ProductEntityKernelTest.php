@@ -20,9 +20,9 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Entity;
 
 use Drupal\apigee_edge\Entity\EdgeEntityType;
+use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
 use Drupal\apigee_m10n\Entity\XProduct;
 use Drupal\apigee_m10n\Entity\XProductInterface;
-use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;

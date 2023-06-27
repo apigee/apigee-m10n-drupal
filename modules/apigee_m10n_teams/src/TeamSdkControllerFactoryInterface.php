@@ -20,8 +20,8 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
-use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 
 /**
  * Interface for the `apigee_m10n_teams.sdk_controller_factory` service.
