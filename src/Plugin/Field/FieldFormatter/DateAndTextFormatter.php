@@ -74,7 +74,7 @@ class DateAndTextFormatter extends TimestampFormatter {
       // text.
       $elements[$delta] = [
         '#markup' => t($text, [
-          '@date' => $elements[$delta]['#markup'],
+          '@date' => $elements[$delta]['#markup'] ?? $elements[$delta]['#text'],
         ]),
       ];
     }

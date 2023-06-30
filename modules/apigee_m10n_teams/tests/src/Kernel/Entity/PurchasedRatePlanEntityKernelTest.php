@@ -209,11 +209,12 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
 
     $this->setRawContent($response->getContent());
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-
     // Checking "Active and Future Purchased Plans" table columns.
+    $div_to_use = floatval(\Drupal::VERSION) <= 10.0 ? '.purchased-plan-row:nth-child(1) td.purchased-plan-start-date div' : '.purchased-plan-row:nth-child(1) td.purchased-plan-start-date div time';
+
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status span', 'Active');
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-rate-plan a', $this->rate_plan->getDisplayName());
-    $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-start-date div', $this->purchased_plan->getStartDate()->format('m/d/Y'));
+    $this->assertCssElementText($div_to_use, $this->purchased_plan->getStartDate()->format('m/d/Y'));
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-end-date', '');
   }
 

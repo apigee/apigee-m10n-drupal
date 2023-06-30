@@ -110,6 +110,17 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
         'date_format' => $date_format,
         'custom_date_format' => $custom_date_format,
         'timezone' => '',
+        'tooltip' => [
+          'date_format' => $date_format,
+          'custom_date_format' => 'm/d/Y'
+        ],
+        'time_diff' => [
+          'enabled' => FALSE,
+          'future_format' => '@interval hence',
+          'past_format' => '@interval ago',
+          'granularity' => 2,
+          'refresh' => 60,
+        ]
       ],
       'label' => TRUE,
       'view_mode' => 'default',
@@ -127,7 +138,7 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
 
     static::assertSame('Start Date', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
-    static::assertSame($expected, (string) $build[0]['#markup']);
+    static::assertSame($expected, (string) ($build[0]['#markup'] ?? $build[0]['#text']));
   }
 
 }

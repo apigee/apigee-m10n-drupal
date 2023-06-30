@@ -14,5 +14,6 @@ dependencies:
   - commerce:commerce_order
   - commerce:commerce_cart
   - commerce:commerce_checkout
+  - jquery_ui_dialog:jquery_ui_dialog
 
 php: 8.0

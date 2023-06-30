@@ -89,7 +89,7 @@ class MonetizationRouteSubscriber extends RouteSubscriberBase {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events = parent::getSubscribedEvents();
     $events[RoutingEvents::ALTER] = ['onAlterRoutes', -101];
     return $events;
