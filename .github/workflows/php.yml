@@ -32,7 +32,6 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - "7.4"
           - "8.0"
           - "8.1"
         drupal-core:
@@ -42,9 +41,19 @@ jobs:
         instance-type:
           - "Edge"
           - "X"
-        #include:
-        #   - php-version: "8.1"
-        #     drupal-core: "10.0.x"
+        include:
+          - php-version: "8.1"
+            drupal-core: "10.0.x"
+            instance-type: "Edge"
+          - php-version: "8.1"
+            drupal-core: "10.0.x"
+            instance-type: "X"
+          - php-version: "8.1"
+            drupal-core: "10.1.x"
+            instance-type: "Edge"
+          - php-version: "8.1"
+            drupal-core: "10.1.x"
+            instance-type: "X"
 
     steps:
 
@@ -99,8 +108,6 @@ jobs:
         composer config --no-plugins allow-plugins.php-http/discovery true
         composer config preferred-install."drupal/apigee_edge" source
         composer config preferred-install."apigee/apigee-client-php" source
-        composer require drupal/rules:3.0.0-alpha7
-        composer require --dev drush/drush
         composer config minimum-stability dev
         composer require drupal/commerce:^2.16
         composer require drupal/token:~1.0
