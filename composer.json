@@ -12,7 +12,7 @@
         "drupal/core": "^9.4 || ^10.0",
         "drupal/requirement": "~1.0",
         "drupal/jquery_ui_dialog": "^2.0",
-        "apigee/apigee-client-php": "^2.0.16 || 3.x-dev"
+        "apigee/apigee-client-php": "^2.0.16 || 3.0.0"
     },
     "require-dev": {
         "apigee/apigee-mock-client-php": "^1.1.1",
