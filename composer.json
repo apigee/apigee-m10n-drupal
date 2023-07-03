@@ -10,7 +10,7 @@
         "commerceguys/intl": "~1.0 || ^2.0",
         "drupal/apigee_edge": "^2.0.2 || ^3.0.0",
         "drupal/core": "^9.4 || ^10.0",
-        "drupal/requirement": "~1.0 || ^1.2",
+        "drupal/requirement": "^1.2",
         "drupal/jquery_ui_dialog": "^2.0",
         "apigee/apigee-client-php": "^2.0.16 || ^3.0.0"
     },
