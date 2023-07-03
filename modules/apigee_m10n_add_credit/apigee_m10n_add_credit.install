@@ -64,3 +64,19 @@ function apigee_m10n_add_credit_install() {
     user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, AddCreditServiceInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
   }
 }
+
+/**
+ * Install jquery_ui_dialog module if apigee_m10n_add_credit module is installed.
+ */
+function apigee_m10n_add_credit_update_9000(&$sandbox) {
+  // When upgrading, jquery_ui_dialog module is not enabled.
+  // Check if apigee_m10n_add_credit module is enabled.
+  if (Drupal::moduleHandler()->moduleExists('apigee_m10n_add_credit')) {
+    $installer = \Drupal::service('module_installer');
+    // Install jquery_ui_dialog module.
+    $installer->install(['jquery_ui_dialog']);
+  }
+
+  // Clear all caches.
+  drupal_flush_all_caches();
+}

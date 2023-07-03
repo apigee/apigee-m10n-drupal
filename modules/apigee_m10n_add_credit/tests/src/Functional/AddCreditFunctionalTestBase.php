@@ -57,6 +57,7 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     'commerce',
     'user',
     'field_ui',
+    'jquery_ui_dialog'
   ];
 
   /**

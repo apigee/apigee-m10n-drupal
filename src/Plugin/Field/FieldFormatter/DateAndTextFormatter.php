@@ -72,9 +72,10 @@ class DateAndTextFormatter extends TimestampFormatter {
     foreach ($items as $delta => $item) {
       // Grab the formatted date from the TimestampFormatter and add it to the
       // text.
+      // For Drupal 10.1, date is available in '#text'.
       $elements[$delta] = [
         '#markup' => t($text, [
-          '@date' => $elements[$delta]['#markup'],
+          '@date' => $elements[$delta]['#markup'] ?? $elements[$delta]['#text'],
         ]),
       ];
     }

@@ -471,7 +471,7 @@ class AddCreditService implements AddCreditServiceInterface {
           $build['table']['#attached'] = [
             'library' => [
               'core/drupal.dialog.ajax',
-              'core/jquery.ui.dialog',
+              'jquery_ui_dialog/dialog',
             ],
           ];
         }

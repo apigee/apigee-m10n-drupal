@@ -39,6 +39,15 @@ content:
       date_format: custom
       custom_date_format: m/d/Y
       timezone: ''
+      tooltip:
+        date_format: long
+        custom_date_format: ''
+      time_diff:
+        enabled: false
+        future_format: '@interval hence'
+        past_format: '@interval ago'
+        granularity: 2
+        refresh: 60
       text: 'This plan has a new version effective @date. Toggle below to see the future rate plan.'
     third_party_settings: {  }
   products:
