@@ -66,9 +66,10 @@ function apigee_m10n_add_credit_install() {
 }
 
 /**
- * Install jquery_ui_dialog module if apigee_m10n_add_credit module is installed
+ * Install jquery_ui_dialog module if apigee_m10n_add_credit module is installed.
  */
 function apigee_m10n_add_credit_update_9000(&$sandbox) {
+  // When upgrading, jquery_ui_dialog module is not enabled.
   // Check if apigee_m10n_add_credit module is enabled.
   if (Drupal::moduleHandler()->moduleExists('apigee_m10n_add_credit')) {
     $installer = \Drupal::service('module_installer');

@@ -210,6 +210,8 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
     $this->setRawContent($response->getContent());
     static::assertSame(Response::HTTP_OK, $response->getStatusCode());
     // Checking "Active and Future Purchased Plans" table columns.
+    // As div generated for startdate is different for Drupal 10.1
+    // hence need to check Drupal version and select the div.
     $div_to_use = floatval(\Drupal::VERSION) <= 10.0 ? '.purchased-plan-row:nth-child(1) td.purchased-plan-start-date div' : '.purchased-plan-row:nth-child(1) td.purchased-plan-start-date div time';
 
     $this->assertCssElementText('.purchased-plan-row:nth-child(1) td.purchased-plan-status span', 'Active');

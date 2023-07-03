@@ -29,6 +29,7 @@
       var self = this;
       $(".two_decimal_price div input").keyup(function(){
         var number = ($(this).val().split('.'));
+        // Check if there is value after decimal.
         if (number[1] && number[1].length > 2)
         {
           var price = parseFloat($(this).val());

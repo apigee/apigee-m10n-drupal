@@ -138,6 +138,7 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
 
     static::assertSame('Start Date', (string) $build['#title']);
     static::assertTrue($build['#label_display']);
+    // For Drupal 10.1, date is available in '#text'.
     static::assertSame($expected, (string) ($build[0]['#markup'] ?? $build[0]['#text']));
   }
 
