@@ -142,7 +142,7 @@ jobs:
         php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
         vendor/bin/drush rs 8000 &
 
-    - uses: nanasess/setup-chromedriver@v1
+    - uses: nanasess/setup-chromedriver@v2
 
     - run: |
         export DISPLAY=:99
