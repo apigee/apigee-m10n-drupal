@@ -34,26 +34,25 @@ jobs:
         php-version:
           - "8.0"
           - "8.1"
+          - "8.2"
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
           - "9.4.x"
           - "9.5.x"
+          - "10.0.x"
+          - "10.1.x"
         instance-type:
           - "Edge"
           - "X"
-        include:
-          - php-version: "8.1"
+        exclude:
+          - php-version: "8.2"
+            drupal-core: "9.4.x"
+          - php-version: "8.2"
+            drupal-core: "9.5.x"
+          - php-version: "8.0"
             drupal-core: "10.0.x"
-            instance-type: "Edge"
-          - php-version: "8.1"
-            drupal-core: "10.0.x"
-            instance-type: "X"
-          - php-version: "8.1"
+          - php-version: "8.0"
             drupal-core: "10.1.x"
-            instance-type: "Edge"
-          - php-version: "8.1"
-            drupal-core: "10.1.x"
-            instance-type: "X"
 
     steps:
 
