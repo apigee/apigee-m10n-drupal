@@ -85,6 +85,27 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
   protected $owner;
 
   /**
+   * Suppress errors if rate plan that overlaps another accepted rate plan.
+   *
+   * @var bool
+   */
+  protected $suppressWarning;
+
+  /**
+   * The currently logged-in user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  private $currentUser;
+
+  /**
+   * The rate plan this purchased_product belongs to.
+   *
+   * @var \Drupal\apigee_m10n\Entity\XRatePlanInterface
+   */
+  protected $rate_plan;
+
+  /**
    * Constructs a `purchased_product` entity.
    *
    * @param array $values
