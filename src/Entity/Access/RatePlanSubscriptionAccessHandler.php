@@ -96,10 +96,13 @@ class RatePlanSubscriptionAccessHandler implements AccessInterface, EntityHandle
     // If rate plan is a developer rate plan, and the assigned developer is
     // different from account, deny access.
     if ($rate_plan instanceof DeveloperRatePlanInterface) {
-      if ($developer = $rate_plan->getDeveloper()) {
+      $developer = $rate_plan->getDeveloper();
+      if ($developer) {
         return AccessResult::allowedIf($account->getEmail() === $developer->getEmail());
       }
-      return AccessResult::forbidden("User {$developer->getEmail()} cannot subscribe to developer rate plan.");
+      else {
+        return AccessResult::forbidden("Missing developer reference on {$rate_plan->id()} rate plan.");
+      }
     }
 
     if ($rate_plan instanceof CompanyRatePlanInterface) {
