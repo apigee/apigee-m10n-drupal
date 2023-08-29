@@ -70,6 +70,20 @@ abstract class PurchasedProductListBuilder extends EntityListBuilder implements 
   protected $messenger;
 
   /**
+   * The active status of the purchased product.
+   *
+   * @var string
+   */
+  protected $checkStatus;
+
+  /**
+   * Rateplan Id of the apiproduct.
+   *
+   * @var array
+   */
+  protected $activeRatePlanId;
+
+  /**
    * PurchasedProductListBuilder constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type

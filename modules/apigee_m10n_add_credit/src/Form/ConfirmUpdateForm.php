@@ -67,6 +67,20 @@ class ConfirmUpdateForm extends ConfirmFormBase {
   protected $monetization;
 
   /**
+   * The user id from route.
+   *
+   * @var string
+   */
+  protected $userId;
+
+  /**
+   * The billingtype selected.
+   *
+   * @var string
+   */
+  protected $billingtype_selected;
+
+  /**
    * Constructs a Confirmation object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
