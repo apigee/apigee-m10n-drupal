@@ -39,6 +39,13 @@ class UpdateBillingTypeTest extends AddCreditFunctionalJavascriptTestBase {
   protected $developer;
 
   /**
+   * A developer user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $developeruser;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {

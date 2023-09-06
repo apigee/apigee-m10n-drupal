@@ -55,6 +55,34 @@ class DateAndTextFormatterKernelTest extends MonetizationKernelTestBase {
   protected $settings;
 
   /**
+   * The name of the entity type to use in this test.
+   *
+   * @var string
+   */
+  protected $entityType;
+
+  /**
+   * The bundle being tested.
+   *
+   * @var string
+   */
+  protected $bundle;
+
+  /**
+   * Holds the randomly-generated name of a field.
+   *
+   * @var string
+   */
+  protected $fieldName;
+
+  /**
+   * Testing profile type entity view display.
+   *
+   * @var \Drupal\Core\Entity\Display\EntityViewDisplayInterface
+   */
+  protected $display;
+
+  /**
    * Extra modules to enable.
    *
    * @var array
