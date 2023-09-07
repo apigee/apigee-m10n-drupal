@@ -40,6 +40,13 @@ class GeneralSettingsConfigFormTest extends AddCreditFunctionalTestBase {
   protected $product;
 
   /**
+   * A developer user.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $developer;
+
+  /**
    * {@inheritdoc}
    *
    * @throws \Exception
