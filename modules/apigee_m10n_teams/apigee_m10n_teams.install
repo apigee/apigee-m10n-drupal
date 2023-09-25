@@ -30,3 +30,56 @@ function apigee_m10n_teams_install() {
     user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, MonetizationTeamsInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
   }
 }
+
+/**
+ * Implements hook_requirements().
+ */
+function apigee_m10n_teams_requirements($phase) {
+  $requirements = [];
+
+  if ($phase == 'install' || $phase == 'runtime') {
+    try {
+      /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
+      $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
+      $org_controller = \Drupal::service('apigee_edge.controller.organization');
+      /* @var \Apigee\Edge\Api\Management\Entity\Organization $organization */
+      $organization = $org_controller->load($sdk_connector->getOrganization());
+      if ($organization && $org_controller->isOrganizationApigeeX()) {
+        // AppGroup APIs are not supported in Apigee X / Hybrid orgs with monetization enabled.
+        if ($organization->getAddonsConfig() || TRUE === $organization->getAddonsConfig()->getMonetizationConfig()->getEnabled()) {
+          $url = [
+            ':url' => 'https://cloud.google.com/apigee/docs/api-platform/get-started/compare-apigee-products#unsupported-apis',
+          ];
+          $message = ($phase == 'runtime') ?
+            t("The Apigee Monetization Teams module functionality is not available for monetization enabled org on Apigee X / Hybrid and should be uninstalled, because <a href=':url' target='_blank'>AppGroup APIs are not supported in Apigee X / Hybrid orgs with monetization enabled</a>.", $url) :
+            t("The Apigee Monetization Teams module functionality is not available for monetization enabled org on Apigee X / Hybrid because <a href=':url' target='_blank'>AppGroup APIs are not supported in Apigee X / Hybrid orgs with monetization enabled</a>.", $url);
+          $requirements['apigee_edge_teams_not_supported'] = [
+            'title' => t('Apigee Edge Teams'),
+            'description' => $message,
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+      } else {
+        // Edge company APIs are not supported in Apigee Hybrid orgs.
+        if ($organization && !OrganizationFeatures::isCompaniesFeatureAvailable($organization)) {
+          $url = [
+            ':url' => 'https://cloud.google.com/apigee/docs/api-platform/get-started/compare-apigee-products#unsupported-apis',
+          ];
+          $message = ($phase == 'runtime') ?
+            t("The Apigee Monetization Teams module functionality is not available for your org and should be uninstalled, because <a href=':url' target='_blank'>Edge company APIs are not supported for Apigee Hybrid orgs</a>.", $url) :
+            t("The Apigee Monetization Teams module functionality is not available for your org because <a href=':url' target='_blank'>Edge company APIs are not supported for Apigee Hybrid orgs</a>.", $url);
+          $requirements['apigee_edge_teams_not_supported'] = [
+            'title' => t('Apigee Edge Teams'),
+            'description' => $message,
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+      }
+    }
+    catch (\Exception $exception) {
+      // Do nothing if connection to Edge is not available.
+    }
+  }
+
+  return $requirements;
+}
