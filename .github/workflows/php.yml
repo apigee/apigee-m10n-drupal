@@ -38,7 +38,6 @@ jobs:
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
           - "9.5.x"
-          - "10.0.x"
           - "10.1.x"
         instance-type:
           - "Edge"
@@ -46,8 +45,6 @@ jobs:
         exclude:
           - php-version: "8.2"
             drupal-core: "9.5.x"
-          - php-version: "8.0"
-            drupal-core: "10.0.x"
           - php-version: "8.0"
             drupal-core: "10.1.x"
 
