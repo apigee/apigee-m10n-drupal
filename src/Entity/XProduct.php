@@ -60,6 +60,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "apigee_m10n.settings.xproduct",
  * )
  */
+#[\AllowDynamicProperties]
 class XProduct extends FieldableEdgeEntityBase implements XProductInterface {
 
   use DisplayNamePropertyAwareDecoratorTrait;
