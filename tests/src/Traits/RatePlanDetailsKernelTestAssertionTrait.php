@@ -56,7 +56,7 @@ trait RatePlanDetailsKernelTestAssertionTrait {
     $this->assertCssElementText(".rate-plan-detail .rate-plan-detail__overview__country > .field__item", $details->getOrganization()->getCountry());
     // Pricing Type.
     $this->assertCssElementText(".rate-plan-detail .rate-plan-detail__overview__pricing-type > .field__label", 'Pricing type');
-    $this->assertCssElementText(".rate-plan-detail .rate-plan-detail__overview__pricing-type > .field__item", ucfirst($details->getRevenueType()));
+    $this->assertCssElementText(".rate-plan-detail .rate-plan-detail__overview__pricing-type > .field__item", ucfirst($details->getRevenueType() ? $details->getRevenueType() : ''));
 
     // Test rate plan rates.
     $prefix = '.rate-plan-detail:first-child';
