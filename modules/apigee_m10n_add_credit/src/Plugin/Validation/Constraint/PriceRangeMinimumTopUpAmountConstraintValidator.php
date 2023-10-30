@@ -73,7 +73,7 @@ class PriceRangeMinimumTopUpAmountConstraintValidator extends ConstraintValidato
   /**
    * {@inheritdoc}
    */
-  public function validate($value, Constraint $constraint) {
+  public function validate($value, Constraint $constraint): void {
     if (!($value instanceof PriceRangeItem)) {
       throw new UnexpectedTypeException($value, PriceRangeItem::class);
     }
