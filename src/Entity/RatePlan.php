@@ -75,6 +75,7 @@ use Drupal\user\Entity\User;
  *   field_ui_base_route = "apigee_m10n.settings.rate_plan",
  * )
  */
+#[\AllowDynamicProperties]
 class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
 
   use CurrencyPropertyAwareDecoratorTrait;
