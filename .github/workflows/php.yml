@@ -107,7 +107,7 @@ jobs:
         composer require wikimedia/composer-merge-plugin
         composer config --json extra.merge-plugin.require '["modules/contrib/apigee_m10n/composer.json"]'
         composer config platform.php ${{ matrix.php-version }}
-        composer config --json extra.patches."drupal/core" '{ "Solves Deprecated function: preg_quote()": "https://www.drupal.org/files/issues/2023-11-10/3327662-1_1.patch"}'
+        composer config --json extra.patches."drupal/core" '{ "Test Fix for Deprecated issue - preg_quote(): Passing null to parameter": "https://www.drupal.org/files/issues/2023-11-10/3327662-1_1.patch"}'
         composer update --with-all-dependencies
         composer require --dev phpspec/prophecy-phpunit:^2
 
