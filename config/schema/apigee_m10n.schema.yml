@@ -120,9 +120,17 @@ field.formatter.settings.apigee_datestamp:
           type: integer
           label: 'Refresh interval in seconds'
 
-field.formatter.settings.timestamp:
+field.formatter.settings.apigee_tnc_default:
   type: mapping
-  label: 'Timestamp display format settings'
+  label: 'Terms and Conditions'
+  mapping:
+    default_description:
+      type: string
+      label: 'Terms and Conditions'
+
+field.formatter.settings.apigee_date_and_text_formatter:
+  type: mapping
+  label: 'Apigee date and text formatter'
   mapping:
     date_format:
       type: string
@@ -132,7 +140,7 @@ field.formatter.settings.timestamp:
       label: 'Custom date format'
     timezone:
       type: string
-      label: 'Time zone'
+      label: 'Timezone'
     tooltip:
       type: mapping
       label: Tooltip
@@ -162,11 +170,6 @@ field.formatter.settings.timestamp:
         refresh:
           type: integer
           label: 'Refresh interval in seconds'
-
-field.formatter.settings.apigee_tnc_default:
-  type: mapping
-  label: 'Terms and Conditions'
-  mapping:
-    default_description:
+    text:
       type: string
-      label: 'Terms and Conditions'
+      label: 'Text'
