@@ -31,8 +31,10 @@ use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryI
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\RevenueReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
+use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
 use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Entity\PurchasedProduct;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
@@ -234,6 +236,42 @@ class Monetization implements MonetizationInterface {
       return in_array(strtolower($entity->id()), $product_ids)
         ? AccessResult::allowed()
         : AccessResult::forbidden('Product is not eligible for this developer');
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): AccessResultInterface {
+    // Cache results for this request.
+    static $eligible_product_cache = [];
+    $company_id = $team->getDisplayName();
+
+    if (!isset($eligible_product_cache[$company_id])) {
+      if ($this->isOrganizationApigeeXorHybrid()) {
+        // Instantiate an instance of the m10n ApiProduct controller.
+        $product_controller = new ApiXProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
+        // Get a list of available products for the m10n developer.
+        $eligible_product_cache[$company_id] = $product_controller->getAvailableApixProductsByCompany($company_id);
+      }
+      else {
+        // Instantiate an instance of the m10n ApiProduct controller.
+        $product_controller = new ApiProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
+        // Get a list of available products for the m10n developer.
+        $eligible_product_cache[$company_id] = $product_controller->getEligibleProductsByCompany($company_id);
+      }
+    }
+
+    // Get just the IDs from the available products.
+    $product_ids = array_map(function ($product) {
+      return $product->id();
+    }, $eligible_product_cache[$company_id]);
+
+    if (!$this->isOrganizationApigeeXorHybrid()) {
+      // Allow only if the id is in the eligible list.
+      return in_array(strtolower($api_product->id()), $product_ids)
+        ? AccessResult::allowed()
+        : AccessResult::forbidden('Product is not eligible for this company');
     }
   }
 
