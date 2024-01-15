@@ -267,9 +267,15 @@ class Monetization implements MonetizationInterface {
       return $product->id();
     }, $eligible_product_cache[$company_id]);
 
-    if (!$this->isOrganizationApigeeXorHybrid()) {
+    if ($this->isOrganizationApigeeXorHybrid()) {
+      // Apigee X products are case sensitive.
+      return in_array(($entity->id()), $product_ids)
+        ? AccessResult::allowed()
+        : AccessResult::forbidden('Product is not eligible for this company');
+    }
+    else {
       // Allow only if the id is in the eligible list.
-      return in_array(strtolower($api_product->id()), $product_ids)
+      return in_array(strtolower($entity->id()), $product_ids)
         ? AccessResult::allowed()
         : AccessResult::forbidden('Product is not eligible for this company');
     }
