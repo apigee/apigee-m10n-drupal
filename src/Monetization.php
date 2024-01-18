@@ -242,35 +242,6 @@ class Monetization implements MonetizationInterface {
   /**
    * {@inheritdoc}
    */
-  public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): AccessResultInterface {
-    // Cache results for this request.
-    static $eligible_product_cache = [];
-    $company_id = $team->getDisplayName();
-
-    if (!isset($eligible_product_cache[$company_id])) {
-      // kint($this->sdkConnector->getOrganization());
-      // Instantiate an instance of the m10n ApiProduct controller.
-      $product_controller = new ApiProductController($this->sdkConnector->getOrganization(), $this->sdkConnector->getClient());
-      // Get a list of available products for the m10n company.
-      $eligible_product_cache[$company_id] = $product_controller->getEligibleProductsByCompany($company_id);
-
-    }
-
-    // Get just the IDs from the available products.
-    $product_ids = array_map(function ($product) {
-      return $product->id();
-    }, $eligible_product_cache[$company_id]);
-
-    // Allow only if the id is in the eligible list.
-    return in_array(strtolower($api_product->id()), $product_ids)
-      ? AccessResult::allowed()
-      : AccessResult::forbidden('Product is not eligible for this company');
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getDeveloperPrepaidBalances(UserInterface $developer, \DateTimeImmutable $billingDate): ?array {
     $balance_controller = $this->sdkControllerFactory->developerBalanceController($developer);
     return $this->getPrepaidBalances($balance_controller, $billingDate);

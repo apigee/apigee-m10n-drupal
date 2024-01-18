@@ -66,7 +66,7 @@ function apigee_m10n_teams_product_bundle_access(EntityInterface $entity, $opera
 function apigee_m10n_teams_apigee_edge_teams_team_api_product_access(ApiProductInterface $api_product, string $operation, TeamInterface $team, AccountInterface $account) {
   // For the assignment operation a product must either be free or purchased.
   if ($operation == 'assign') {
-    return \Drupal::service('apigee_m10n.monetization')
+    return \Drupal::service('apigee_m10n.teams')
       ->apiProductTeamAssignmentAccess($api_product, $team, $account);
   }
 

@@ -19,6 +19,7 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
@@ -60,5 +61,16 @@ interface TeamSdkControllerFactoryInterface {
    *   The controller.
    */
   public function teamBalanceController($team_id): CompanyPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates a team prepaid balance controller.
+   *
+   * @param string $company_id
+   *   The team ID.
+   *
+   * @return \Apigee\Edge\Api\Monetization\Controller\ApiProductController
+   *   The controller.
+   */
+  public function companyApiProductController(string $company_id): ApiProductController;
 
 }
