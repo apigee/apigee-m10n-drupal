@@ -77,14 +77,14 @@ jobs:
         echo "::set-output name=dir::$(composer config cache-files-dir)"
 
     - name: Cache composer dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.composercache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Checkout apigee_m10n module
-      uses: actions/checkout@v3.0.0
+      uses: actions/checkout@v3
       with:
         path: drupal/modules/contrib/apigee_m10n
 
@@ -107,7 +107,6 @@ jobs:
         composer require wikimedia/composer-merge-plugin
         composer config --json extra.merge-plugin.require '["modules/contrib/apigee_m10n/composer.json"]'
         composer config platform.php ${{ matrix.php-version }}
-        composer config --json extra.patches."drupal/core" '{ "Deprecated function: preg_quote(): Passing null to parameter #1 ($str)": "https://www.drupal.org/files/issues/2023-11-10/3327662-1_1.patch"}'
         composer update --with-all-dependencies
         composer require --dev phpspec/prophecy-phpunit:^2
 
