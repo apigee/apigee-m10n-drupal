@@ -108,6 +108,7 @@ class AddCreditAddToCartForm extends AddToCartForm {
     $this->request = $request;
     $this->routeMatch = $route_match;
     $this->addCreditPluginManager = $add_credit_plugin_manager;
+    $this->currentUser = $current_user;
   }
 
   /**
