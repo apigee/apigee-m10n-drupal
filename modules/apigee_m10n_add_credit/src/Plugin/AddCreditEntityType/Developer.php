@@ -113,7 +113,7 @@ class Developer extends AddCreditEntityTypeBase {
       ];
 
       // Instead of loading all users, load target user and current as fallback.
-      $ids = (is_array($target_account['target_id'])) ? [$target_account['target_id'], $account->getEmail()] : [$account->getEmail()];
+      $ids = [$target_account['target_id'], $account->getEmail()];
     }
     elseif ($account->hasPermission('add credit to own developer prepaid balance')) {
       $ids = [$account->getEmail()];
