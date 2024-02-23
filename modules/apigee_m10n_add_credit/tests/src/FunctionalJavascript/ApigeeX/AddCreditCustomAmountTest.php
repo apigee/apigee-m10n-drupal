@@ -99,11 +99,11 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Tests validation for the price range field.
    *
-   * @param float|null $minimum
+   * @param string|null $minimum
    *   The minimum amount.
-   * @param float|null $maximum
+   * @param string|null $maximum
    *   The maximum amount.
-   * @param float|null $default
+   * @param string|null $default
    *   The default amount.
    * @param string|null $message
    *   The expected message.
@@ -112,7 +112,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerPriceRange
    */
-  public function testPriceRangeFieldValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, string $message = NULL) {
+  public function testPriceRangeFieldValidation(string $minimum = NULL, string $maximum = NULL, string $default = NULL, string $message = NULL) {
     $this->setupApigeeAddCreditProduct();
 
     // Add a product.
@@ -135,13 +135,13 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Tests the unit price range field validation.
    *
-   * @param float|null $minimum
+   * @param string|null $minimum
    *   The minimum amount.
-   * @param float|null $maximum
+   * @param string|null $maximum
    *   The maximum amount.
-   * @param float|null $default
+   * @param string|null $default
    *   The default amount.
-   * @param float|null $amount
+   * @param string|null $amount
    *   The amount for the unit price field.
    * @param string|null $message
    *   The expected message.
@@ -150,7 +150,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerUnitPrice
    */
-  public function testUnitPriceValidation(float $minimum = NULL, float $maximum = NULL, float $default = NULL, float $amount = NULL, string $message = NULL) {
+  public function testUnitPriceValidation(string $minimum = NULL, string $maximum = NULL, string $default = NULL, string $amount = NULL, string $message = NULL) {
     $this->setupApigeeAddCreditProduct();
 
     // Add a product.
@@ -191,13 +191,13 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'title[0][value]' => $title,
       'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => 20,
-      'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => 500,
-      'variations[form][0][apigee_price_range][0][price_range][fields][default]' => 40,
+      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => '20',
+      'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => '500',
+      'variations[form][0][apigee_price_range][0][price_range][fields][default]' => '40',
     ], 'Save');
 
     $this->submitForm([
-      'unit_price[0][amount][number]' => 50,
+      'unit_price[0][amount][number]' => '50',
     ], 'Add to cart');
 
     $this->drupalGet('checkout/1');
@@ -207,22 +207,22 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Tests the minimum validation amount on checkout.
    *
-   * @param float $amount_1
+   * @param string $amount_1
    *   The amount for the first order item.
-   * @param float $amount_2
+   * @param string $amount_2
    *   The amount for the second order item.
-   * @param int $quantity_1
+   * @param string $quantity_1
    *   The quantity for the first order item.
-   * @param int $quantity_2
+   * @param string $quantity_2
    *   The quantity for the second order item.
-   * @param bool $valid
+   * @param string $valid
    *   If the amount is valid.
    *
    * @throws \Exception
    *
    * @dataProvider providerMinimumAmountValidationOnCheckout
    */
-  public function testMinimumAmountValidationOnCheckout($amount_1, $amount_2, int $quantity_1, int $quantity_2, bool $valid) {
+  public function testMinimumAmountValidationOnCheckout($amount_1, $amount_2, string $quantity_1, string $quantity_2, string $valid) {
 
     $this->createCommercePaymentGateway();
     $this->setupApigeeAddCreditProduct('default', FALSE);
@@ -303,21 +303,21 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   public function providerPriceRange() {
     return [
       [
-        20.00,
-        30.00,
-        15.00,
+        '20.00',
+        '30.00',
+        '15.00',
         'The default value must be between the minimum and the maximum price.',
       ],
       [
-        20.00,
-        NULL,
-        15.00,
+        '20.00',
+        '',
+        '15.00',
         'This default value cannot be less than the minimum price.',
       ],
       [
-        20.00,
-        10.00,
-        NULL,
+        '20.00',
+        '10.00',
+        '',
         'The minimum value is greater than the maximum value.',
       ],
     ];
@@ -329,24 +329,24 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   public function providerUnitPrice() {
     return [
       [
-        20.00,
-        30.00,
-        25.00,
-        35.00,
+        '20.00',
+        '30.00',
+        '25.00',
+        '35.00',
         'The amount must be between USD20.00 and USD30.00.',
       ],
       [
-        20.00,
-        NULL,
-        25.00,
-        15.00,
+        '20.00',
+        '',
+        '25.00',
+        '15.00',
         'This amount cannot be less than USD20.00.',
       ],
       [
-        20.00,
-        NULL,
-        NULL,
-        15.00,
+        '20.00',
+        '',
+        '',
+        '',
         'This amount cannot be less than USD20.00.',
       ],
     ];
@@ -359,7 +359,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     return [
       // TODO: Commerce throws an error when a string is entered for price.
       [
-        10.00,
+        '10.00',
         'The product @title has been successfully saved.',
       ],
     ];
@@ -371,18 +371,18 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   public function providerMinimumAmountValidationOnCheckout() {
     return [
       [
-        5.00,
-        2.00,
-        1,
-        1,
-        FALSE,
+        '5.00',
+        '2.00',
+        '1',
+        '1',
+        '0',
       ],
       [
         '10.00',
         '11.00',
-        1,
-        1,
-        TRUE,
+        '1',
+        '1',
+        '1',
       ],
     ];
   }
