@@ -222,7 +222,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerMinimumAmountValidationOnCheckout
    */
-  public function testMinimumAmountValidationOnCheckout($amount_1, $amount_2, string $quantity_1, string $quantity_2, string $valid) {
+  public function testMinimumAmountValidationOnCheckout(string $amount_1, string $amount_2, string $quantity_1, string $quantity_2, string $valid) {
 
     $this->createCommercePaymentGateway();
     $this->setupApigeeAddCreditProduct('default', FALSE);
@@ -240,8 +240,8 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'title[0][value]' => $title,
       'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
-      'variations[form][0][price][0][number]' => 1.00,
-      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => 10.00,
+      'variations[form][0][price][0][number]' => '1.00',
+      'variations[form][0][apigee_price_range][0][price_range][fields][minimum]' => '10.00',
     ], 'Save');
 
     $this->drupalGet('product/1');
@@ -346,7 +346,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         '20.00',
         '',
         '',
-        '',
+        '15.00',
         'This amount cannot be less than USD20.00.',
       ],
     ];
