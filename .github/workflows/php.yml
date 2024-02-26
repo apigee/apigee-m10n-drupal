@@ -77,14 +77,14 @@ jobs:
         echo "::set-output name=dir::$(composer config cache-files-dir)"
 
     - name: Cache composer dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v2
       with:
         path: ${{ steps.composercache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Checkout apigee_m10n module
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.0.0
       with:
         path: drupal/modules/contrib/apigee_m10n
 
