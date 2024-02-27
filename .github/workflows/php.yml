@@ -32,21 +32,14 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - "8.0"
           - "8.1"
           - "8.2"
         drupal-core:
           # Should update the following as the minimum supported version from Drupal.org
-          - "9.5.x"
           - "10.1.x"
         instance-type:
           - "Edge"
           - "X"
-        exclude:
-          - php-version: "8.2"
-            drupal-core: "9.5.x"
-          - php-version: "8.0"
-            drupal-core: "10.1.x"
 
     steps:
 
@@ -77,14 +70,14 @@ jobs:
         echo "::set-output name=dir::$(composer config cache-files-dir)"
 
     - name: Cache composer dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.composercache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Checkout apigee_m10n module
-      uses: actions/checkout@v3.0.0
+      uses: actions/checkout@v3
       with:
         path: drupal/modules/contrib/apigee_m10n
 
@@ -143,13 +136,13 @@ jobs:
         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
     - name: "Run PHPUnit tests"
-      if: ${{ matrix.drupal-core != '9.5.x' || matrix.php-version != '8.1' }}
+      if: ${{ matrix.drupal-core != '10.1.x' || matrix.php-version != '8.1' }}
       run: |
         cd drupal
         vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit,kernel,functional,functional-javascript modules/contrib/apigee_m10n
 
     - name: "Run PHPUnit tests with Code Coverage"
-      if: ${{ matrix.drupal-core == '9.5.x' && matrix.php-version == '8.1' }}
+      if: ${{ matrix.drupal-core == '10.1.x' && matrix.php-version == '8.1' }}
       run: |
         cd drupal
         cp modules/contrib/apigee_m10n/phpunit.core.xml.dist core/phpunit.xml
@@ -163,7 +156,7 @@ jobs:
         path: drupal/sites/simpletest/browser_output/*
 
     - name: Upload coverage to Codecov
-      if: ${{ matrix.drupal-core == '9.5.x' && matrix.php-version == '8.1' }}
+      if: ${{ matrix.drupal-core == '10.1.x' && matrix.php-version == '8.1' }}
       uses: codecov/codecov-action@v3
       with:
         files: /tmp/coverage_${{ matrix.instance-type }}.xml
