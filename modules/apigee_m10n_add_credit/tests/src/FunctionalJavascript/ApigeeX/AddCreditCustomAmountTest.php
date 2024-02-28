@@ -215,14 +215,14 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *   The quantity for the first order item.
    * @param string $quantity_2
    *   The quantity for the second order item.
-   * @param string $valid
+   * @param bool $valid
    *   If the amount is valid.
    *
    * @throws \Exception
    *
    * @dataProvider providerMinimumAmountValidationOnCheckout
    */
-  public function testMinimumAmountValidationOnCheckout(string $amount_1, string $amount_2, string $quantity_1, string $quantity_2, string $valid) {
+  public function testMinimumAmountValidationOnCheckout(string $amount_1, string $amount_2, string $quantity_1, string $quantity_2, bool $valid) {
 
     $this->createCommercePaymentGateway();
     $this->setupApigeeAddCreditProduct('default', FALSE);
@@ -375,14 +375,14 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         '2.00',
         '1',
         '1',
-        '0',
+        FALSE,
       ],
       [
         '10.00',
         '11.00',
         '1',
         '1',
-        '1',
+        TRUE,
       ],
     ];
   }
