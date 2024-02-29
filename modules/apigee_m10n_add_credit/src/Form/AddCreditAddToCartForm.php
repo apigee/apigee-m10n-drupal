@@ -21,15 +21,7 @@ namespace Drupal\apigee_m10n_add_credit\Form;
 
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface;
-use Drupal\commerce_cart\CartManagerInterface;
-use Drupal\commerce_cart\CartProviderInterface;
 use Drupal\commerce_cart\Form\AddToCartForm;
-use Drupal\commerce_order\Resolver\OrderTypeResolverInterface;
-use Drupal\commerce_price\Resolver\ChainPriceResolverInterface;
-use Drupal\commerce_store\CurrentStoreInterface;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -90,44 +82,16 @@ class AddCreditAddToCartForm extends AddToCartForm {
    * @param \Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
    *   The add credit plugin manager.
    */
-  public function __construct(
-    EntityRepositoryInterface $entity_repository,
-    EntityTypeBundleInfoInterface $entity_type_bundle_info,
-    TimeInterface $time,
-    CartManagerInterface $cart_manager,
-    CartProviderInterface $cart_provider,
-    OrderTypeResolverInterface $order_type_resolver,
-    CurrentStoreInterface $current_store,
-    ChainPriceResolverInterface $chain_price_resolver,
-    AccountInterface $current_user,
-    RequestStack $request,
-    RouteMatchInterface $route_match,
-    AddCreditEntityTypeManagerInterface $add_credit_plugin_manager
-  ) {
-    parent::__construct($entity_repository, $entity_type_bundle_info, $time, $cart_manager, $cart_provider, $order_type_resolver, $current_store, $chain_price_resolver, $current_user);
-    $this->request = $request;
-    $this->routeMatch = $route_match;
-    $this->addCreditPluginManager = $add_credit_plugin_manager;
-  }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity.repository'),
-      $container->get('entity_type.bundle.info'),
-      $container->get('datetime.time'),
-      $container->get('commerce_cart.cart_manager'),
-      $container->get('commerce_cart.cart_provider'),
-      $container->get('commerce_order.chain_order_type_resolver'),
-      $container->get('commerce_store.current_store'),
-      $container->get('commerce_price.chain_price_resolver'),
-      $container->get('current_user'),
-      $container->get('request_stack'),
-      $container->get('current_route_match'),
-      $container->get('plugin.manager.apigee_add_credit_entity_type')
-    );
+    $instance = parent::create($container);
+    $instance->request = $container->get('request_stack');
+    $instance->routeMatch = $container->get('current_route_match');
+    $instance->addCreditPluginManager = $container->get('plugin.manager.apigee_add_credit_entity_type');
+    return $instance;
   }
 
   /**

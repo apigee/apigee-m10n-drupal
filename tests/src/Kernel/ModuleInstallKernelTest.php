@@ -93,7 +93,7 @@ class ModuleInstallKernelTest extends KernelTestBase {
     $this->setRawContent((string) $response->getContent());
 
     // Make sure both modules are on the uninstall page.
-    $this->assertText('Uninstall Apigee Edge module');
+    $this->assertText('Uninstall Apigee module');
     $this->assertText('Uninstall Apigee Monetization module');
 
     // Check the installed permissions.
