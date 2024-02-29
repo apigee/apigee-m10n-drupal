@@ -3,7 +3,7 @@ description: Provides the ability to create a Drupal Commerce "Add Credit" produ
 package: Apigee
 
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10
 
 dependencies:
   - apigee_m10n:apigee_m10n
@@ -16,4 +16,4 @@ dependencies:
   - commerce:commerce_checkout
   - jquery_ui_dialog:jquery_ui_dialog
 
-php: 8.0
+php: 8.1
