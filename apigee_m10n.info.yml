@@ -3,11 +3,9 @@ description: Apigee Edge Monetization Drupal integration
 package: Apigee
 
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10
 
 dependencies:
   - apigee_edge:apigee_edge
   - drupal:link
   - requirement:requirement
-
-php: 8.0
