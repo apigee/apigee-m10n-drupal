@@ -9,3 +9,5 @@ dependencies:
   - apigee_edge:apigee_edge
   - drupal:link
   - requirement:requirement
+
+php: 8.1
