@@ -315,7 +315,6 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     $company_id = $team->getDisplayName();
 
     if (!isset($eligible_product_cache[$company_id])) {
-      // kint($this->sdkConnector->getOrganization());
       // Instantiate an instance of the m10n ApiProduct controller.
       $product_controller = $this->sdk_controller_factory->companyApiProductController($company_id);
       // Get a list of available products for the m10n company.
