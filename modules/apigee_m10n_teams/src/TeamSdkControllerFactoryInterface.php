@@ -63,7 +63,7 @@ interface TeamSdkControllerFactoryInterface {
   public function teamBalanceController($team_id): CompanyPrepaidBalanceControllerInterface;
 
   /**
-   * Creates a team prepaid balance controller.
+   * Creates a company api product controller.
    *
    * @param string $company_id
    *   The team ID.
