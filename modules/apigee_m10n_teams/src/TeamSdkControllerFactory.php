@@ -89,7 +89,7 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
     if (empty($this->controllers[__FUNCTION__][$company_id])) {
       // Don't assume the bucket has been initialized.
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
-      // Create a new balance controller.
+      // Create a new company Api Product controller.
       $this->controllers[__FUNCTION__][$company_id] = new ApiProductController(
         $this->getOrganization(),
         $this->getClient()
