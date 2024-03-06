@@ -22,6 +22,7 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
+use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\MonetizationInterface;
@@ -39,6 +40,7 @@ use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFor
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -302,6 +304,34 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $this->logger->error('Unable to accept latest TnC: ' . $t->getMessage());
     }
     return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): AccessResultInterface {
+    // Cache results for this request.
+    static $eligible_product_cache = [];
+    $company_id = $team->getDisplayName();
+
+    if (!isset($eligible_product_cache[$company_id])) {
+      // Instantiate an instance of the m10n ApiProduct controller.
+      $product_controller = $this->sdk_controller_factory->companyApiProductController($company_id);
+      // Get a list of available products for the m10n company.
+      $eligible_product_cache[$company_id] = $product_controller->getEligibleProductsByCompany($company_id);
+
+    }
+
+    // Get just the IDs from the available products.
+    $product_ids = array_map(function ($product) {
+      return $product->id();
+    }, $eligible_product_cache[$company_id]);
+
+    // Allow only if the id is in the eligible list.
+    return in_array(strtolower($api_product->id()), $product_ids)
+      ? AccessResult::allowed()
+      : AccessResult::forbidden('Product is not eligible for this company');
+
   }
 
 }
