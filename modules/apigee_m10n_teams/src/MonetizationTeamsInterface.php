@@ -23,8 +23,10 @@ namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
+use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -136,5 +138,20 @@ interface MonetizationTeamsInterface {
    *   Terms and conditions history item.
    */
   public function acceptLatestTermsAndConditions(string $company_id): ?LegalEntityTermsAndConditionsHistoryItem;
+
+  /**
+   * Checks access to a product for a given account.
+   *
+   * @param \Drupal\apigee_edge\Entity\ApiProductInterface $api_product
+   *   The 'api_product'  entity.
+   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
+   *   The 'api_product'  entity.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   Whether or not the user has access to the entity.
+   */
+  public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): ?AccessResultInterface;
 
 }

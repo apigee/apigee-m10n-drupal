@@ -21,6 +21,9 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\apigee_edge\Entity\ApiProductInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 
 /**
  * Implements hook_entity_type_alter().
@@ -55,4 +58,18 @@ function apigee_m10n_teams_purchased_plan_access(EntityInterface $entity, $opera
  */
 function apigee_m10n_teams_product_bundle_access(EntityInterface $entity, $operation, AccountInterface $account) {
   return Drupal::service('apigee_m10n.teams')->entityAccess($entity, $operation, $account);
+}
+
+/**
+ * Implements hook_apigee_edge_teams_team_api_product_access().
+ */
+function apigee_m10n_teams_apigee_edge_teams_team_api_product_access(ApiProductInterface $api_product, string $operation, TeamInterface $team, AccountInterface $account) {
+  // For the assignment operation a product must either be free or purchased.
+  if ($operation == 'assign') {
+    return \Drupal::service('apigee_m10n.teams')
+      ->apiProductTeamAssignmentAccess($api_product, $team, $account);
+  }
+
+  // No opinion on other operations.
+  return AccessResult::neutral();
 }
