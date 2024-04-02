@@ -80,9 +80,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $page = $this->getSession()->getPage();
     $page->pressButton('Show row weights');
     $page->selectFieldOption('fields[price][region]', 'hidden');
-    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->waitForField('fields[price][region]');
     $page->selectFieldOption('fields[apigee_price_range][region]', 'content');
-    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->waitForField('fields[apigee_price_range][region]');
     $this->submitForm([], 'Save');
 
     // Check if price field is disabled and all price range fields are visible.
