@@ -65,7 +65,7 @@ class Developer extends AddCreditEntityTypeBase {
     string $plugin_id,
     $plugin_definition,
     EntityTypeManagerInterface $entity_type_manager,
-    RequestStack $request
+    RequestStack $request,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager);
     $this->request = $request;
