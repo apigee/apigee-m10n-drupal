@@ -173,3 +173,4 @@ field.formatter.settings.apigee_date_and_text_formatter:
     text:
       type: string
       label: 'Text'
+      
