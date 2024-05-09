@@ -251,8 +251,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $admin_routes = [
       Url::fromRoute('apigee_m10n.settings'),
       Url::fromRoute('apigee_m10n.settings.rate_plan_x'),
-      Url::fromRoute('apigee_m10n.settings.xproduct'),
-      Url::fromRoute('apigee_m10n.settings.purchased_product'),
+      Url::fromRoute('entity.entity_view_display.purchased_plan.default'),
       Url::fromRoute('entity.xproduct.collection'),
     ];
 
