@@ -169,7 +169,7 @@ class Monetization implements MonetizationInterface {
     LoggerInterface $logger,
     PermissionHandlerInterface $permission_handler,
     CurrencyFormatterInterface $currency_formatter,
-    OrganizationControllerInterface $organization_controller
+    OrganizationControllerInterface $organization_controller,
   ) {
     $this->sdkConnector           = $sdk_connector;
     $this->sdkControllerFactory   = $sdk_controller_factory;
