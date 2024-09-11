@@ -470,9 +470,9 @@ class Monetization implements MonetizationInterface {
     $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
     $criteria = new PrepaidBalanceReportCriteria(strtoupper($date->format('F')), (int) $date->format('Y'));
     $criteria
-      ->developers($developer_id)
-      ->currencies($currency)
-      ->showTransactionDetail(TRUE);
+      ->setDevelopers($developer_id)
+      ->setCurrencies($currency)
+      ->setShowTransactionDetail(TRUE);
     return $controller->generateReport($criteria);
   }
 
