@@ -8,7 +8,7 @@
         "ext-bcmath": "*",
         "cweagans/composer-patches": "~1.6",
         "commerceguys/intl": "^2.0",
-        "drupal/apigee_edge": "^3.0.8",
+        "drupal/apigee_edge": "^3.0.0",
         "drupal/core": "^10.2",
         "drupal/requirement": "^1.2",
         "drupal/jquery_ui_dialog": "^2.0",
