@@ -285,9 +285,9 @@ abstract class ReportsDownloadFormBase extends FormBase {
     $controller = $this->sdkControllerFactory->developerReportDefinitionController($developer_id);
     $criteria = new RevenueReportCriteria($from_date, $to_date);
     $criteria
-      ->developers($developer_id)
-      ->currencies($currency)
-      ->showTransactionDetail(TRUE);
+      ->setDevelopers($developer_id)
+      ->setCurrencies($currency)
+      ->setShowTransactionDetail(TRUE);
     return $controller->generateReport($criteria);
   }
 
