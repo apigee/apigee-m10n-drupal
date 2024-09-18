@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\ApiProduct;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Apigee\Edge\Entity\Property\AttributesPropertyAwareTrait;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\DescriptionPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DisplayNamePropertyAwareDecoratorTrait;
@@ -63,6 +64,7 @@ use Drupal\user\UserInterface;
 #[\AllowDynamicProperties]
 class XProduct extends FieldableEdgeEntityBase implements XProductInterface {
 
+  use AttributesPropertyAwareTrait;
   use DisplayNamePropertyAwareDecoratorTrait;
   use DescriptionPropertyAwareDecoratorTrait;
   use IdPropertyAwareDecoratorTrait;
