@@ -137,7 +137,7 @@ class BuyApiController extends ControllerBase {
           'url.developer',
         ],
         'tags' => [],
-        'max-age' => 0,
+        'max-age' => 300,
       ],
       '#attached' => ['library' => ['apigee_m10n/rate_plan.entity_list']],
     ];

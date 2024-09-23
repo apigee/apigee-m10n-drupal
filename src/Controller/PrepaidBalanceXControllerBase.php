@@ -161,7 +161,7 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
       '#cache' => [
         'contexts' => ['url.path'],
         'tags' => $this->getCacheTags($this->entity),
-        'max-age' => 0,
+        'max-age' => $max_age = $this->getCacheMaxAge(),
         'keys' => [static::getCacheId($this->entity, 'prepaid_balances')],
       ],
     ];
@@ -320,6 +320,7 @@ abstract class PrepaidBalanceXControllerBase extends ControllerBase implements P
    */
   public static function getCacheTags(EntityInterface $entity) {
     return [
+      static::CACHE_MISS,
       static::CACHE_PREFIX,
       static::getCacheId($entity),
     ];
