@@ -31,7 +31,7 @@ class ReportsDownloadForm extends ReportsDownloadFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?UserInterface $user = NULL) {
     return $this->getForm($form, $form_state, $user);
   }
 

@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
-use Drupal\apigee_edge_teams\Entity\TeamRoleInterface;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\ApigeeMonetizationTeamsTestTrait;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
+use Drupal\apigee_edge_teams\Entity\TeamRoleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

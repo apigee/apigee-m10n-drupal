@@ -19,11 +19,11 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin;
 
-use Drupal\apigee_m10n_add_credit\Annotation\AddCreditEntityType;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n_add_credit\Annotation\AddCreditEntityType;
 
 /**
  * Defines a manager for add credit entity type plugins.

@@ -57,7 +57,7 @@ class TeamProductBundleStorage extends ProductBundleStorage implements TeamProdu
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
 
-      // TODO: Consider caching this list in the DB.
+      // @todo Consider caching this list in the DB.
       // Set static cache.
       $this->product_bundles_by_team[$team_id] = array_map(function ($entity) {
         return $entity->id();

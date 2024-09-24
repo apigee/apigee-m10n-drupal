@@ -59,7 +59,7 @@ class RevenueShareRatesFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    // @todo: Implement settings summary.
+    // @todo Implement settings summary.
     $summary = [];
 
     return $summary;

@@ -103,21 +103,21 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
   /**
    * {@inheritdoc}
    */
-  public function getPossibleValues(AccountInterface $account = NULL) {
+  public function getPossibleValues(?AccountInterface $account = NULL) {
     return $this->getSettableValues($account);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPossibleOptions(AccountInterface $account = NULL) {
+  public function getPossibleOptions(?AccountInterface $account = NULL) {
     return $this->getSettableOptions($account);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getSettableValues(AccountInterface $account = NULL) {
+  public function getSettableValues(?AccountInterface $account = NULL) {
     $flatten_options = OptGroup::flattenOptions($this->getSettableOptions($account));
     return array_keys($flatten_options);
   }
@@ -125,7 +125,7 @@ class AddCreditTargetItem extends FieldItemBase implements OptionsProviderInterf
   /**
    * {@inheritdoc}
    */
-  public function getSettableOptions(AccountInterface $account = NULL) {
+  public function getSettableOptions(?AccountInterface $account = NULL) {
     $entity_bundle_info = \Drupal::service('entity_type.bundle.info');
     $options = [];
     foreach (\Drupal::service('plugin.manager.apigee_add_credit_entity_type')->getEntities($account) as $entity_type => $entities) {

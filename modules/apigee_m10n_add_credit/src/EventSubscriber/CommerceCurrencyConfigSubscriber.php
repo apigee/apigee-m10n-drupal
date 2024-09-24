@@ -7,15 +7,13 @@
 
 namespace Drupal\apigee_m10n_add_credit\EventSubscriber;
 
-use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Drupal\commerce_price\Price;
 use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\commerce_price\Price;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -162,8 +160,8 @@ class CommerceCurrencyConfigSubscriber implements EventSubscriberInterface {
         $original_data = $config->getOriginal();
         $currencyCode = $original_data['currencyCode'];
         $addCreditProducts = $this->entityTypeManager->getStorage('commerce_product')->loadByProperties([
-          'apigee_add_credit_enabled' => '1'
-          ]
+          'apigee_add_credit_enabled' => '1',
+        ]
         );
         foreach ($addCreditProducts as $product) {
           if ($product_variation = $product->getDefaultVariation()) {

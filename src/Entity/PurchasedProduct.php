@@ -21,18 +21,15 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\AcceptedRatePlan;
 use Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlan;
-use Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
-use Apigee\Edge\Entity\Property\NamePropertyAwareTrait;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\ApiProductPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\EndTimePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartTimePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\XRatePlanInterface as DrupalRatePlanInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
 
@@ -125,7 +122,7 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
     parent::__construct($values, $entity_type, $decorated);
 
     if (!empty($values['xratePlan']) && $values['xratePlan'] instanceof DrupalRatePlanInterface) {
-      // TODO: Since `RatePlan::createFrom($sdk_rate_plan)` is available do we
+      // @todo Since `RatePlan::createFrom($sdk_rate_plan)` is available do we
       // need to store an extra reference here. Is the slight performance
       // benefit worth it?
       $this->setRatePlan($values['xratePlan']);
@@ -173,7 +170,7 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
       'developer',
       'name',
       'apiProduct',
-      'ratePlan'
+      'ratePlan',
     ];
     // Disable the form display entry for all read only fields.
     foreach ($read_only_fields as $field_name) {
@@ -278,7 +275,7 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
    */
   public function getDeveloper(): ?DeveloperInterface {
     $currentUserId = $this->currentUser;
-    // TODO: Return the `apigee_edge` developer entity reference.
+    // @todo Return the `apigee_edge` developer entity reference.
     return $this->decorated->getDeveloper($currentUserId);
   }
 

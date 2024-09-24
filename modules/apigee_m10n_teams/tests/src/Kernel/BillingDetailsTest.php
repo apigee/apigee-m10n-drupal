@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
-use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
 
 /**

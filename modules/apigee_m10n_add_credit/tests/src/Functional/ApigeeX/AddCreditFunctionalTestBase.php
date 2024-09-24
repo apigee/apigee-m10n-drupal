@@ -19,12 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional\ApigeeX;
 
-use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
-use Drupal\apigee_edge\Job\Job;
-use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\Tests\apigee_m10n\Functional\ApigeeX\MonetizationFunctionalTestBase;
 use Drupal\Tests\apigee_m10n_add_credit\Traits\ApigeeX\AddCreditFunctionalTestTrait;
+use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -57,7 +55,7 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     'commerce',
     'user',
     'field_ui',
-    'jquery_ui_dialog'
+    'jquery_ui_dialog',
   ];
 
   /**
@@ -97,7 +95,6 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
 
     // Before finalizing the payment, we have to add a couple of responses to
     // the queue.
-
     $this->warmApigeexOrganizationCache();
 
     $this->stack

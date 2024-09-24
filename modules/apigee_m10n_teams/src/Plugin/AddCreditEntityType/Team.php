@@ -19,15 +19,14 @@
 
 namespace Drupal\apigee_m10n_teams\Plugin\AddCreditEntityType;
 
-use Drupal\apigee_edge_teams\TeamMembershipManagerInterface;
-use Drupal\apigee_m10n_add_credit\Annotation\AddCreditEntityType;
-use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_edge_teams\TeamMembershipManagerInterface;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

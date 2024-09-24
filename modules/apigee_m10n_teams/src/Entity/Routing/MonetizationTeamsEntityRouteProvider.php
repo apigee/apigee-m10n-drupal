@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Routing;
 
-use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
 use Symfony\Component\Routing\Route;
 
 /**

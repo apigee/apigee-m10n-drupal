@@ -119,12 +119,12 @@ class PriceRange extends FormElement {
       ],
       '#attached' => [
         'library' => [
-          'apigee_m10n_add_credit/price_range'
+          'apigee_m10n_add_credit/price_range',
         ],
       ],
       'fields' => [
         '#type' => 'container',
-      ]
+      ],
     ];
 
     // Add the help text if specified.
@@ -153,7 +153,7 @@ class PriceRange extends FormElement {
       $element['price_range']['fields']['minimum']['#required'] = TRUE;
 
       if (isset($element['#ajax'])) {
-        // TODO: Explain why we have are copying ajax over to number fields.
+        // @todo Explain why we have are copying ajax over to number fields.
         $element['price_range']['fields'][$name]['#ajax'] = $element['#ajax'];
       }
     }

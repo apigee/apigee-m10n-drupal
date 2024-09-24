@@ -19,11 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel\ApigeeX;
 
-use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
+use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_store\StoreCreationTrait;
-use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
 
 /**
  * Tests the status page for add credit.

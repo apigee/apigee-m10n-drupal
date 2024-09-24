@@ -24,11 +24,11 @@ use Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\EndDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\RatePlanInterface as DrupalRatePlanInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
 
@@ -116,7 +116,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
     parent::__construct($values, $entity_type, $decorated);
     // Save entity references in this class as well as the decorated instance.
     if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof DrupalRatePlanInterface) {
-      // TODO: Since `RatePlan::createFrom($sdk_rate_plan)` is available do we
+      // @todo Since `RatePlan::createFrom($sdk_rate_plan)` is available do we
       // need to store an extra reference here. Is the slight performance
       // benefit worth it?
       $this->setRatePlan($values['ratePlan']);
@@ -374,7 +374,7 @@ class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInte
    * {@inheritdoc}
    */
   public function getDeveloper(): ?DeveloperInterface {
-    // TODO: Return the `apigee_edge` developer entity reference.
+    // @todo Return the `apigee_edge` developer entity reference.
     return $this->decorated->getDeveloper();
   }
 

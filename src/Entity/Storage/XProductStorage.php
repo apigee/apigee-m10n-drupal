@@ -19,14 +19,12 @@
 
 namespace Drupal\apigee_m10n\Entity\Storage;
 
-use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
-use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
-use Drupal\apigee_m10n\Entity\Storage\Controller\XProductEntityControllerProxy;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
+use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -119,7 +117,7 @@ class XProductStorage extends EdgeEntityStorageBase implements XProductStorageIn
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
 
-      // TODO: Consider caching this list in the DB.
+      // @todo Consider caching this list in the DB.
       // Set static cache.
       $this->xproduct_by_developer[$developer_id] = array_map(function ($entity) {
         return $entity->id();
@@ -153,7 +151,7 @@ class XProductStorage extends EdgeEntityStorageBase implements XProductStorageIn
       $this->invokeStorageLoadHook($entities);
       $this->setPersistentCache($entities);
 
-      // TODO: Consider caching this list in the DB.
+      // @todo Consider caching this list in the DB.
       // Set static cache.
       $this->all_xproduct = array_map(function ($entity) {
         return $entity->id();

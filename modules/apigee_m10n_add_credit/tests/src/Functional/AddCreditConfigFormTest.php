@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
+use Drupal\Core\Url;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_product\Entity\ProductType;
-use Drupal\Core\Url;
 
 /**
  * Tests the add credit config form.
@@ -103,7 +103,7 @@ class AddCreditConfigFormTest extends AddCreditFunctionalTestBase {
     $this->assertCssElementContains('div.apigee-add-credit-notification-note', 'See Drupal commerce documentation.');
 
     // Test form config.
-    // TODO: cache supported currencies.
+    // @todo cache supported currencies.
     $this->queueMockResponses(['get-supported-currencies', 'get-supported-currencies']);
     $this->submitForm([
       'use_modal' => FALSE,

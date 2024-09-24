@@ -55,18 +55,18 @@ class SetBillingType extends AddCreditFunctionalJavascriptTestBase {
     // Create and sign in a user with view own billing details permissions
     // and billing type as Prepaid.
     $this->stack->queueMockResponse([
-      'post-apigeex-billing-type'
+      'post-apigeex-billing-type',
     ]);
     $this->developer1 = $this->signIn(['view own billing details'], 'Prepaid');
 
     $this->queueApigeexDeveloperResponse($this->developer1);
     $this->stack->queueMockResponse([
-      'post-apigeex-billing-type'
+      'post-apigeex-billing-type',
     ]);
 
     $this->queueApigeexDeveloperResponse($this->developer1);
     $this->stack->queueMockResponse([
-      'get-apigeex-billing-type'
+      'get-apigeex-billing-type',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.xprofile', [
@@ -78,7 +78,7 @@ class SetBillingType extends AddCreditFunctionalJavascriptTestBase {
     $this->assertSession()->responseContains('Prepaid');
 
     $this->stack->queueMockResponse([
-      'post-apigeex-billing-type' => ['billingType' => 'Postpaid']
+      'post-apigeex-billing-type' => ['billingType' => 'Postpaid'],
     ]);
 
     // Create and sign in a user with view own billing details permissions
@@ -87,12 +87,12 @@ class SetBillingType extends AddCreditFunctionalJavascriptTestBase {
 
     $this->queueApigeexDeveloperResponse($this->developer);
     $this->stack->queueMockResponse([
-      'post-apigeex-billing-type' => ['billingType' => 'Postpaid']
+      'post-apigeex-billing-type' => ['billingType' => 'Postpaid'],
     ]);
 
     $this->queueApigeexDeveloperResponse($this->developer);
     $this->stack->queueMockResponse([
-      'get-apigeex-billing-type'  => ['billingType' => 'Postpaid']
+      'get-apigeex-billing-type'  => ['billingType' => 'Postpaid'],
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.xprofile', [

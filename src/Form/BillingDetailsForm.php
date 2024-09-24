@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Form;
 
 use Apigee\Edge\Api\Monetization\Controller\DeveloperControllerInterface;
-use Drupal\apigee_edge\Entity\Developer;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -28,6 +27,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_edge\Entity\Developer;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -136,7 +136,7 @@ class BillingDetailsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?UserInterface $user = NULL) {
     $this->developer = Developer::load($user->getEmail());
 
     // Load the mint developer to retrieve legal name and billing type.

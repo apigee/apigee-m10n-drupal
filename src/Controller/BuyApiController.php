@@ -19,21 +19,16 @@
 
 namespace Drupal\apigee_m10n\Controller;
 
-use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
-use Drupal\apigee_m10n\Entity\XProduct;
-use Drupal\apigee_m10n\Entity\XRatePlan;
-use Drupal\apigee_m10n\Form\RatePlanXConfigForm;
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactoryInterface;
+use Drupal\apigee_m10n\Entity\XRatePlan;
+use Drupal\apigee_m10n\Form\RatePlanXConfigForm;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -147,7 +142,7 @@ class BuyApiController extends ControllerBase {
     $view_builder = $this->entityTypeManager()->getViewBuilder('xrate_plan');
 
     foreach ($plans as $id => $plan) {
-      // TODO: Add a test for render cache.
+      // @todo Add a test for render cache.
       $build['#cache']['tags'] = Cache::mergeTags($build['#cache']['tags'], $plan->getCacheTags());
       // Generate a build array using the view builder.
       $build['#children'][$id] = $view_builder->view($plan, $view_mode);

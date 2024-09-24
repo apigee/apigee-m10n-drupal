@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanLinkFormatter;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Link;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanLinkFormatter;
 
 /**
  * Class override for the `apigee_purchase_plan_link` field formatter.

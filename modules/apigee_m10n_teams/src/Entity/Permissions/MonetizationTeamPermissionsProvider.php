@@ -20,9 +20,9 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Permissions;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\apigee_edge_teams\DynamicTeamPermissionProviderInterface;
 use Drupal\apigee_edge_teams\Structure\TeamPermission;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Provides the default team permissions.

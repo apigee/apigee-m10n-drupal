@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional\ApigeeX;
 
+use Drupal\Core\Url;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_product\Entity\ProductType;
-use Drupal\Core\Url;
 
 /**
  * Tests the add credit button on prepaid balance page.
@@ -56,9 +56,9 @@ class AddCreditPrepaidBalancePageTest extends AddCreditFunctionalTestBase {
     $this->stack->queueMockResponse(['post-apigeex-billing-type']);
 
     $this->developer = $this->signIn([
-                        'view own prepaid balance',
-                        'add credit to own developer prepaid balance'
-                      ], 'prepaid');
+      'view own prepaid balance',
+      'add credit to own developer prepaid balance',
+    ], 'prepaid');
 
     // Enable add credit for the product type.
     $product_type = ProductType::load('default');

@@ -21,12 +21,6 @@ namespace Drupal\apigee_m10n\Entity\Form;
 
 use Apigee\Edge\Api\Monetization\Entity\LegalEntityInterface;
 use Apigee\Edge\Exception\ClientErrorException;
-use Apigee\Edge\Exception\ServerErrorException;
-use Drupal\apigee_edge\Entity\ApiProductInterface;
-use Drupal\apigee_edge\Entity\Developer;
-use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityForm;
-use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -34,7 +28,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
+use Drupal\apigee_edge\Entity\Developer;
+use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityForm;
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -135,7 +132,7 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
    * {@inheritdoc}
    */
   public function getFormId() {
-    // @TODO: Make sure we find a better way to handle names
+    // @todo Make sure we find a better way to handle names
     // without adding rate plan ID this form is getting cached
     // and when rendered as a formatter.
     // Also known issue in core @see https://www.drupal.org/project/drupal/issues/766146.
@@ -148,7 +145,6 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
     // Redirect to Rate Plan detail page on submit.
-
     $form['#action'] = $this->getEntity()->getRatePlan()->toUrl('purchase')->toString();
     return $form;
   }
@@ -197,7 +193,6 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     try {
       // Auto assign legal name.
-
       $developer_id = $this->getEntity()->getDeveloper()->getEmail();
       $developer = Developer::load($developer_id);
 
@@ -264,12 +259,12 @@ class PurchasedProductForm extends FieldableEdgeEntityForm {
       return;
     }
 
-    /* @var \Drupal\apigee_m10n\Entity\PurchasedProduct $purchased_product */
+    /** @var \Drupal\apigee_m10n\Entity\PurchasedProduct $purchased_product */
     $purchased_product = $form_state->getFormObject()->getEntity();
     $rate_plan = $purchased_product->getRatePlan();
     $user = $purchased_product->getOwner();
 
-    /* @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdk */
+    /** @var \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdk */
     $sdk = \Drupal::service('apigee_m10n.sdk_controller_factory');
     try {
       $developer_billing_type = $sdk->developerBillingTypeController($user->getEmail())->getAllBillingDetails();

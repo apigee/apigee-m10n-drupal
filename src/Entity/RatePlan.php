@@ -27,6 +27,8 @@ use Apigee\Edge\Api\Monetization\Entity\RatePlanRevisionInterface;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\CurrencyPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DescriptionPropertyAwareDecoratorTrait;
@@ -42,8 +44,6 @@ use Drupal\apigee_m10n\Entity\Property\PaymentDueDaysPropertyAwareDecoratorTrait
 use Drupal\apigee_m10n\Entity\Property\RecurringFeePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\SetUpFeePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartDatePropertyAwareDecoratorTrait;
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 
 /**

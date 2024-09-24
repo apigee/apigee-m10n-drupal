@@ -25,9 +25,9 @@ use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategory;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
-use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
+use Drupal\apigee_m10n\Entity\RatePlan;
 
 /**
  * Class TeamRatePlanAccessTest.

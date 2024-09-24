@@ -19,8 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel\Plugin;
 
-use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n_add_credit\Plugin\AddCreditEntityTypeInterface;
 
 /**
  * Tests the AddCreditEntityTypeManager plugin.
@@ -118,7 +118,7 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
       'get-developers' => [
         'developers' => [$this->currentUser],
         'org_name' => $this->sdk_connector->getOrganization(),
-      ]
+      ],
     ]);
     $this->assertCount(1, $this->manager->getEntities($this->currentUser)['developer']);
   }
