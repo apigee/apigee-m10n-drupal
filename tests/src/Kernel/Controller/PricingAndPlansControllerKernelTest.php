@@ -22,11 +22,11 @@ namespace Drupal\Tests\apigee_m10n\Kernel\Controller;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\StandardRatePlan;
-use Drupal\apigee_edge\Entity\ApiProduct;
-use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_edge\Entity\ApiProduct;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -178,7 +178,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     foreach ($rate_plans as $product_bundle_id => $plans) {
       foreach ($plans as $plan) {
         if (get_class($plan->decorated()) == DeveloperRatePlan::class) {
-          /* @var DeveloperRatePlan $decorated */
+          /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan $decorated */
           $decorated = $plan->decorated();
           $this->assertSame($this->accounts['developer']->getEmail(), $decorated->getDeveloper()->getEmail(), 'Email is the same');
         }
@@ -202,7 +202,6 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     }
 
     // Test the same but for a different developer context.
-
     // Queue the product bundle response.
     $this->stack->queueMockResponse(['get_monetization_packages' => ['packages' => $product_bundles]]);
     foreach ($rate_plans as $product_bundle_id => $plans) {
@@ -211,7 +210,7 @@ class PricingAndPlansControllerKernelTest extends MonetizationKernelTestBase {
     foreach ($rate_plans as $product_bundle_id => $plans) {
       foreach ($plans as $plan) {
         if (get_class($plan->decorated()) == DeveloperRatePlan::class) {
-          /* @var DeveloperRatePlan $decorated */
+          /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan $decorated */
           $decorated = $plan->decorated();
           $this->assertSame($this->accounts['developer']->getEmail(), $decorated->getDeveloper()->getEmail(), 'Email is the same');
         }

@@ -58,7 +58,7 @@ class NavigationTest extends MonetizationFunctionalTestBase {
   public function testNavigation() {
     $this->developer = $this->createAccount([
       'view xproduct',
-      'view own purchased_plan'
+      'view own purchased_plan',
     ]);
     // Warm the ApigeeX organization.
     $this->warmApigeexOrganizationCache();
@@ -88,8 +88,8 @@ class NavigationTest extends MonetizationFunctionalTestBase {
       ],
     ])->queueMockResponse([
       'get_monetization_apigeex_plans' => [
-        'plans' => [$xrate_plan]
-      ]
+        'plans' => [$xrate_plan],
+      ],
     ]);
 
     // Check the manage Manage Subscriptions link.

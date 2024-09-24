@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_test\Plugin\KeyProvider;
 
-use Drupal\apigee_edge\Plugin\KeyProvider\EnvironmentVariablesKeyProvider;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\apigee_edge\Plugin\KeyProvider\EnvironmentVariablesKeyProvider;
 use Drupal\key\KeyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

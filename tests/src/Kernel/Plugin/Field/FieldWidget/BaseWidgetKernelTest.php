@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldWidget;
 
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 
 /**
  * Base test class for field widget tests.

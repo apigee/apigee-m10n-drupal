@@ -20,8 +20,8 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Entity\Render;
 
 use Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Exception\InvalidRatePlanIdException;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Exception\InvalidRatePlanIdException;
 
 /**
  * Kernel test for the rate plan storage.
