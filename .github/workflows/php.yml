@@ -137,7 +137,7 @@ jobs:
         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
     - name: "Run PHPUnit tests"
-      if: ${{ matrix.drupal-core != '10.1.x' || matrix.php-version != '8.1' }}
+      if: ${{ matrix.drupal-core != '10.2.x' || matrix.php-version != '8.2' }}
       run: |
         cd drupal
         vendor/bin/phpunit -c core --verbose --color --group apigee_m10n --testsuite unit,kernel,functional,functional-javascript modules/contrib/apigee_m10n
