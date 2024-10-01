@@ -64,7 +64,7 @@ class UpdateBillingTypeTest extends AddCreditFunctionalJavascriptTestBase {
 
     // Create and sign in a user with no update any billing type permissions.
     $this->stack->queueMockResponse([
-      'post-apigeex-billing-type'
+      'post-apigeex-billing-type',
     ]);
     $this->developeruser = $this->signIn([], 'Prepaid');
 
@@ -76,7 +76,7 @@ class UpdateBillingTypeTest extends AddCreditFunctionalJavascriptTestBase {
     $this->assertSession()->responseContains('Access denied');
 
     $this->stack->queueMockResponse([
-      'get-apigeex-billing-type'
+      'get-apigeex-billing-type',
     ]);
 
     // Create and sign in a user with update any billing type permissions.
@@ -84,12 +84,12 @@ class UpdateBillingTypeTest extends AddCreditFunctionalJavascriptTestBase {
 
     $this->queueApigeexDeveloperResponse($this->developeruser);
     $this->stack->queueMockResponse([
-      'post-apigeex-billing-type'
+      'post-apigeex-billing-type',
     ]);
 
     $this->queueApigeexDeveloperResponse($this->developeruser);
     $this->stack->queueMockResponse([
-      'get-apigeex-billing-type'
+      'get-apigeex-billing-type',
     ]);
 
     $this->drupalGet(Url::fromRoute('apigee_m10n_add_credit.userbillingtype', [
@@ -129,7 +129,7 @@ class UpdateBillingTypeTest extends AddCreditFunctionalJavascriptTestBase {
 
     // Test form config.
     $this->submitForm([
-      'billingtype' => 'postpaid'
+      'billingtype' => 'postpaid',
     ], 'Save changes');
 
     $this->queueApigeexDeveloperResponse($this->developeruser);

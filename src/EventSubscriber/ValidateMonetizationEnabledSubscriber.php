@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n\EventSubscriber;
 
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;

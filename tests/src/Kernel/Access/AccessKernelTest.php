@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Access;
 
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\Entity\User;
 
 /**

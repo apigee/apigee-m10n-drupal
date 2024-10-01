@@ -19,15 +19,15 @@
 
 namespace Drupal\apigee_m10n_add_credit\Form;
 
-use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
-use Drupal\commerce_price\Entity\Currency;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
+use Drupal\commerce_price\Entity\Currency;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -120,8 +120,8 @@ class AddCreditConfigForm extends ConfigFormBase {
       '#type' => 'container',
       '#attributes' => [
         'class' => [
-          'container-inline'
-        ]
+          'container-inline',
+        ],
       ],
       'text' => [
         '#type' => 'html_tag',

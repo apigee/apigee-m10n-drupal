@@ -23,8 +23,8 @@ use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategory;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
-use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Entity\RatePlan;
 
 /**
  * Class RatePlanAccessTest.

@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\RatePlan as MonetizationRatePlan;
-use Apigee\Edge\Api\ApigeeX\Entity\RatePlanRevisionInterface;
 use Apigee\Edge\Api\ApigeeX\Entity\StandardRatePlan;
 use Apigee\Edge\Api\ApigeeX\Structure\ConsumptionPricingRate;
 use Apigee\Edge\Api\ApigeeX\Structure\FixedRecurringFee;
@@ -30,6 +29,8 @@ use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\ApiXProductPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\BillingPeriodPropertyAwareDecoratorTrait;
@@ -45,8 +46,6 @@ use Drupal\apigee_m10n\Entity\Property\PaymentFundingModelPropertyAwareDecorator
 use Drupal\apigee_m10n\Entity\Property\RevenueShareTypePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StartTimePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\XPackagePropertyAwareDecoratorTrait;
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 
 /**

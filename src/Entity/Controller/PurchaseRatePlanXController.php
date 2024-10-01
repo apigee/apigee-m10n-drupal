@@ -20,12 +20,12 @@
 namespace Drupal\apigee_m10n\Entity\Controller;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\PurchasedProduct;
-use Drupal\apigee_m10n\Entity\XRatePlanInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\apigee_m10n\Entity\PurchasedProduct;
+use Drupal\apigee_m10n\Entity\XRatePlanInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -75,7 +75,6 @@ class PurchaseRatePlanXController extends ControllerBase implements ContainerInj
    */
   public function purchaseForm(UserInterface $user, XRatePlanInterface $xrate_plan) {
     // Create a purchased_plan to pass to the purchased_plan edit form.
-
     $purchased_plan = PurchasedProduct::create([
       'xratePlan' => $xrate_plan,
       'developer' => new Developer(['email' => $user->getEmail()]),
@@ -100,7 +99,7 @@ class PurchaseRatePlanXController extends ControllerBase implements ContainerInj
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The title.
    */
-  public function title(RouteMatchInterface $route_match, UserInterface $user = NULL, XRatePlanInterface $xrate_plan = NULL) {
+  public function title(RouteMatchInterface $route_match, ?UserInterface $user = NULL, ?XRatePlanInterface $xrate_plan = NULL) {
     return $this->t('Purchase @rate_plan', ['@rate_plan' => $xrate_plan->getDisplayName()]);
   }
 

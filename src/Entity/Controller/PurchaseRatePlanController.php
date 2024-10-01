@@ -20,12 +20,12 @@
 namespace Drupal\apigee_m10n\Entity\Controller;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -100,7 +100,7 @@ class PurchaseRatePlanController extends ControllerBase implements ContainerInje
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The title.
    */
-  public function title(RouteMatchInterface $route_match, UserInterface $user = NULL, RatePlanInterface $rate_plan = NULL) {
+  public function title(RouteMatchInterface $route_match, ?UserInterface $user = NULL, ?RatePlanInterface $rate_plan = NULL) {
     return $this->t('Purchase @rate_plan', ['@rate_plan' => $rate_plan->getDisplayName()]);
   }
 

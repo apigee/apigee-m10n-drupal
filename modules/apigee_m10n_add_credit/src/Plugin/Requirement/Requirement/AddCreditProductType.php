@@ -56,7 +56,7 @@ class AddCreditProductType extends RequirementBase {
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    /* @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
+    /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
     $display_repository = \Drupal::service('entity_display.repository');
 
     $order_type_id = '';
@@ -72,7 +72,7 @@ class AddCreditProductType extends RequirementBase {
           'id' => 'add_credit',
           'label' => 'Add credit',
           'targetEntityType' => 'commerce_order',
-          'configuration' => ['pattern' => '[commerce_order:uuid]-[pattern:number]']
+          'configuration' => ['pattern' => '[commerce_order:uuid]-[pattern:number]'],
         ]);
         $number_pattern->save();
       }

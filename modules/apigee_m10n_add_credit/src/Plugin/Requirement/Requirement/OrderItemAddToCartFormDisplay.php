@@ -19,11 +19,11 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\requirement\Plugin\RequirementBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

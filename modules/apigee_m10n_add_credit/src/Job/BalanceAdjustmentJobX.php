@@ -20,18 +20,14 @@
 namespace Drupal\apigee_m10n_add_credit\Job;
 
 use Apigee\Edge\Api\ApigeeX\Controller\PrepaidBalanceControllerInterface;
-use Drupal\apigee_edge\Entity\DeveloperInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Language\Language;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\apigee_edge\Job\EdgeJob;
-use Drupal\apigee_m10n\Controller\PrepaidBalanceXController;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_price\Price;
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Language\Language;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\user\UserInterface;
 
 /**
  * An apigee job that will apply a balance adjustment.
@@ -43,7 +39,7 @@ use Drupal\user\UserInterface;
  * error will let the job runner know that the request was unsuccessful and will
  * trigger a retry.
  *
- * @todo: Handle refunds when the monetization API supports it.
+ * @todo Handle refunds when the monetization API supports it.
  */
 class BalanceAdjustmentJobX extends EdgeJob {
 
@@ -92,7 +88,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The drupal commerce order.
    */
-  public function __construct(EntityInterface $developer, Adjustment $adjustment, OrderInterface $order = NULL) {
+  public function __construct(EntityInterface $developer, Adjustment $adjustment, ?OrderInterface $order = NULL) {
     parent::__construct();
 
     $this->developer = $developer->getOwner();
@@ -220,7 +216,6 @@ class BalanceAdjustmentJobX extends EdgeJob {
     // wasn't applied, we could return true here and the top-up would be
     // retried.
     // @todo Return true once we can determine the payment wasn't applied.
-
     return FALSE;
   }
 

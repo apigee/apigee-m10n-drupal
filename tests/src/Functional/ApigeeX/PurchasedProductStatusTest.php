@@ -83,8 +83,8 @@ class PurchasedProductStatusTest extends MonetizationFunctionalTestBase {
       ],
     ])->queueMockResponse([
       'get_monetization_apigeex_plans' => [
-        'plans' => [$xrate_plan]
-      ]
+        'plans' => [$xrate_plan],
+      ],
     ]);
 
     $this->drupalGet(Url::fromRoute('entity.purchased_product.developer_product_collection', [
@@ -125,8 +125,8 @@ class PurchasedProductStatusTest extends MonetizationFunctionalTestBase {
       ],
     ])->queueMockResponse([
       'get_monetization_apigeex_plans' => [
-        'plans' => [$xrate_plan]
-      ]
+        'plans' => [$xrate_plan],
+      ],
     ]);
 
     $this->drupalGet(Url::fromRoute('entity.purchased_product.developer_product_collection', [

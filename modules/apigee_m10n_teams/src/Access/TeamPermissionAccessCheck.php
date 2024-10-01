@@ -19,11 +19,11 @@
 
 namespace Drupal\apigee_m10n_teams\Access;
 
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
-use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultReasonInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
+use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -108,7 +108,7 @@ class TeamPermissionAccessCheck implements TeamPermissionAccessInterface {
       }
     }
 
-    // TODO: Add a `team.permissions` cache context.
+    // @todo Add a `team.permissions` cache context.
     // See: `\Drupal\Core\Cache\Context\AccountPermissionsCacheContext`.
     $access_result = AccessResult::allowedIf($access)
       ->addCacheableDependency($team)

@@ -19,6 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
+use Drupal\Core\Url;
+use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\TeamPermissionHandlerInterface;
 use Drupal\apigee_m10n\Entity\ProductBundle;
@@ -30,10 +34,6 @@ use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
-use Drupal\Core\Url;
-use Drupal\KernelTests\KernelTestBase;
-use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
-use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
 
 /**
  * Tests the module affected overrides are overridden properly.

@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
-use Drupal\apigee_m10n\Entity\RatePlan;
-use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\Tests\apigee_m10n\Traits\RatePlanDetailsKernelTestAssertionTrait;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
+use Drupal\apigee_m10n\Entity\RatePlan;
+use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 
 /**
  * Tests the team rate plan entity.
@@ -158,7 +158,7 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
     $this->assertRatePlanDetails($details);
 
     // Test rate plan rate card.
-    // TODO: Test the rate plan render form.
+    // @todo Test the rate plan render form.
   }
 
 }

@@ -20,7 +20,6 @@
 namespace Drupal\Tests\apigee_m10n\Functional;
 
 use Drupal\Core\Url;
-use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
 
 /**
  * UI tests for the Pricing and Plans page.

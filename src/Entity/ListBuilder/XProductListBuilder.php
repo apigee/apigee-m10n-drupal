@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Render\Markup;
 
 /**
  * Admin list builder for `xproduct` entities.
@@ -45,7 +44,6 @@ class XProductListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\apigee_m10n\Entity\XProductInterface $entity */
     // Build a list of product links.
-
     $product_links = [];
     return [
       'title' => $entity->toLink($entity->label()),

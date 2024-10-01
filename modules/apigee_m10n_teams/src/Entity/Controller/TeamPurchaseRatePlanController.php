@@ -20,11 +20,11 @@
 namespace Drupal\apigee_m10n_teams\Entity\Controller;
 
 use Apigee\Edge\Api\Monetization\Entity\Company;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\Controller\PurchaseRatePlanController;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Controller for subscribing to rate plans.

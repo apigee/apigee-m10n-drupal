@@ -19,10 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel\Plugin\EntityReferenceSelection;
 
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection\AddCreditProductsSelection;
 use Drupal\commerce_product\Entity\Product;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
  * Tests the AddCreditProductsSelection plugin.

@@ -20,8 +20,6 @@
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Drupal\apigee_m10n\Entity\PurchasedProduct;
-use Drupal\apigee_m10n\Monetization;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemInterface;
@@ -29,6 +27,8 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\apigee_m10n\Entity\PurchasedProduct;
+use Drupal\apigee_m10n\Monetization;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -154,7 +154,7 @@ class PurchaseProductFormFormatter extends FormatterBase implements ContainerFac
       $developer_id = $value['user']->getEmail();
       $purchased_product = PurchasedProduct::create([
         'xratePlan' => $rate_plan,
-        // TODO: User a controller proxy that caches the developer entity.
+        // @todo User a controller proxy that caches the developer entity.
         // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
         'developer' => new Developer(['email' => $developer_id]),
       ]);

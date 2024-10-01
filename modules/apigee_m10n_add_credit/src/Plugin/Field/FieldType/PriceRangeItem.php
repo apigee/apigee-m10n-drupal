@@ -19,12 +19,12 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType;
 
-use Drupal\apigee_m10n_add_credit\Element\PriceRange;
-use Drupal\commerce_price\Price;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TypedData\DataDefinition;
+use Drupal\apigee_m10n_add_credit\Element\PriceRange;
+use Drupal\commerce_price\Price;
 
 /**
  * Plugin implementation of the 'apigee_price_range' field type.

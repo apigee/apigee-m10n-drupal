@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Access\AccessResultForbidden;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\user\Entity\Role;
 use Drupal\user\Form\UserPermissionsForm;
 use Psr\Log\LoggerInterface;

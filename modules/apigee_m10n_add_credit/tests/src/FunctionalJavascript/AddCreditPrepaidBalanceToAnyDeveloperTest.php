@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\FunctionalJavascript;
 
+use Drupal\Core\Url;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_product\Entity\ProductType;
-use Drupal\Core\Url;
 
 /**
  * Tests the add credit button on the prepaid balance page.

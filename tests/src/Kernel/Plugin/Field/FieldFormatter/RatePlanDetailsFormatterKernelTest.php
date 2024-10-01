@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\RatePlanDetailsFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\RatePlanDetailsFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\Tests\apigee_m10n\Traits\RatePlanDetailsKernelTestAssertionTrait;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\RatePlanDetailsFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\RatePlanDetailsFieldItem;
 
 /**
  * Test the `apigee_rate_plan_details` field formatter.

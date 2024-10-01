@@ -20,8 +20,8 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Entity\RatePlan;
 
 /**
  * Test the `rate_plan` entity.

@@ -20,7 +20,6 @@
 namespace Drupal\apigee_m10n\Plugin\Menu;
 
 use Drupal\Core\Menu\MenuLinkDefault;
-use Drupal\Core\Url;
 
 /**
  * Represents a menu link for a listing and buying apis for 4G and 5G.

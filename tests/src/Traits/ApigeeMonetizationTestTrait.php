@@ -25,17 +25,16 @@ use Apigee\Edge\Api\Monetization\Controller\SupportedCurrencyController;
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
 use Apigee\Edge\Api\Monetization\Entity\ApiProduct as MonetizationApiProduct;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
-use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlan;
 use Apigee\Edge\Api\Monetization\Entity\Property\FreemiumPropertiesInterface;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanDetail;
 use Apigee\Edge\Api\Monetization\Structure\RatePlanRateRateCard;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
+use Drupal\Tests\apigee_mock_api_client\Traits\ApigeeMockApiClientHelperTrait;
 use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
 use Drupal\apigee_edge\Plugin\EdgeKeyTypeInterface;
 use Drupal\apigee_edge\UserDeveloperConverterInterface;
-use Drupal\apigee_m10n\Entity\Package;
-use Drupal\apigee_m10n\Entity\PackageInterface;
 use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
@@ -43,10 +42,6 @@ use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n\Entity\RatePlan;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
-use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
-use Drupal\key\Entity\Key;
-use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
-use Drupal\Tests\apigee_mock_api_client\Traits\ApigeeMockApiClientHelperTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -282,7 +277,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, string $id = NULL, array $properties = []): RatePlanInterface {
+  protected function createRatePlan(ProductBundleInterface $product_bundle, $type = RatePlanInterface::TYPE_STANDARD, ?string $id = NULL, array $properties = []): RatePlanInterface {
     $client = $this->sdk_connector->getClient();
     $org_name = $this->sdk_connector->getOrganization();
 

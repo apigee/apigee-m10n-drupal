@@ -19,9 +19,9 @@
  * MA 02110-1301, USA.
  */
 
-use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 
 /**
  * @file
