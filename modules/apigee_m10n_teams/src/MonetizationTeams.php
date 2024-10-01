@@ -22,6 +22,11 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\apigee_edge\Entity\ApiProductInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
@@ -39,11 +44,6 @@ use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Access\AccessResultInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Session\AccountInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -221,7 +221,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
    * {@inheritdoc}
    */
   public function currentTeam(): ?TeamInterface {
-    // TODO: This call could be much smarter.
+    // @todo This call could be much smarter.
     // All team routes have the team as the first parameter and we could be
     // checking a route list to make sure the team is part of a team route
     // similar to the `_apigee_monetization_route` route option.
@@ -251,7 +251,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     if (!($latest_tnc = $this->monetization->getLatestTermsAndConditions())) {
       // If there isn't a latest TnC, and there was no error, there shouldn't be
       // anything to accept.
-      // TODO: Add a test for an org with no TnC defined.
+      // @todo Add a test for an org with no TnC defined.
       return TRUE;
     }
     // Check the cache table.

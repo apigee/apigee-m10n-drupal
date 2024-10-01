@@ -19,8 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional;
 
-use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Url;
+use Drupal\commerce_product\Entity\ProductType;
 use Drupal\user\RoleInterface;
 
 /**

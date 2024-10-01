@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_teams\Access;
 
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Symfony\Component\Routing\Route;
 
 /**

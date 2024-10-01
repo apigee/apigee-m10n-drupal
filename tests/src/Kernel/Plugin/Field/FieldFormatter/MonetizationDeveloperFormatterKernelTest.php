@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\FieldItemList;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\MonetizationDeveloperFormatter;
 use Drupal\apigee_m10n\Plugin\Field\FieldType\MonetizationDeveloperFieldItem;
-use Drupal\Core\Field\FieldItemList;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
  * Test the `apigee_monetization_developer` field formatter.

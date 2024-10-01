@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Entity\Access;
 
-use Drupal\apigee_m10n\Entity\XRatePlan;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
 
 /**

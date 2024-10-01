@@ -20,13 +20,13 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_edge\Job\Job;
 use Drupal\apigee_edge\Job\JobCreatorTrait;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Job\BalanceAdjustmentJob;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use GuzzleHttp\Psr7\Response;
 
 /**

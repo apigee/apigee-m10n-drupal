@@ -20,10 +20,10 @@
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlanInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxyInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
-use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Overridden storage controller for the `purchased_plan` entity for teams.

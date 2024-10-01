@@ -19,10 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\DatestampFormatter;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\DatestampFormatter;
 
 /**
  * Test the `apigee_datestamp` field formatter.
@@ -112,7 +112,7 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
         'timezone' => '',
         'tooltip' => [
           'date_format' => $date_format,
-          'custom_date_format' => 'm/d/Y'
+          'custom_date_format' => 'm/d/Y',
         ],
         'time_diff' => [
           'enabled' => FALSE,
@@ -120,7 +120,7 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
           'past_format' => '@interval ago',
           'granularity' => 2,
           'refresh' => 60,
-        ]
+        ],
       ],
       'label' => TRUE,
       'view_mode' => 'default',
@@ -128,7 +128,7 @@ class DatestampFormatterKernelTest extends MonetizationKernelTestBase {
     ]);
     static::assertInstanceOf(DatestampFormatter::class, $instance);
 
-    /* @var \DateTimeImmutable $value */
+    /** @var \DateTimeImmutable $value */
     $value = $this->purchasedPlan->getStartDate();
     $expected = \Drupal::service('date.formatter')
       ->format($value->getTimestamp(), $date_format, $custom_date_format);

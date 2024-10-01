@@ -73,7 +73,7 @@ class ConsumptionPricingRatesFieldItem extends FieldItemBase {
           'units'         => rand(5, 20),
           'nanos'         => rand(5, 20),
         ]),
-      ]
+      ],
     ]);
 
     return $values;

@@ -19,10 +19,6 @@
 
 namespace Drupal\apigee_m10n_add_credit\Form;
 
-use Apigee\Edge\Api\ApigeeX\Controller\DeveloperBillingTypeController;
-use Drupal\apigee_edge\Entity\Developer;
-use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -30,6 +26,7 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -146,7 +143,7 @@ class BillingTypeForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, UserInterface $user = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?UserInterface $user = NULL) {
     $billingType = ['postpaid' => 'Postpaid' , 'prepaid' => 'Prepaid'];
     $developer_billingtype = $this->monetization->getBillingtype($user);
     $form['billingtype'] = [
@@ -168,8 +165,8 @@ class BillingTypeForm extends FormBase {
       '#states' => [
         'disabled' => [
           ':input[name="billingtype"]' => ['value' => strtolower($developer_billingtype)],
-        ]
-      ]
+        ],
+      ],
     ];
     return $form;
   }
@@ -177,7 +174,7 @@ class BillingTypeForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state, UserInterface $user = NULL) {
+  public function submitForm(array &$form, FormStateInterface $form_state, ?UserInterface $user = NULL) {
     $user = $this->routeMatch->getParameter('user');
     $billingtype_selected = $form_state->getValue('billingtype');
     $form_state->setRedirect('apigee_m10n_add_credit.userbillingtype.confirm', ['user' => $user->id(), 'billingtype' => $billingtype_selected]);

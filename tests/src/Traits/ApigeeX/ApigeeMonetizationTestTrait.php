@@ -24,25 +24,19 @@ use Apigee\Edge\Api\ApigeeX\Structure\ConsumptionPricingRate;
 use Apigee\Edge\Api\ApigeeX\Structure\Fee;
 use Apigee\Edge\Api\ApigeeX\Structure\RatePlanXFee;
 use Apigee\Edge\Api\ApigeeX\Structure\RevenueShareRates;
-use Apigee\Edge\Api\Management\Entity\DeveloperInterface;
 use Apigee\Edge\Api\Monetization\Entity\Developer;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
+use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
+use Drupal\Tests\apigee_mock_api_client\Traits\ApigeeMockApiClientHelperTrait;
 use Drupal\apigee_edge\Entity\ApiProduct;
-use Drupal\apigee_edge\Entity\Developer as EdgeDeveloper;
 use Drupal\apigee_edge\Plugin\EdgeKeyTypeInterface;
-use Drupal\apigee_edge\UserDeveloperConverterInterface;
 use Drupal\apigee_m10n\Entity\PurchasedProduct;
 use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\apigee_m10n\Entity\XProduct;
 use Drupal\apigee_m10n\Entity\XProductInterface;
 use Drupal\apigee_m10n\Entity\XRatePlan;
 use Drupal\apigee_m10n\Entity\XRatePlanInterface;
-use Drupal\apigee_m10n\EnvironmentVariable;
-use Drupal\apigee_m10n_test\Plugin\KeyProvider\TestEnvironmentVariablesKeyProvider;
-use Drupal\key\Entity\Key;
-use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
-use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
-use Drupal\Tests\apigee_mock_api_client\Traits\ApigeeMockApiClientHelperTrait;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -199,7 +193,7 @@ trait ApigeeMonetizationTestTrait {
       'name'          => $this->randomMachineName(),
       'description'   => $this->getRandomGenerator()->sentences(3),
       'displayName'   => $this->getRandomGenerator()->word(16),
-      'approvalType'  => ApiProduct::APPROVAL_TYPE_AUTO
+      'approvalType'  => ApiProduct::APPROVAL_TYPE_AUTO,
     ]);
     // Need to queue the management api product.
     $this->stack->queueMockResponse(['api_apigeex_product' => ['product' => $product]]);
@@ -236,7 +230,7 @@ trait ApigeeMonetizationTestTrait {
       'id'            => $product->id(),
       'name'          => $product->getName(),
       'description'   => $product->getDescription(),
-      'displayName'   => $product->getDisplayName()
+      'displayName'   => $product->getDisplayName(),
     ]);
 
     $this->stack->queueMockResponse(['xpackage' => ['product' => $xpackage]]);
@@ -262,7 +256,7 @@ trait ApigeeMonetizationTestTrait {
    *
    * @throws \Exception
    */
-  protected function createRatePlan(XProductInterface $xproduct, $type = XRatePlanInterface::TYPE_STANDARD, string $id = NULL, array $properties = []): XRatePlanInterface {
+  protected function createRatePlan(XProductInterface $xproduct, $type = XRatePlanInterface::TYPE_STANDARD, ?string $id = NULL, array $properties = []): XRatePlanInterface {
     $start_date = new \DateTimeImmutable('2018-07-26 00:00:00', new \DateTimeZone($this->org_default_timezone));
     $start_time = (int) ($start_date->getTimestamp() . $start_date->format('v'));
     $end_date = new \DateTimeImmutable('today +1 year', new \DateTimeZone($this->org_default_timezone));
@@ -277,20 +271,20 @@ trait ApigeeMonetizationTestTrait {
       'ratePlanXFee'         => new RatePlanXFee([
         'currencyCode'  => 'USD',
         'units'         => '1',
-        'nanos'         => 300000000
+        'nanos'         => 300000000,
       ]),
       'consumptionPricingType'  => 'FIXED_PER_UNIT',
       'consumptionPricingRates' => new ConsumptionPricingRate([
         'fee' => new Fee(
             [
-                'currencyCode'    => 'USD',
-                'units'           => '1',
-                'nanos'           => 100000000
+              'currencyCode'    => 'USD',
+              'units'           => '1',
+              'nanos'           => 100000000,
             ]),
       ]),
       'revenueShareType'      => 'FIXED',
       'revenueShareRates'     => new RevenueShareRates([
-          'sharePercentage' => 17.56
+        'sharePercentage' => 17.56,
       ]),
       'state'                 => 'PUBLISHED',
       'startTime'             => $start_time,
@@ -366,7 +360,7 @@ trait ApigeeMonetizationTestTrait {
         'email' => $user->getEmail(),
         'name' => $user->getDisplayName(),
       ]),
-      'startTime'       => $start_time
+      'startTime'       => $start_time,
     ]);
 
     // Warm the purchased_plan.

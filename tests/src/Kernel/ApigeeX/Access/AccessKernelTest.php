@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Access;
 
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\Entity\User;
 
 /**
@@ -151,7 +151,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertFalse($collection_url->access($this->developer));
     static::assertFalse($collection_url->access($this->anonymous));
 
-    // TODO: test the cancel page.
+    // @todo test the cancel page.
   }
 
   /**
@@ -207,7 +207,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $xproduct_route = Url::fromRoute('entity.xproduct.developer',
       [
         'user' => $this->developer->id(),
-        'xproduct' => $this->xproduct->id()
+        'xproduct' => $this->xproduct->id(),
       ]
     );
     static::assertTrue($xproduct_route->access($this->administrator));
@@ -218,7 +218,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $xproduct_route = Url::fromRoute('entity.xproduct.developer',
       [
         'user' => $this->administrator->id(),
-        'xproduct' => $this->xproduct->id()
+        'xproduct' => $this->xproduct->id(),
       ]
     );
     static::assertTrue($xproduct_route->access($this->administrator));

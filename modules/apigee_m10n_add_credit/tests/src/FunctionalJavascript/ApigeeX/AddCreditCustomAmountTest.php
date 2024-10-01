@@ -26,7 +26,7 @@ use Drupal\commerce_product\Entity\ProductType;
 /**
  * Tests custom amount for an apigee add credit product.
  *
- * TODO: These tests take a lof of time to run with the dataProviders. Figure out
+ * @todo These tests take a lof of time to run with the dataProviders. Figure out
  * a way to make this more efficient.
  *
  * @group apigee_m10n
@@ -112,7 +112,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerPriceRange
    */
-  public function testPriceRangeFieldValidation(string $minimum = NULL, string $maximum = NULL, string $default = NULL, string $message = NULL) {
+  public function testPriceRangeFieldValidation(?string $minimum = NULL, ?string $maximum = NULL, ?string $default = NULL, ?string $message = NULL) {
     $this->setupApigeeAddCreditProduct();
 
     // Add a product.
@@ -150,7 +150,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    *
    * @dataProvider providerUnitPrice
    */
-  public function testUnitPriceValidation(string $minimum = NULL, string $maximum = NULL, string $default = NULL, string $amount = NULL, string $message = NULL) {
+  public function testUnitPriceValidation(?string $minimum = NULL, ?string $maximum = NULL, ?string $default = NULL, ?string $amount = NULL, ?string $message = NULL) {
     $this->setupApigeeAddCreditProduct();
 
     // Add a product.
@@ -357,7 +357,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
    */
   public function providerPriceField() {
     return [
-      // TODO: Commerce throws an error when a string is entered for price.
+      // @todo Commerce throws an error when a string is entered for price.
       [
         '10.00',
         'The product @title has been successfully saved.',

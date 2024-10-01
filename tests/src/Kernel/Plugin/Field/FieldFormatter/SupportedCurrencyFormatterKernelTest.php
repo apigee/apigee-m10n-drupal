@@ -19,10 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SupportedCurrencyFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\SupportedCurrencylFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\SupportedCurrencyFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\SupportedCurrencylFieldItem;
 
 /**
  * Test the `apigee_currency` field formatter.

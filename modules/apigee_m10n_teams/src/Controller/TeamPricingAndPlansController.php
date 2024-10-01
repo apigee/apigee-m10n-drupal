@@ -19,10 +19,10 @@
 
 namespace Drupal\apigee_m10n_teams\Controller;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Controller\PricingAndPlansController;
 use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
-use Drupal\Core\Access\AccessResult;
 
 /**
  * Generates the pricing and plans page.

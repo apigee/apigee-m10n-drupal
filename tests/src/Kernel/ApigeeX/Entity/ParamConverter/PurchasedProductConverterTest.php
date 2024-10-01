@@ -19,8 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Entity\ParamConverter;
 
-use Drupal\apigee_m10n\Entity\ParamConverter\PurchasedProductConverter;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Entity\ParamConverter\PurchasedProductConverter;
 
 /**
  * Tests the purchased plan param converter.

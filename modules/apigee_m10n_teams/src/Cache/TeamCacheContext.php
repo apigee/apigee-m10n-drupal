@@ -19,10 +19,10 @@
 
 namespace Drupal\apigee_m10n_teams\Cache;
 
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
 use Drupal\Core\Cache\Context\RequestStackCacheContextBase;
+use Drupal\apigee_edge_teams\Entity\TeamInterface;
 
 /**
  * Defines the TeamCacheContext service, for "per URL team" caching.

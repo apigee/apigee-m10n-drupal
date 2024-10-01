@@ -20,10 +20,10 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
  * Test the `apigee_date_and_text_formatter` field formatter.

@@ -19,8 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional;
 
-use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
 
 /**
  * A base class for functional tests.

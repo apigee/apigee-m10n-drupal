@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Monetization;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -27,6 +26,7 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\apigee_m10n\Monetization;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

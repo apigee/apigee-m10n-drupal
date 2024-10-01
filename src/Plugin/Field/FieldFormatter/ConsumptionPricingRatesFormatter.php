@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n\Plugin\Field\FieldFormatter;
 
-use Apigee\Edge\Api\ApigeeX\Structure\Fee;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
@@ -60,7 +59,7 @@ class ConsumptionPricingRatesFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    // @todo: Implement settings summary.
+    // @todo Implement settings summary.
     $summary = [];
 
     return $summary;

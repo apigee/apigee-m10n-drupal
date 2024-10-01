@@ -29,15 +29,7 @@ use Apigee\Edge\Api\Monetization\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Entity\TermsAndConditionsInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\PrepaidBalanceReportCriteria;
-use Apigee\Edge\Api\Monetization\Structure\Reports\Criteria\RevenueReportCriteria;
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
-use Drupal\apigee_edge\SDKConnectorInterface;
-use Drupal\apigee_m10n\Entity\PurchasedPlan;
-use Drupal\apigee_m10n\Entity\PurchasedProduct;
-use Drupal\apigee_m10n\Entity\RatePlanInterface;
-use Drupal\apigee_m10n\Entity\XRatePlanInterface;
-use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -45,6 +37,13 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\apigee_edge\Entity\Controller\OrganizationControllerInterface;
+use Drupal\apigee_edge\SDKConnectorInterface;
+use Drupal\apigee_m10n\Entity\PurchasedPlan;
+use Drupal\apigee_m10n\Entity\PurchasedProduct;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
+use Drupal\apigee_m10n\Entity\XRatePlanInterface;
+use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\user\PermissionHandlerInterface;
 use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
@@ -268,7 +267,7 @@ class Monetization implements MonetizationInterface {
     if (!($latest_tnc = $this->getLatestTermsAndConditions())) {
       // If there isn't a latest TnC, and there was no error, there shouldn't be
       // anything to accept.
-      // TODO: Add a test for an org with no TnC defined.
+      // @todo Add a test for an org with no TnC defined.
       return TRUE;
     }
     // Check the cache table.
@@ -481,7 +480,7 @@ class Monetization implements MonetizationInterface {
    */
   public function isDeveloperAlreadySubscribed(string $developer_id, RatePlanInterface $rate_plan): bool {
     // Use cached result if available.
-    // TODO: Handle purchased_plan caching per developer on the storage level.
+    // @todo Handle purchased_plan caching per developer on the storage level.
     // See: \Drupal\apigee_m10n\Entity\Storage\PurchasedPlanStorage::loadByDeveloperId()
     $cid = "apigee_m10n:dev:purchased_plans:{$developer_id}";
     if ($cache = $this->cache->get($cid)) {

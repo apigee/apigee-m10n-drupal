@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\Monetization\Entity\ApiPackage;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\ApiProductsPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\DescriptionPropertyAwareDecoratorTrait;
@@ -29,7 +30,6 @@ use Drupal\apigee_m10n\Entity\Property\IdPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\NamePropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\OrganizationPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\StatusPropertyAwareDecoratorTrait;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\UserInterface;
 
 /**

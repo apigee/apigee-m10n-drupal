@@ -18,11 +18,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Form;
 
-use Drupal\apigee_m10n\Form\RatePlanXConfigForm;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Entity\Entity\EntityViewMode;
 use Drupal\Core\Form\FormState;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Form\RatePlanXConfigForm;
 
 /**
  * Tests for `apigee_m10n.xrate_plan.config` settings.

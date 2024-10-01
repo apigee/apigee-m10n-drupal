@@ -106,7 +106,7 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
    */
   public function loadByDeveloperId(string $developer_id): array {
     // Get all purchases for this developer.
-    // TODO: Cache purchased_product lists per developer.
+    // @todo Cache purchased_product lists per developer.
     return $this->getPurchasedProductControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }
@@ -152,7 +152,6 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
     static $controller_cache = [];
 
     // Make sure a controller is cached.
-
     $controller_cache[$developer_id] = $controller_cache[$developer_id]
       ?? $this->controllerFactory()->developerAcceptedRatePlanxController($developer_id);
 

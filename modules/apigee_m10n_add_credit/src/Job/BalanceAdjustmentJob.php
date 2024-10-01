@@ -21,6 +21,10 @@ namespace Drupal\apigee_m10n_add_credit\Job;
 
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\PrepaidBalanceControllerInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Language\Language;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\apigee_edge\Entity\DeveloperInterface;
 use Drupal\apigee_edge\Job\EdgeJob;
 use Drupal\apigee_m10n\Controller\PrepaidBalanceController;
@@ -28,10 +32,6 @@ use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_price\Price;
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Language\Language;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\user\UserInterface;
 
 /**
@@ -44,7 +44,7 @@ use Drupal\user\UserInterface;
  * error will let the job runner know that the request was unsuccessful and will
  * trigger a retry.
  *
- * @todo: Handle refunds when the monetization API supports it.
+ * @todo Handle refunds when the monetization API supports it.
  */
 class BalanceAdjustmentJob extends EdgeJob {
 
@@ -100,7 +100,7 @@ class BalanceAdjustmentJob extends EdgeJob {
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The drupal commerce order.
    */
-  public function __construct(EntityInterface $company_or_user, Adjustment $adjustment, OrderInterface $order = NULL) {
+  public function __construct(EntityInterface $company_or_user, Adjustment $adjustment, ?OrderInterface $order = NULL) {
     parent::__construct();
 
     // Either a developer or a company can be passed.
@@ -236,7 +236,6 @@ class BalanceAdjustmentJob extends EdgeJob {
     // wasn't applied, we could return true here and the top-up would be
     // retried.
     // @todo Return true once we can determine the payment wasn't applied.
-
     return FALSE;
   }
 
@@ -427,10 +426,10 @@ class BalanceAdjustmentJob extends EdgeJob {
     $csv = array_map('str_getcsv', explode("\r\n", $report));
 
     // This assumes the last transaction is the one we just performed.
-    // @todo: Find a better way to retrieve the transaction ID.
+    // @todo Find a better way to retrieve the transaction ID.
     $transaction = end($csv);
 
-    /* @var \Drupal\apigee_m10n_add_credit\Entity\AddCreditLogInterface $log */
+    /** @var \Drupal\apigee_m10n_add_credit\Entity\AddCreditLogInterface $log */
     $log = \Drupal::entityTypeManager()->getStorage('add_credit_log')->create([
       'commerce_order' => $this->order ? $this->order->id() : NULL,
       'apigee_transaction' => isset($transaction[6]) ?: NULL,

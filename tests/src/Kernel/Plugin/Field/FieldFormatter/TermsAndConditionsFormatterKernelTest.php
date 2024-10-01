@@ -20,11 +20,11 @@
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
 use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Drupal\Core\Field\FieldItemList;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_m10n\Entity\PurchasedPlan;
 use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\TermsAndConditionsFormatter;
 use Drupal\apigee_m10n\Plugin\Field\FieldType\TermsAndConditionsFieldItem;
-use Drupal\Core\Field\FieldItemList;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
  * Test the `apigee_tnc_default` field formatter.

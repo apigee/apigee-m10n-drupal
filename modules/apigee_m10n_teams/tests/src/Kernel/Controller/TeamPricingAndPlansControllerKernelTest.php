@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Controller;
 
-use Drupal\apigee_edge\Entity\ApiProduct;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
+use Drupal\apigee_edge\Entity\ApiProduct;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

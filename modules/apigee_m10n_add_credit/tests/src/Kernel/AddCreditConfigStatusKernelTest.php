@@ -20,10 +20,10 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Kernel;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_store\StoreCreationTrait;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 
 /**
  * Tests the status page for add credit.
@@ -94,7 +94,7 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
   public function testStatusReport() {
     $this->warmOrganizationCache();
 
-    // TODO: Figure out why this line is needed otherwise monetization fails.
+    // @todo Figure out why this line is needed otherwise monetization fails.
     \Drupal::service('apigee_m10n.monetization')->isMonetizationEnabled();
 
     $requirements = $this->checkAddCreditRequirements();

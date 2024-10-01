@@ -19,14 +19,12 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\PurchasedProduct;
-use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
-use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\apigee_m10n\Entity\PurchasedProduct;
+use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -47,7 +45,7 @@ class PurchasedProductListBuilderForDeveloper extends PurchasedProductListBuilde
   /**
    * {@inheritdoc}
    */
-  public function render(UserInterface $user = NULL) {
+  public function render(?UserInterface $user = NULL) {
 
     // Return 404 if the user is not set and keep a compatible method signature.
     if (!($user instanceof UserInterface)) {

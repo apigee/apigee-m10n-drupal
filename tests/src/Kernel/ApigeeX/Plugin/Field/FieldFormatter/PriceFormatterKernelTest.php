@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter;
 
 /**
  * Test the `apigee_price` field formatter.
@@ -93,7 +93,7 @@ class PriceFormatterKernelTest extends MonetizationKernelTestBase {
 
     $item_list = $this->ratePlan->get('setupFees');
     static::assertInstanceOf(FieldItemList::class, $item_list);
-    /* @var \Drupal\Core\Field\BaseFieldDefinition $field_definition */
+    /** @var \Drupal\Core\Field\BaseFieldDefinition $field_definition */
     $field_definition = $this->fieldManager->getBaseFieldDefinitions('xrate_plan')['setupFees'];
 
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter $instance */

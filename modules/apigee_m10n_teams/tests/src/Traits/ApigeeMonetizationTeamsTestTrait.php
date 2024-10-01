@@ -23,7 +23,6 @@ use Apigee\Edge\Api\Monetization\Entity\Company;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\apigee_m10n\EnvironmentVariable;
-use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlanInterface;
 
 /**
