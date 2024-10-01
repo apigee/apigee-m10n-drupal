@@ -19,10 +19,10 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Requirement\Requirement;
 
-use Drupal\commerce_payment\PaymentGatewayManager;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\commerce_payment\PaymentGatewayManager;
 use Drupal\requirement\Plugin\RequirementBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

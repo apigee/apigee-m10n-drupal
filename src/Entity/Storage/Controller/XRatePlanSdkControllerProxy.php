@@ -69,7 +69,7 @@ class XRatePlanSdkControllerProxy implements XRatePlanSdkControllerProxyInterfac
    * {@inheritdoc}
    */
   public function loadAll(): array {
-    // TODO: Cache this list.
+    // @todo Cache this list.
     $all_product_bundles = XProduct::loadAll();
 
     /** @var \Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface[] $rate_plans */

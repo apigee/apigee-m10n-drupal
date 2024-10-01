@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel\Entity;
 
-use Drupal\apigee_m10n\Entity\ProductBundle;
-use Drupal\apigee_m10n_teams\Entity\TeamProductBundleInterface;
 use Drupal\Tests\apigee_m10n\Traits\RatePlansPropertyEnablerTrait;
 use Drupal\Tests\apigee_m10n_teams\Kernel\MonetizationTeamsKernelTestBase;
 use Drupal\Tests\apigee_m10n_teams\Traits\TeamProphecyTrait;
+use Drupal\apigee_m10n\Entity\ProductBundle;
+use Drupal\apigee_m10n_teams\Entity\TeamProductBundleInterface;
 
 /**
  * Tests the team product bundle entity.

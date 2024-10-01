@@ -19,13 +19,13 @@
 
 namespace Drupal\Tests\apigee_m10n\Functional\ApigeeX;
 
-use Drupal\apigee_m10n\Controller\PrepaidBalanceXController;
-use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
-use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
+use Drupal\apigee_m10n\Controller\PrepaidBalanceXController;
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
+use Drupal\apigee_m10n\Form\PrepaidBalanceRefreshForm;
 use Drupal\user\Entity\Role;
 use Drupal\user\UserInterface;
 
@@ -93,8 +93,8 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
 
     $this->queueApigeexDeveloperResponse($this->developer);
     $this->stack->queueMockResponse([
-          'get-apigeex-prepaid-balances'
-        ]);
+      'get-apigeex-prepaid-balances',
+    ]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.xbilling', [
       'user' => $this->developer->id(),
     ]));
@@ -247,7 +247,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   protected function queueResponses(UserInterface $user) {
     $this->queueApigeexDeveloperResponse($user);
     $this->stack->queueMockResponse([
-      'get-apigeex-prepaid-balances'
+      'get-apigeex-prepaid-balances',
     ]);
   }
 

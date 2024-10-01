@@ -19,8 +19,8 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Functional\ApigeeX;
 
-use Drupal\commerce_product\Entity\ProductType;
 use Drupal\Core\Url;
+use Drupal\commerce_product\Entity\ProductType;
 use Drupal\user\RoleInterface;
 
 /**
@@ -131,9 +131,9 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     // Create and sign in a user with add credit permissions.
     $this->stack->queueMockResponse(['post-apigeex-billing-type']);
     $this->developer = $this->signIn([
-                          'view own prepaid balance',
-                          'add credit to own developer prepaid balance'
-                        ], 'Prepaid');
+      'view own prepaid balance',
+      'add credit to own developer prepaid balance',
+    ], 'Prepaid');
     $this->queueApigeexDeveloperResponse($this->developer);
 
     $this->stack->queueMockResponse(['get-apigeex-billing-type']);

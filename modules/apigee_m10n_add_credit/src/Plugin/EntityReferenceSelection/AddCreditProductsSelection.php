@@ -20,8 +20,8 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\EntityReferenceSelection;
 
-use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
+use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 
 /**
  * Provides a entity selection plugin for add credit products.

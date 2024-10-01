@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
+use Drupal\Tests\UnitTestCase;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n_teams\Cache\TeamCacheContext;
-use Drupal\Tests\UnitTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 

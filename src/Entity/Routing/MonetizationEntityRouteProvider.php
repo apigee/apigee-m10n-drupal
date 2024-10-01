@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n\Entity\Routing;
 
-use Drupal\apigee_m10n\Entity\Controller\ContextDependentEntityController;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\apigee_m10n\Entity\Controller\ContextDependentEntityController;
 use Drupal\entity\Routing\DefaultHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
 

@@ -19,10 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchaseProductFormFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\PurchaseProductFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchaseProductFormFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\PurchaseProductFieldItem;
 
 /**
  * Test the `apigee_purchase_plan_link` field formatter.

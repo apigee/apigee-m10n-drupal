@@ -20,12 +20,12 @@
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget;
 
 use Apigee\Edge\Api\Monetization\Entity\CompanyAcceptedRatePlan;
-use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\apigee_m10n\Plugin\Field\FieldWidget\TermsAndConditionsWidget;
-use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
+use Drupal\apigee_m10n\Plugin\Field\FieldWidget\TermsAndConditionsWidget;
+use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

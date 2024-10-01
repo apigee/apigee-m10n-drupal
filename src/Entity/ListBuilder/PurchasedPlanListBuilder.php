@@ -19,9 +19,6 @@
 
 namespace Drupal\apigee_m10n\Entity\ListBuilder;
 
-use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
-use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -32,6 +29,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\apigee_m10n\Entity\Form\PurchasedPlanForm;
+use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -131,7 +131,7 @@ abstract class PurchasedPlanListBuilder extends EntityListBuilder implements Con
    * {@inheritdoc}
    */
   public function getPageTitle(RouteMatchInterface $route_match): string {
-    // TODO: make sure this string is configurable.
+    // @todo make sure this string is configurable.
     return $this->t('Purchased plans');
   }
 

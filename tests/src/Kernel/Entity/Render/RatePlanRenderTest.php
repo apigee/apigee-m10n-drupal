@@ -114,7 +114,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
     $details = $rate_plan->getRatePlanDetails()[0];
     $this->assertRatePlanDetails($details);
 
-    // TODO: test the purchase form.
+    // @todo test the purchase form.
   }
 
 }

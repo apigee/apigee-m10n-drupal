@@ -19,13 +19,13 @@
 
 namespace Drupal\Tests\apigee_m10n_teams\Kernel;
 
+use Drupal\Core\Session\UserSession;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_edge\Entity\Developer;
 use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_edge_teams\Entity\TeamRole;
 use Drupal\apigee_edge_teams\Entity\TeamRoleInterface;
-use Drupal\Core\Session\UserSession;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\user\UserInterface;
 
 /**

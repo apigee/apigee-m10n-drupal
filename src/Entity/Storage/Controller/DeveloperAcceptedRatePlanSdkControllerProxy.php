@@ -109,7 +109,7 @@ class DeveloperAcceptedRatePlanSdkControllerProxy implements DeveloperAcceptedRa
    */
   public function loadByDeveloperId(string $developer_id): array {
     // Get all purchases for this developer.
-    // TODO: Cache purchased_plan lists per developer.
+    // @todo Cache purchased_plan lists per developer.
     return $this->getPurchasedPlanControllerByDeveloperId($developer_id)
       ->getAllAcceptedRatePlans();
   }

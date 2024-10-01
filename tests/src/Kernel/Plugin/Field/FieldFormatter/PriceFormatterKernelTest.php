@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter;
 
 /**
  * Test the `apigee_price` field formatter.
@@ -88,7 +88,7 @@ class PriceFormatterKernelTest extends MonetizationKernelTestBase {
 
     $item_list = $this->ratePlan->get('earlyTerminationFee');
     static::assertInstanceOf(FieldItemList::class, $item_list);
-    /* @var \Drupal\Core\Field\BaseFieldDefinition $field_definition */
+    /** @var \Drupal\Core\Field\BaseFieldDefinition $field_definition */
     $field_definition = $this->fieldManager->getBaseFieldDefinitions('rate_plan')['earlyTerminationFee'];
 
     /** @var \Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PriceFormatter $instance */

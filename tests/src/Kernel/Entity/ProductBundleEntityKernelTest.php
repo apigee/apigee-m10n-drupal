@@ -19,13 +19,13 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Entity;
 
+use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Url;
+use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Drupal\apigee_edge\Entity\EdgeEntityType;
 use Drupal\apigee_m10n\Entity\ProductBundle;
 use Drupal\apigee_m10n\Entity\ProductBundleInterface;
 use Drupal\apigee_m10n\Entity\Routing\MonetizationEntityRouteProvider;
-use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\Core\Url;
-use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;

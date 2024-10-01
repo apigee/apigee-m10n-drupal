@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_add_credit;
 
-use Drupal\commerce_product\Entity\ProductInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\commerce_product\Entity\ProductInterface;
 
 /**
  * Defines a service for managing add credit products.

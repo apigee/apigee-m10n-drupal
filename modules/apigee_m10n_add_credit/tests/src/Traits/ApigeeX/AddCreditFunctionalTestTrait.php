@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Traits\ApigeeX;
 
-use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm;
 use Drupal\commerce_payment\Entity\PaymentGateway;
@@ -89,7 +88,7 @@ trait AddCreditFunctionalTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createCommerceStore(string $mail = NULL): StoreInterface {
+  protected function createCommerceStore(?string $mail = NULL): StoreInterface {
     $store = $this->createStore(NULL, $mail ?? $this->config('system.site')
       ->get('mail'));
     $store->save();
@@ -111,7 +110,7 @@ trait AddCreditFunctionalTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createCommerceProduct(StoreInterface $store, ProductVariationInterface $variation, string $title = NULL): ProductInterface {
+  protected function createCommerceProduct(StoreInterface $store, ProductVariationInterface $variation, ?string $title = NULL): ProductInterface {
     $product = Product::create([
       'title' => $title ?? $this->randomMachineName(),
       'type' => 'default',
@@ -140,7 +139,7 @@ trait AddCreditFunctionalTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createCommerceProductVariation(string $title = NULL, string $sku = NULL, Price $price = NULL): ProductVariationInterface {
+  protected function createCommerceProductVariation(?string $title = NULL, ?string $sku = NULL, ?Price $price = NULL): ProductVariationInterface {
     $variation = ProductVariation::create([
       'type' => 'default',
       'sku' => $sku ?? $this->randomMachineName(),
@@ -169,7 +168,7 @@ trait AddCreditFunctionalTestTrait {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createCommercePaymentGateway(string $id = NULL, string $label = NULL, array $configuration = NULL): PaymentGatewayInterface {
+  protected function createCommercePaymentGateway(?string $id = NULL, ?string $label = NULL, ?array $configuration = NULL): PaymentGatewayInterface {
     $gateway = PaymentGateway::create([
       'id' => $id ?? 'onsite',
       'label' => $label ?? 'On-site',
@@ -205,7 +204,7 @@ trait AddCreditFunctionalTestTrait {
   /**
    * Helper to mock responses.
    *
-   * TODO: Move this to \Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase.
+   * @todo Move this to \Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase.
    *
    * @param array $response_ids
    *   An array of response ids.
@@ -226,7 +225,7 @@ trait AddCreditFunctionalTestTrait {
   /**
    * Returns an array of mock responses.
    *
-   * TODO: Move this to \Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase.
+   * @todo Move this to \Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase.
    *
    * @return array
    *   An array of mock responses.
@@ -234,7 +233,7 @@ trait AddCreditFunctionalTestTrait {
   public function getMockResponses() {
     return [
       'get-apigeex-prepaid-balances',
-      'get-supported-currencies'
+      'get-supported-currencies',
     ];
   }
 

@@ -19,9 +19,9 @@
 
 namespace Drupal\apigee_m10n_add_credit\Plugin\Field\FieldFormatter;
 
-use Drupal\commerce_price\Plugin\Field\FieldFormatter\PriceDefaultFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\commerce_price\Plugin\Field\FieldFormatter\PriceDefaultFormatter;
 
 /**
  * Plugin implementation of the 'price_range_default' formatter.

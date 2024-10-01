@@ -19,12 +19,12 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -138,7 +138,7 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
         $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $this->entity->getOwnerId()]);
       }
     }
-    // TODO: Check to see if `EntityStorageException` is the only type of error
+    // @todo Check to see if `EntityStorageException` is the only type of error
     // to we need to catch here.
     catch (\Exception $e) {
 

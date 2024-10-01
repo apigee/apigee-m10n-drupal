@@ -19,10 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\Plugin\Field\FieldFormatter;
 
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\OrganizationFormatter;
-use Drupal\apigee_m10n\Plugin\Field\FieldType\OrganizationFieldItem;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Tests\apigee_m10n\Kernel\MonetizationKernelTestBase;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\OrganizationFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldType\OrganizationFieldItem;
 
 /**
  * Test the `apigee_organization` field formatter.

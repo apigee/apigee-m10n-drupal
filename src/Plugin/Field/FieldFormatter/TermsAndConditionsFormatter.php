@@ -42,7 +42,7 @@ class TermsAndConditionsFormatter extends FormatterBase {
     $elements = [];
     foreach ($items as $delta => $item) {
       $elements[$delta] = [
-        '#markup' => $item->value ? $this->t('Accepted') : $this->t('Declined')
+        '#markup' => $item->value ? $this->t('Accepted') : $this->t('Declined'),
       ];
     }
     return $elements;

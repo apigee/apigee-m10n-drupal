@@ -19,11 +19,11 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\ListBuilder;
 
+use Drupal\Core\Url;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilder;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
-use Drupal\Core\Url;
 
 /**
  * Entity list builder for team purchased plans.
@@ -40,7 +40,7 @@ class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function render(TeamInterface $team = NULL) {
+  public function render(?TeamInterface $team = NULL) {
     // From this point forward `$this->user` is a safe assumption.
     $this->team = $team;
 

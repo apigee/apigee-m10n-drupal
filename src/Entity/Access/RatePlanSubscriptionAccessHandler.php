@@ -22,13 +22,13 @@ namespace Drupal\apigee_m10n\Entity\Access;
 use Apigee\Edge\Api\Monetization\Entity\CompanyRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperCategoryRatePlanInterface;
 use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
-use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
+use Drupal\apigee_m10n\Entity\RatePlanInterface;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

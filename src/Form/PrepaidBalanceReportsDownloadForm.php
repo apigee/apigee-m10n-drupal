@@ -20,10 +20,10 @@
 namespace Drupal\apigee_m10n\Form;
 
 use Apigee\Edge\Exception\ClientErrorException;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -68,7 +68,7 @@ class PrepaidBalanceReportsDownloadForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, EntityInterface $entity = NULL, array $supported_currencies = []) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?EntityInterface $entity = NULL, array $supported_currencies = []) {
     $form['heading'] = [
       '#type' => 'html_tag',
       '#tag' => 'h3',

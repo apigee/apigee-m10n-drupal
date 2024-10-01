@@ -19,9 +19,9 @@
 
 namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
 
-use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Functional\MonetizationFunctionalTestBase;
+use Drupal\apigee_m10n\Form\PrepaidBalanceConfigForm;
 
 /**
  * UI tests for the prepaid balance config form.

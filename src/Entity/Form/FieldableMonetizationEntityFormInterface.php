@@ -19,8 +19,8 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
-use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityFormInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityFormInterface;
 
 /**
  * Entity form variant for Apigee Monetization entity types.

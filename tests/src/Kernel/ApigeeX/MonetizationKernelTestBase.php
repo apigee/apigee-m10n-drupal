@@ -19,10 +19,10 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX;
 
-use Drupal\apigee_edge\OauthTokenFileStorage;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\apigee_m10n\Traits\ApigeeX\ApigeeMonetizationTestTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
+use Drupal\apigee_edge\OauthTokenFileStorage;
 
 /**
  * The base class for Monetization kernel tests.

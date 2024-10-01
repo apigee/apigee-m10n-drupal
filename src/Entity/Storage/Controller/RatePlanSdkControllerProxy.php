@@ -69,7 +69,7 @@ class RatePlanSdkControllerProxy implements RatePlanSdkControllerProxyInterface 
    * {@inheritdoc}
    */
   public function loadAll(): array {
-    // TODO: Cache this list.
+    // @todo Cache this list.
     $all_product_bundles = ProductBundle::loadAll();
 
     /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface[] $rate_plans */

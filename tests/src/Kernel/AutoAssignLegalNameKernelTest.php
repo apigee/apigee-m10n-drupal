@@ -19,8 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Drupal\Core\Form\FormState;
-
 /**
  * AutoAssignLegalNameKernelTest tests.
  */

@@ -19,11 +19,11 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel;
 
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\user\Entity\Role;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
