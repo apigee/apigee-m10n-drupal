@@ -325,6 +325,7 @@ abstract class PrepaidBalanceControllerBase extends ControllerBase implements Pr
    */
   public static function getCacheTags(EntityInterface $entity) {
     return [
+      static::CACHE_MISS,
       static::CACHE_PREFIX,
       static::getCacheId($entity),
     ];
