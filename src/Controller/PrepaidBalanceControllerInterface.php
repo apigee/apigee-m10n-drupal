@@ -31,8 +31,11 @@ use Drupal\Core\Entity\EntityInterface;
 interface PrepaidBalanceControllerInterface {
 
   /**
-   * Cache prefix is new 'reserved' cache tag format CACHE_MISS_IF_UNCACHEABLE_HTTP_METHOD:$suffix,
-   * if something is tagged with this, it will be a cache miss on POST requests.
+   * Cache prefix is new 'reserved' cache tag format.
+   *
+   * CACHE_MISS_IF_UNCACHEABLE_HTTP_METHOD:$suffix.
+   *
+   * If tagged, it will be a cache miss on POST.
    */
   const CACHE_MISS = 'CACHE_MISS_IF_UNCACHEABLE_HTTP_METHOD:form';
 
