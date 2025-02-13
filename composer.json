@@ -4,22 +4,22 @@
     "type": "drupal-module",
     "description": "Apigee Edge Monetization for Drupal",
     "require": {
-        "php": "~8.3.0",
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
         "ext-bcmath": "*",
         "cweagans/composer-patches": "~1.6",
         "commerceguys/intl": "^2.0",
-        "drupal/apigee_edge": "^4.0.0",
-        "drupal/core": "^11.1",
-        "drupal/requirement": "drupal11-prep",
-        "drupal/jquery_ui_dialog": "^2.1",
-        "apigee/apigee-client-php": "^4.0.0"
+        "drupal/apigee_edge": "^3.0.0 || ^4.0.0",
+        "drupal/core": "^10.2 || ^11.1",
+        "drupal/requirement": "^1.2 || dev-drupal11-prep",
+        "drupal/jquery_ui_dialog": "^2.0 || ^2.1",
+        "apigee/apigee-client-php": "^3.0.7 || ^4.0.0"
     },
     "require-dev": {
         "apigee/apigee-mock-client-php": "^1.1.1",
         "drupal/drupal-extension": "~5",
-        "drupal/core-dev": "^11.1",
-        "drush/drush": "^13.3",
-        "mglaman/drupal-check": "^1.5",
+        "drupal/core-dev": "^10.2 || ^11.1",
+        "drush/drush": "^12.4.3 || ^13.3",
+        "mglaman/drupal-check": "^1.3 || ^1.5",
         "phpmd/phpmd": "^2.8.2",
         "phpmetrics/phpmetrics": "^2.5",
         "phpstan/phpstan": "^1.12"
