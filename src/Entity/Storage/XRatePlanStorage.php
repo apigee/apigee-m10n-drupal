@@ -24,6 +24,7 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\apigee_edge\Entity\Controller\EdgeEntityControllerInterface;
 use Drupal\apigee_edge\Entity\Storage\EdgeEntityStorageBase;
 use Drupal\apigee_m10n\Entity\Storage\Controller\XRatePlanSdkControllerProxyInterface;
@@ -113,7 +114,7 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
           }
         }
         catch (InvalidRatePlanIdException $exception) {
-          watchdog_exception('apigee_m10n', $exception);
+          Error::logException('apigee_m10n', $exception);
         }
       }
       $this->invokeStorageLoadHook($entities);
@@ -224,7 +225,7 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
           }
         }
         catch (InvalidRatePlanIdException $exception) {
-          watchdog_exception('apigee_m10n', $exception);
+          Error::logException('apigee_m10n', $exception);
           $this->cacheBackend->delete($cid);
         }
       }

@@ -125,7 +125,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
       });
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_kickstart', $exception);
+      Error::logException('apigee_kickstart', $exception);
     }
   }
 
@@ -238,7 +238,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
           ->save();
       }
       catch (\Exception $exception) {
-        watchdog_exception('apigee_kickstart', $exception);
+        Error::logException('apigee_kickstart', $exception);
       }
     }
   }

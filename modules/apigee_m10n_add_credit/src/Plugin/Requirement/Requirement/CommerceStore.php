@@ -25,6 +25,7 @@ use CommerceGuys\Addressing\AddressFormat\AddressField;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\address\FieldHelper;
 use Drupal\address\LabelHelper;
 use Drupal\apigee_edge\SDKConnectorInterface;
@@ -100,7 +101,7 @@ class CommerceStore extends RequirementBase implements ContainerFactoryPluginInt
       }
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_m10n_add_credit', $exception);
+      Error::logException('apigee_m10n_add_credit', $exception);
     }
   }
 
@@ -234,7 +235,7 @@ class CommerceStore extends RequirementBase implements ContainerFactoryPluginInt
       $store->save();
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_m10n_add_credit', $exception);
+      Error::logException('apigee_m10n_add_credit', $exception);
     }
   }
 
