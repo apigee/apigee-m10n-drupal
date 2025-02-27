@@ -155,7 +155,6 @@ jobs:
       if: ${{ matrix.drupal-core != '10.3.x' || matrix.php-version != '8.2' }}
       run: |
         cd drupal
-        vendor/bin/phpunit --migrate-configuration -c core apigee_m10n modules/contrib/apigee_m10n
         vendor/bin/phpunit -c core --color --group apigee_m10n --testsuite unit,kernel,functional,functional-javascript modules/contrib/apigee_m10n
 
     - name: "Run PHPUnit tests with Code Coverage"
@@ -163,7 +162,6 @@ jobs:
       run: |
         cd drupal
         cp modules/contrib/apigee_m10n/phpunit.core.xml.dist core/phpunit.xml
-        vendor/bin/phpunit --migrate-configuration -c core apigee_m10n modules/contrib/apigee_m10n
         vendor/bin/phpunit -c core --color --group apigee_m10n --testsuite unit,kernel,functional,functional-javascript --coverage-clover /tmp/coverage_${{ matrix.instance-type }}.xml modules/contrib/apigee_m10n
         
     - name: Artifacts
