@@ -53,7 +53,7 @@ class ApigeeEdgeConnection extends RequirementBase {
    * {@inheritdoc}
    */
   public function isCompleted(): bool {
-    $logger = \Drupal::logger('requirement');
+    $logger = \Drupal::logger('apigee_m10n');
     try {
       $this->getApigeeEdgeSdkConnector()->testConnection();
       return TRUE;

@@ -106,7 +106,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
     $this->languageManager = $language_manager;
     $this->currencyRepository = new CurrencyRepository();
     $this->importableCurrencies = $this->getImportableCurrencies();
-    $logger = \Drupal::logger('apigee_kickstart');
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     // Get organization supported currencies.
     try {
@@ -190,7 +190,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $currencies = $form_state->getValue('supported_currencies');
     $store = $form_state->getValue('store');
-    $logger = \Drupal::logger('apigee_kickstart');
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface $currency */
     foreach ($currencies as $currency_code) {
