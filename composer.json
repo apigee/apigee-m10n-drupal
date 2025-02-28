@@ -18,7 +18,7 @@
         "apigee/apigee-mock-client-php": "^1.1.1",
         "drupal/drupal-extension": "~5",
         "drupal/core-dev": "^10.3 || ^11.1",
-        "drush/drush": "^13.3",
+        "drush/drush": "^12.4.3 || ^13.3",
         "mglaman/drupal-check": "^1.5",
         "phpmd/phpmd": "^2.8.2",
         "phpmetrics/phpmetrics": "^2.5",
