@@ -20,6 +20,7 @@ namespace Drupal\apigee_m10n\Form;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -44,10 +45,17 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
   protected $dateFormatter;
 
   /**
-   * {@inheritdoc}
+   * PrepaidBalanceConfigForm constructor.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   The date formatter.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config_manager
+   *   The typed config manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, DateFormatterInterface $date_formatter) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, DateFormatterInterface $date_formatter, TypedConfigManagerInterface $typed_config_manager) {
+    parent::__construct($config_factory, $typed_config_manager);
 
     $this->dateFormatter = $date_formatter;
   }
@@ -58,7 +66,8 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('date.formatter')
+      $container->get('date.formatter'),
+      $container->get('config.typed')
     );
   }
 
