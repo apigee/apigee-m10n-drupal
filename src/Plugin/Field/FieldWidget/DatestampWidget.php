@@ -38,8 +38,6 @@ use Drupal\Core\Form\FormStateInterface;
 class DatestampWidget extends TimestampDatetimeWidget {
 
   /**
-   * Example format used as Datetime::formatExample is deprecated in Drupal:10.2.0 and is removed from Drupal:11.0.0.
-   *
    * @var string
    */
   public const DATESTAMPFORMAT = 'YYYY-MM-DD HH:MM:SS';
