@@ -31,6 +31,7 @@ use Apigee\Edge\Api\Monetization\Entity\DeveloperRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
 use Drupal\apigee_m10n\Entity\Property\ApiXProductPropertyAwareDecoratorTrait;
 use Drupal\apigee_m10n\Entity\Property\BillingPeriodPropertyAwareDecoratorTrait;
@@ -223,6 +224,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
     $utc = new \DateTimeZone('UTC');
     $currentTimestamp = (new \DateTimeImmutable())->setTimezone($utc);
     $currentTimestamp = (int) ($currentTimestamp->getTimestamp() . $currentTimestamp->format('v'));
+    $logger = \Drupal::logger('apigee_m10n');
 
     /** @var \Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface $entity */
     foreach ($rateplans as $id => $entity) {
@@ -235,7 +237,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
         }
       }
       catch (InvalidRatePlanIdException $exception) {
-        watchdog_exception('apigee_m10n', $exception);
+        Error::logException($logger, $exception);
       }
     }
 
