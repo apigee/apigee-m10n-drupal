@@ -224,6 +224,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
     $utc = new \DateTimeZone('UTC');
     $currentTimestamp = (new \DateTimeImmutable())->setTimezone($utc);
     $currentTimestamp = (int) ($currentTimestamp->getTimestamp() . $currentTimestamp->format('v'));
+    $logger = \Drupal::logger('apigee_m10n');
 
     /** @var \Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface $entity */
     foreach ($rateplans as $id => $entity) {
@@ -236,7 +237,7 @@ class XRatePlan extends FieldableEdgeEntityBase implements XRatePlanInterface {
         }
       }
       catch (InvalidRatePlanIdException $exception) {
-        Error::logException('apigee_m10n', $exception);
+        Error::logException($logger, $exception);
       }
     }
 

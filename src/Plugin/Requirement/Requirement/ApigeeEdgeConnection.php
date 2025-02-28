@@ -53,12 +53,13 @@ class ApigeeEdgeConnection extends RequirementBase {
    * {@inheritdoc}
    */
   public function isCompleted(): bool {
+    $logger = \Drupal::logger('requirement');
     try {
       $this->getApigeeEdgeSdkConnector()->testConnection();
       return TRUE;
     }
     catch (\Exception $exception) {
-      Error::logException('requirement', $exception);
+      Error::logException($logger, $exception);
     }
 
     return FALSE;

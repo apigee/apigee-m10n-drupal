@@ -103,6 +103,7 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
     $this->withController(function (XRatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $include_future_plans, &$entities) {
       // Load the  rate plans for this xproduct.
       $sdk_entities = $controller->loadRatePlansByProduct($product_bundle_id, $include_future_plans);
+      $logger = \Drupal::logger('apigee_m10n');
       // Convert the SDK entities to drupal entities.
       /** @var \Apigee\Edge\Api\ApigeeX\Entity\RatePlanInterface $entity */
       foreach ($sdk_entities as $id => $entity) {
@@ -114,7 +115,7 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
           }
         }
         catch (InvalidRatePlanIdException $exception) {
-          Error::logException('apigee_m10n', $exception);
+          Error::logException($logger, $exception);
         }
       }
       $this->invokeStorageLoadHook($entities);
@@ -209,6 +210,7 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
   public function loadAll(): array {
     $cid = 'values:xrateplan';
     $rate_plans = $this->cacheBackend->get($cid);
+    $logger = \Drupal::logger('apigee_m10n');
     if ($rate_plans && $rate_plans->data) {
       return $rate_plans->data;
     }
@@ -225,7 +227,7 @@ class XRatePlanStorage extends EdgeEntityStorageBase implements XRatePlanStorage
           }
         }
         catch (InvalidRatePlanIdException $exception) {
-          Error::logException('apigee_m10n', $exception);
+          Error::logException($logger, $exception);
           $this->cacheBackend->delete($cid);
         }
       }

@@ -124,6 +124,7 @@ class PaymentGateway extends RequirementBase implements ContainerFactoryPluginIn
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     try {
       $gateway = $this->getEntityTypeManager()
@@ -132,7 +133,7 @@ class PaymentGateway extends RequirementBase implements ContainerFactoryPluginIn
       $gateway->save();
     }
     catch (\Exception $exception) {
-      Error::logException('apigee_m10n_add_credit', $exception);
+      Error::logException($logger, $exception);
     }
   }
 

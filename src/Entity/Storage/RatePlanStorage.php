@@ -103,6 +103,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
     $this->withController(function (RatePlanSdkControllerProxyInterface $controller) use ($product_bundle_id, $include_future_plans, &$entities) {
       // Load the  rate plans for this product bundle.
       $sdk_entities = $controller->loadRatePlansByProductBundle($product_bundle_id, $include_future_plans);
+      $logger = \Drupal::logger('apigee_m10n');
       // Convert the SDK entities to drupal entities.
       /** @var \Apigee\Edge\Api\Monetization\Entity\RatePlanInterface $entity */
       foreach ($sdk_entities as $id => $entity) {
@@ -114,7 +115,7 @@ class RatePlanStorage extends EdgeEntityStorageBase implements RatePlanStorageIn
           }
         }
         catch (InvalidRatePlanIdException $exception) {
-          Error::logException('apigee_m10n', $exception);
+          Error::logException($logger, $exception);
         }
       }
       $this->invokeStorageLoadHook($entities);

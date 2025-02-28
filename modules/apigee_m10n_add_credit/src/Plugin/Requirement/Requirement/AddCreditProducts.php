@@ -106,6 +106,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
     $this->languageManager = $language_manager;
     $this->currencyRepository = new CurrencyRepository();
     $this->importableCurrencies = $this->getImportableCurrencies();
+    $logger = \Drupal::logger('apigee_kickstart');
 
     // Get organization supported currencies.
     try {
@@ -126,7 +127,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
       });
     }
     catch (\Exception $exception) {
-      Error::logException('apigee_kickstart', $exception);
+      Error::logException($logger, $exception);
     }
   }
 
@@ -189,6 +190,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $currencies = $form_state->getValue('supported_currencies');
     $store = $form_state->getValue('store');
+    $logger = \Drupal::logger('apigee_kickstart');
 
     /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface $currency */
     foreach ($currencies as $currency_code) {
@@ -239,7 +241,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
           ->save();
       }
       catch (\Exception $exception) {
-        Error::logException('apigee_kickstart', $exception);
+        Error::logException($logger, $exception);
       }
     }
   }
