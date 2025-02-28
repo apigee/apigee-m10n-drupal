@@ -45,6 +45,8 @@ class PrepaidBalanceConfigForm extends ConfigFormBase {
   protected $dateFormatter;
 
   /**
+   * PrepaidBalanceConfigForm constructor.
+   *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
