@@ -38,6 +38,8 @@ use Drupal\Core\Form\FormStateInterface;
 class DatestampWidget extends TimestampDatetimeWidget {
 
   /**
+   * Constant fot Date Time format.
+   *
    * @var string
    */
   public const DATESTAMPFORMAT = 'YYYY-MM-DD HH:MM:SS';
