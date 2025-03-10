@@ -373,14 +373,14 @@ class BalanceAdjustmentJob extends EdgeJob {
     $messages = [
       'developer' => [
         'balance_error_message' => 'Apigee User ({email}) has no balance for ({currency}).',
-        'report_text_error_header' => 'Calculation discrepancy applying adjustment to developer `{email}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text_info_header'  => 'Adjustment applied to developer:  `{email}`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text_error_header' => 'Calculation discrepancy applying adjustment to developer `({email})`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text_info_header'  => 'Adjustment applied to developer:  `({email})`. <br />' . PHP_EOL . PHP_EOL,
         'report_text'              => $report_text,
       ],
       'company' => [
         'balance_error_message' => 'Apigee team ({team_name}) has no balance for ({currency}).',
-        'report_text_error_header'  => 'Calculation discrepancy applying adjustment to team `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
-        'report_text_info_header'   => 'Adjustment applied to team:       `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text_error_header'  => 'Calculation discrepancy applying adjustment to team `({team_name})`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text_info_header'   => 'Adjustment applied to team:       `({team_name})`. <br />' . PHP_EOL . PHP_EOL,
         'report_text'               => $report_text,
       ],
     ];
