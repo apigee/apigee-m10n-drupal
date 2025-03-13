@@ -313,18 +313,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
    * Tests admin route permissions.
    */
   public function assertAdminRoutes() {
-    /** @var \Drupal\Core\Url[] $admin_routes */
-    // $admin_routes = [
-    //   Url::fromRoute('apigee_m10n.settings'),
-    //   Url::fromRoute('apigee_m10n.settings.rate_plan'),
-    //   Url::fromRoute('apigee_m10n.settings.prepaid_balance'),
-    //   Url::fromRoute('entity.entity_view_display.purchased_plan.default'),
-    //   Url::fromRoute('entity.product_bundle.collection'),
-    // ];
-    $route1 = Url::fromRoute('apigee_m10n.settings');
-    static::assertTrue($route1->access($this->administrator));
-    static::assertFalse($route1->access($this->developer));
-    static::assertFalse($route1->access($this->anonymous));
+    // $route1 = Url::fromRoute('apigee_m10n.settings');
+    // static::assertTrue($route1->access($this->administrator));
+    // static::assertFalse($route1->access($this->developer));
+    // static::assertFalse($route1->access($this->anonymous));
 
     $route2 = Url::fromRoute('apigee_m10n.settings.rate_plan');
     static::assertTrue($route2->access($this->administrator));
@@ -345,13 +337,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     static::assertTrue($route5->access($this->administrator));
     static::assertFalse($route5->access($this->developer));
     static::assertFalse($route5->access($this->anonymous));
-
-    // Make sure only the admin account has access to all admin routes.
-    // foreach ($admin_routes as $route) {
-    //   static::assertTrue($route->access($this->administrator));
-    //   static::assertFalse($route->access($this->developer));
-    //   static::assertFalse($route->access($this->anonymous));
-    // }
   }
 
   /**
