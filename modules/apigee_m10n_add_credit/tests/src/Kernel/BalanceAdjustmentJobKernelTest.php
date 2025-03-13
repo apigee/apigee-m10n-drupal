@@ -115,6 +115,7 @@ class BalanceAdjustmentJobKernelTest extends MonetizationKernelTestBase {
       ->set('mail', $this->site_mail)
       ->set('name', 'example site')
       ->save();
+    drupal_flush_all_caches();
   }
 
   /**
