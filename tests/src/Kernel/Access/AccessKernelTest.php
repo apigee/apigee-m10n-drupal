@@ -314,29 +314,20 @@ class AccessKernelTest extends MonetizationKernelTestBase {
    */
   public function assertAdminRoutes() {
     \Drupal::service("router.builder")->rebuild();
-    $url = Url::fromRoute('apigee_m10n.settings', ['user' => $this->administrator->id()]);
-    static::assertTrue($url->access($this->administrator));
-    static::assertTrue($this->administrator->hasPermission('administer apigee monetization'));
-    // $headers = @get_headers($url);
-    // if($headers && strpos( $headers[0], '200')) {
-    //   static::assertSession($url)->statusCodeEquals(200); // Check for successful response
-    //   echo "Status Code - ". $this->getSession()->getStatusCode();
-    //   static::assertTrue($this->administrator->hasPermission('administer apigee monetization'));
-    // }
-    // $admin_routes = [
-    //   Url::fromRoute('apigee_m10n.settings', ['user' => $this->administrator->id()]),
-    //   Url::fromRoute('apigee_m10n.settings.rate_plan', ['user' => $this->administrator->id()]),
-    //   Url::fromRoute('apigee_m10n.settings.prepaid_balance', ['user' => $this->administrator->id()]),
-    //   Url::fromRoute('entity.entity_view_display.purchased_plan.default', ['user' => $this->administrator->id()]),
-    //   Url::fromRoute('entity.product_bundle.collection', ['user' => $this->administrator->id()]),
-    // ];
+    $admin_routes = [
+      Url::fromRoute('apigee_m10n.settings'),
+      Url::fromRoute('apigee_m10n.settings.rate_plan'),
+      Url::fromRoute('apigee_m10n.settings.prepaid_balance'),
+      Url::fromRoute('entity.entity_view_display.purchased_plan.default'),
+      Url::fromRoute('entity.product_bundle.collection')
+    ];
 
-    // // Make sure only the admin account has access to all admin routes.
-    // foreach ($admin_routes as $route) {
-    //   static::assertTrue($route->access($this->administrator));
-    //   static::assertFalse($route->access($this->developer));
-    //   static::assertFalse($route->access($this->anonymous));
-    // }
+    // Make sure only the admin account has access to all admin routes.
+    foreach ($admin_routes as $route) {
+      static::assertTrue($route->access($this->administrator));
+      static::assertFalse($route->access($this->developer));
+      static::assertFalse($route->access($this->anonymous));
+    }
   }
 
   /**
