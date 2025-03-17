@@ -85,7 +85,6 @@ class AddCreditProductsSelectionTest extends MonetizationKernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->installSchema('system', ['sequences']);
     $this->installEntitySchema('commerce_product');
     $this->installEntitySchema('user');
     $this->installConfig([

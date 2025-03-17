@@ -40,7 +40,6 @@ class RatePlanConverterTest extends MonetizationKernelTestBase {
   protected function setUp():void {
     parent::setUp();
 
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',

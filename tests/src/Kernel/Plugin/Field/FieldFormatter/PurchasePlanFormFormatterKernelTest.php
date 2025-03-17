@@ -78,7 +78,6 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
 
     $this->installEntitySchema('user');
     $this->installEntitySchema('date_format');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
