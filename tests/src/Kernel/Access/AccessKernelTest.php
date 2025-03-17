@@ -315,12 +315,14 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   public function assertAdminRoutes() {
     \Drupal::service("router.builder")->rebuild();
     $url = Url::fromRoute('apigee_m10n.settings', ['user' => $this->administrator->id()]);
-    $headers = @get_headers($url);
-    if($headers && strpos( $headers[0], '200')) {
-      static::assertSession($url)->statusCodeEquals(200); // Check for successful response
-      echo "Status Code - ". $this->getSession()->getStatusCode();
-      static::assertTrue($this->administrator->hasPermission('administer apigee monetization'));
-    }
+    static::assertTrue($url->access($this->administrator));
+    static::assertTrue($this->administrator->hasPermission('administer apigee monetization'));
+    // $headers = @get_headers($url);
+    // if($headers && strpos( $headers[0], '200')) {
+    //   static::assertSession($url)->statusCodeEquals(200); // Check for successful response
+    //   echo "Status Code - ". $this->getSession()->getStatusCode();
+    //   static::assertTrue($this->administrator->hasPermission('administer apigee monetization'));
+    // }
     // $admin_routes = [
     //   Url::fromRoute('apigee_m10n.settings', ['user' => $this->administrator->id()]),
     //   Url::fromRoute('apigee_m10n.settings.rate_plan', ['user' => $this->administrator->id()]),
