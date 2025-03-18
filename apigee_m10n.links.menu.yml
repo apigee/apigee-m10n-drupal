@@ -1,7 +1,7 @@
 system.admin_apigee_m10n:
   title: 'Apigee monetization'
   parent: system.admin_config
-  route_name: apigee_monetization.settings
+  route_name: apigee_m10n.settings
 
 entity.product_bundle.collection:
   class: Drupal\apigee_m10n\Plugin\Menu\ProductPluginClass
