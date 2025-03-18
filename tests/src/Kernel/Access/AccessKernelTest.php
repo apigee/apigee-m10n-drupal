@@ -133,10 +133,10 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   public function testAll() {
     $this->assertPermissionList();
     $this->assertAdminRoutes();
-    // $this->assertPricingAndPlanRoutes();
-    // $this->assertProductBundleRoutes();
-    // $this->assertRatePlanRoutes();
-    // $this->assertPurchasedPlanRoutes();
+    $this->assertPricingAndPlanRoutes();
+    $this->assertProductBundleRoutes();
+    $this->assertRatePlanRoutes();
+    $this->assertPurchasedPlanRoutes();
     // $this->assertBillingRoutes();
     // $this->assertReportsRoute();
   }
