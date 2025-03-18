@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
-use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Session\AccountInterface;
 use Prophecy\Argument;
 
 /**
