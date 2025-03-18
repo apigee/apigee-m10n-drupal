@@ -1,4 +1,4 @@
-apigee_m10n.settings:
+apigee_monetization.settings:
   path: /admin/config/apigee-monetization
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage

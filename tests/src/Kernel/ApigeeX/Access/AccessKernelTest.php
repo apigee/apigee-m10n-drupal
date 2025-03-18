@@ -249,7 +249,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   public function assertAdminRoutes() {
     /** @var \Drupal\Core\Url[] $admin_routes */
     $admin_routes = [
-      Url::fromRoute('apigee_m10n.settings'),
+      Url::fromRoute('apigee_monetization.settings'),
       Url::fromRoute('apigee_m10n.settings.rate_plan_x'),
       Url::fromRoute('entity.entity_view_display.purchased_plan.default'),
       Url::fromRoute('entity.xproduct.collection'),

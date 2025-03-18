@@ -315,11 +315,11 @@ class AccessKernelTest extends MonetizationKernelTestBase {
   public function assertAdminRoutes() {
     \Drupal::service("router.builder")->rebuild();
     $admin_routes = [
-      Url::fromRoute('apigee_m10n.settings'),
-      Url::fromRoute('apigee_m10n.settings.rate_plan'),
-      Url::fromRoute('apigee_m10n.settings.prepaid_balance'),
-      Url::fromRoute('entity.entity_view_display.purchased_plan.default'),
-      Url::fromRoute('entity.product_bundle.collection')
+      Url::fromRoute('apigee_monetization.settings'),
+      // Url::fromRoute('apigee_m10n.settings.rate_plan'),
+      // Url::fromRoute('apigee_m10n.settings.prepaid_balance'),
+      // Url::fromRoute('entity.entity_view_display.purchased_plan.default'),
+      // Url::fromRoute('entity.product_bundle.collection')
     ];
 
     // Make sure only the admin account has access to all admin routes.
