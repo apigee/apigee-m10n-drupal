@@ -72,7 +72,7 @@ apigee_m10n.settings.purchased_plan:
     _apigee_monetization_route: TRUE
 
 entity.entity_view_display.purchased_plan.default:
-  path: admin/config/apigee-monetization/purchased-plan-settings/display
+  path: /admin/config/apigee-monetization/purchased-plan-settings/display
   defaults:
     _title: Rate plan purchases
   requirements:
