@@ -108,7 +108,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'roles' => $developer->getRoles(),
       'mail' => $developer->getEmail(),
     ]);
-    $this->setCurrentUser($this->developer);
 
     // Anonymous.
     $this->anonymous = new AnonymousUserSession();

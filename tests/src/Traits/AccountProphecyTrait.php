@@ -33,12 +33,12 @@ trait AccountProphecyTrait {
    * @param array $permissions
    *   Any permissions in the account should have.
    *
-   * @return \Drupal\Core\Session\AccountProxyInterface
+   * @return \Drupal\Core\Session\AccountInterface
    *   The user account.
    */
   protected function prophesizeAccount($permissions = []) {
     static $uid = 2;
-    return $this->prophesize(AccountProxyInterface::class)
+    return $this->prophesize(AccountInterface::class)
       ->id()
       ->willReturn($uid++)
       ->getObjectProphecy()
@@ -71,7 +71,7 @@ trait AccountProphecyTrait {
    * @param array $permissions
    *   An array of permissions the current user should have.
    *
-   * @return \Drupal\Core\Session\AccountProxyInterface
+   * @return \Drupal\Core\Session\AccountInterface
    *   The current user.
    */
   protected function prophesizeCurrentUser($permissions = []) {
