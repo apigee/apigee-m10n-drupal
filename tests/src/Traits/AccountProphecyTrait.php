@@ -19,7 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Traits;
 
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Prophecy\Argument;
 
 /**
@@ -33,12 +33,12 @@ trait AccountProphecyTrait {
    * @param array $permissions
    *   Any permissions in the account should have.
    *
-   * @return \Drupal\Core\Session\AccountInterface
+   * @return \Drupal\Core\Session\AccountProxyInterface
    *   The user account.
    */
   protected function prophesizeAccount($permissions = []) {
     static $uid = 2;
-    return $this->prophesize(AccountInterface::class)
+    return $this->prophesize(AccountProxyInterface::class)
       ->id()
       ->willReturn($uid++)
       ->getObjectProphecy()
@@ -71,7 +71,7 @@ trait AccountProphecyTrait {
    * @param array $permissions
    *   An array of permissions the current user should have.
    *
-   * @return \Drupal\Core\Session\AccountInterface
+   * @return \Drupal\Core\Session\AccountProxyInterface
    *   The current user.
    */
   protected function prophesizeCurrentUser($permissions = []) {
