@@ -115,7 +115,7 @@ class AddCreditService implements AddCreditServiceInterface {
         $options = ['langcode' => $message['langcode']];
         $params['@site'] = $this->config->get('system.site')->get('name');
         $message['subject'] = $this->t('Developer account add credit error from @site', $params, $options);
-        $body = "There was an error applying a credit to an account. \n\r\n\r" . $params['@report_text'] . "\n\r\n\r@error";
+        $body = "There was an error applying a credit to an account.\n" . $params['@report_text'] . "\n@error";
         $message['body'][0] = $this->t($body, $params, $options);
         break;
 
