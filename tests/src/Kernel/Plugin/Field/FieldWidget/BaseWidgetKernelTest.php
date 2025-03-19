@@ -53,7 +53,6 @@ abstract class BaseWidgetKernelTest extends MonetizationKernelTestBase {
   protected function setUp():void {
     parent::setUp();
 
-    $this->installSchema('system', 'sequences');
     $this->installConfig(['filter', 'node', 'system']);
     $this->installEntitySchema('node');
     $this->installEntitySchema('user');

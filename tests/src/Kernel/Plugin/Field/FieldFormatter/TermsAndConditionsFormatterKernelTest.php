@@ -65,7 +65,6 @@ class TermsAndConditionsFormatterKernelTest extends MonetizationKernelTestBase {
 
     $this->installEntitySchema('user');
     $this->installSchema('user', ['users_data']);
-    $this->installSchema('system', ['sequences']);
 
     $this->formatter_manager = $this->container->get('plugin.manager.field.formatter');
     $this->field_manager = $this->container->get('entity_field.manager');

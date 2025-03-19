@@ -58,7 +58,6 @@ class RatePlanAccessControlHandlerTest extends MonetizationKernelTestBase {
     parent::setUp();
 
     // Setup for creating a user.
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',

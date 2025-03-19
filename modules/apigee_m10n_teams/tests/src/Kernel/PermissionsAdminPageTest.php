@@ -50,7 +50,6 @@ class PermissionsAdminPageTest extends MonetizationTeamsKernelTestBase {
 
     $this->installEntitySchema('user');
     $this->installEntitySchema('team_member_role');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
