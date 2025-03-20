@@ -102,7 +102,6 @@ class PurchasePlanFormFormatterKernelTest extends MonetizationKernelTestBase {
    * @throws \Exception
    */
   public function testView() {
-    $this->warmOrganizationCache();
     $this->stack->queueMockResponse([
       'get_terms_conditions',
       'get_developer_terms_conditions',

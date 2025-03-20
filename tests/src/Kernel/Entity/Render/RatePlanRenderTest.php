@@ -75,7 +75,6 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
    * Tests theme preprocess functions being able to attach assets.
    */
   public function testRenderRatePlan() {
-    $this->warmOrganizationCache();
     $this->warmTnsCache();
     $this->warmDeveloperTnsCache($this->developer);
 

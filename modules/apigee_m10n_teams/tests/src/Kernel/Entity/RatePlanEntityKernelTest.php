@@ -103,7 +103,6 @@ class RatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase {
    * @throws \Exception
    */
   public function testRatePlanEntity() {
-    $this->warmOrganizationCache();
     $this->setCurrentTeamRoute($this->team);
     $this->warmTnsCache();
     $this->warmTeamTnsCache($this->team);

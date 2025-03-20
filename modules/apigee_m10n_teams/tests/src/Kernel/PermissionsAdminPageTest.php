@@ -66,7 +66,6 @@ class PermissionsAdminPageTest extends MonetizationTeamsKernelTestBase {
    * Ensure this module properly extends the team permissions page UI.
    */
   public function testPermissionsAdminPage() {
-    $this->warmOrganizationCache();
     $request = Request::create(Url::fromRoute('apigee_edge_teams.settings.team.permissions')->toString(), 'GET');
     $response = $this->container
       ->get('http_kernel')

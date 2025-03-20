@@ -108,7 +108,6 @@ class PurchaseProductFormFormatterKernelTest extends MonetizationKernelTestBase 
    * @throws \Exception
    */
   public function testView() {
-    $this->warmApigeexOrganizationCache();
     $this->stack->queueMockResponse([
       'get_developer_terms_conditions',
     ]);

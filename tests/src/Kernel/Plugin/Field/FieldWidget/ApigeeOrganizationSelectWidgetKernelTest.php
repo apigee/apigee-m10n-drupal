@@ -34,7 +34,6 @@ class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernelTest {
    * Test widget display.
    */
   public function testView() {
-    $this->warmOrganizationCache();
     $field_name = 'field_test';
     $field_type = 'apigee_organization';
     $settings = [
