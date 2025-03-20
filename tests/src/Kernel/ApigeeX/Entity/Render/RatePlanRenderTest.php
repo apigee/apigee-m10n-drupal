@@ -82,6 +82,7 @@ class RatePlanRenderTest extends MonetizationKernelTestBase {
    * Tests theme preprocess functions being able to attach assets.
    */
   public function testRenderRatePlan() {
+    $this->warmApigeexOrganizationCache();
     $price_formatter = \Drupal::service('apigee_m10n.price_formatter');
 
     $rate_plan = $this->rate_plan;

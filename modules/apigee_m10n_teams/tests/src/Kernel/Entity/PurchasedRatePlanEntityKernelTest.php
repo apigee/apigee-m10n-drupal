@@ -176,6 +176,7 @@ class PurchasedRatePlanEntityKernelTest extends MonetizationTeamsKernelTestBase 
    * @throws \Exception
    */
   public function testPurchasedRatePlanEntityHasAccess() {
+    $this->warmOrganizationCache();
     $this->createCurrentUserSession($this->member);
 
     $new_permissions = [

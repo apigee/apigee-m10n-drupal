@@ -75,6 +75,7 @@ class ModuleInstallKernelTest extends KernelTestBase {
    * installed at the same time.
    */
   public function testModuleInstall() {
+    $this->warmOrganizationCache();
     \Drupal::service('module_installer')->install(['apigee_m10n']);
     // Installing modules updates the container and needs a router rebuild.
     $this->container = \Drupal::getContainer();
