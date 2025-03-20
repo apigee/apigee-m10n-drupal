@@ -99,6 +99,7 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'roles' => $admin->getRoles(),
       'mail' => $admin->getEmail(),
     ]);
+
     // Developer.
     $developer = $this->createAccount(MonetizationInterface::DEFAULT_AUTHENTICATED_PERMISSIONS);
     $this->developer = new UserSession([
@@ -107,6 +108,8 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'roles' => $developer->getRoles(),
       'mail' => $developer->getEmail(),
     ]);
+    $this->setCurrentUser($this->developer);
+
     // Anonymous.
     $this->anonymous = new AnonymousUserSession();
 
@@ -119,8 +122,6 @@ class AccessKernelTest extends MonetizationKernelTestBase {
       'view own purchased_plan',
       'view rate_plan',
     ], TRUE, '', ['billing_type' => 'POSTPAID']);
-
-    $this->prophesizeCurrentUser([]);
   }
 
   /**
