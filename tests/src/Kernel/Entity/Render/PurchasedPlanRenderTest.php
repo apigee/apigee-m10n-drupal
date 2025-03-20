@@ -70,6 +70,8 @@ class PurchasedPlanRenderTest extends MonetizationKernelTestBase {
 
     // Set the default timezone for formatting the start  date.
     $purchased_plan_default_display = \Drupal::config('core.entity_view_display.purchased_plan.purchased_plan.default')->get('content');
+    $purchased_plan_default_display['startDate']['settings']['date_format'] = 'custom';
+    $purchased_plan_default_display['startDate']['settings']['custom_date_format'] = 'D, m/d/Y - H:i';
     $purchased_plan_default_display['startDate']['settings']['timezone'] = 'America/Los_Angeles';
     \Drupal::configFactory()->getEditable('core.entity_view_display.purchased_plan.purchased_plan.default')->set('content', $purchased_plan_default_display)->save();
 
