@@ -77,7 +77,7 @@ class AddCreditProductAdminTest extends AddCreditFunctionalTestBase {
     $table_html = $this->getSession()->getPage()->find('css', 'table#field-display-overview')->getHtml();
     // Make sure the enable field comes before the "Disabled" row (region).
     static::assertLessThan(
-      strpos($table_html, '<td colspan="7">Disabled</td>'),
+      strpos($table_html, 'Disabled</td>'),
       strpos($table_html, 'This is an Apigee add credit product'),
       'Failed asserting the "Add credit" toggle is not disabled.'
     );
