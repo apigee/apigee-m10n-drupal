@@ -28,7 +28,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 /**
  * Base test class for field widget tests.
  */
-class BaseWidgetKernelTest extends MonetizationKernelTestBase {
+abstract class BaseWidgetKernelTest extends MonetizationKernelTestBase {
 
   use ContentTypeCreationTrait;
   use NodeCreationTrait;
