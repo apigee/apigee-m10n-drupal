@@ -9,9 +9,7 @@
 <phpunit bootstrap="tests/bootstrap.php" colors="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutOutputDuringTests="true"
-         beStrictAboutChangesToGlobalState="true" 
-         failOnWarning="false" 
-         cacheResult="false">
+         beStrictAboutChangesToGlobalState="true">
 <!-- TODO set printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter" once
  https://youtrack.jetbrains.com/issue/WI-24808 is resolved. Drupal provides a
  result printer that links to the html output results for functional tests.
