@@ -1,0 +1,12 @@
+langcode: en
+status: true
+dependencies: {  }
+id: add_credit
+label: Add Credit
+description: 'This product is used to add credit to prepaid balances.'
+variationTypes:
+  - add_credit
+multipleVariations: true
+injectVariationFields: true
+traits: {  }
+locked: false
