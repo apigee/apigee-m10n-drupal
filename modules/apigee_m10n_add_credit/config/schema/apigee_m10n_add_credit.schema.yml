@@ -83,3 +83,24 @@ apigee_m10n_add_credit.general_settings.config:
     wait_time:
       type: integer
       label: 'How much time to wait till the next topup balance.'
+
+apigee_m10n_add_credit.commerce_product_type.*:
+  type: commerce_config_entity_bundle
+  label: 'Product type'
+  mapping:
+    description:
+      type: text
+      label: 'Description'
+    variationTypes:
+      type: sequence
+      label: 'Variation types'
+      orderby: value
+      sequence:
+        type: string
+        label: 'Variation type'
+    multipleVariations:
+      type: boolean
+      label: 'Allow each product to have multiple variations'
+    injectVariationFields:
+      type: boolean
+      label: 'Inject product variation fields into the rendered product'
