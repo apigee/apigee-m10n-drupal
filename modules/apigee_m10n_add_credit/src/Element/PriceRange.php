@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n_add_credit\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
-use Drupal\Core\Render\Element\FormElementBase;
 
 /**
  * Provides a price range form element.
@@ -45,9 +44,10 @@ use Drupal\Core\Render\Element\FormElementBase;
  *   '#available_currencies' => ['USD', 'EUR'],
  * ];
  * @endcode
+ *
+ * @FormElement("price_range")
  */
-#[FormElement('price_range')]
-class PriceRange extends FormElementBase {
+class PriceRange extends FormElement {
 
   /**
    * {@inheritdoc}
