@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernelTest {
+class ApigeeOrganizationSelectWidgetKernelTest extends BaseWidgetKernel {
 
   /**
    * Test widget display.
