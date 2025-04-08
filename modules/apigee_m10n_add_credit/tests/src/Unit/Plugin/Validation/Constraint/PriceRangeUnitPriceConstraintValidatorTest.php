@@ -67,9 +67,9 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
   }
 
   /**
-   * Provides data for static::testValidate().
+   * Provides data for self::testValidate().
    */
-  public static function providerValidate() {
+  public function providerValidate() {
     $data = [];
 
     $constraint = new PriceRangeDefaultOutOfRangeConstraint();
@@ -133,11 +133,6 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
       ],
     ];
 
-    return self::casesLoop($cases);
-  }
-
-  public function casesLoop($cases) {
-    $data = [];
     foreach ($cases as $case) {
       $value = $this->createMock(PriceItem::class);
       $value->expects($this->any())
