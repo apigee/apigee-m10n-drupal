@@ -69,7 +69,7 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
   /**
    * Provides data for self::testValidate().
    */
-  public function providerValidate() {
+  public static function providerValidate() {
     $data = [];
 
     $constraint = new PriceRangeDefaultOutOfRangeConstraint();
@@ -134,42 +134,42 @@ class PriceRangeUnitPriceConstraintValidatorTest extends PriceRangeDefaultOutOfR
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceItem::class);
-      $value->expects($this->any())
+      $value = self::createMock(PriceItem::class);
+      $value->expects(self::any())
         ->method('getValue')
         ->willReturn($case['price']);
 
-      $items = $this->createMock(FieldItemListInterface::class);
-      $items->expects($this->any())
+      $items = self::createMock(FieldItemListInterface::class);
+      $items->expects(self::any())
         ->method('getValue')
         ->willReturn([$case['range']]);
 
-      $variation = $this->createMock(ProductVariation::class);
-      $variation->expects($this->any())
+      $variation = self::createMock(ProductVariation::class);
+      $variation->expects(self::any())
         ->method('get')
         ->with('apigee_price_range')
         ->willReturn($items);
-      $variation->expects($this->any())
+      $variation->expects(self::any())
         ->method('hasField')
         ->with('apigee_price_range')
         ->willReturn(TRUE);
 
-      $order = $this->createMock(OrderItem::class);
-      $order->expects($this->any())
+      $order = self::createMock(OrderItem::class);
+      $order->expects(self::any())
         ->method('getPurchasedEntity')
         ->willReturn($variation);
 
-      $field = $this->createMock(FieldItemListInterface::class);
-      $field->expects($this->any())
+      $field = self::createMock(FieldItemListInterface::class);
+      $field->expects(self::any())
         ->method('getEntity')
         ->willReturn($order);
 
-      $value->expects($this->any())
+      $value->expects(self::any())
         ->method('getParent')
         ->willReturn($field);
 
-      $currencyFormatter = $this->createMock(CurrencyFormatter::class);
-      $currencyFormatter->expects($this->any())
+      $currencyFormatter = self::createMock(CurrencyFormatter::class);
+      $currencyFormatter->expects(self::any())
         ->method('format')
         ->willReturn("USD10.00");
 

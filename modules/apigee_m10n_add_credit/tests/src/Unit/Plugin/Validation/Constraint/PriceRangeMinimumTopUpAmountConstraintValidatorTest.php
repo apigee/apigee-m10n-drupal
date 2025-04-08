@@ -71,7 +71,7 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
   /**
    * Provides data for self::testValidate().
    */
-  public function providerValidate() {
+  public static function providerValidate() {
     $data = [];
 
     $cases = [
@@ -80,28 +80,28 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceRangeItem::class);
-      $value->expects($this->any())
+      $value = self::createMock(PriceRangeItem::class);
+      $value->expects(self::any())
         ->method('getValue')
         ->willReturn([
           'minimum' => $case['minimum'],
           'currency_code' => $case['currency_code'],
         ]);
 
-      $supportedCurrency = $this->createMock(SupportedCurrency::class);
-      $supportedCurrency->expects($this->any())
+      $supportedCurrency = self::createMock(SupportedCurrency::class);
+      $supportedCurrency->expects(self::any())
         ->method('getMinimumTopUpAmount')
         ->willReturn(11.00);
 
-      $monetization = $this->createMock(Monetization::class);
-      $monetization->expects($this->any())
+      $monetization = self::createMock(Monetization::class);
+      $monetization->expects(self::any())
         ->method('getSupportedCurrencies')
         ->willReturn([
           'usd' => $supportedCurrency,
         ]);
 
-      $currencyFormatter = $this->createMock(CurrencyFormatter::class);
-      $currencyFormatter->expects($this->any())
+      $currencyFormatter = self::createMock(CurrencyFormatter::class);
+      $currencyFormatter->expects(self::any())
         ->method('format')
         ->willReturn('USD11.00');
 
