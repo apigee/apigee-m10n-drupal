@@ -158,7 +158,7 @@ class AddCreditProductType extends RequirementBase {
         'id' => 'add_credit',
         'label' => 'Add credit',
         'description' => 'This product is used to add credit to prepaid balances.',
-        'variationType' => $variation_type->id(),
+        'variationTypes' => [$variation_type->id()],
         'multipleVariations' => TRUE,
         'injectVariationFields' => TRUE,
       ])
