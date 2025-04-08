@@ -62,7 +62,7 @@ class PriceRangeMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCas
   /**
    * Provides data for self::testValidate().
    */
-  public static function providerValidate() {
+  public function providerValidate() {
     $data = [];
 
     $cases = [
@@ -72,8 +72,8 @@ class PriceRangeMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCas
     ];
 
     foreach ($cases as $case) {
-      $value = self::createMock(PriceRangeItem::class);
-      $value->expects(self::any())
+      $value = $this->createMock(PriceRangeItem::class);
+      $value->expects($this->any())
         ->method('getValue')
         ->willReturn([
           'minimum' => $case['minimum'],
