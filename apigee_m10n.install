@@ -34,70 +34,77 @@ use Drupal\user\Entity\Role;
  */
 function apigee_m10n_requirements($phase) {
   $requirements = [];
+  if (Drupal::moduleHandler()->moduleExists('apigee_edge')) {
+    // If monetization is disabled after module has been installed, show error on status page.
+    if ($phase === 'runtime') {
+      try {
+        /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
+        $monetization = Drupal::service('apigee_m10n.monetization');
 
-  // If monetization is disabled after module has been installed, show error on status page.
-  if ($phase === 'runtime') {
-    try {
-      /** @var \Drupal\apigee_m10n\MonetizationInterface $monetization */
-      $monetization = Drupal::service('apigee_m10n.monetization');
+        if (!$monetization->isMonetizationEnabled()) {
+          $requirements['apigee_monetization_connection_error'] = [
+            'title' => t('Apigee Monetization'),
+            'description' => t(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE),
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
+      }
+      catch (ApiException $exception) {
+        Drupal::logger('apigee_m10n')->error($exception->getMessage());
+      }
+    }
 
-      if (!$monetization->isMonetizationEnabled()) {
-        $requirements['apigee_monetization_connection_error'] = [
-          'title' => t('Apigee Monetization'),
-          'description' => t(Monetization::MONETIZATION_DISABLED_ERROR_MESSAGE),
+    if ($phase == 'install' || $phase == 'runtime') {
+      if (!extension_loaded('bcmath')) {
+        $requirements['apigee_monetization_bcmath'] = [
+          'title' => t('BC Math'),
+          'description' => t('Apigee Monetization requires the BC Math PHP extension in order to format prices.'),
           'severity' => REQUIREMENT_ERROR,
         ];
       }
     }
-    catch (ApiException $exception) {
-      Drupal::logger('apigee_m10n')->error($exception->getMessage());
-    }
-  }
 
-  if ($phase == 'install' || $phase == 'runtime') {
-    if (!extension_loaded('bcmath')) {
-      $requirements['apigee_monetization_bcmath'] = [
-        'title' => t('BC Math'),
-        'description' => t('Apigee Monetization requires the BC Math PHP extension in order to format prices.'),
-        'severity' => REQUIREMENT_ERROR,
-      ];
-    }
-  }
+    // Should not be able to install if organization is not monetized.
+    if ($phase === 'install') {
+      $message = t("Apigee Monetization module functionality is not available for the organization used.");
+      $monetized = TRUE;
 
-  // Should not be able to install if organization is not monetized.
-  if ($phase === 'install') {
-    $message = t("Apigee Monetization module functionality is not available for the organization used.");
-    $monetized = TRUE;
+      try {
+        /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
+        $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
+        $org_controller = \Drupal::service('apigee_edge.controller.organization');
+        /* @var \Apigee\Edge\Api\Management\Entity\Organization $organization */
+        $organization = $org_controller->load($sdk_connector->getOrganization());
 
-    try {
-      /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
-      $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
-      $org_controller = \Drupal::service('apigee_edge.controller.organization');
-      /* @var \Apigee\Edge\Api\Management\Entity\Organization $organization */
-      $organization = $org_controller->load($sdk_connector->getOrganization());
-
-      // Check if org is ApigeeX.
-      if ($organization && ('CLOUD' === $organization->getRuntimeType() || 'HYBRID' === $organization->getRuntimeType())) {
-        if (!$organization->getAddonsConfig() || !$organization->getAddonsConfig()->getMonetizationConfig() || (FALSE === $organization->getAddonsConfig()->getMonetizationConfig()->getEnabled())) {
+        // Check if org is ApigeeX.
+        if ($organization && ('CLOUD' === $organization->getRuntimeType() || 'HYBRID' === $organization->getRuntimeType())) {
+          if (!$organization->getAddonsConfig() || !$organization->getAddonsConfig()->getMonetizationConfig() || (FALSE === $organization->getAddonsConfig()->getMonetizationConfig()->getEnabled())) {
+            $monetized = FALSE;
+          }
+        }
+        elseif ($organization && !$organization->getPropertyValue('features.isMonetizationEnabled')) {
           $monetized = FALSE;
         }
       }
-      elseif ($organization && !$organization->getPropertyValue('features.isMonetizationEnabled')) {
+      catch (\Exception $exception) {
+        // If not able to connect to Apigee Edge.
         $monetized = FALSE;
       }
     }
-    catch (\Exception $exception) {
-      // If not able to connect to Apigee Edge.
-      $monetized = FALSE;
+  } else {
+    if ($phase === 'install') {
+      $message = t("Enable Apigee module & configure the GCP credentials first.");
+      $monetized = TRUE;
+      Drupal::logger('apigee_m10n')->notice($message);
     }
+  }
 
-    if (FALSE === $monetized) {
-      $requirements['apigee_monetization_not_supported'] = [
-        'title' => t('Apigee Monetization'),
-        'description' => $message,
-        'severity' => REQUIREMENT_ERROR,
-      ];
-    }
+  if (FALSE === $monetized) {
+    $requirements['apigee_monetization_not_supported'] = [
+      'title' => t('Apigee Monetization'),
+      'description' => $message,
+      'severity' => REQUIREMENT_ERROR,
+    ];
   }
 
   return $requirements;
