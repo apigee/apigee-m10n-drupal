@@ -89,6 +89,8 @@ function apigee_m10n_requirements($phase) {
         // If not able to connect to Apigee Edge.
         $monetized = FALSE;
       }
+    } else {
+      $monetized = FALSE;
     }
   }
 
