@@ -64,10 +64,11 @@ function apigee_m10n_requirements($phase) {
     }
   }
 
+  $message = t("Apigee Monetization module functionality is not available for the organization used.");
+  $monetized = TRUE;
+
   // Should not be able to install if organization is not monetized.
   if (InstallerKernel::installationAttempted() || $phase == 'runtime') {
-    $message = t("Apigee Monetization module functionality is not available for the organization used.");
-    $monetized = TRUE;
     try {
       /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
       $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
