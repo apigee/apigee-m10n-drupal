@@ -34,7 +34,6 @@ use Drupal\user\Entity\Role;
  */
 function apigee_m10n_requirements($phase) {
   $requirements = [];
-
   // If monetization is disabled after module has been installed, show error on status page.
   if ($phase === 'runtime') {
     try {
@@ -68,7 +67,6 @@ function apigee_m10n_requirements($phase) {
   if ($phase === 'install') {
     $message = t("Apigee Monetization module functionality is not available for the organization used.");
     $monetized = TRUE;
-
     try {
       /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
       $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
