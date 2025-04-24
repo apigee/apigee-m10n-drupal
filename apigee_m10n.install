@@ -21,7 +21,6 @@
 use Apigee\Edge\Exception\ApiException;
 use Drupal\apigee_m10n\Monetization;
 use Drupal\apigee_m10n\MonetizationInterface;
-use Drupal\Core\Installer\InstallerKernel;
 use Drupal\user\RoleInterface;
 use Drupal\user\Entity\Role;
 
