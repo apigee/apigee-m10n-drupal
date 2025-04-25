@@ -67,7 +67,7 @@ function apigee_m10n_requirements($phase) {
   if ($phase === 'install') {
     $message = t("Apigee Monetization module functionality is not available for the organization used.");
     $monetized = TRUE;
-    if (Drupal::moduleHandler()->moduleExists('apigee_edge')) {
+    if (\Drupal::moduleHandler()->moduleExists('apigee_edge')) {
       try {
         /** @var \Drupal\apigee_edge\SDKConnectorInterface $sdk_connector */
         $sdk_connector = \Drupal::service('apigee_edge.sdk_connector');
@@ -92,14 +92,14 @@ function apigee_m10n_requirements($phase) {
     } else {
       $monetized = FALSE;
     }
-  }
 
-  if (FALSE === $monetized) {
-    $requirements['apigee_monetization_not_supported'] = [
-      'title' => t('Apigee Monetization'),
-      'description' => $message,
-      'severity' => REQUIREMENT_ERROR,
-    ];
+    if (FALSE === $monetized && \Drupal::moduleHandler()->moduleExists('apigee_edge') && \Drupal::moduleHandler()->moduleExists('requirement')) {
+      $requirements['apigee_monetization_not_supported'] = [
+        'title' => t('Apigee Monetization'),
+        'description' => $message,
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
   }
 
   return $requirements;
