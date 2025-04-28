@@ -72,7 +72,6 @@ class AddCreditConfigStatusKernelTest extends MonetizationKernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('apigee_edge', ['apigee_edge_job']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([

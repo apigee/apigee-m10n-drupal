@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_add_credit\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -58,9 +59,11 @@ class AddCreditConfigForm extends ConfigFormBase {
    *   The monetization service.
    * @param \Drupal\Core\Entity\EntityStorageInterface $storage
    *   The commerce_product entity storage.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config_manager
+   *   The typed config manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, MonetizationInterface $monetization, EntityStorageInterface $storage) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, MonetizationInterface $monetization, EntityStorageInterface $storage, TypedConfigManagerInterface $typed_config_manager) {
+    parent::__construct($config_factory, $typed_config_manager);
     $this->monetization = $monetization;
     $this->storage = $storage;
   }
@@ -72,7 +75,8 @@ class AddCreditConfigForm extends ConfigFormBase {
     return new static(
       $container->get('config.factory'),
       $container->get('apigee_m10n.monetization'),
-      $container->get('entity_type.manager')->getStorage('commerce_product')
+      $container->get('entity_type.manager')->getStorage('commerce_product'),
+      $container->get('config.typed')
     );
   }
 

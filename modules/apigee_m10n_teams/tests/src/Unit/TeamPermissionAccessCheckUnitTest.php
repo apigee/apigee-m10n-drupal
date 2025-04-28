@@ -123,7 +123,7 @@ class TeamPermissionAccessCheckUnitTest extends UnitTestCase {
    * @return array
    *   The data.
    */
-  public function accessData() {
+  public static function accessData() {
     return [
       // Account with no team permissions.
       [

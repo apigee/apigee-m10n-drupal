@@ -61,7 +61,7 @@ class FormatCurrencyTwigFilterTest extends MonetizationKernelTestBase {
   public function testRenderFloatAsUsd() {
     $this->template['#template'] = "{{ 10.50 | apigee_m10n_format_currency('USD') }}";
 
-    $output = (string) \Drupal::service('renderer')->renderPlain($this->template);
+    $output = (string) \Drupal::service('renderer')->renderInIsolation($this->template);
 
     $this::assertEquals($output, "$10.50");
   }
@@ -72,7 +72,7 @@ class FormatCurrencyTwigFilterTest extends MonetizationKernelTestBase {
   public function testRenderStringAsAud() {
     $this->template['#template'] = "{{ '10.50' | apigee_m10n_format_currency('AUD') }}";
 
-    $output = (string) \Drupal::service('renderer')->renderPlain($this->template);
+    $output = (string) \Drupal::service('renderer')->renderInIsolation($this->template);
 
     $this::assertEquals($output, "A$10.50");
   }

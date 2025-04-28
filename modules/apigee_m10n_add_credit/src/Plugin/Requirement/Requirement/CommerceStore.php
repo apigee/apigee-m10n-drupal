@@ -25,6 +25,7 @@ use CommerceGuys\Addressing\AddressFormat\AddressField;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepositoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\address\FieldHelper;
 use Drupal\address\LabelHelper;
 use Drupal\apigee_edge\SDKConnectorInterface;
@@ -84,6 +85,7 @@ class CommerceStore extends RequirementBase implements ContainerFactoryPluginInt
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->sdkConnector = $sdk_connector;
     $this->subdivisionRepository = $subdivision_repository;
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     try {
       $organization_id = $this->sdkConnector->getOrganization();
@@ -100,7 +102,7 @@ class CommerceStore extends RequirementBase implements ContainerFactoryPluginInt
       }
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_m10n_add_credit', $exception);
+      Error::logException($logger, $exception);
     }
   }
 
@@ -226,6 +228,7 @@ class CommerceStore extends RequirementBase implements ContainerFactoryPluginInt
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $form_state->cleanValues();
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     try {
       $values = $form_state->getValues();
@@ -234,7 +237,7 @@ class CommerceStore extends RequirementBase implements ContainerFactoryPluginInt
       $store->save();
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_m10n_add_credit', $exception);
+      Error::logException($logger, $exception);
     }
   }
 

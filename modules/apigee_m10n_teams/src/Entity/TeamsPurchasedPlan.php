@@ -34,6 +34,7 @@ use Drupal\apigee_m10n\Entity\RatePlanInterface;
  *
  * This is a class for purchased plans that is aware of teams.
  */
+#[\AllowDynamicProperties]
 class TeamsPurchasedPlan extends PurchasedPlan implements TeamsPurchasedPlanInterface {
 
   /**

@@ -304,7 +304,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Provides data to self::testPriceRangeFieldValidation().
    */
-  public function providerPriceRange() {
+  public static function providerPriceRange() {
     return [
       [
         '5.00',
@@ -336,7 +336,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Provides data to self::testUnitPriceValidation().
    */
-  public function providerUnitPrice() {
+  public static function providerUnitPrice() {
     return [
       [
         '20.00',
@@ -365,7 +365,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Provides data to self::testPriceFieldOnDefaultProduct().
    */
-  public function providerPriceField() {
+  public static function providerPriceField() {
     return [
       // @todo Commerce throws an error when a string is entered for price.
       [
@@ -378,7 +378,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
   /**
    * Provides data to self::testMinimumAmountValidationOnCheckout().
    */
-  public function providerMinimumAmountValidationOnCheckout() {
+  public static function providerMinimumAmountValidationOnCheckout() {
     return [
       [
         '5.00',

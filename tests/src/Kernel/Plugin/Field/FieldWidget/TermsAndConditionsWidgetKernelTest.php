@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class TermsAndConditionsWidgetKernelTest extends BaseWidgetKernelTest {
+class TermsAndConditionsWidgetKernelTest extends BaseWidgetKernel {
 
   /**
    * {@inheritdoc}

@@ -72,7 +72,7 @@ class RouteValidateMonetizationEnabledFunctionalTest extends MonetizationFunctio
    * @return array
    *   An array of routes to test for monetization.
    */
-  public function routes() {
+  public static function routes() {
     return [
       ['apigee_m10n_test.monetization', TRUE],
       ['apigee_m10n_test.non_monetization', FALSE],

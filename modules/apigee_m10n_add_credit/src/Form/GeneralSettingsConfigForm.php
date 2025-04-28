@@ -20,6 +20,7 @@ namespace Drupal\apigee_m10n_add_credit\Form;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\apigee_m10n\MonetizationInterface;
@@ -45,8 +46,8 @@ class GeneralSettingsConfigForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, MonetizationInterface $monetization) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, MonetizationInterface $monetization, TypedConfigManagerInterface $typed_config_manager) {
+    parent::__construct($config_factory, $typed_config_manager);
     $this->monetization = $monetization;
   }
 
@@ -56,7 +57,8 @@ class GeneralSettingsConfigForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('apigee_m10n.monetization')
+      $container->get('apigee_m10n.monetization'),
+      $container->get('config.typed')
     );
   }
 

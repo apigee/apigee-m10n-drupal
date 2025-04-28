@@ -69,7 +69,6 @@ class PurchasePlanLinkFormatterKernelTest extends MonetizationKernelTestBase {
     parent::setUp();
 
     $this->installEntitySchema('user');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',

@@ -57,7 +57,6 @@ class ModuleInstallKernelTest extends KernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->installSchema('system', ['sequences']);
 
     // Install the user module.
     \Drupal::service('module_installer')->install(['user', 'apigee_edge']);

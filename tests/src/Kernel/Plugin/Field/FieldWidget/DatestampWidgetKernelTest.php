@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @group apigee_m10n
  * @group apigee_m10n_kernel
  */
-class DatestampWidgetKernelTest extends BaseWidgetKernelTest {
+class DatestampWidgetKernelTest extends BaseWidgetKernel {
 
   /**
    * Test widget display.

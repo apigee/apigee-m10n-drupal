@@ -26,6 +26,7 @@ use CommerceGuys\Intl\Currency\CurrencyRepository;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Utility\Error;
 use Drupal\apigee_m10n\ApigeeEdgeSdkConnectorTrait;
 use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_price\Price;
@@ -105,6 +106,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
     $this->languageManager = $language_manager;
     $this->currencyRepository = new CurrencyRepository();
     $this->importableCurrencies = $this->getImportableCurrencies();
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     // Get organization supported currencies.
     try {
@@ -125,7 +127,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
       });
     }
     catch (\Exception $exception) {
-      watchdog_exception('apigee_kickstart', $exception);
+      Error::logException($logger, $exception);
     }
   }
 
@@ -188,6 +190,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $currencies = $form_state->getValue('supported_currencies');
     $store = $form_state->getValue('store');
+    $logger = \Drupal::logger('apigee_m10n_add_credit');
 
     /** @var \Apigee\Edge\Api\Monetization\Entity\SupportedCurrencyInterface $currency */
     foreach ($currencies as $currency_code) {
@@ -238,7 +241,7 @@ class AddCreditProducts extends RequirementBase implements ContainerFactoryPlugi
           ->save();
       }
       catch (\Exception $exception) {
-        watchdog_exception('apigee_kickstart', $exception);
+        Error::logException($logger, $exception);
       }
     }
   }

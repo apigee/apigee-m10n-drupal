@@ -41,7 +41,6 @@ class RatePlanStorageTest extends MonetizationKernelTestBase {
     parent::setUp();
 
     // Setup for creating a user.
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
     $this->installConfig([
       'user',
@@ -102,7 +101,7 @@ class RatePlanStorageTest extends MonetizationKernelTestBase {
    * @return array
    *   An array of rate plan ids.
    */
-  public function ratePlanIdsProvider() {
+  public static function ratePlanIdsProvider() {
     return [
       [
         'ks_test_plan',

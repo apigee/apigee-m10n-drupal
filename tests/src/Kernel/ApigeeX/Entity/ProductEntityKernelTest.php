@@ -68,7 +68,6 @@ class ProductEntityKernelTest extends MonetizationKernelTestBase {
 
     // Prepare to create a user.
     $this->installEntitySchema('user');
-    $this->installSchema('system', ['sequences']);
     $this->installSchema('user', ['users_data']);
 
     $this->user = $this->createAccount(array_keys($this->container->get('user.permissions')->getPermissions()));

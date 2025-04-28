@@ -31,12 +31,6 @@ use Drupal\apigee_m10n\Entity\ParamConverter\PurchasedPlanConverter;
 class PurchasedPlanConverterTest extends MonetizationKernelTestBase {
 
   /**
-   * Test entities are converted.
-   */
-  public function testConvert() {
-  }
-
-  /**
    * Test the route converter applies.
    */
   public function testApplies() {
