@@ -18,14 +18,6 @@ content:
     settings:
       link: false
     third_party_settings: {  }
-  purchase:
-    type: apigee_purchase_plan_link
-    weight: 1
-    region: content
-    label: visually_hidden
-    settings:
-      label: 'Purchase Plan'
-    third_party_settings: {  }
 hidden:
   advance: true
   contractDuration: true
