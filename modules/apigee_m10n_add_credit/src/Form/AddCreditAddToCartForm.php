@@ -114,7 +114,8 @@ class AddCreditAddToCartForm extends AddToCartForm {
         $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
           "{$default_value['target_type']}:{$default_value['target_id']}",
         ];
-      } else {
+      }
+      else {
         $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
           "{$default_value}:{$default_value}",
         ];

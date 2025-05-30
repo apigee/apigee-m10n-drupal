@@ -114,7 +114,8 @@ class Developer extends AddCreditEntityTypeBase {
       // Instead of loading all users, load target user and current as fallback.
       if (is_array($target_account)) {
         $ids = [$target_account['target_id'], $account->getEmail()];
-      } else {
+      }
+      else {
         $ids = [$target_account, $account->getEmail()];
       }
     }
