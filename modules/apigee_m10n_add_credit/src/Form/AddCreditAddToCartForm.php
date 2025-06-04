@@ -96,7 +96,7 @@ class AddCreditAddToCartForm extends AddToCartForm {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $request = $this->request->getCurrentRequest();
     // Get the default value from query otherwise use the current user.
-      $default_value = $request->query->has(AddCreditConfig::TARGET_FIELD_NAME) ? $request->get(AddCreditConfig::TARGET_FIELD_NAME) : [
+    $default_value = $request->query->has(AddCreditConfig::TARGET_FIELD_NAME) ? $request->get(AddCreditConfig::TARGET_FIELD_NAME) : [
       'target_type' => 'developer',
       'target_id' => $this->currentUser->getEmail(),
     ];

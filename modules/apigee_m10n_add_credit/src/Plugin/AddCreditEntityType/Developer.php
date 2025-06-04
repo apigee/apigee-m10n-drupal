@@ -106,11 +106,11 @@ class Developer extends AddCreditEntityTypeBase {
   public function getEntities(AccountInterface $account): array {
     $ids = [];
     $request = $this->request->getCurrentRequest();
-     if ($account->hasPermission('add credit to any developer prepaid balance')) {
-        $target_account = $request->query->has(AddCreditConfig::TARGET_FIELD_NAME) ? $request->get(AddCreditConfig::TARGET_FIELD_NAME) : [
-          'target_type' => 'developer',
-          'target_id' => $account->getEmail(),
-        ];
+    if ($account->hasPermission('add credit to any developer prepaid balance')) {
+      $target_account = $request->query->has(AddCreditConfig::TARGET_FIELD_NAME) ? $request->get(AddCreditConfig::TARGET_FIELD_NAME) : [
+        'target_type' => 'developer',
+        'target_id' => $account->getEmail(),
+      ];
       // Instead of loading all users, load target user and current as fallback.
       $ids = [$target_account['target_id'], $account->getEmail()];
     }
