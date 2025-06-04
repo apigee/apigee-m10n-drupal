@@ -94,8 +94,9 @@ class AddCreditAddToCartForm extends AddToCartForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $request = $this->request->getCurrentRequest();
     // Get the default value from query otherwise use the current user.
-    $default_value = $this->request->getCurrentRequest()->get(AddCreditConfig::TARGET_FIELD_NAME) ?? [
+      $default_value = $request->query->has(AddCreditConfig::TARGET_FIELD_NAME) ? $request->get(AddCreditConfig::TARGET_FIELD_NAME) : [
       'target_type' => 'developer',
       'target_id' => $this->currentUser->getEmail(),
     ];
@@ -110,16 +111,10 @@ class AddCreditAddToCartForm extends AddToCartForm {
 
     // If the target field is visible, set a default value.
     if (isset($form[AddCreditConfig::TARGET_FIELD_NAME])) {
-      if (is_array($default_value)) {
-        $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
-          "{$default_value['target_type']}:{$default_value['target_id']}",
-        ];
-      }
-      else {
-        $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
-          "{$default_value}:{$default_value}",
-        ];
-      }
+      $form[AddCreditConfig::TARGET_FIELD_NAME]['widget']['#default_value'] = [
+        "{$default_value['target_type']}:{$default_value['target_id']}",
+      ];
+    }
     }
 
     return $form;
