@@ -115,7 +115,6 @@ class AddCreditAddToCartForm extends AddToCartForm {
         "{$default_value['target_type']}:{$default_value['target_id']}",
       ];
     }
-    }
 
     return $form;
   }
