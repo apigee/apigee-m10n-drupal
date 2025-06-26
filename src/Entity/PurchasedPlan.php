@@ -67,6 +67,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route    = "apigee_m10n.settings.purchased_plan",
  * )
  */
+#[\AllowDynamicProperties]
 class PurchasedPlan extends FieldableEdgeEntityBase implements PurchasedPlanInterface, EntityOwnerInterface {
 
   use EndDatePropertyAwareDecoratorTrait {
