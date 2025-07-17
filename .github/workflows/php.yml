@@ -41,6 +41,7 @@ jobs:
           - "10.4.x"
           - "10.5.x"
           - "11.1.x"
+          - "11.2.x"
         instance-type:
           - "Edge"
           - "X"
@@ -56,6 +57,18 @@ jobs:
             instance-type: "Edge"
           - php-version: "8.2"
             drupal-core: "11.1.x"
+            instance-type: "X"
+          - php-version: "8.1"
+            drupal-core: "11.2.x"
+            instance-type: "Edge"
+          - php-version: "8.1"
+            drupal-core: "11.2.x"
+            instance-type: "X"
+          - php-version: "8.2"
+            drupal-core: "11.2.x"
+            instance-type: "Edge"
+          - php-version: "8.2"
+            drupal-core: "11.2.x"
             instance-type: "X"
 
     steps:
