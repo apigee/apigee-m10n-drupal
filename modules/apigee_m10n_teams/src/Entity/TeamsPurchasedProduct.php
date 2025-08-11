@@ -192,7 +192,6 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function loadByTeamId(string $team_id): array {
-    // return [];
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
       ->loadByTeamId($team_id);
