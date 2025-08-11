@@ -8,7 +8,6 @@ use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamPurchasedPlanConverter;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxy;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanXSdkControllerProxy;
 
-
 /**
  * Responsible for overriding `apigee_m10n` services.
  */

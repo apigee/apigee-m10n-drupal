@@ -21,7 +21,6 @@ namespace Drupal\apigee_m10n_teams\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlan;
 use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface;
-// use Apigee\Edge\Api\ApigeeX\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
 use Drupal\Core\Entity\EntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -105,19 +104,6 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  // public function getTermsAndConditions(): bool {
-  //   if ($this->isTeamPurchasedProduct()) {
-  //     $decorated = $this->decorated();
-  //     return \Drupal::service('apigee_m10n.teams')->isLatestTermsAndConditionAccepted($decorated->getCompany()->id());
-  //   }
-  //   else {
-  //     return parent::getTermsAndConditions();
-  //   }
-  // }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getTeam() {
     // Returns an entity reference. If you need the monetization company
     // reference, you can use `$purchased_product->decorated()->getCompany()` but
@@ -162,13 +148,6 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
     $decorated = $this->decorated();
     return ['target_id' => $decorated->getCompany()->id()];
   }
-
-  /**
-   * {@inheritdoc}
-   */
-  // public function getDeveloper(): ?DeveloperInterface {
-  //   return !$this->isTeamPurchasedProduct() ? parent::getDeveloper() : NULL;
-  // }
 
   /**
    * {@inheritdoc}
