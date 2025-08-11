@@ -6,6 +6,8 @@ use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
 use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamPurchasedPlanConverter;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxy;
+use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanXSdkControllerProxy;
+
 
 /**
  * Responsible for overriding `apigee_m10n` services.
@@ -19,6 +21,10 @@ class ApigeeM10nTeamsServiceProvider implements ServiceModifierInterface {
     if ($container->hasDefinition('apigee_m10n.sdk_controller_proxy.purchased_plan')) {
       $container->getDefinition('apigee_m10n.sdk_controller_proxy.purchased_plan')
         ->setClass(TeamAcceptedRatePlanSdkControllerProxy::class);
+    }
+    if ($container->hasDefinition('apigee_m10n.sdk_controller_proxy.purchased_product')) {
+      $container->getDefinition('apigee_m10n.sdk_controller_proxy.purchased_product')
+        ->setClass(TeamAcceptedRatePlanXSdkControllerProxy::class);
     }
     if ($container->hasDefinition('apigee_m10n.sdk_controller_factory')) {
       $container->getDefinition('apigee_m10n.sdk_controller_factory')
