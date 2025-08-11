@@ -35,14 +35,19 @@ use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanSubscriptionAccessHandler;
 use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
+use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedProductForm;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedProductStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
+use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProduct;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchaseProductFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
+use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchaseProductLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
 use Psr\Log\LoggerInterface;
 
@@ -150,6 +155,33 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       // Create a link template for team purchased plan collection.
       $entity_types['purchased_plan']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-plans');
     }
+
+    // Overrides for the purchased_product entity.
+    if (isset($entity_types['purchased_product'])) {
+      // Use our class to override the original entity class.
+      $entity_types['purchased_product']->setClass(TeamsPurchasedProduct::class);
+      // Override the storage class.
+      $entity_types['purchased_product']->setStorageClass(TeamPurchasedProductStorage::class);
+      // Override purchase form.
+      $entity_types['purchased_product']->setFormClass('default', TeamPurchasedProductForm::class);
+      // Create a link template for team purchased product collection.
+      $entity_types['purchased_product']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-product');
+    }
+
+    // Overrides for the `xrate_plan` entity.
+    if (isset($entity_types['xrate_plan'])) {
+      // Use our class to override the original entity class.
+      $entity_types['xrate_plan']->setClass(TeamsRatePlan::class);
+      $entity_types['xrate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}');
+      $entity_types['xrate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}/purchase');
+      // Get the entity route providers.
+      $route_providers = $entity_types['xrate_plan']->getRouteProviderClasses();
+      // Override the `html` route provider.
+      $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
+      $entity_types['xrate_plan']->setHandlerClass('route_provider', $route_providers);
+      $entity_types['xrate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
+      $entity_types['xrate_plan']->setHandlerClass('subscription_access', TeamRatePlanSubscriptionAccessHandler::class);
+    }
   }
 
   /**
@@ -159,6 +191,8 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     // Override the purchase link and form formatters.
     $info['apigee_purchase_plan_form']['class'] = TeamPurchasePlanFormFormatter::class;
     $info['apigee_purchase_plan_link']['class'] = TeamPurchasePlanLinkFormatter::class;
+    $info['apigee_purchase_product_form']['class'] = TeamPurchaseProductFormFormatter::class;
+    $info['apigee_purchase_product_link']['class'] = TeamPurchaseProductLinkFormatter::class;
   }
 
   /**

@@ -20,6 +20,7 @@
 namespace Drupal\apigee_m10n_teams;
 
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
@@ -46,6 +47,23 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
       );
     }
     return $this->controllers[__FUNCTION__][$company_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function appGroupAcceptedRatePlanController(string $appgroup_id): AppGroupAcceptedRatePlanController {
+    if (empty($this->controllers[__FUNCTION__][$appgroup_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$appgroup_id] = new AppGroupAcceptedRatePlanController(
+        $appgroup_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$appgroup_id];
   }
 
   /**

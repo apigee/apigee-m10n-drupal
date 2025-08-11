@@ -17,6 +17,13 @@ apigee_m10n_teams.purchased_plans:
   parent_id: apigee_m10n_teams.balance_and_plans
   weight: -1
 
+apigee_m10n_teams.purchased_product:
+  title: 'Purchased products'
+  route_name: entity.purchased_product.team_collection
+  base_route: entity.team.canonical
+  parent_id: apigee_m10n_teams.balance_and_plans
+  weight: -1
+
 apigee_m10n_teams.team_billing_details:
   title: 'Billing Details'
   route_name: apigee_m10n_teams.team_billing_details
