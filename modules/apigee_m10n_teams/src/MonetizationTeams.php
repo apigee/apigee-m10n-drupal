@@ -33,6 +33,7 @@ use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler;
+use Drupal\apigee_m10n_teams\Entity\Access\TeamXRatePlanAccessControlHandler;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanSubscriptionAccessHandler;
 use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
@@ -41,6 +42,7 @@ use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
+use Drupal\apigee_m10n_teams\Entity\TeamsXRatePlan;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanFormFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter\TeamPurchasePlanLinkFormatter;
 use Drupal\apigee_m10n_teams\Plugin\Field\FieldWidget\CompanyTermsAndConditionsWidget;
@@ -137,6 +139,20 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['rate_plan']->setHandlerClass('route_provider', $route_providers);
       $entity_types['rate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
       $entity_types['rate_plan']->setHandlerClass('subscription_access', TeamRatePlanSubscriptionAccessHandler::class);
+    }
+
+    if (isset($entity_types['xrate_plan'])) {
+      // AppGroups use the `xrate_plan` entity type.
+      // Use our class to override the original entity class.
+      $entity_types['xrate_plan']->setClass(TeamsXRatePlan::class);
+      $entity_types['xrate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}');
+      $entity_types['xrate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}/purchase');
+      // Get the entity route providers.
+      $route_providers = $entity_types['xrate_plan']->getRouteProviderClasses();
+      // Override the `html` route provider.
+      $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
+      $entity_types['xrate_plan']->setHandlerClass('route_provider', $route_providers);
+      $entity_types['xrate_plan']->setHandlerClass('access', TeamXRatePlanAccessControlHandler::class);
     }
 
     // Overrides for the purchased_plan entity.

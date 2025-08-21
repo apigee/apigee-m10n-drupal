@@ -47,6 +47,25 @@ function apigee_m10n_teams_field_widget_info_alter(array &$info) {
 }
 
 /**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function apigee_m10n_teams_menu_local_tasks_alter(array &$local_tasks) {
+  $monetization = \Drupal::service('apigee_m10n.monetization');
+  if (isset($local_tasks['tabs']) && is_array($local_tasks['tabs'])) {
+    foreach ($local_tasks['tabs'] as &$tab_group) {
+      if (is_array($tab_group)) {
+        if ($monetization->isOrganizationApigeeXorHybrid()) {
+          unset($tab_group['apigee_m10n_teams.team_plans']);
+        }
+        else {
+          unset($tab_group['apigee_m10n_teams.team_xplans']);
+        }
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_ENTITY_TYPE_access().
  */
 function apigee_m10n_teams_purchased_plan_access(EntityInterface $entity, $operation, AccountInterface $account) {
