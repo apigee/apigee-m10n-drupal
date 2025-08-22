@@ -81,6 +81,17 @@ apigee_monetization.team_plans:
     _apigee_monetization_route: TRUE
     _apigee_developer_route: apigee_monetization.plans
 
+apigee_monetization.team_xplans:
+  path: /teams/{team}/xplans
+  defaults:
+    _controller: \Drupal\apigee_m10n_teams\Controller\TeamBuyApiController::teamCatalogPage
+    _title: "Buy APIs"
+  requirements:
+    _team_permission: 'view rate_plan'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.plans
+
 apigee_m10n_teams.team_billing_details:
   path: '/teams/{team}/monetization/billing-details'
   defaults:
