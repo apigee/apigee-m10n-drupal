@@ -28,7 +28,8 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface;
 /**
  * Overridden storage controller for the `purchased_product` entity for teams.
  */
-class TeamPurchasedProductStorage extends PurchasedProductStorage implements TeamPurchasedProductStorageInterface {
+class TeamPurchasedProductStorage extends PurchasedProductStorage implements TeamPurchasedProductStorageInterface
+{
 
   /**
    * {@inheritdoc}
@@ -38,17 +39,18 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    * context since it only takes the entity ID as a parameter. We can avoid the
    * issue be setting the original while we still have context.
    */
-  protected function doPreSave(EntityInterface $entity) {
-    // Check for team context.
-    if (!$entity->isNew()
-      && $entity->decorated() instanceof AppGroupAcceptedRatePlanInterface
-      && ($team_id = $entity->decorated()->getAppGroup()->id())
-    ) {
-      // Reset the static and persistent cache so we can load unchanged.
-      $this->resetControllerCache([$entity->id()]);
-      $this->resetCache([$entity->id()]);
-      // Load the unchanged entity from the API.
-      $entity->original = $this->loadTeamPurchasedProductById($team_id, $entity->id());
+  protected function doPreSave(EntityInterface $entity)
+  {
+    /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface $entity */
+    if (!$entity->isNew() && $entity->isTeamPurchasedProduct()) {
+      if ($appgroup = $entity->decorated()->getAppGroup()) {
+        $team_id = $appgroup->id();
+        // Reset the static and persistent cache so we can load unchanged.
+        $this->resetControllerCache([$entity->id()]);
+        $this->resetCache([$entity->id()]);
+        // Load the unchanged entity from the API.
+        $entity->original = $this->loadTeamPurchasedProductById($team_id, $entity->id());
+      }
     }
 
     return parent::doPreSave($entity);
@@ -59,7 +61,8 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadByTeamId(string $team_id): array {
+  public function loadByTeamId(string $team_id): array
+  {
     $entities = [];
 
     $this->withController(function (TeamAcceptedRatePlanXSdkControllerProxyInterface $controller) use ($team_id, &$entities) {
@@ -82,7 +85,8 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadTeamPurchasedProductById(string $team_id, string $id): ?TeamsPurchasedProductInterface {
+  public function loadTeamPurchasedProductById(string $team_id, string $id): ?TeamsPurchasedProductInterface
+  {
     // Load from cache.
     $ids = [$id];
     $purchased_product = $this->getFromPersistentCache($ids);
@@ -108,5 +112,4 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
 
     return $entity;
   }
-
 }

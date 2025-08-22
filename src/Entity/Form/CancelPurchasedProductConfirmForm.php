@@ -19,18 +19,21 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Apigee\Edge\Api\ApigeeX\Entity\Developer;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityConfirmFormBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Cancel entity form for `purchased_product` entities.
  */
-class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
+class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase
+{
 
   /**
    * Purchased plan entity.
@@ -54,6 +57,13 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
   protected $sdkControllerFactory;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * CancelPurchaseConfirmForm constructor.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
@@ -63,56 +73,65 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
    * @param \Drupal\apigee_m10n\ApigeeSdkControllerFactory $sdkControllerFactory
    *   SDK Controller factory.
    */
-  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory) {
+  public function __construct(RouteMatchInterface $route_match, MessengerInterface $messenger, ApigeeSdkControllerFactory $sdkControllerFactory, EntityTypeManagerInterface $entity_type_manager)
+  {
     $this->routeMatch = $route_match;
     $this->purchasedProduct = $route_match->getParameter('purchased_product');
     $this->messenger = $messenger;
     $this->sdkControllerFactory = $sdkControllerFactory;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container)
+  {
     return new static(
       $container->get('current_route_match'),
       $container->get('messenger'),
-      $container->get('apigee_m10n.sdk_controller_factory')
+      $container->get('apigee_m10n.sdk_controller_factory'),
+      $container->get('entity_type.manager')
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
+  public function getDescription()
+  {
     return $this->t('Are you sure you want to cancel this API Product?');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getConfirmText() {
+  public function getConfirmText()
+  {
     return $this->t('Confirm');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getQuestion() {
+  public function getQuestion()
+  {
     return $this->t('Cancel %rate_plan', ['%rate_plan' => $this->purchasedProduct->getApiProduct()]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getCancelUrl() {
+  public function getCancelUrl()
+  {
     return $this->entity->toUrl('collection');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state)
+  {
     $form = parent::buildForm($form, $form_state);
     return $form;
   }
@@ -120,30 +139,34 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildEntity(array $form, FormStateInterface $form_state) {
+  public function buildEntity(array $form, FormStateInterface $form_state)
+  {
     return $this->purchasedProduct;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    $this->entity->user = $this->routeMatch->getParameter('user');
-
+  public function submitForm(array &$form, FormStateInterface $form_state)
+  {
     try {
+      $user = $this->routeMatch->getParameter('user');
+      if ($user) {
+        $developer = new Developer(['email' => $user->getEmail()]);
+        $this->entity->decorated()->setDeveloper($developer);
+      }
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have successfully cancelled %label API Product', ['%label' => $this->entity->getApiProduct()]));
         Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_PRODUCT_CACHE_TAG]);
-        $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $this->entity->getOwnerId()]);
+        if ($user = $this->routeMatch->getParameter('user')) {
+          $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $user->id()]);
+        } elseif ($team_id = $this->routeMatch->getParameter('team')) {
+          $form_state->setRedirect('entity.purchased_product.team_collection', ['team' => $team_id]);
+        }
       }
-    }
-    // @todo Check to see if `EntityStorageException` is the only type of error
-    // to we need to catch here.
-    catch (\Exception $e) {
-
+    } catch (\Exception $e) {
       $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
   }
-
 }

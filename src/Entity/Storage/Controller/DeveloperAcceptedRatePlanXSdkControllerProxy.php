@@ -30,23 +30,26 @@ use Drupal\apigee_m10n\ApigeeSdkControllerFactoryAwareTrait;
  * plan controllers require a product bundle ID for instantiation so we
  * sometimes need to get a controller at runtime for a given rate plan.
  */
-class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedRatePlanXSdkControllerProxyInterface {
+class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedRatePlanXSdkControllerProxyInterface
+{
 
   use ApigeeSdkControllerFactoryAwareTrait;
 
   /**
    * {@inheritdoc}
    */
-  public function create(EntityInterface $entity): void {
+  public function create(EntityInterface $entity): void
+  {
     $this->doCreate($entity);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function doCreate(EntityInterface $entity): void {
+  public function doCreate(EntityInterface $entity): void
+  {
 
-    $this->getPurchasedPlanController($entity)
+    $this->getPurchasedProductController($entity)
       ->acceptRatePlan(
         $entity->getRatePlan()
       );
@@ -55,7 +58,8 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
   /**
    * {@inheritdoc}
    */
-  public function load(string $id): EntityInterface {
+  public function load(string $id): EntityInterface
+  {
     // A little secret is that the real product bundle ID is not required for
     // loading a rate plan but may be required for saving it.
     return $this->loadById('default', $id);
@@ -64,28 +68,35 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
   /**
    * {@inheritdoc}
    */
-  public function update(EntityInterface $entity): void {
-    $this->getPurchasedProductControllerByDeveloperId($entity->user->getEmail())->updateSubscription($entity);
+  public function update(EntityInterface $entity): void
+  {
+    /** @var \Drupal\apigee_m10n\Entity\PurchasedProductInterface $entity */
+    if (!($developer = $entity->getDeveloper())) {
+      throw new RuntimeException('The Developer must be set to update a purchased product.');
+    }
+    $this->getPurchasedProductControllerByDeveloperId($developer->getEmail())->updateSubscription($entity->decorated());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function delete(string $id): void {
+  public function delete(string $id): void
+  {
     throw new RuntimeException('Unable to delete purchase. Update the end date to cancel.');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadAll(): array {
+  public function loadAll(): array
+  {
     // Get all active user emails.
     $select = \Drupal::database()->select('users_field_data', 'u')
       ->fields('u', ['mail']);
     $select->condition('status', 1);
     $select->condition('uid', [0, 1], 'NOT IN');
 
-    /** @var \Apigee\Edge\Api\Apigee\Entity\DeveloperAcceptedRatePlanInterface[] $purchased_products */
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface[] $purchased_products */
     $purchased_products = [];
 
     // Loops through all developer emails to get their purchased products.
@@ -104,7 +115,8 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
   /**
    * {@inheritdoc}
    */
-  public function loadByDeveloperId(string $developer_id): array {
+  public function loadByDeveloperId(string $developer_id): array
+  {
     // Get all purchases for this developer.
     // @todo Cache purchased_product lists per developer.
     return $this->getPurchasedProductControllerByDeveloperId($developer_id)
@@ -114,7 +126,8 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
   /**
    * {@inheritdoc}
    */
-  public function loadById(string $developer_id, string $id): ?EntityInterface {
+  public function loadById(string $developer_id, string $id): ?EntityInterface
+  {
     return $this->getPurchasedProductControllerByDeveloperId($developer_id)->load($id);
   }
 
@@ -124,15 +137,16 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
    * @param \Apigee\Edge\Entity\EntityInterface $entity
    *   The ID of the product bundle the rate plan belongs to.
    *
-   * @return \Apigee\Edge\Api\Monetization\Controller\AcceptedRatePlanControllerInterface
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\AcceptedRatePlanControllerInterface
    *   The real rate plan controller.
    */
-  protected function getPurchasedPlanController(EntityInterface $entity) {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\DeveloperAcceptedRatePlanInterface $entity */
+  protected function getPurchasedProductController(EntityInterface $entity)
+  {
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface $entity */
     if (!($developer = $entity->getDeveloper())) {
       // If the developer ID is not set, we have no way to get the controller
       // since it depends on the developer id or email.
-      throw new RuntimeException('The Developer must be set to create a purchased plan controller.');
+      throw new RuntimeException('The Developer must be set to create a purchased product controller.');
     }
     // Get the controller.
     return $this->getPurchasedProductControllerByDeveloperId($developer->getEmail());
@@ -147,7 +161,8 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
    * @return \Apigee\Edge\Api\ApigeeX\Controller\AcceptedRatePlanControllerInterface
    *   The purchased_product controller.
    */
-  protected function getPurchasedProductControllerByDeveloperId($developer_id) {
+  protected function getPurchasedProductControllerByDeveloperId($developer_id)
+  {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
 
@@ -157,5 +172,4 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
 
     return $controller_cache[$developer_id];
   }
-
 }

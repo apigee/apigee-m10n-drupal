@@ -30,12 +30,14 @@ use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanXSdkCo
  * plan controllers require a product bundle ID for instantiation so we
  * sometimes need to get a controller at runtime for a given rate plan.
  */
-class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanXSdkControllerProxy implements TeamAcceptedRatePlanXSdkControllerProxyInterface {
+class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanXSdkControllerProxy implements TeamAcceptedRatePlanXSdkControllerProxyInterface
+{
 
   /**
    * {@inheritdoc}
    */
-  public function loadByTeamId(string $team_id): array {
+  public function loadByTeamId(string $team_id): array
+  {
     // Get all purchases for this team.
     return $this->getPurchasedProductControllerByTeamId($team_id)
       ->getAllAcceptedRatePlans();
@@ -44,7 +46,8 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
   /**
    * {@inheritdoc}
    */
-  public function loadTeamPurchasedProductById(string $team_id, string $id): ?EntityInterface {
+  public function loadTeamPurchasedProductById(string $team_id, string $id): ?EntityInterface
+  {
     // Get all purchases for this team.
     return $this->getPurchasedProductControllerByTeamId($team_id)->load($id);
   }
@@ -52,12 +55,15 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
   /**
    * {@inheritdoc}
    */
-  public function update(EntityInterface $entity): void {
-    $controller = $entity instanceof AppGroupAcceptedRatePlanInterface
-      ? $this->getPurchasedProductControllerByTeamId($entity->getAppGroup()->id())
-      : $this->getPurchasedProductController($entity);
-
-    $controller->updateSubscription($entity);
+  public function update(EntityInterface $entity): void
+  {
+    /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface $entity */
+    if ($entity->isTeamPurchasedProduct()) {
+      $controller = $this->getPurchasedProductControllerByTeamId($entity->getTeamEntity()->id());
+      $controller->updateSubscription($entity->decorated());
+    } else {
+      parent::update($entity);
+    }
   }
 
   /**
@@ -69,7 +75,8 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
    * @return \Apigee\Edge\Api\ApigeeX\Controller\AcceptedRatePlanControllerInterface
    *   The purchased_plan controller.
    */
-  protected function getPurchasedProductControllerByTeamId($team_id) {
+  protected function getPurchasedProductControllerByTeamId($team_id)
+  {
     // Cache the controllers here for privacy.
     static $controller_cache = [];
     // Make sure a controller is cached.
@@ -82,7 +89,8 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
   /**
    * {@inheritdoc}
    */
-  protected function getPurchasedProductController(EntityInterface $entity) {
+  protected function getPurchasedProductController(EntityInterface $entity)
+  {
     if ($entity instanceof AppGroupAcceptedRatePlanInterface) {
       /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $entity */
       if (!($company = $entity->getAppGroup())) {
@@ -92,11 +100,9 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
       }
       // Get the controller.
       return $this->getPurchasedProductControllerByTeamId($appgroup->id());
-    }
-    else {
+    } else {
       /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface $entity */
       return parent::getPurchasedProductController($entity);
     }
   }
-
 }
