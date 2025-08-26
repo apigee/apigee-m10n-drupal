@@ -122,28 +122,10 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    * @return string
    *   Returns the team ID.
    */
-  // private function getTeamId(): ?string {
-  //   /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $decorated */
-  //   $decorated = $this->decorated();
-  //   return $decorated ? $decorated->getAppGroup()->id() : NULL;
-  // }
-  private function getTeamId(): ?string
-  {
+  private function getTeamId(): ?string {
     /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $decorated */
     $decorated = $this->decorated();
-
-    // return $decorated ? $decorated->getAppGroup()->id() : NULL;
-    if ($decorated && $appgroup = $decorated->getAppGroup()) {
-      return $appgroup->id();
-    }
-
-    // Fallback to get the team from the route match.                                                                                                     
-    // This is not ideal, but it's a pragmatic solution to this complex problem.                                                                          
-    $route_match = \Drupal::service('current_route_match');
-    if ($team = $route_match->getParameter('team')) {
-      return is_string($team) ? $team : $team->id();
-    }
-    return NULL;
+    return $decorated ? $decorated->getAppGroup()->id() : NULL;
   }
 
   /**

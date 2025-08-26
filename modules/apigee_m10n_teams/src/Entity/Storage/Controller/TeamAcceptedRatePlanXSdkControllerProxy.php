@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 
-use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanXSdkControllerProxy;
 
@@ -60,10 +59,12 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
     /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface $entity */
     if ($entity->isTeamPurchasedProduct()) {
       $controller = $this->getPurchasedProductControllerByTeamId($entity->getTeamEntity()->id());
-      $controller->updateSubscription($entity->decorated());
+      $acceptedRatePlan = $entity->decorated();
     } else {
-      parent::update($entity);
+      $controller = $this->getPurchasedProductController($entity);
+      $acceptedRatePlan = $entity;
     }
+    $controller->updateSubscription($acceptedRatePlan);
   }
 
   /**
@@ -89,20 +90,9 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
   /**
    * {@inheritdoc}
    */
-  protected function getPurchasedProductController(EntityInterface $entity)
+  public function getPurchasedProductController(EntityInterface $entity)
   {
-    if ($entity instanceof AppGroupAcceptedRatePlanInterface) {
-      /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $entity */
-      if (!($company = $entity->getAppGroup())) {
-        // If the team ID is not set, we have no way to get the controller
-        // since it depends on the team ID.
-        throw new RuntimeException('The team must be set to create a purchased_plan controller.');
-      }
-      // Get the controller.
-      return $this->getPurchasedProductControllerByTeamId($appgroup->id());
-    } else {
-      /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface $entity */
-      return parent::getPurchasedProductController($entity);
-    }
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface $entity */
+    return parent::getPurchasedProductController($entity);
   }
 }

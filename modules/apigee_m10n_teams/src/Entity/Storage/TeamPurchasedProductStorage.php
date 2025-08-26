@@ -61,8 +61,7 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadByTeamId(string $team_id): array
-  {
+  public function loadByTeamId(string $team_id): array {
     $entities = [];
 
     $this->withController(function (TeamAcceptedRatePlanXSdkControllerProxyInterface $controller) use ($team_id, &$entities) {
@@ -85,8 +84,7 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function loadTeamPurchasedProductById(string $team_id, string $id): ?TeamsPurchasedProductInterface
-  {
+  public function loadTeamPurchasedProductById(string $team_id, string $id): ?TeamsPurchasedProductInterface {
     // Load from cache.
     $ids = [$id];
     $purchased_product = $this->getFromPersistentCache($ids);
