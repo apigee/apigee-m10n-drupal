@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
-use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\PurchasedProductStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanXSdkControllerProxyInterface;
@@ -28,8 +27,7 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface;
 /**
  * Overridden storage controller for the `purchased_product` entity for teams.
  */
-class TeamPurchasedProductStorage extends PurchasedProductStorage implements TeamPurchasedProductStorageInterface
-{
+class TeamPurchasedProductStorage extends PurchasedProductStorage implements TeamPurchasedProductStorageInterface {
 
   /**
    * {@inheritdoc}
@@ -39,8 +37,7 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    * context since it only takes the entity ID as a parameter. We can avoid the
    * issue be setting the original while we still have context.
    */
-  protected function doPreSave(EntityInterface $entity)
-  {
+  protected function doPreSave(EntityInterface $entity) {
     /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface $entity */
     if (!$entity->isNew() && $entity->isTeamPurchasedProduct()) {
       if ($appgroup = $entity->decorated()->getAppGroup()) {
@@ -110,4 +107,5 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
 
     return $entity;
   }
+
 }

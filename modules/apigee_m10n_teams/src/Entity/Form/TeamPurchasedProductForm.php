@@ -29,14 +29,12 @@ use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface;
 /**
  * Team purchased plan entity form.
  */
-class TeamPurchasedProductForm extends PurchasedProductForm
-{
+class TeamPurchasedProductForm extends PurchasedProductForm {
 
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state)
-  {
+  public function form(array $form, FormStateInterface $form_state) {
     if ($this->entity instanceof TeamsPurchasedProductInterface && $this->entity->isTeamPurchasedProduct()) {
       $form = FieldableEdgeEntityForm::form($form, $form_state);
       if ($rate_plan = $this->getEntity()->getRatePlan()) {
@@ -51,8 +49,7 @@ class TeamPurchasedProductForm extends PurchasedProductForm
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     // If the team has already purchased this plan, show a message instead.
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
 
@@ -80,8 +77,7 @@ class TeamPurchasedProductForm extends PurchasedProductForm
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state)
-  {
+  public function save(array $form, FormStateInterface $form_state) {
     try {
       if ($this->entity instanceof TeamsPurchasedProductInterface && $this->entity->isTeamPurchasedProduct()) {
         // Auto assign legal name.
@@ -118,4 +114,5 @@ class TeamPurchasedProductForm extends PurchasedProductForm
       $this->messenger->addError($e->getMessage());
     }
   }
+
 }

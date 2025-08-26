@@ -35,8 +35,7 @@ use Drupal\apigee_m10n\Entity\XRatePlanInterface;
  * This is a class for purchased products that is aware of teams.
  */
 #[\AllowDynamicProperties]
-class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedProductInterface
-{
+class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedProductInterface {
 
   /**
    * EdgeEntityBase constructor.
@@ -50,8 +49,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    *
    * @throws \ReflectionException
    */
-  public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL)
-  {
+  public function __construct(array $values, ?string $entity_type = NULL, ?EdgeEntityInterface $decorated = NULL) {
     // The entity type is not passed from `EdgeEntityBase::createFrom`.
     $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
     // Bypass the `PurchasedProduct` and `EdgeEntityBase` constructors.
@@ -81,8 +79,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  protected static function getProperties(): array
-  {
+  protected static function getProperties(): array {
     $properties = parent::getProperties();
 
     // Add the team property.
@@ -94,8 +91,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
-  {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $definitions = parent::baseFieldDefinitions($entity_type);
 
     // Set the target for the team reference to the team entity.
@@ -108,8 +104,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  public function getTeam()
-  {
+  public function getTeam() {
     // Returns an entity reference. If you need the monetization company
     // reference, you can use `$purchased_product->decorated()->getCompany()` but
     // you have to check `$purchased_product->isTeamPurchasedProduct()` first.
@@ -134,8 +129,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    * @return \Drupal\apigee_edge_teams\Entity\TeamInterface
    *   Returns the team.
    */
-  public function getTeamEntity(): ?TeamInterface
-  {
+  public function getTeamEntity(): ?TeamInterface {
     if ($this->isTeamPurchasedProduct()) {
       return \Drupal::entityTypeManager()->getStorage('team')->load($this->getTeamId());
     }
@@ -149,8 +143,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    * @return array
    *   An entity reference array.
    */
-  private function getTeamReference()
-  {
+  private function getTeamReference() {
     /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $decorated */
     $decorated = $this->decorated();
     return ['target_id' => $decorated->getAppGroup()->id()];
@@ -159,24 +152,21 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  public function getDeveloper(): ?DeveloperInterface
-  {
+  public function getDeveloper(): ?DeveloperInterface {
     return !$this->isTeamPurchasedProduct() ? parent::getDeveloper() : NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function isTeamPurchasedProduct(): bool
-  {
+  public function isTeamPurchasedProduct(): bool {
     return ($this->purchasedProductType() === static::PURCHASED_PRODUCT_TYPE_TEAM);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function purchasedProductType()
-  {
+  public function purchasedProductType() {
     return $this->decorated() instanceof AppGroupAcceptedRatePlanInterface
       ? static::PURCHASED_PRODUCT_TYPE_TEAM
       : static::PURCHASED_PRODUCT_TYPE_DEVELOPER;
@@ -185,8 +175,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  public function getOwner()
-  {
+  public function getOwner() {
     // Team purchased products do not belong to a particular user, but to a team,
     // however the EntityOwnerInterface expects a user, so return NULL instead.
     if ($this->isTeamPurchasedProduct()) {
@@ -208,8 +197,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public static function loadByTeamId(string $team_id): array
-  {
+  public static function loadByTeamId(string $team_id): array {
     return \Drupal::entityTypeManager()
       ->getStorage(static::ENTITY_TYPE_ID)
       ->loadByTeamId($team_id);
@@ -218,8 +206,7 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
   /**
    * {@inheritdoc}
    */
-  public function toUrl($rel = 'canonical', array $options = [])
-  {
+  public function toUrl($rel = 'canonical', array $options = []) {
     // Get team collection for team URLs.
     if (($team_id = $this->getTeamId()) && $rel === 'collection') {
       // Build the URL.
@@ -234,4 +221,5 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
       return parent::toUrl($rel, $options);
     }
   }
+
 }

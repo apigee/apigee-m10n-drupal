@@ -42,22 +42,22 @@ class TeamPurchaseProductFormFormatter extends PurchaseProductFormFormatter {
    * @throws \Exception
    */
   protected function viewValue(FieldItemInterface $item) {
-   if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
-     if ($item->getEntity()->access('purchase')) {
+    if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
+      if ($item->getEntity()->access('purchase')) {
         $create_values = [
           'xratePlan' => $item->getEntity(),
-           'appgroup' => new AppGroup(['id' => $value['team']->id()]),
-           'startDate' => new \DateTimeImmutable(),
-         ];
-         $purchased_product = PurchasedProduct::create($create_values);
-         return $this->entityFormBuilder->getForm($purchased_product, 'default', [
+          'appgroup' => new AppGroup(['id' => $value['team']->id()]),
+          'startDate' => new \DateTimeImmutable(),
+        ];
+        $purchased_product = PurchasedProduct::create($create_values);
+        return $this->entityFormBuilder->getForm($purchased_product, 'default', [
           'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
-         ]);
-       }
+        ]);
+      }
     }
     else {
       return parent::viewValue($item);
-     }
-   }
+    }
+  }
 
 }

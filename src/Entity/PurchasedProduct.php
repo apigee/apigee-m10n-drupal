@@ -276,7 +276,7 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
     if ($developer = $this->getDeveloper()) {
       return $developer->getEmail();
     }
-    return null;
+    return NULL;
   }
 
   /**

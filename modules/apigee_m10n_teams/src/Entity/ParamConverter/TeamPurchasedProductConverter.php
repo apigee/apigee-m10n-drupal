@@ -29,14 +29,12 @@ use Drupal\user\UserInterface;
  *
  * {@inheritdoc}
  */
-class TeamPurchasedProductConverter extends PurchasedProductConverter
-{
+class TeamPurchasedProductConverter extends PurchasedProductConverter {
 
   /**
    * {@inheritdoc}
    */
-  public function convert($value, $definition, $name, array $defaults)
-  {
+  public function convert($value, $definition, $name, array $defaults) {
     $entity_type_id = $this->getEntityTypeFromDefaults($definition, $name, $defaults);
     /** @var \Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedProductStorage $storage */
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
@@ -59,4 +57,5 @@ class TeamPurchasedProductConverter extends PurchasedProductConverter
 
     return $entity;
   }
+
 }

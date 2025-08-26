@@ -103,6 +103,7 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
   public function getQuestion() {
     return $this->t('Cancel %rate_plan', ['%rate_plan' => $this->purchasedProduct->getApiProduct()]);
   }
+  
   /**
    * {@inheritdoc}
    */
@@ -135,7 +136,8 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
       if ($user) {
         $developer = new Developer(['email' => $user->getEmail()]);
         $this->entity->decorated()->setDeveloper($developer);
-      } elseif ($team_id) {
+      }
+      elseif ($team_id) {
         $appgroup = new AppGroup(['name' => $team_id,]);
         $this->entity->decorated()->setAppGroup($appgroup);
       }
@@ -145,12 +147,15 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
         Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_PRODUCT_CACHE_TAG]);
         if ($user) {
           $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $user->id()]);
-        } elseif ($team_id) {
+        }
+        elseif ($team_id) {
           $form_state->setRedirect('entity.purchased_product.team_collection', ['team' => $team_id]);
         }
       }
     } catch (\Exception $e) {
       $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
+
   }
+
 }

@@ -26,8 +26,7 @@ use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchaseProductLinkFormatter;
 /**
  * Class override for the `apigee_purchase_product_link` field formatter.
  */
-class TeamPurchaseProductLinkFormatter extends PurchaseProductLinkFormatter
-{
+class TeamPurchaseProductLinkFormatter extends PurchaseProductLinkFormatter {
 
   /**
    * Renderable link element.
@@ -40,15 +39,16 @@ class TeamPurchaseProductLinkFormatter extends PurchaseProductLinkFormatter
    *
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
-  protected function viewValue(FieldItemInterface $item)
-  {
+  protected function viewValue(FieldItemInterface $item){
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     $canonical_url = $rate_plan->toUrl();
     if ($canonical_url->getRouteName() === 'entity.xrate_plan.team') {
       return Link::createFromRoute($this->getSetting('label'), 'entity.xrate_plan.team_purchase', $canonical_url->getRouteParameters())->toRenderable();
-    } else {
+    }
+    else {
       return parent::viewValue($item);
     }
   }
+
 }

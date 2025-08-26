@@ -24,8 +24,7 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 /**
  * Team specific additions to the the purchased_product entity.
  */
-interface TeamsPurchasedProductInterface
-{
+interface TeamsPurchasedProductInterface {
 
   const PURCHASED_PRODUCT_TYPE_TEAM      = 'TEAM';
   const PURCHASED_PRODUCT_TYPE_DEVELOPER = 'DEVELOPER';
@@ -67,4 +66,5 @@ interface TeamsPurchasedProductInterface
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public static function loadByTeamId(string $team_id): array;
+
 }
