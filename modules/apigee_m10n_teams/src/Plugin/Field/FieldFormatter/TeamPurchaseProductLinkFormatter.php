@@ -39,7 +39,7 @@ class TeamPurchaseProductLinkFormatter extends PurchaseProductLinkFormatter {
    *
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
-  protected function viewValue(FieldItemInterface $item){
+  protected function viewValue(FieldItemInterface $item) {
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     $canonical_url = $rate_plan->toUrl();

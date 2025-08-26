@@ -45,7 +45,8 @@ class TeamPurchasedProductConverter extends PurchasedProductConverter {
 
     if (!empty($team_id)) {
       $entity = $storage->loadTeamPurchasedProductById($team_id, $value);
-    } else {
+    }
+    else {
       // Get the developer ID.
       $user = $defaults['user'] ?? FALSE;
       // Load the user if it is still a string.

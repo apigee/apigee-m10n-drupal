@@ -40,7 +40,8 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
       if ($rate_plan = $this->getEntity()->getRatePlan()) {
         $form['#action'] = $rate_plan->toUrl('team-purchase')->toString();
       }
-    } else {
+    }
+    else {
       $form = parent::form($form, $form_state);
     }
     return $form;
@@ -66,7 +67,8 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
       }
       $form = FieldableEdgeEntityForm::buildForm($form, $form_state);
       $this->insufficientFundsWorkflow($form, $form_state);
-    } else {
+    }
+    else {
       // Call buildForm of PurchasedProductForm.
       $form = parent::buildForm($form, $form_state);
     }
@@ -102,15 +104,18 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
             '%label' => $display_name,
           ]));
           $form_state->setRedirect('entity.purchased_plan.team_collection', ['team' => $company_id]);
-        } else {
+        }
+        else {
           $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
             '%label' => $display_name,
           ]));
         }
-      } else {
+      }
+      else {
         parent::save($form, $form_state);
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
     }
   }

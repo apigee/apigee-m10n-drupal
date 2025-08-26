@@ -57,7 +57,8 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
     // Set the decorated value.
     if ($decorated) {
       $this->decorated = $decorated;
-    } else {
+    }
+    else {
       // We override this constructor so we can determine the decorated class.
       $decorated_class = isset($values['appgroup']) ? AppGroupAcceptedRatePlan::class : static::decoratedClass();
       $rc = new \ReflectionClass($decorated_class);
@@ -180,7 +181,8 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
     // however the EntityOwnerInterface expects a user, so return NULL instead.
     if ($this->isTeamPurchasedProduct()) {
       return NULL;
-    } else {
+    }
+    else {
       return parent::getOwner();
     }
   }
@@ -217,7 +219,8 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
       $url->setRouteParameter('team', $team_id);
 
       return $url;
-    } else {
+    }
+    else {
       return parent::toUrl($rel, $options);
     }
   }

@@ -56,7 +56,8 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
     if ($entity->isTeamPurchasedProduct()) {
       $controller = $this->getPurchasedProductControllerByTeamId($entity->getTeamEntity()->id());
       $acceptedRatePlan = $entity->decorated();
-    } else {
+    }
+    else {
       $controller = $this->getPurchasedProductController($entity);
       $acceptedRatePlan = $entity;
     }

@@ -161,5 +161,5 @@ class DeveloperAcceptedRatePlanXSdkControllerProxy implements DeveloperAcceptedR
 
     return $controller_cache[$developer_id];
   }
-  
+
 }
