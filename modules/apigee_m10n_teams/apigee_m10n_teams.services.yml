@@ -18,3 +18,9 @@ services:
     arguments: ['@request_stack']
     tags:
       - { name: cache.context }
+
+  paramconverter.entity.xrate_plan:
+    class: Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamXRatePlanConverter
+    tags:
+      - { name: paramconverter, priority: 10 }
+    arguments: ['@entity_type.manager', '@entity.repository']

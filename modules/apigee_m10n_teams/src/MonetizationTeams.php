@@ -39,9 +39,11 @@ use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
 use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedProductForm;
 use Drupal\apigee_m10n_teams\Entity\Routing\MonetizationTeamsEntityRouteProvider;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamProductBundleStorage;
+use Drupal\apigee_m10n_teams\Entity\Storage\TeamXProductStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedProductStorage;
 use Drupal\apigee_m10n_teams\Entity\TeamProductBundle;
+use Drupal\apigee_m10n_teams\Entity\TeamXProduct;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProduct;
 use Drupal\apigee_m10n_teams\Entity\TeamsRatePlan;
@@ -131,6 +133,20 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['product_bundle']->setStorageClass(TeamProductBundleStorage::class);
     }
 
+    if (isset($entity_types['xproduct'])) {
+      // Use our class to override the original entity class.
+      $entity_types['xproduct']->setClass(TeamXProduct::class);
+      // Create a link template for team product bundles.
+      $entity_types['xproduct']->setLinkTemplate('team', '/teams/{team}/monetization/xproduct/{xproduct}');
+      // Get the entity route providers.
+      $route_providers = $entity_types['xproduct']->getRouteProviderClasses();
+      // Override the `html` route provider.
+      $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
+      $entity_types['xproduct']->setHandlerClass('route_provider', $route_providers);
+      // Override the storage class.
+      $entity_types['xproduct']->setStorageClass(TeamXProductStorage::class);
+    }
+
     // Overrides for the `rate_plan` entity.
     if (isset($entity_types['rate_plan'])) {
       // Use our class to override the original entity class.
@@ -182,21 +198,6 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['purchased_product']->setFormClass('default', TeamPurchasedProductForm::class);
       // Create a link template for team purchased product collection.
       $entity_types['purchased_product']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-product');
-    }
-
-    // Overrides for the `xrate_plan` entity.
-    if (isset($entity_types['xrate_plan'])) {
-      // Use our class to override the original entity class.
-      $entity_types['xrate_plan']->setClass(TeamsRatePlan::class);
-      $entity_types['xrate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}');
-      $entity_types['xrate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}/purchase');
-      // Get the entity route providers.
-      $route_providers = $entity_types['xrate_plan']->getRouteProviderClasses();
-      // Override the `html` route provider.
-      $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
-      $entity_types['xrate_plan']->setHandlerClass('route_provider', $route_providers);
-      $entity_types['xrate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
-      $entity_types['xrate_plan']->setHandlerClass('subscription_access', TeamRatePlanSubscriptionAccessHandler::class);
     }
   }
 
