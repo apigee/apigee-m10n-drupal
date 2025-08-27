@@ -33,6 +33,7 @@ use Drupal\apigee_m10n\Exception\SdkEntityLoadException;
 use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanAccessControlHandler;
+use Drupal\apigee_m10n_teams\Entity\Access\TeamXRatePlanAccessControlHandler;
 use Drupal\apigee_m10n_teams\Entity\Access\TeamRatePlanSubscriptionAccessHandler;
 use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedPlanForm;
 use Drupal\apigee_m10n_teams\Entity\Form\TeamPurchasedProductForm;

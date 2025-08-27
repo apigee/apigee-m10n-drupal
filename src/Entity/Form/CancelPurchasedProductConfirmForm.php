@@ -152,7 +152,7 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
           $form_state->setRedirect('entity.purchased_product.team_collection', ['team' => $team_id]);
         }
       }
-    } 
+    }
     catch (\Exception $e) {
       $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
