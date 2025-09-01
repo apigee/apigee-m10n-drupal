@@ -21,12 +21,12 @@ namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Link;
-use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchasePlanLinkFormatter;
+use Drupal\apigee_m10n\Plugin\Field\FieldFormatter\PurchaseProductLinkFormatter;
 
 /**
- * Class override for the `apigee_purchase_plan_link` field formatter.
+ * Class override for the `apigee_purchase_product_link` field formatter.
  */
-class TeamPurchaseProductLinkFormatter extends PurchasePlanLinkFormatter {
+class TeamPurchaseProductLinkFormatter extends PurchaseProductLinkFormatter {
 
   /**
    * Renderable link element.

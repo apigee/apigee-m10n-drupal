@@ -20,7 +20,7 @@
 namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\AcceptedRatePlanInterface;
-use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\DeveloperInterface;
 
 /**
  * Defines the interface for purchased_product entity objects.

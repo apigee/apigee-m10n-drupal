@@ -60,10 +60,10 @@ class TeamPurchasedProductListBuilder extends PurchasedProductListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function cancelUrl(PurchasedProductInterface $purchased_plan) {
-    return $this->ensureDestination(Url::fromRoute('entity.purchased_plan.team_cancel_form', [
+  protected function cancelUrl(PurchasedProductInterface $purchased_product) {
+    return $this->ensureDestination(Url::fromRoute('entity.purchased_product.team_cancel_form', [
       'team' => $this->team->id(),
-      'purchased_plan' => $purchased_plan->id(),
+      'purchased_product' => $purchased_product->id(),
     ]));
   }
 

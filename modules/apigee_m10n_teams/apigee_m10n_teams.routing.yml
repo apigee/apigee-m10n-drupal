@@ -45,15 +45,15 @@ entity.rate_plan.team_purchase:
     _apigee_developer_route: entity.rate_plan.purchase
 
 entity.xrate_plan.team_purchase:
-  path: '/teams/{team}/monetization/product-bundle/{product_bundle}/plan/{rate_plan}/purchase'
+  path: '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}/purchase'
   defaults:
     _controller: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamPurchaseForm'
     _title_callback: '\Drupal\apigee_m10n_teams\Entity\Controller\TeamPurchaseRatePlanController::teamTitle'
   requirements:
-    _entity_access: 'rate_plan.purchase'
+    _entity_access: 'xrate_plan.purchase'
   options:
     _apigee_monetization_route: TRUE
-    _apigee_developer_route: entity.rate_plan.purchase
+    _apigee_developer_route: entity.xrate_plan.purchase
 
 
 entity.purchased_plan.team_cancel_form:
@@ -69,6 +69,20 @@ entity.purchased_plan.team_cancel_form:
       purchased_plan:
         type: 'entity:purchased_plan'
         converter: paramconverter.entity.purchased_plan
+
+entity.purchased_product.team_cancel_form:
+  path: '/teams/{team}/monetization/purchased-product/{purchased_product}/cancel'
+  defaults:
+    _entity_form: 'purchased_product.cancel'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::title'
+  requirements:
+    _entity_access: 'purchased_product.update'
+  options:
+    _apigee_monetization_route: TRUE
+    parameters:
+      purchased_product:
+        type: 'entity:purchased_product'
+        converter: paramconverter.entity.purchased_product
 
 apigee_monetization.team_plans:
   path: '/teams/{team}/plans'

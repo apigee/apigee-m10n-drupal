@@ -5,6 +5,7 @@ namespace Drupal\apigee_m10n_teams;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
 use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamPurchasedPlanConverter;
+use Drupal\apigee_m10n_teams\Entity\ParamConverter\TeamPurchasedProductConverter;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanSdkControllerProxy;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanXSdkControllerProxy;
 
@@ -32,6 +33,10 @@ class ApigeeM10nTeamsServiceProvider implements ServiceModifierInterface {
     if ($container->hasDefinition('paramconverter.entity.purchased_plan')) {
       $container->getDefinition('paramconverter.entity.purchased_plan')
         ->setClass(TeamPurchasedPlanConverter::class);
+    }
+    if ($container->hasDefinition('paramconverter.entity.purchased_product')) {
+      $container->getDefinition('paramconverter.entity.purchased_product')
+        ->setClass(TeamPurchasedProductConverter::class);
     }
   }
 

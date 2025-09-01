@@ -21,6 +21,7 @@ namespace Drupal\apigee_m10n_teams\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlan;
 use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
 use Drupal\Core\Entity\EntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -68,8 +69,8 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
       $this->decorated = $rc->newInstance($values);
     }
     // Save entity references in this class as well as the decorated instance.
-    if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof XRatePlanInterface) {
-      $this->setRatePlan($values['ratePlan']);
+    if (!empty($values['xratePlan']) && $values['xratePlan'] instanceof XRatePlanInterface) {
+      $this->setRatePlan($values['xratePlan']);
     }
 
     // Do not suppress warnings by default.
@@ -118,9 +119,9 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    *   Returns the team ID.
    */
   private function getTeamId(): ?string {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\AppGroupAcceptedRatePlanInterface $decorated */
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $decorated */
     $decorated = $this->decorated();
-    return $decorated ? $decorated->getCompany()->id() : NULL;
+    return $decorated ? $decorated->getAppGroup()->id() : NULL;
   }
 
   /**
@@ -144,9 +145,16 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
    *   An entity reference array.
    */
   private function getTeamReference() {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\AppGroupAcceptedRatePlanInterface $decorated */
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $decorated */
     $decorated = $this->decorated();
-    return ['target_id' => $decorated->getCompany()->id()];
+    return ['target_id' => $decorated->getAppGroup()->id()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDeveloper(): ?DeveloperInterface {
+    return !$this->isTeamPurchasedProduct() ? parent::getDeveloper() : NULL;
   }
 
   /**
