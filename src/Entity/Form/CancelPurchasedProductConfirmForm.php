@@ -19,13 +19,15 @@
 
 namespace Drupal\apigee_m10n\Entity\Form;
 
+use Apigee\Edge\Api\ApigeeX\Entity\Developer;
+use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\AppGroup;
 
 /**
  * Cancel entity form for `purchased_product` entities.
@@ -128,22 +130,33 @@ class CancelPurchasedProductConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
-    $this->entity->user = $this->routeMatch->getParameter('user');
-
     try {
+      $user = $this->routeMatch->getParameter('user');
+      $team_id = $this->routeMatch->getParameter('team');
+      if ($user) {
+        $developer = new Developer(['email' => $user->getEmail()]);
+        $this->entity->decorated()->setDeveloper($developer);
+      }
+      elseif ($team_id) {
+        $appgroup = new AppGroup(['name' => $team_id]);
+        $this->entity->decorated()->setAppGroup($appgroup);
+      }
+
       if ($this->entity->save()) {
         $this->messenger->addStatus($this->t('You have successfully cancelled %label API Product', ['%label' => $this->entity->getApiProduct()]));
         Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_PRODUCT_CACHE_TAG]);
-        $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $this->entity->getOwnerId()]);
+        if ($user) {
+          $form_state->setRedirect('entity.purchased_product.developer_product_collection', ['user' => $user->id()]);
+        }
+        elseif ($team_id) {
+          $form_state->setRedirect('entity.purchased_product.team_collection', ['team' => $team_id]);
+        }
       }
     }
-    // @todo Check to see if `EntityStorageException` is the only type of error
-    // to we need to catch here.
     catch (\Exception $e) {
-
       $this->messenger->addError('Error while cancelling plan: ' . $e->getMessage());
     }
+
   }
 
 }

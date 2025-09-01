@@ -34,6 +34,22 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
   /**
    * {@inheritdoc}
    */
+  public function form(array $form, FormStateInterface $form_state) {
+    if ($this->entity instanceof TeamsPurchasedProductInterface && $this->entity->isTeamPurchasedProduct()) {
+      $form = FieldableEdgeEntityForm::form($form, $form_state);
+      if ($rate_plan = $this->getEntity()->getRatePlan()) {
+        $form['#action'] = $rate_plan->toUrl('team-purchase')->toString();
+      }
+    }
+    else {
+      $form = parent::form($form, $form_state);
+    }
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // If the team has already purchased this plan, show a message instead.
     /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
@@ -50,6 +66,7 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
         ];
       }
       $form = FieldableEdgeEntityForm::buildForm($form, $form_state);
+      $this->insufficientFundsWorkflow($form, $form_state);
     }
     else {
       // Call buildForm of PurchasedProductForm.
@@ -74,8 +91,13 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
           $company->save();
         }
 
-        $display_name = $this->entity->getRatePlan()->getDisplayName();
-        Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_CACHE_TAG]);
+        if (!($rate_plan = $this->entity->getRatePlan())) {
+          $this->messenger->addError($this->t('Unable to purchase plan: invalid rate plan.'));
+          return;
+        }
+
+        $display_name = $rate_plan->getDisplayName();
+        Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_PRODUCT_CACHE_TAG]);
 
         if ($this->entity->save()) {
           $this->messenger->addStatus($this->t('You have purchased %label plan', [

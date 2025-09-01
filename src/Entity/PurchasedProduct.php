@@ -21,7 +21,7 @@ namespace Drupal\apigee_m10n\Entity;
 
 use Apigee\Edge\Api\ApigeeX\Entity\AcceptedRatePlan;
 use Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlan;
-use Apigee\Edge\Api\Monetization\Entity\DeveloperInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\DeveloperInterface;
 use Apigee\Edge\Entity\EntityInterface as EdgeEntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\apigee_edge\Entity\FieldableEdgeEntityBase;
@@ -90,13 +90,6 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
   protected $suppressWarning;
 
   /**
-   * The currently logged-in user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  private $currentUser;
-
-  /**
    * The rate plan this purchased_product belongs to.
    *
    * @var \Drupal\apigee_m10n\Entity\XRatePlanInterface
@@ -130,7 +123,6 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
 
     // Do not suppress warnings by default.
     $this->suppressWarning = FALSE;
-    $this->currentUser = \Drupal::currentUser();
   }
 
   /**
@@ -274,17 +266,17 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
    * {@inheritdoc}
    */
   public function getDeveloper(): ?DeveloperInterface {
-    $currentUserId = $this->currentUser;
-    // @todo Return the `apigee_edge` developer entity reference.
-    return $this->decorated->getDeveloper($currentUserId);
+    return $this->decorated->getDeveloper();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDeveloperEmail(): ?string {
-    $currentUserEmailId = $this->currentUser->getEmail();
-    return $currentUserEmailId;
+    if ($developer = $this->getDeveloper()) {
+      return $developer->getEmail();
+    }
+    return NULL;
   }
 
   /**
@@ -338,12 +330,10 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
    * {@inheritdoc}
    */
   public function getOwner() {
-    $currentUserEmailId = $this->currentUser->getEmail();
     if (!isset($this->owner)) {
       $owner = $this->entityTypeManager()->getStorage('user')->loadByProperties([
-        'mail' => $currentUserEmailId,
+        'mail' => $this->getDeveloper()->getEmail(),
       ]);
-
       $this->owner = !empty($owner) ? reset($owner) : NULL;
     }
     return $this->owner;

@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage;
 
-use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\PurchasedProductStorage;
 use Drupal\apigee_m10n_teams\Entity\Storage\Controller\TeamAcceptedRatePlanXSdkControllerProxyInterface;
@@ -39,16 +38,16 @@ class TeamPurchasedProductStorage extends PurchasedProductStorage implements Tea
    * issue be setting the original while we still have context.
    */
   protected function doPreSave(EntityInterface $entity) {
-    // Check for team context.
-    if (!$entity->isNew()
-      && $entity->decorated() instanceof AppGroupAcceptedRatePlanInterface
-      && ($team_id = $entity->decorated()->getAppGroup()->id())
-    ) {
-      // Reset the static and persistent cache so we can load unchanged.
-      $this->resetControllerCache([$entity->id()]);
-      $this->resetCache([$entity->id()]);
-      // Load the unchanged entity from the API.
-      $entity->original = $this->loadTeamPurchasedProductById($team_id, $entity->id());
+    /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface $entity */
+    if (!$entity->isNew() && $entity->isTeamPurchasedProduct()) {
+      if ($appgroup = $entity->decorated()->getAppGroup()) {
+        $team_id = $appgroup->id();
+        // Reset the static and persistent cache so we can load unchanged.
+        $this->resetControllerCache([$entity->id()]);
+        $this->resetCache([$entity->id()]);
+        // Load the unchanged entity from the API.
+        $entity->original = $this->loadTeamPurchasedProductById($team_id, $entity->id());
+      }
     }
 
     return parent::doPreSave($entity);

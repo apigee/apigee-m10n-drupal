@@ -184,20 +184,6 @@ class MonetizationTeams implements MonetizationTeamsInterface {
       $entity_types['purchased_product']->setLinkTemplate('team_collection', '/teams/{team}/monetization/purchased-product');
     }
 
-    // Overrides for the `xrate_plan` entity.
-    if (isset($entity_types['xrate_plan'])) {
-      // Use our class to override the original entity class.
-      $entity_types['xrate_plan']->setClass(TeamsRatePlan::class);
-      $entity_types['xrate_plan']->setLinkTemplate('team', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}');
-      $entity_types['xrate_plan']->setLinkTemplate('team-purchase', '/teams/{team}/monetization/xproduct/{xproduct}/plan/{xrate_plan}/purchase');
-      // Get the entity route providers.
-      $route_providers = $entity_types['xrate_plan']->getRouteProviderClasses();
-      // Override the `html` route provider.
-      $route_providers['html'] = MonetizationTeamsEntityRouteProvider::class;
-      $entity_types['xrate_plan']->setHandlerClass('route_provider', $route_providers);
-      $entity_types['xrate_plan']->setHandlerClass('access', TeamRatePlanAccessControlHandler::class);
-      $entity_types['xrate_plan']->setHandlerClass('subscription_access', TeamRatePlanSubscriptionAccessHandler::class);
-    }
   }
 
   /**

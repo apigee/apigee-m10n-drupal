@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_teams\Entity\Storage\Controller;
 
-use Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface;
 use Apigee\Edge\Entity\EntityInterface;
 use Drupal\apigee_m10n\Entity\Storage\Controller\DeveloperAcceptedRatePlanXSdkControllerProxy;
 
@@ -53,11 +52,16 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
    * {@inheritdoc}
    */
   public function update(EntityInterface $entity): void {
-    $controller = $entity instanceof AppGroupAcceptedRatePlanInterface
-      ? $this->getPurchasedProductControllerByTeamId($entity->getAppGroup()->id())
-      : $this->getPurchasedProductController($entity);
-
-    $controller->updateSubscription($entity);
+    /** @var \Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface $entity */
+    if ($entity->isTeamPurchasedProduct()) {
+      $controller = $this->getPurchasedProductControllerByTeamId($entity->getTeamEntity()->id());
+      $acceptedRatePlan = $entity->decorated();
+    }
+    else {
+      $controller = $this->getPurchasedProductController($entity);
+      $acceptedRatePlan = $entity;
+    }
+    $controller->updateSubscription($acceptedRatePlan);
   }
 
   /**
@@ -82,21 +86,9 @@ class TeamAcceptedRatePlanXSdkControllerProxy extends DeveloperAcceptedRatePlanX
   /**
    * {@inheritdoc}
    */
-  protected function getPurchasedProductController(EntityInterface $entity) {
-    if ($entity instanceof AppGroupAcceptedRatePlanInterface) {
-      /** @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupAcceptedRatePlanInterface $entity */
-      if (!($company = $entity->getAppGroup())) {
-        // If the team ID is not set, we have no way to get the controller
-        // since it depends on the team ID.
-        throw new RuntimeException('The team must be set to create a purchased_plan controller.');
-      }
-      // Get the controller.
-      return $this->getPurchasedProductControllerByTeamId($appgroup->id());
-    }
-    else {
-      /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface $entity */
-      return parent::getPurchasedProductController($entity);
-    }
+  public function getPurchasedProductController(EntityInterface $entity) {
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\DeveloperAcceptedRatePlanInterface $entity */
+    return parent::getPurchasedProductController($entity);
   }
 
 }

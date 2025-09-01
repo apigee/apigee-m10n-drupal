@@ -19,7 +19,7 @@
 
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 
-use Apigee\Edge\Api\Monetization\Entity\Company;
+use Apigee\Edge\Api\ApigeeX\Entity\AppGroup;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\PurchasedProduct;
@@ -44,12 +44,13 @@ class TeamPurchaseProductFormFormatter extends PurchaseProductFormFormatter {
   protected function viewValue(FieldItemInterface $item) {
     if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
       if ($item->getEntity()->access('purchase')) {
-        $purchased_plan = PurchasedProduct::create([
-          'ratePlan' => $item->getEntity(),
-          'company' => new Company(['id' => $value['team']->id()]),
+        $create_values = [
+          'xratePlan' => $item->getEntity(),
+          'appgroup' => new AppGroup(['id' => $value['team']->id()]),
           'startDate' => new \DateTimeImmutable(),
-        ]);
-        return $this->entityFormBuilder->getForm($purchased_plan, 'default', [
+        ];
+        $purchased_product = PurchasedProduct::create($create_values);
+        return $this->entityFormBuilder->getForm($purchased_product, 'default', [
           'save_label' => $this->t('@save_label', ['@save_label' => $this->getSetting('label')]),
         ]);
       }
