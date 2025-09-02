@@ -236,6 +236,29 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
+  public function isxTeamAlreadySubscribed(string $team_id, TeamsXRatePlan $rate_plan): bool {
+    // Use cached result if available.
+    // See: \Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedProductStorage::loadByTeamId()
+    $cid = "apigee_m10n_teams:dev:team_purchased_product:{$team_id}";
+    if ($cache = \Drupal::cache()->get($cid)) {
+      $teamPurchases = $cache->data;
+    }
+    else {
+      $teamPurchases = TeamsPurchasedProduct::loadByTeamId($team_id);
+      \Drupal::cache()->set($cid, $teamPurchases, strtotime('now + 5 minutes'));
+    }
+    foreach ($teamPurchases as $team_purchased_plan) {
+      if (($team_purchased_plan->decorated()->getApiProduct() == $rate_plan->decorated()->getApiProduct()) && (empty($team_purchased_plan->decorated()->getEndTime()))) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isTeamAlreadySubscribed(string $team_id, TeamsRatePlan $rate_plan): bool {
     // Use cached result if available.
     // See: \Drupal\apigee_m10n_teams\Entity\Storage\TeamPurchasedPlanStorage::loadByTeamId()

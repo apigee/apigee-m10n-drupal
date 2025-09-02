@@ -76,7 +76,7 @@ class PurchaseRatePlanXController extends ControllerBase implements ContainerInj
   public function purchaseForm(UserInterface $user, XRatePlanInterface $xrate_plan) {
     // Create a purchased_plan to pass to the purchased_plan edit form.
     $purchased_plan = PurchasedProduct::create([
-      'xratePlan' => $xrate_plan,
+      'ratePlan' => $xrate_plan,
       'developer' => new Developer(['email' => $user->getEmail()]),
     ]);
 

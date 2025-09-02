@@ -153,7 +153,7 @@ class PurchaseProductFormFormatter extends FormatterBase implements ContainerFac
     if (($value = $item->getValue()) && $item->getEntity()->access('purchase')) {
       $developer_id = $value['user']->getEmail();
       $purchased_product = PurchasedProduct::create([
-        'xratePlan' => $rate_plan,
+        'ratePlan' => $rate_plan,
         // @todo User a controller proxy that caches the developer entity.
         // @see: https://github.com/apigee/apigee-edge-drupal/pull/97.
         'developer' => new Developer(['email' => $developer_id]),

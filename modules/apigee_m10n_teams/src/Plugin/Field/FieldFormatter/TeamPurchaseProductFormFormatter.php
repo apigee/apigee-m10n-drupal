@@ -19,7 +19,6 @@
 
 namespace Drupal\apigee_m10n_teams\Plugin\Field\FieldFormatter;
 
-use Apigee\Edge\Api\ApigeeX\Entity\AppGroup;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\PurchasedProduct;
@@ -45,8 +44,8 @@ class TeamPurchaseProductFormFormatter extends PurchaseProductFormFormatter {
     if (($value = $item->getValue()) && (isset($value['team'])) && ($value['team'] instanceof TeamInterface)) {
       if ($item->getEntity()->access('purchase')) {
         $create_values = [
-          'xratePlan' => $item->getEntity(),
-          'appgroup' => new AppGroup(['id' => $value['team']->id()]),
+          'ratePlan' => $item->getEntity(),
+          'appgroup' => $value['team']->decorated(),
           'startDate' => new \DateTimeImmutable(),
         ];
         $purchased_product = PurchasedProduct::create($create_values);
