@@ -69,8 +69,8 @@ class TeamsPurchasedProduct extends PurchasedProduct implements TeamsPurchasedPr
       $this->decorated = $rc->newInstance($values);
     }
     // Save entity references in this class as well as the decorated instance.
-    if (!empty($values['xratePlan']) && $values['xratePlan'] instanceof XRatePlanInterface) {
-      $this->setRatePlan($values['xratePlan']);
+    if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof XRatePlanInterface) {
+      $this->setRatePlan($values['ratePlan']);
     }
 
     // Do not suppress warnings by default.

@@ -132,7 +132,7 @@ class PurchaseProductLinkFormatter extends FormatterBase implements ContainerFac
    *   Renderable link element.
    */
   protected function viewValue(FieldItemInterface $item) {
-    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
+    /** @var \Drupal\apigee_m10n\Entity\XRatePlanInterface $rate_plan */
     $rate_plan = $item->getEntity();
     if ($value = $item->getValue()) {
       if ($this->monetization->isDeveloperAlreadySubscribed($value['user']->getEmail(), $rate_plan)) {
@@ -140,7 +140,7 @@ class PurchaseProductLinkFormatter extends FormatterBase implements ContainerFac
       }
 
       return Link::createFromRoute(
-        $this->getSetting('label'), 'entity.rate_plan.purchase', [
+        $this->getSetting('label'), 'entity.xrate_plan.purchase', [
           'user'           => $value['user']->id(),
           'product_bundle' => $rate_plan->getProductBundleId(),
           'rate_plan'      => $rate_plan->id(),

@@ -114,11 +114,11 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
     $entity_type = $entity_type ?? static::ENTITY_TYPE_ID;
     parent::__construct($values, $entity_type, $decorated);
 
-    if (!empty($values['xratePlan']) && $values['xratePlan'] instanceof DrupalRatePlanInterface) {
+    if (!empty($values['ratePlan']) && $values['ratePlan'] instanceof DrupalRatePlanInterface) {
       // @todo Since `RatePlan::createFrom($sdk_rate_plan)` is available do we
       // need to store an extra reference here. Is the slight performance
       // benefit worth it?
-      $this->setRatePlan($values['xratePlan']);
+      $this->setRatePlan($values['ratePlan']);
     }
 
     // Do not suppress warnings by default.

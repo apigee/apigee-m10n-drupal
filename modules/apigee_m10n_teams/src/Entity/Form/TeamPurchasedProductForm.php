@@ -22,7 +22,6 @@ namespace Drupal\apigee_m10n_teams\Entity\Form;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\apigee_edge\Entity\Form\FieldableEdgeEntityForm;
-use Drupal\apigee_edge_teams\Entity\Team;
 use Drupal\apigee_m10n\Entity\Form\PurchasedProductForm;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProductInterface;
 
@@ -34,31 +33,15 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
   /**
    * {@inheritdoc}
    */
-  public function form(array $form, FormStateInterface $form_state) {
-    if ($this->entity instanceof TeamsPurchasedProductInterface && $this->entity->isTeamPurchasedProduct()) {
-      $form = FieldableEdgeEntityForm::form($form, $form_state);
-      if ($rate_plan = $this->getEntity()->getRatePlan()) {
-        $form['#action'] = $rate_plan->toUrl('team-purchase')->toString();
-      }
-    }
-    else {
-      $form = parent::form($form, $form_state);
-    }
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // If the team has already purchased this plan, show a message instead.
-    /** @var \Drupal\apigee_m10n\Entity\RatePlanInterface $rate_plan */
-
+    /** @var \Drupal\apigee_m10n\Entity\XRatePlanInterface $rate_plan */
     if ($this->entity instanceof TeamsPurchasedProductInterface && $this->entity->isTeamPurchasedProduct()) {
       // Execute only is called from teams.
-      $team_id = $this->entity->decorated()->getCompany()->id();
+      $team_id = $this->entity->decorated()->getAppGroup()->id();
+
       $monetization = \Drupal::service('apigee_m10n.teams');
-      if (($rate_plan = $this->getEntity()->getRatePlan()) && ($monetization->isTeamAlreadySubscribed($team_id, $rate_plan))) {
+      if (($rate_plan = $this->getEntity()->getRatePlan()) && ($monetization->isxTeamAlreadySubscribed($team_id, $rate_plan))) {
         return [
           '#markup' => $this->t('You have already purchased %rate_plan.', [
             '%rate_plan' => $rate_plan->getDisplayName(),
@@ -82,17 +65,10 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
   public function save(array $form, FormStateInterface $form_state) {
     try {
       if ($this->entity instanceof TeamsPurchasedProductInterface && $this->entity->isTeamPurchasedProduct()) {
-        // Auto assign legal name.
-        $company_id = $this->entity->decorated()->getCompany()->id();
-        $company = Team::load($company_id);
-        // Autopopulate legal name when company has no legal name attribute set.
-        if (empty($company->getAttributeValue(static::LEGAL_NAME_ATTR))) {
-          $company->setAttribute(static::LEGAL_NAME_ATTR, $company_id);
-          $company->save();
-        }
+        $appgroup_id = $this->entity->decorated()->getAppGroup()->id();
 
         if (!($rate_plan = $this->entity->getRatePlan())) {
-          $this->messenger->addError($this->t('Unable to purchase plan: invalid rate plan.'));
+          $this->messenger->addError($this->t('Unable to purchase product: invalid rate plan.'));
           return;
         }
 
@@ -100,13 +76,13 @@ class TeamPurchasedProductForm extends PurchasedProductForm {
         Cache::invalidateTags([PurchasedProductForm::MY_PURCHASES_PRODUCT_CACHE_TAG]);
 
         if ($this->entity->save()) {
-          $this->messenger->addStatus($this->t('You have purchased %label plan', [
+          $this->messenger->addStatus($this->t('You have purchased %label product', [
             '%label' => $display_name,
           ]));
-          $form_state->setRedirect('entity.purchased_plan.team_collection', ['team' => $company_id]);
+          $form_state->setRedirect('entity.purchased_product.team_collection', ['team' => $appgroup_id]);
         }
         else {
-          $this->messenger->addWarning($this->t('Unable to purchase %label plan', [
+          $this->messenger->addWarning($this->t('Unable to purchase %label product', [
             '%label' => $display_name,
           ]));
         }

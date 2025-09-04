@@ -145,8 +145,8 @@ class PurchasedProductStorage extends EdgeEntityStorageBase implements Purchased
     $ids = [$id];
     $purchased_products = $this->getFromPersistentCache($ids);
     // Return the cached entity.
-    if (isset($purchased_product[$id])) {
-      return $purchased_product[$id];
+    if (isset($purchased_products[$id])) {
+      return $purchased_products[$id];
     }
 
     $entity = NULL;
