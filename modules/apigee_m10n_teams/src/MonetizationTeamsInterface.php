@@ -144,7 +144,7 @@ interface MonetizationTeamsInterface {
    * @param \Drupal\apigee_edge\Entity\ApiProductInterface $api_product
    *   The 'api_product'  entity.
    * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
-   *   The 'api_product'  entity.
+   *   The 'team' entity.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account.
    *
