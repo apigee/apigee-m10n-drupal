@@ -30,12 +30,15 @@ use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface as ApigeexRat
 use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyController as ApigeeXSupportedCurrencyController;
 use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyControllerInterface as ApigeeXSupportedCurrencyControllerInterface;
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\AppGroupInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageController;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperController;
 use Apigee\Edge\Api\Monetization\Controller\DeveloperPrepaidBalanceController;
@@ -175,6 +178,24 @@ class ApigeeSdkControllerFactory implements ApigeeSdkControllerFactoryInterface 
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
       // Create a new balance controller.
       $this->controllers[__FUNCTION__][$name] = new CompanyPrepaidBalanceController(
+        $name,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$name];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function appGroupBalanceController(AppGroupInterface $appgroup): AppGroupPrepaidBalanceControllerInterface {
+    $name = $appgroup->getName();
+    if (empty($this->controllers[__FUNCTION__][$name])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$name] = new AppGroupPrepaidBalanceController(
         $name,
         $this->getOrganization(),
         $this->getClient()

@@ -24,8 +24,11 @@ use Apigee\Edge\Api\ApigeeX\Controller\AppGroupAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceController;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
+// use Apigee\Edge\Api\ApigeeX\Controller\AppGroupBillingTypeController;
 
 /**
  * An `apigee_m10n.sdk_controller_factory` overridden service class.
@@ -92,6 +95,23 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
       $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
       // Create a new balance controller.
       $this->controllers[__FUNCTION__][$team_id] = new CompanyPrepaidBalanceController(
+        $team_id,
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$team_id];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function teamBalancexController($team_id): AppGroupPrepaidBalanceControllerInterface {
+    if (empty($this->controllers[__FUNCTION__][$team_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new balance controller.
+      $this->controllers[__FUNCTION__][$team_id] = new AppGroupPrepaidBalanceController(
         $team_id,
         $this->getOrganization(),
         $this->getClient()
