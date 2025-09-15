@@ -28,7 +28,6 @@ use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceController;
 use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
-// use Apigee\Edge\Api\ApigeeX\Controller\AppGroupBillingTypeController;
 
 /**
  * An `apigee_m10n.sdk_controller_factory` overridden service class.
