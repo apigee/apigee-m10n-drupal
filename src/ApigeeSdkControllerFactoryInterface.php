@@ -20,11 +20,13 @@
 namespace Drupal\apigee_m10n;
 
 use Apigee\Edge\Api\ApigeeX\Controller\ApiProductControllerInterface as ApixProductControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\ApigeeX\Controller\DeveloperAcceptedRatePlanController as ApigeeXDeveloperAcceptedRatePlanController;
 use Apigee\Edge\Api\ApigeeX\Controller\DeveloperBillingTypeController;
 use Apigee\Edge\Api\ApigeeX\Controller\DeveloperPrepaidBalanceControllerInterface as ApigeeXDeveloperPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\ApigeeX\Controller\RatePlanControllerInterface as ApigeexRatePlanControllerInterface;
 use Apigee\Edge\Api\ApigeeX\Controller\SupportedCurrencyControllerInterface as ApigeeXSupportedCurrencyControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\AppGroupInterface;
 use Apigee\Edge\Api\Management\Entity\CompanyInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiPackageControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductControllerInterface;
@@ -106,6 +108,17 @@ interface ApigeeSdkControllerFactoryInterface {
    *   The company balance controller.
    */
   public function companyBalanceController(CompanyInterface $company): CompanyPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates an appgroup prepaid balance controller.
+   *
+   * @param \Apigee\Edge\Api\ApigeeX\Entity\AppGroupInterface $appgroup
+   *   The AppGroup.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface
+   *   The appgroup balance controller.
+   */
+  public function appGroupBalanceController(AppGroupInterface $appgroup): AppGroupPrepaidBalanceControllerInterface;
 
   /**
    * Creates a product controller.

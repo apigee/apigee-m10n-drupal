@@ -91,28 +91,28 @@ class BalanceAdjustmentJobX extends EdgeJob {
   /**
    * Creates an Apigee balance adjustment (add credit) job.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $developer
+   * @param \Drupal\Core\Entity\EntityInterface $appgroup_or_developer
    *   The appgroup  or user the adjustment should  be applied to.
    * @param \Drupal\commerce_order\Adjustment $adjustment
    *   The drupal commerce adjustment.
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The drupal commerce order.
    */
-  public function __construct(EntityInterface $appgroup_or_user  , Adjustment $adjustment, ?OrderInterface $order = NULL) {
+  public function __construct(EntityInterface $appgroup_or_developer, Adjustment $adjustment, ?OrderInterface $order = NULL) {
     parent::__construct();
 
     // Either a developer or a appgroup can be passed.
-    if ($appgroup_or_user instanceof UserInterface) {
+    if ($appgroup_or_developer instanceof UserInterface) {
       // A user was passed.
-      $this->developer = $appgroup_or_user;
+      $this->developer = $appgroup_or_developer;
     }
-    elseif ($appgroup_or_user instanceof DeveloperInterface) {
+    elseif ($appgroup_or_developer instanceof DeveloperInterface) {
       // A developer was passed. Get the owner.
-      $this->developer = $appgroup_or_user->getOwner();
+      $this->developer = $appgroup_or_developer->getOwner();
     }
-    elseif ($appgroup_or_user->decorated() instanceof AppGroupInterface) {
+    elseif ($appgroup_or_developer->decorated() instanceof AppGroupInterface) {
       // An appgroup was passed.
-      $this->appgroup = $appgroup_or_user;
+      $this->appgroup = $appgroup_or_developer;
     }
   
     $this->adjustment = $adjustment;
