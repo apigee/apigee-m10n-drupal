@@ -28,12 +28,15 @@ use Drupal\apigee_m10n_add_credit\AddCreditConfig;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_price\Price;
+use Drupal\user\UserInterface;
+use Drupal\apigee_edge\Entity\DeveloperInterface;
+use Apigee\Edge\Api\ApigeeX\Entity\AppGroupInterface;
 
 /**
  * An apigee job that will apply a balance adjustment.
  *
  * The job is responsible for updating the account balance for a developer or
- * company. It is usually initiated after an add credit product is purchased.
+ * appgroup. It is usually initiated after an add credit product is purchased.
  *
  * Execute should not return anything if the job was successful. Throwing an
  * error will let the job runner know that the request was unsuccessful and will
@@ -51,6 +54,13 @@ class BalanceAdjustmentJobX extends EdgeJob {
    * @var \Drupal\user\UserInterface
    */
   protected $developer;
+
+  /**
+   * The appgroup to whom a balance adjustment is to be made.
+   *
+   * @var \Apigee\Edge\Api\ApigeeX\Entity\AppGroupInterface
+   */
+  protected $appgroup;
 
   /**
    * The drupal commerce adjustment.
@@ -81,18 +91,30 @@ class BalanceAdjustmentJobX extends EdgeJob {
   /**
    * Creates an Apigee balance adjustment (add credit) job.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $developer
-   *   The company  or user the adjustment should  be applied to.
+   * @param \Drupal\Core\Entity\EntityInterface $appgroup_or_developer
+   *   The appgroup  or user the adjustment should  be applied to.
    * @param \Drupal\commerce_order\Adjustment $adjustment
    *   The drupal commerce adjustment.
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The drupal commerce order.
    */
-  public function __construct(EntityInterface $developer, Adjustment $adjustment, ?OrderInterface $order = NULL) {
+  public function __construct(EntityInterface $appgroup_or_developer, Adjustment $adjustment, ?OrderInterface $order = NULL) {
     parent::__construct();
 
-    $this->developer = $developer->getOwner();
-
+    // Either a developer or a appgroup can be passed.
+    if ($appgroup_or_developer instanceof UserInterface) {
+      // A user was passed.
+      $this->developer = $appgroup_or_developer;
+    }
+    elseif ($appgroup_or_developer instanceof DeveloperInterface) {
+      // A developer was passed. Get the owner.
+      $this->developer = $appgroup_or_developer->getOwner();
+    }
+    elseif ($appgroup_or_developer->decorated() instanceof AppGroupInterface) {
+      // An appgroup was passed.
+      $this->appgroup = $appgroup_or_developer;
+    }
+  
     $this->adjustment = $adjustment;
 
     $this->order = $order;
@@ -163,6 +185,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
       // Compile message context.
       $context = [
         'email'             => !empty($this->developer) ? $this->developer->getEmail() : '',
+        'team_name'         => !empty($this->appgroup) ? $this->appgroup->label() : '',
         'existing'          => $this->formatPrice($existing_top_ups),
         'adjustment'        => $this->formatPrice($adjustment->getAmount()),
         'new_balance'       => isset($new_balance) ? $this->formatPrice($new_balance) : 'Error retrieving the new balance.',
@@ -181,6 +204,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
       // some empty values for formatting.
       $all_placeholders = [
         '@email' => '',
+        '@team_name' => '',
         '@existing' => '',
         '@adjustment' => '',
         '@new_balance' => '',
@@ -248,7 +272,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
    * @throws \Exception
    */
   protected function getPrepaidBalance(PrepaidBalanceControllerInterface $controller, $currency_code) {
-    /** @var \Apigee\Edge\Api\Monetization\Entity\PrepaidBalanceInterface[] $balances */
+    /** @var \Apigee\Edge\Api\ApigeeX\Entity\PrepaidBalanceInterface[] $balances */
     $balances = $controller->getPrepaidBalance();
 
     if (!empty($balances)) {
@@ -277,8 +301,16 @@ class BalanceAdjustmentJobX extends EdgeJob {
    */
   protected function getBalanceController() {
     // Return the appropriate controller for the operational entity type.
-    return \Drupal::service('apigee_m10n.sdk_controller_factory')
-      ->developerBalancexController($this->developer);
+    if (!empty($this->developer)) {
+      return \Drupal::service('apigee_m10n.sdk_controller_factory')
+        ->developerBalancexController($this->developer);
+    }
+    elseif (!empty($this->appgroup)) {
+      return \Drupal::service('apigee_m10n.sdk_controller_factory')
+        ->appGroupBalanceController($this->appgroup->decorated());
+    }
+    return FALSE;
+
   }
 
   /**
@@ -334,8 +366,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
    *   The message.
    */
   protected function getMessage($message_id) {
-    $type = 'developer';
-
+    $type = $this->isDeveloperAdjustment() ? 'developer' : 'appgroup';
     $report_text = 'Existing credit added ({month}):  `{existing}`.<br />' . PHP_EOL;
     $report_text .= 'Amount Applied:                   `{adjustment}`.<br />' . PHP_EOL;
     $report_text .= 'New Balance:                      `{new_balance}`.<br />' . PHP_EOL;
@@ -347,6 +378,12 @@ class BalanceAdjustmentJobX extends EdgeJob {
         'report_text_error_header' => 'Calculation discrepancy applying adjustment to developer `{email}`. <br />' . PHP_EOL . PHP_EOL,
         'report_text_info_header'  => 'Adjustment applied to developer:  `{email}`. <br />' . PHP_EOL . PHP_EOL,
         'report_text'              => $report_text,
+      ],
+      'appgroup' => [
+        'balance_error_message' => 'Apigee team ({team_name}) has no balance for ({currency}).',
+        'report_text_error_header'  => 'Calculation discrepancy applying adjustment to team `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text_info_header'   => 'Adjustment applied to team:       `{team_name}`. <br />' . PHP_EOL . PHP_EOL,
+        'report_text'               => $report_text,
       ],
     ];
 

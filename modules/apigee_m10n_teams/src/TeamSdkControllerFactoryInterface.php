@@ -24,6 +24,7 @@ use Apigee\Edge\Api\ApigeeX\Controller\AppGroupAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
 
 /**
  * Interface for the `apigee_m10n_teams.sdk_controller_factory` service.
@@ -73,6 +74,17 @@ interface TeamSdkControllerFactoryInterface {
    *   The controller.
    */
   public function teamBalanceController($team_id): CompanyPrepaidBalanceControllerInterface;
+
+  /**
+   * Creates a team prepaid balance controller.
+   *
+   * @param string $team_id
+   *   The team ID.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface
+   *   The controller.
+   */
+  public function teamBalancexController($team_id): AppGroupPrepaidBalanceControllerInterface;
 
   /**
    * Creates a company api product controller.
