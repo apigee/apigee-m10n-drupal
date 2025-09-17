@@ -153,4 +153,15 @@ interface MonetizationTeamsInterface {
    */
   public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): ?AccessResultInterface;
 
+  /**
+   * Returns the billing type of an appgroup.
+   *
+   * @param \Drupal\apigee_edge_teams\Entity\TeamInterface $team
+   *   Appgroup entity.
+   *
+   * @return string|null
+   *   Billing type.
+   */
+  public function getAppGroupBillingtype(TeamInterface $team): ?string;
+
 }
