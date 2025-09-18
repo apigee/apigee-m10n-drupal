@@ -386,7 +386,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): AccessResultInterface {
     // Cache results for this request.
     static $eligible_product_cache = [];
-    $company_id = $team->getDisplayName();
+    $company_id = $team->id();
 
     if (!isset($eligible_product_cache[$company_id])) {
       // Instantiate an instance of the m10n ApiProduct controller.
