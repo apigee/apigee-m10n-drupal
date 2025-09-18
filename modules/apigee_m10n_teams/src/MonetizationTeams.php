@@ -383,29 +383,50 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   /**
    * {@inheritdoc}
    */
-  public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): AccessResultInterface {
+  public function apiProductTeamAssignmentAccess(ApiProductInterface $api_product, TeamInterface $team, AccountInterface $account): ?AccessResultInterface {
     // Cache results for this request.
     static $eligible_product_cache = [];
-    $company_id = $team->id();
 
-    if (!isset($eligible_product_cache[$company_id])) {
-      // Instantiate an instance of the m10n ApiProduct controller.
-      $product_controller = $this->sdk_controller_factory->companyApiProductController($company_id);
-      // Get a list of available products for the m10n company.
-      $eligible_product_cache[$company_id] = $product_controller->getEligibleProductsByCompany($company_id);
+    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
+      $appgroup_id = $team->id();
+      if (!isset($eligible_product_cache[$appgroup_id])) {
 
+        // Instantiate an instance of the m10n ApiProduct controller.
+        $product_controller = $this->sdk_controller_factory->appGroupApiProductController($appgroup_id);
+        // Get a list of available products for the m10n developer.
+        $eligible_product_cache[$appgroup_id] = $product_controller->getEligibleProductsByAppGroup($appgroup_id);
+      }
+
+      $product_ids = array_map(function ($product) {
+        return $product->id();
+      }, $eligible_product_cache[$appgroup_id]);
+
+      // Apigee X product names are case-sensitive.
+      return in_array($api_product->id(), $product_ids)
+        ? AccessResult::allowed()
+        : AccessResult::forbidden('Product is not eligible for this team');
     }
+    else {
+      $company_id = $team->id();
 
-    // Get just the IDs from the available products.
-    $product_ids = array_map(function ($product) {
-      return $product->id();
-    }, $eligible_product_cache[$company_id]);
+      if (!isset($eligible_product_cache[$company_id])) {
+        // Instantiate an instance of the m10n ApiProduct controller.
+        $product_controller = $this->sdk_controller_factory->companyApiProductController($company_id);
+        // Get a list of available products for the m10n company.
+        $eligible_product_cache[$company_id] = $product_controller->getEligibleProductsByCompany($company_id);
 
-    // Allow only if the id is in the eligible list.
-    return in_array(strtolower($api_product->id()), $product_ids)
-      ? AccessResult::allowed()
-      : AccessResult::forbidden('Product is not eligible for this company');
+      }
 
+      // Get just the IDs from the available products.
+      $product_ids = array_map(function ($product) {
+        return $product->id();
+      }, $eligible_product_cache[$company_id]);
+
+      // Allow only if the id is in the eligible list.
+      return in_array(strtolower($api_product->id()), $product_ids)
+        ? AccessResult::allowed()
+        : AccessResult::forbidden('Product is not eligible for this company');
+    }
   }
 
   /**

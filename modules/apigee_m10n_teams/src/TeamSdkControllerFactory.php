@@ -19,8 +19,9 @@
 
 namespace Drupal\apigee_m10n_teams;
 
-use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
+use Apigee\Edge\Api\ApigeeX\Controller\ApiProductController as AppGroupApiProductController;
 use Apigee\Edge\Api\ApigeeX\Controller\AppGroupAcceptedRatePlanController;
+use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
@@ -136,6 +137,22 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
     return $this->controllers[__FUNCTION__][$company_id];
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function appGroupApiProductController(string $appgroup_id): AppGroupApiProductController {
+    if (empty($this->controllers[__FUNCTION__][$appgroup_id])) {
+      // Don't assume the bucket has been initialized.
+      $this->controllers[__FUNCTION__] = $this->controllers[__FUNCTION__] ?? [];
+      // Create a new appgroup Api Product controller.
+      $this->controllers[__FUNCTION__][$appgroup_id] = new AppGroupApiProductController(
+        $this->getOrganization(),
+        $this->getClient()
+      );
+    }
+    return $this->controllers[__FUNCTION__][$appgroup_id];
+  }
+  
   /**
    * {@inheritdoc}
    */
