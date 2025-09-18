@@ -429,4 +429,12 @@ class MonetizationTeams implements MonetizationTeamsInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getAppGroupBillingtype(TeamInterface $team): ?string {
+
+    return $this->sdk_controller_factory->appGroupBillingTypeController($team->decorated()->id())->getAllBillingDetails()->getbillingType();
+  }
+
 }

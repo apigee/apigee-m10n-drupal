@@ -29,6 +29,7 @@ use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceController;
 use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupBillingTypeController;
 
 /**
  * An `apigee_m10n.sdk_controller_factory` overridden service class.
@@ -148,6 +149,17 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
         $this->getOrganization(),
         $this->getClient()
       );
+    }
+    return $this->controllers[__FUNCTION__][$appgroup_id];
+  }
+  
+  /**
+   * {@inheritdoc}
+   */
+  public function appGroupBillingTypeController(string $appgroup_id): AppGroupBillingTypeController {
+    if (empty($this->controllers[__FUNCTION__][$appgroup_id])) {
+      // Create a new  Billing type controller.
+      $this->controllers[__FUNCTION__][$appgroup_id] = new AppGroupBillingTypeController($appgroup_id, $this->getOrganization(), $this->getClient());
     }
     return $this->controllers[__FUNCTION__][$appgroup_id];
   }

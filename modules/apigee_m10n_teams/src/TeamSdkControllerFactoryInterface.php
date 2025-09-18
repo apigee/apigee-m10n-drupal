@@ -19,13 +19,14 @@
 
 namespace Drupal\apigee_m10n_teams;
 
-use Apigee\Edge\Api\ApigeeX\Controller\ApiProductController as AppGroupApiProductController;
 use Apigee\Edge\Api\ApigeeX\Controller\AppGroupAcceptedRatePlanController;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
+use Apigee\Edge\Api\ApigeeX\Controller\AppGroupBillingTypeController;
+use Apigee\Edge\Api\ApigeeX\Controller\ApiProductController as AppGroupApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\ApiProductController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyAcceptedRatePlanController;
 use Apigee\Edge\Api\Monetization\Controller\CompanyPrepaidBalanceControllerInterface;
 use Apigee\Edge\Api\Monetization\Controller\CompanyTermsAndConditionsController;
-use Apigee\Edge\Api\ApigeeX\Controller\AppGroupPrepaidBalanceControllerInterface;
 
 /**
  * Interface for the `apigee_m10n_teams.sdk_controller_factory` service.
@@ -108,5 +109,16 @@ interface TeamSdkControllerFactoryInterface {
    *   The controller.
    */
   public function appGroupApiProductController(string $appgroup_id): AppGroupApiProductController;
+  
+  /**
+   * Creates an appgroup billing type controller.
+   *
+   * @param string $appgroup_id
+   *   The team ID.
+   *
+   * @return \Apigee\Edge\Api\ApigeeX\Controller\AppGroupBillingTypeController
+   *   The controller.
+   */
+  public function appGroupBillingTypeController(string $appgroup_id): AppGroupBillingTypeController;
 
 }
