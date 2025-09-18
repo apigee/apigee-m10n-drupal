@@ -407,7 +407,7 @@ class MonetizationTeams implements MonetizationTeamsInterface {
         : AccessResult::forbidden('Product is not eligible for this team');
     }
     else {
-      $company_id = $team->getDisplayName();
+      $company_id = $team->id();
 
       if (!isset($eligible_product_cache[$company_id])) {
         // Instantiate an instance of the m10n ApiProduct controller.
