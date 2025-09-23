@@ -21,6 +21,7 @@
 
 namespace Drupal\apigee_m10n_teams;
 
+use Apigee\Edge\Api\ApigeeX\Entity\BillingTypeInterface;
 use Apigee\Edge\Api\Monetization\Structure\LegalEntityTermsAndConditionsHistoryItem;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -435,6 +436,14 @@ class MonetizationTeams implements MonetizationTeamsInterface {
   public function getAppGroupBillingtype(TeamInterface $team): ?string {
 
     return $this->sdk_controller_factory->appGroupBillingTypeController($team->decorated()->id())->getAllBillingDetails()->getbillingType();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateBillingtype(string $teamId, string $billingtype): BillingTypeInterface {
+
+    return $this->sdk_controller_factory->appGroupBillingTypeController($teamId)->updateBillingType($billingtype);
   }
 
 }

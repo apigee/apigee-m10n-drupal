@@ -153,3 +153,26 @@ apigee_m10n_teams.team_reports:
   options:
     _apigee_monetization_route: TRUE
     _apigee_developer_route: apigee_monetization.profile
+
+apigee_m10n_teams.teambillingtype:
+  path: /teams/{team}/team-billingtype
+  defaults:
+    _form: \Drupal\apigee_m10n_teams\Form\BillingTypeForm
+    _title: Billing Type
+  requirements:
+    _team_permission: 'view rate_plan'
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.profile
+
+apigee_m10n_teams.teambillingtype.confirm:
+  path: /team/{team}/{billingtype}/confirm
+  defaults:
+    _form: \Drupal\apigee_m10n_teams\Form\ConfirmUpdateForm
+    _title: 'Confirm Update'
+  requirements:
+    team: '^[A-Za-z0-9_-]+'
+    _custom_access: \Drupal\apigee_m10n_teams\Form\ConfirmUpdateForm::access
+  options:
+    _apigee_monetization_route: TRUE
+    _apigee_developer_route: apigee_monetization.profile
