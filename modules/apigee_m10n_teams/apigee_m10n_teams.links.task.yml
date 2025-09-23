@@ -1,10 +1,5 @@
 apigee_m10n_teams.balance_and_plans:
-  route_name: entity.purchased_plan.team_collection
-  title: 'Balance and plans'
-  base_route: entity.team.canonical
-
-apigee_m10n_teams.balance_and_product:
-  route_name: entity.purchased_product.team_collection
+  route_name: apigee_monetization_teams.billing
   title: 'Balance and plans'
   base_route: entity.team.canonical
 
@@ -19,7 +14,7 @@ apigee_m10n_teams.xbilling:
   title: 'Prepaid balance'
   route_name: apigee_monetization_teams.xbilling
   base_route: entity.team.canonical
-  parent_id: apigee_m10n_teams.balance_and_product
+  parent_id: apigee_m10n_teams.balance_and_plans
   weight: -2
 
 apigee_m10n_teams.purchased_plans:
@@ -33,7 +28,7 @@ apigee_m10n_teams.purchased_product:
   title: 'Purchased products'
   route_name: entity.purchased_product.team_collection
   base_route: entity.team.canonical
-  parent_id: apigee_m10n_teams.balance_and_product
+  parent_id: apigee_m10n_teams.balance_and_plans
   weight: -1
 
 apigee_m10n_teams.team_billing_details:
@@ -47,7 +42,7 @@ apigee_m10n_teams.team_xbilling_details:
   title: 'Billing Details'
   route_name: apigee_m10n_teams.team_xbilling_details
   base_route: entity.team.canonical
-  parent_id: apigee_m10n_teams.balance_and_product
+  parent_id: apigee_m10n_teams.balance_and_plans
   weight: 0
 
 apigee_m10n_teams.team_reports:
@@ -68,7 +63,7 @@ apigee_m10n_teams.team_xplans:
   class: Drupal\apigee_m10n_teams\Plugin\Menu\LocalTask\TeamPlansLocalTask
   route_name: apigee_monetization.team_xplans
   base_route: entity.team.canonical
-  parent_id: apigee_m10n_teams.balance_and_product
+  parent_id: apigee_m10n_teams.balance_and_plans
   weight: 1
 
 apigee_m10n_teams.teambillingtype:
