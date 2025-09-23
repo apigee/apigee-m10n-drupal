@@ -109,7 +109,7 @@ interface TeamSdkControllerFactoryInterface {
    *   The controller.
    */
   public function appGroupApiProductController(string $appgroup_id): AppGroupApiProductController;
-  
+
   /**
    * Creates an appgroup billing type controller.
    *

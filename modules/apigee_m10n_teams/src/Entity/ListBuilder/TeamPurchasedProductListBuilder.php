@@ -24,6 +24,7 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\ListBuilder\PurchasedProductListBuilder;
 use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedProduct;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Entity list builder for team purchased product.
@@ -45,6 +46,22 @@ class TeamPurchasedProductListBuilder extends PurchasedProductListBuilder {
     $this->team = $team;
 
     return parent::render();
+  }
+
+  /**
+   * Checks teams access.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if conditions are met.
+   */
+  public function access() {
+    $monetization = \Drupal::service('apigee_m10n.monetization');
+
+    if (!$monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('ApigeeX is not enabled.');
+    }
+
+    return AccessResult::allowed();
   }
 
   /**

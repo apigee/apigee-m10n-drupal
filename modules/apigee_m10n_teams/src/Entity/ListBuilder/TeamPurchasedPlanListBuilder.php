@@ -24,6 +24,7 @@ use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\apigee_m10n\Entity\ListBuilder\PurchasedPlanListBuilder;
 use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n_teams\Entity\TeamsPurchasedPlan;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Entity list builder for team purchased plans.
@@ -45,6 +46,21 @@ class TeamPurchasedPlanListBuilder extends PurchasedPlanListBuilder {
     $this->team = $team;
 
     return parent::render();
+  }
+
+  /**
+   * Checks teams access.
+   *
+   * @return \Drupal\Core\Access\AccessResult
+   *   Grants access to the route if conditions are met.
+   */
+  public function access() {
+    if ($this->monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('ApigeeX does not support purchased plan.');
+    }
+
+    return AccessResult::allowed();
+
   }
 
   /**

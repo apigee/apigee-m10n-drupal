@@ -31,6 +31,7 @@ entity.purchased_plan.team_collection:
   requirements:
     user: '\d+'
     _team_permission: 'view purchased_plan'
+    _custom_access: \Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamPurchasedPlanListBuilder::access
   options:
     _apigee_monetization_route: TRUE
     _apigee_developer_route: entity.purchased_plan.developer_collection
@@ -43,6 +44,7 @@ entity.purchased_product.team_collection:
   requirements:
     user: '\d+'
     _team_permission: 'view purchased_product'
+    _custom_access: \Drupal\apigee_m10n_teams\Entity\ListBuilder\TeamPurchasedProductListBuilder::access
   options:
     _apigee_monetization_route: TRUE
     _apigee_developer_route: entity.purchased_product.developer_collection

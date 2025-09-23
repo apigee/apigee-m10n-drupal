@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
  *   id = "apigee_m10n_teams.team_xplans",
  *   route_name = "apigee_monetization.team_xplans",
  *   base_route = "entity.team.canonical",
- *   parent_id = "apigee_m10n_teams.balance_and_plans",
+ *   parent_id = "apigee_m10n_teams.balance_and_product",
  *   weight = 1
  * )
  */
