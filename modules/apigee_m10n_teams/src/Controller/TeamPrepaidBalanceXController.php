@@ -77,7 +77,7 @@ class TeamPrepaidBalanceXController extends PrepaidBalanceXControllerBase {
   }
 
   /**
-   * {@inheritdoc}  
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
@@ -133,6 +133,5 @@ class TeamPrepaidBalanceXController extends PrepaidBalanceXControllerBase {
 
     return $this->team_access_check->hasTeamPermission($this->entity, $this->currentUser, 'refresh prepaid balance');
   }
-
 
 }

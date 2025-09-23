@@ -114,7 +114,7 @@ class BalanceAdjustmentJobX extends EdgeJob {
       // An appgroup was passed.
       $this->appgroup = $appgroup_or_developer;
     }
-  
+
     $this->adjustment = $adjustment;
 
     $this->order = $order;
