@@ -151,7 +151,7 @@ abstract class PurchasedProductListBuilder extends EntityListBuilder implements 
   public function buildHeader() {
     return [
       'subscription_id' => [
-        'data' => $this->t('Subscription Name'),
+        'data' => $this->t('Subscription ID'),
         'class' => ['purchased-subscription'],
         'field' => 'name',
       ],
