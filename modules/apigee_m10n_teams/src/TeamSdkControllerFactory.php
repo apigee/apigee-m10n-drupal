@@ -152,7 +152,7 @@ class TeamSdkControllerFactory extends ApigeeSdkControllerFactory implements Tea
     }
     return $this->controllers[__FUNCTION__][$appgroup_id];
   }
-  
+
   /**
    * {@inheritdoc}
    */
