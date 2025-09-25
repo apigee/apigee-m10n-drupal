@@ -24,7 +24,7 @@ use Apigee\Edge\Api\ApigeeX\Structure\ConsumptionPricingRate;
 use Apigee\Edge\Api\ApigeeX\Structure\Fee;
 use Apigee\Edge\Api\ApigeeX\Structure\RatePlanXFee;
 use Apigee\Edge\Api\ApigeeX\Structure\RevenueShareRates;
-use Apigee\Edge\Api\Monetization\Entity\Developer;
+use Apigee\Edge\Api\ApigeeX\Entity\Developer;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Drupal\Tests\apigee_edge\Traits\ApigeeEdgeFunctionalTestTrait;
 use Drupal\Tests\apigee_m10n\Traits\AccountProphecyTrait;
