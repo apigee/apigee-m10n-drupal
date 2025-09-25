@@ -27,7 +27,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\apigee_edge\Entity\Developer;
-use Drupal\apigee_edge_teams\Entity\TeamInterface;
 use Drupal\user\UserInterface;
 use Drupal\apigee_m10n_add_credit\Form\GeneralSettingsConfigForm;
 
@@ -154,7 +153,7 @@ function apigee_m10n_add_credit_user_presave(UserInterface $account) {
 /**
  * Implements hook_entity_insert().
  */
-function apigee_m10n_add_credit_team_insert(Drupal\Core\Entity\EntityInterface $entity) {
+function apigee_m10n_add_credit_team_insert(EntityInterface $entity) {
   // Check if org is ApigeeX.
   if (TRUE === \Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
     $default_billingtype = 'POSTPAID';
