@@ -149,3 +149,16 @@ function apigee_m10n_add_credit_user_presave(UserInterface $account) {
     }
   }
 }
+
+/**
+ * Implements hook_entity_insert().
+ */
+function apigee_m10n_add_credit_team_insert(EntityInterface $entity) {
+  // Check if org is ApigeeX.
+  if (TRUE === \Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
+    $default_billingtype = 'POSTPAID';
+    // Add the billing type.
+    $default_billingtype = \Drupal::config(GeneralSettingsConfigForm::CONFIG_NAME)->get('billing.billingtype');
+    \Drupal::service('apigee_m10n.teams')->updateBillingType($entity->id(), strtoupper($default_billingtype));
+  }
+}
