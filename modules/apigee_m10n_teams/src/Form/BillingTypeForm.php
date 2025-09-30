@@ -132,10 +132,7 @@ class BillingTypeForm extends FormBase {
       return AccessResult::forbidden('Only accessible for ApigeeX organization');
     }
 
-    return AccessResult::allowedIf(
-      $account->hasPermission('update any billing type')
-    );
-
+    return AccessResult::allowed();
   }
 
   /**

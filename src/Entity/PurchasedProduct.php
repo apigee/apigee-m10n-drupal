@@ -330,12 +330,18 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
    * {@inheritdoc}
    */
   public function getOwner() {
-    if (!isset($this->owner)) {
-      $owner = $this->entityTypeManager()->getStorage('user')->loadByProperties([
-        'mail' => $this->getDeveloper()->getEmail(),
-      ]);
-      $this->owner = !empty($owner) ? reset($owner) : NULL;
+    if (isset($this->owner)) {
+      return $this->owner;
     }
+
+    $this->owner = NULL;
+    if ($email = $this->getDeveloperEmail()) {
+      $users = $this->entityTypeManager()->getStorage('user')->loadByProperties([
+        'mail' => $email,
+      ]);
+      $this->owner = !empty($users) ? reset($users) : NULL;
+    }
+
     return $this->owner;
   }
 
@@ -343,14 +349,7 @@ class PurchasedProduct extends FieldableEdgeEntityBase implements PurchasedProdu
    * {@inheritdoc}
    */
   public function getCurrentOwnerId() {
-    if (!isset($this->owner)) {
-      $owner = $this->entityTypeManager()->getStorage('user')->loadByProperties([
-        'mail' => $this->getDeveloperEmail(),
-      ]);
-      $this->owner = !empty($owner) ? reset($owner) : NULL;
-    }
-
-    return ($owner = $this->owner) ? $owner->id() : NULL;
+    return ($owner = $this->getOwner()) ? $owner->id() : NULL;
   }
 
   /**

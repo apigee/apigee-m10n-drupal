@@ -85,7 +85,7 @@ class PurchasedProductUpdateAccessControlHandler extends EntityAccessControlHand
 
     return AccessResult::allowedIf(
       $account->hasPermission('update any purchased_plan') ||
-      ($account->hasPermission('update own purchased_plan') && $account->id() === $user->id())
+      ($account->hasPermission('update own purchased_plan') && $user && $account->id() === $user->id())
     );
 
   }

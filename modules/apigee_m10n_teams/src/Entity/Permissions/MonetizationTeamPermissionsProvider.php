@@ -81,6 +81,12 @@ class MonetizationTeamPermissionsProvider implements DynamicTeamPermissionProvid
         $this->t('Billing details'),
         $this->t('This allows a team member to view billing details')
       ),
+      'update billing type' => new TeamPermission(
+        'update billing type',
+        $this->t('update billing type'),
+        $this->t('Billing details'),
+        $this->t('This allows a team member to update billing type')
+      ),
     ];
   }
 
