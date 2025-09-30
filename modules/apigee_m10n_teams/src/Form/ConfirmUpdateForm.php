@@ -88,7 +88,7 @@ class ConfirmUpdateForm extends ConfirmFormBase {
    */
   protected $teamAccess;
 
-   /**
+  /**
     * The entity type manager.
     *
     * @var \Drupal\Core\Entity\EntityTypeManagerInterface
