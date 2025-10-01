@@ -28,8 +28,11 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_teams\MonetizationTeamsInterface;
 use Drupal\apigee_edge_teams\Entity\Team;
+use Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Defines a confirmation form to confirm updating of team billing type.
@@ -72,6 +75,27 @@ class ConfirmUpdateForm extends ConfirmFormBase {
   protected $teamId;
 
   /**
+   * The monetization service.
+   *
+   * @var \Drupal\apigee_m10n\MonetizationInterface
+   */
+  protected $monetization;
+
+  /**
+   * The team access service.
+   *
+   * @var \Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface
+   */
+  protected $teamAccess;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  private $entityTypeManager;
+
+  /**
    * Constructs a Confirmation object.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
@@ -80,13 +104,22 @@ class ConfirmUpdateForm extends ConfirmFormBase {
    *   The current route match.
    * @param \Drupal\apigee_m10n_teams\MonetizationTeamsInterface $team_monetization
    *   Teams monetization factory.
+   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
+   *   The monetization service.
+   * @param \Drupal\apigee_m10n_teams\Access\TeamPermissionAccessInterface $team_access
+   *   The team access service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager service.
    */
-  public function __construct(MessengerInterface $messenger, RouteMatchInterface $routeMatch, MonetizationTeamsInterface $team_monetization) {
+  public function __construct(MessengerInterface $messenger, RouteMatchInterface $routeMatch, MonetizationTeamsInterface $team_monetization, MonetizationInterface $monetization, TeamPermissionAccessInterface $team_access, EntityTypeManagerInterface $entity_type_manager) {
     $this->messenger = $messenger;
     $this->routeMatch = $routeMatch;
     $this->team_monetization = $team_monetization;
     $this->teamId = $routeMatch->getParameter('team');
     $this->billingtype_selected = $routeMatch->getParameter('billingtype');
+    $this->monetization = $monetization;
+    $this->teamAccess = $team_access;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -96,7 +129,10 @@ class ConfirmUpdateForm extends ConfirmFormBase {
     return new static(
       $container->get('messenger'),
       $container->get('current_route_match'),
-      $container->get('apigee_m10n.teams')
+      $container->get('apigee_m10n.teams'),
+      $container->get('apigee_m10n.monetization'),
+      $container->get('apigee_m10n_teams.access_check.team_permission'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -112,9 +148,19 @@ class ConfirmUpdateForm extends ConfirmFormBase {
    *   Grants access to the route if passed permissions are present.
    */
   public function access(RouteMatchInterface $route_match, AccountInterface $account) {
-    return AccessResult::allowedIf(
-      $account->hasPermission('update any billing type')
-    );
+    $team_id = $route_match->getParameter('team');
+    $team = $this->entityTypeManager->getStorage('team')->load($team_id);
+
+    if (!$this->monetization->isOrganizationApigeeXorHybrid()) {
+      return AccessResult::forbidden('Only accessible for ApigeeX organization');
+    }
+    if (!$this->teamAccess->allowedIfHasTeamPermissions($team, $account, ['update billing type'])) {
+      return AccessResult::forbidden();
+
+    }
+
+    return AccessResult::allowed();
+
   }
 
   /**
