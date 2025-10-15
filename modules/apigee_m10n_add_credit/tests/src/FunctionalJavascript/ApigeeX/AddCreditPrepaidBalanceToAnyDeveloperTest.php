@@ -120,11 +120,10 @@ class AddCreditPrepaidBalanceToAnyDeveloperTest extends AddCreditFunctionalJavas
       "{$this->accountUser->get('first_name')->value} {$this->accountUser->get('last_name')->value}"
     );
 
-    $this->assertCount(
-      2,
-      array_count_values($this->getOptions(AddCreditConfig::TARGET_FIELD_NAME)),
-      'Developer count'
-    );
+    $select_field = $this->assertSession()->selectExists(AddCreditConfig::TARGET_FIELD_NAME);
+    $options = $select_field->findAll('xpath', '//option');
+
+    $this->assertCount(2, $options, 'Developer count');
   }
 
 }

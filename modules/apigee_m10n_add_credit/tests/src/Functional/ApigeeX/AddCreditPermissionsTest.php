@@ -112,7 +112,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
 
     $this->queueApigeexDeveloperResponse($this->developer);
     $this->stack->queueMockResponse([
-      'get-apigeex-prepaid-balances' => [
+      'get-apigeex-prepaid-balances' => (object) [
         "currency_code" => 'AUD',
         "current_units_aud" => "20",
         "current_nano_aud" => "560000000",
@@ -140,7 +140,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
 
     $this->queueApigeexDeveloperResponse($this->developer);
     $this->stack->queueMockResponse([
-      'get-apigeex-prepaid-balances' => [
+      'get-apigeex-prepaid-balances' => (object) [
         "current_units_aud" => "20",
         "current_nano_aud" => "560000000",
 
