@@ -111,17 +111,20 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     $this->stack->queueMockResponse(['get-apigeex-billing-type']);
 
     $this->queueApigeexDeveloperResponse($this->developer);
-    $this->stack->queueMockResponse([
-      'get-apigeex-prepaid-balances' => (object) [
-        "currency_code" => 'AUD',
-        "current_units_aud" => "20",
-        "current_nano_aud" => "560000000",
-
-        "currency_code" => 'USD',
-        "current_units_usd" => "15",
-        "current_nano_usd" => "340000000",
-      ],
-    ]);
+    $prepaid_balances = [
+      "currency_code" => 'AUD',
+      "current_units_aud" => "20",
+      "current_nano_aud" => "560000000",
+      "currency_code" => 'USD',
+      "current_units_usd" => "15",
+      "current_nano_usd" => "340000000",
+    ];
+    // TODO: remove this condition when Drupal 10 is no longer supported.
+    // @see https://www.drupal.org/project/apigee_m10n/issues/3443889
+    if (version_compare(\Drupal::VERSION, '11.2.0-dev', '>=')) {
+      $prepaid_balances = (object) $prepaid_balances;
+    }
+    $this->stack->queueMockResponse(['get-apigeex-prepaid-balances' => $prepaid_balances]);
 
     $this->drupalGet(Url::fromRoute('apigee_monetization.xbilling', [
       'user' => $this->developer->id(),
@@ -139,15 +142,7 @@ class AddCreditPermissionsTest extends AddCreditFunctionalTestBase {
     $this->stack->queueMockResponse(['get-apigeex-billing-type']);
 
     $this->queueApigeexDeveloperResponse($this->developer);
-    $this->stack->queueMockResponse([
-      'get-apigeex-prepaid-balances' => (object) [
-        "current_units_aud" => "20",
-        "current_nano_aud" => "560000000",
-
-        "current_units_usd" => "15",
-        "current_nano_usd" => "340000000",
-      ],
-    ]);
+    $this->stack->queueMockResponse(['get-apigeex-prepaid-balances' => $prepaid_balances]);
     $this->drupalGet(Url::fromRoute('apigee_monetization.xbilling', [
       'user' => $this->developer->id(),
     ]));
