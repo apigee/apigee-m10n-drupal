@@ -20,6 +20,7 @@
 namespace Drupal\Tests\apigee_m10n_teams\Traits;
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\Routing\Route;
 
 /**
  * Tests the team permission access checker.
@@ -40,6 +41,7 @@ trait TeamProphecyTrait {
     $route_match->getRouteName()->willReturn('entity.team.canonical');
     $route_match->getParameter('team')->willReturn($team);
     $route_match->getParameter('user')->willReturn(NULL);
+    $route_match->getRouteObject()->willReturn(new Route('/path'));
     $this->container->set('current_route_match', $route_match->reveal());
     // The `apigee_m10n_teams_entity_type_alter` will have already loaded the
     // `apigee_m10n.teams` service so we need to make sure it is reloaded.
