@@ -259,9 +259,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '94105',
     ], 'Continue to review');
     $this->assertCssElementContains('h1.page-title', 'Review');
-    $this->assertCssElementContains('.checkout-order-summary', $title);
+    $this->assertCssElementContains('#edit-order-summary', $title);
     $total = ($amount_1 * $quantity_1) + ($amount_2 * $quantity_2);
-    $this->assertCssElementContains('.checkout-order-summary', "Total $$total");
+    $this->assertCssElementContains('#edit-order-summary', "Total $$total");
 
     // Finalize the payment.
     $this->queueSupportedCurrencyResponse();
