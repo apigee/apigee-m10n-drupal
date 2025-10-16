@@ -155,7 +155,7 @@ class UpdateBillingTypeTest extends AddCreditFunctionalJavascriptTestBase {
       ],
     ]);
 
-    $this->assertSession()->responseContains('Billing type of the user is saved.');
+    $this->assertSession()->waitForText('Billing type of the user is saved.');
 
   }
 
