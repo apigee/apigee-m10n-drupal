@@ -234,6 +234,23 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
         );
     $number_pattern->save();
 
+    $form_display = $this->container->get('entity_type.manager')
+      ->getStorage('entity_form_display')
+      ->load('commerce_product.default.default');
+    $form_display->setComponent('variations', [
+      'type' => 'inline_entity_form_complex',
+      'region' => 'content',
+    ])->save();
+
+    $variation_form_display = $this->container->get('entity_type.manager')
+      ->getStorage('entity_form_display')
+      ->load('commerce_product_variation.default.default');
+    $variation_form_display->setComponent('price', ['region' => 'content'])
+      ->setComponent('apigee_price_range', [
+        'region' => 'content',
+      ])
+      ->save();
+
     // Add a product.
     $this->drupalGet('product/add/default');
     $title = $this->randomString(16);
