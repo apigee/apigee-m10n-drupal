@@ -78,7 +78,7 @@ class PrepaidBalanceCacheTest extends MonetizationFunctionalTestBase {
   }
 
   /**
-   * Test user with no refresh prepaid balance permission..
+   * Test user with no refresh prepaid balance permission.
    *
    * @throws \Exception
    */
