@@ -28,7 +28,7 @@ use Drupal\apigee_m10n\Entity\PurchasedPlanInterface;
 use Drupal\apigee_m10n\Entity\PurchasedProductInterface;
 
 /**
- * The interface for the add credit service..
+ * The interface for the add credit service.
  */
 interface AddCreditServiceInterface {
 

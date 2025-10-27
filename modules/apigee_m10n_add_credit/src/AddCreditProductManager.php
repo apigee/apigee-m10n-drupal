@@ -43,7 +43,7 @@ class AddCreditProductManager implements AddCreditProductManagerInterface {
   protected $entityTypeManager;
 
   /**
-   * Local cache of products keyed by the currency ID..
+   * Local cache of products keyed by the currency ID.
    *
    * @var \Drupal\commerce_product\Entity\ProductInterface[]
    */
