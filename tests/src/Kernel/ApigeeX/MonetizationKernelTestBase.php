@@ -72,6 +72,11 @@ class MonetizationKernelTestBase extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Set the private file path for the test environment.
+    $this->setSetting('file_private_path', $this->vfsRoot->url() . '/private');
+    // Rebuild the container to apply the new setting.
+    $this->container->get('kernel')->rebuildContainer();
+
     $this->installConfig(['apigee_edge', 'apigee_m10n']);
 
     $this->baseSetUp();
