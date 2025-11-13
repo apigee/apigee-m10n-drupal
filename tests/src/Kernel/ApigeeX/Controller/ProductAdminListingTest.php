@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Controller;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Url;
 use Drupal\Tests\apigee_m10n\Kernel\ApigeeX\MonetizationKernelTestBase;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,6 +53,20 @@ class ProductAdminListingTest extends MonetizationKernelTestBase {
    * @var \Drupal\apigee_m10n\Entity\XProductInterface[]
    */
   protected $xproducts;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container) {
+    parent::register($container);
+    // Ensure the private stream wrapper service is registered in the container
+    // for this test. This is sometimes necessary in kernel tests if the
+    // full module set isn't loaded.
+    if (!$container->hasDefinition('stream_wrapper.private')) {
+      $container->register('stream_wrapper.private', 'Drupal\Core\StreamWrapper\PrivateStream')
+        ->addTag('stream_wrapper', ['scheme' => 'private']);
+    }
+  }
 
   /**
    * {@inheritdoc}

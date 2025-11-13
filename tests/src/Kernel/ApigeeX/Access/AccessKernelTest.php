@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\Kernel\ApigeeX\Access;
 
+use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
@@ -111,6 +112,20 @@ class AccessKernelTest extends MonetizationKernelTestBase {
     $this->stack->reset();
     $this->xrate_plan = $this->createRatePlan($this->xproduct);
     $this->stack->reset();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function register(ContainerBuilder $container) {
+    parent::register($container);
+    // Ensure the private stream wrapper service is registered in the container
+    // for this test. This is sometimes necessary in kernel tests if the
+    // full module set isn't loaded.
+    if (!$container->hasDefinition('stream_wrapper.private')) {
+      $container->register('stream_wrapper.private', 'Drupal\Core\StreamWrapper\PrivateStream')
+        ->addTag('stream_wrapper', ['scheme' => 'private']);
+    }
   }
 
   /**
