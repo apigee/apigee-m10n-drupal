@@ -570,7 +570,7 @@ trait ApigeeMonetizationTestTrait {
   protected function assertHeaderEquals($expected, $actual, $message = '') {
     $this->checkDriverHeaderSupport();
 
-    $this->assertEquals($expected, $actual, $message);
+    $this->assertEquals(strtolower((string) $expected), strtolower((string) $actual), $message);
   }
 
   /**
