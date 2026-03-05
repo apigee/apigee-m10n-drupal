@@ -33,7 +33,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_rate_plan_revenue_rates",
  *   label = @Translation("Revenue Share rates field item"),
  *   description = @Translation("Apigee X Revenue Share rates detail."),
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   no_ui = TRUE,
  *   default_formatter = "apigee_rate_plan_revenue_rates"
  * )
