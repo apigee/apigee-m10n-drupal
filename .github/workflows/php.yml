@@ -14,7 +14,7 @@ env:
   APIGEE_EDGE_HYBRID_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
   BROWSERTEST_OUTPUT_DIRECTORY: "sites/simpletest/browser_output"
   BROWSERTEST_OUTPUT_BASE_URL: ""
-  MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", { "chromeOptions": { "w3c": false } }, "http://127.0.0.1:9515/wd/hub"]'
+  MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", { "chromeOptions": { "w3c": false, "args": ["--disable-dev-shm-usage", "--no-sandbox", "--disable-gpu", "--headless"] } }, "http://127.0.0.1:9515/wd/hub"]'
 
 on:
   push:
@@ -155,27 +155,21 @@ jobs:
         php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
         vendor/bin/drush rs 8000 &
 
-    - name: Start Xvfb and ChromeDriver (with Wait)
+    - uses: nanasess/setup-chromedriver@v2
+
+    - name: Start Xvfb and ChromeDriver
       run: |
-        # Start Xvfb (Virtual Frame Buffer for headless testing)
+        # Start Xvfb
         export DISPLAY=:99
         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
 
-        # --- CRITICAL FIX: Explicitly set the port to 9515 ---
-        chromedriver --url-base=/wd/hub --port=9515 &
+        # Start ChromeDriver
+        chromedriver --url-base=/wd/hub --port=9515 --whitelisted-ips= &
 
-        # Add a robust wait loop to ensure ChromeDriver is fully ready
-        echo "Waiting for ChromeDriver to be ready on port 9515..."
-        # We also wait for the specific 'status' URL, which should return JSON when ready.
+        # Wait for ChromeDriver to be ready (Critical for stability)
+        echo "Waiting for ChromeDriver..."
         timeout 60 bash -c 'until curl --silent --fail http://127.0.0.1:9515/wd/hub/status; do sleep 1; done'
-
-        if [ $? -ne 0 ]; then
-          echo "Error: ChromeDriver failed to start and respond on port 9515 within 60 seconds."
-          # Capture logs/status if possible before failing
-          curl http://127.0.0.1:9515/wd/hub/status || true
-          exit 1
-        fi
-        echo "ChromeDriver is ready on 9515. Running tests."
+        echo "ChromeDriver is ready."
 
     - name: "Run PHPUnit tests"
       if: ${{ matrix.drupal-core != '10.5.x' || matrix.php-version != '8.2' }}
