@@ -3,6 +3,12 @@
     "license": "GPL-2.0",
     "type": "drupal-module",
     "description": "Apigee Edge Monetization for Drupal",
+    "repositories": {
+        "forked-apigee_mock_client_php": {
+            "type": "vcs",
+            "url": "https://github.com/shailesh-google/apigee-mock-client-php"
+        }
+    },
     "require": {
         "php": "~8.2.0 || ~8.3.0",
         "ext-bcmath": "*",
@@ -15,7 +21,7 @@
         "apigee/apigee-client-php": "^3.0.9 || ^4.0.1"
     },
     "require-dev": {
-        "apigee/apigee-mock-client-php": "^1.1.1",
+        "apigee/apigee-mock-client-php": "dev-issue-11-second",
         "drupal/drupal-extension": "~5",
         "drupal/core-dev": "^10.5 || ^11.2",
         "drush/drush": "^12.4.3 || ^13.3",
