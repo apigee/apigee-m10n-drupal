@@ -41,11 +41,11 @@ class PriceRangeMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCas
    * Tests PriceRangeMinimumGreaterMaximumConstraintValidator::validate().
    *
    * @param float $minimum
-   * The minimum price range value.
+   *   The minimum price range value.
    * @param float $maximum
-   * The maximum price range value.
+   *   The maximum price range value.
    * @param bool $valid
-   * TRUE if valid is expected.
+   *   TRUE if valid is expected.
    *
    * @dataProvider providerValidate
    */

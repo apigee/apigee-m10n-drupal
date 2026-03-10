@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint;
@@ -42,10 +41,8 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
   /**
    * Tests PriceRangeDefaultOutOfRangeConstraintValidator::validate().
    *
-   * @param array $range
-   * The range array data.
-   * @param bool $valid
-   * TRUE if valid is expected.
+   * @param array $case
+   *   The test case data, containing 'range' and 'valid' keys.
    *
    * @dataProvider providerValidate
    */
@@ -161,10 +158,10 @@ namespace Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint;
  * Shadow t() system call.
  *
  * @param string $string
- * A string containing the English text to translate.
+ *   A string containing the English text to translate.
  *
  * @return string
- * The translate string.
+ *   The translate string.
  */
 function t($string) {
   return $string;

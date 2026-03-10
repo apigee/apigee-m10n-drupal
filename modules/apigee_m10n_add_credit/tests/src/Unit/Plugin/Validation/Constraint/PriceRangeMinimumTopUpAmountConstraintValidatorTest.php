@@ -20,10 +20,8 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraint;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraintValidator;
@@ -46,11 +44,11 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
    * Tests PriceRangeMinimumTopUpAmountConstraint::validate().
    *
    * @param float $minimum
-   * The minimum amount.
+   *   The minimum amount.
    * @param string $currency_code
-   * The currency code.
+   *   The currency code.
    * @param bool $valid
-   * TRUE if valid is expected.
+   *   TRUE if valid is expected.
    *
    * @dataProvider providerValidate
    */
@@ -105,7 +103,7 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
     ];
 
     foreach ($cases as $case) {
-      // Pass only primitive values to the test method
+      // Pass only primitive values to the test method.
       $data[] = [$case['minimum'], $case['currency_code'], $case['valid']];
     }
 

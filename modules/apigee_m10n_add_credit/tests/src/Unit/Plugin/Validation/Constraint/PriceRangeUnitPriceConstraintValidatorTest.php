@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeUnitPriceConstraint;
