@@ -34,7 +34,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_rate_plan_fixed_recurringfee",
  *   label = @Translation("Fixed recurring fee field item"),
  *   description = @Translation("Apigee X fixed recurring fee detail."),
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   no_ui = TRUE,
  *   default_formatter = "apigee_rate_plan_fixed_recurringfee"
  * )

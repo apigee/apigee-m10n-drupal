@@ -34,7 +34,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_currency",
  *   label = @Translation("Apigee currency field item"),
  *   description = @Translation("Apigee currency."),
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   no_ui = TRUE,
  *   default_formatter = "apigee_currency"
  * )
