@@ -14,7 +14,7 @@ env:
   APIGEE_EDGE_HYBRID_ORGANIZATION: ${{ secrets.APIGEE_EDGE_HYBRID_ORGANIZATION }}
   BROWSERTEST_OUTPUT_DIRECTORY: "sites/simpletest/browser_output"
   BROWSERTEST_OUTPUT_BASE_URL: ""
-  MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", { "chromeOptions": { "w3c": false, "args": ["--disable-dev-shm-usage", "--no-sandbox", "--disable-gpu", "--headless"] } }, "http://127.0.0.1:9515/wd/hub"]'
+  MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", { "goog:chromeOptions": { "w3c": false, "args": ["--disable-dev-shm-usage", "--no-sandbox", "--disable-gpu", "--headless"] } }, "http://127.0.0.1:9515/wd/hub"]'
 
 on:
   push:
