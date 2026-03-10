@@ -113,13 +113,17 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
     $this->currentUser = $this->createAccount(['add credit to own developer prepaid balance']);
     $this->setCurrentUser($this->currentUser);
     $this->queueDeveloperResponse($this->currentUser);
+    $developer = $this->convertUserToEdgeDeveloper($this->currentUser);
     $this->stack->queueMockResponse([
       'get-developers' => [
-        'developers' => [$this->currentUser],
+        'developers' => [$developer],
         'org_name' => $this->sdk_connector->getOrganization(),
       ],
     ]);
-    $this->assertCount(1, $this->manager->getEntities($this->currentUser)['developer']);
+    $entities = $this->manager->getEntities($this->currentUser);
+    $this->assertArrayHasKey('developer', $entities);
+    $this->assertIsArray($entities['developer']);
+    $this->assertCount(1, $entities['developer']);
   }
 
 }
