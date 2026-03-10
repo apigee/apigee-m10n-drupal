@@ -34,7 +34,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_rate_plan_xfee",
  *   label = @Translation("Setup Fee field item"),
  *   description = @Translation("Apigee X Setup fee detail."),
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   no_ui = TRUE,
  *   default_formatter = "apigee_rate_plan_xfee"
  * )

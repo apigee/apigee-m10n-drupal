@@ -32,7 +32,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = @Translation("Price"),
  *   description = @Translation("Stores a decimal number and a three letter currency code."),
  *   no_ui = TRUE,
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   default_formatter = "apigee_price",
  * )
  */
