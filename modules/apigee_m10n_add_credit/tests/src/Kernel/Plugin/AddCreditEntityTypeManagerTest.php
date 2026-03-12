@@ -112,14 +112,18 @@ class AddCreditEntityTypeManagerTest extends MonetizationKernelTestBase {
     // Create a user with proper permission.
     $this->currentUser = $this->createAccount(['add credit to own developer prepaid balance']);
     $this->setCurrentUser($this->currentUser);
+
+    // Get the developer storage.
+    $developer_storage = $this->container->get('entity_type.manager')->getStorage('developer');
+
+    // Queue a response for loading the developer.
     $this->queueDeveloperResponse($this->currentUser);
-    $developer = $this->convertUserToEdgeDeveloper($this->currentUser);
-    $this->stack->queueMockResponse([
-      'get-developers' => [
-        'developers' => [$developer],
-        'org_name' => $this->sdk_connector->getOrganization(),
-      ],
-    ]);
+    /** @var \Drupal\apigee_edge\Entity\DeveloperInterface $developer */
+    $developer = $developer_storage->load($this->currentUser->getEmail());
+    // After loading, the developer is in the static cache.
+    // Let's set the owner on this cached object.
+    $developer->setOwner($this->currentUser);
+
     $entities = $this->manager->getEntities($this->currentUser);
     $this->assertArrayHasKey('developer', $entities);
     $this->assertIsArray($entities['developer']);
