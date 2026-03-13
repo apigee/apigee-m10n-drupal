@@ -31,7 +31,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   id = "apigee_purchase_product",
  *   label = @Translation("Purchase product"),
  *   description = @Translation("Purchase product computed item."),
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   no_ui = TRUE,
  *   default_formatter = "apigee_purchase_product_form"
  * )

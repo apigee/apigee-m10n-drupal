@@ -34,7 +34,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = @Translation("Consumption Rates"),
  *   description = @Translation("Stores a decimal number and a three letter currency code."),
  *   no_ui = TRUE,
- *   category = @Translation("Apigee"),
+ *   category = "Apigee",
  *   default_formatter = "apigee_rate_plan_consumption_rates",
  * )
  */
