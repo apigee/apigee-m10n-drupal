@@ -20,10 +20,8 @@
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
 use Apigee\Edge\Api\Monetization\Entity\SupportedCurrency;
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\apigee_m10n\Monetization;
-use Drupal\apigee_m10n\MonetizationInterface;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraint;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeMinimumTopUpAmountConstraintValidator;
@@ -45,20 +43,45 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
   /**
    * Tests PriceRangeMinimumTopUpAmountConstraint::validate().
    *
-   * @param \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem $value
-   *   The price item field instance.
+   * @param float $minimum
+   *   The minimum amount.
+   * @param string $currency_code
+   *   The currency code.
    * @param bool $valid
    *   TRUE if valid is expected.
-   * @param \Drupal\apigee_m10n\MonetizationInterface $monetization
-   *   The monetization service.
-   * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
-   *   The currency formatter service.
    *
    * @dataProvider providerValidate
    */
-  public function testValidate(PriceRangeItem $value, bool $valid, MonetizationInterface $monetization, CurrencyFormatterInterface $currency_formatter) {
+  public function testValidate(float $minimum, string $currency_code, bool $valid) {
     $constraint = new PriceRangeMinimumTopUpAmountConstraint();
-    $validator = new PriceRangeMinimumTopUpAmountConstraintValidator($monetization, $currency_formatter);
+
+    // Mocks are instantiated here instead of in the data provider.
+    $value = $this->createMock(PriceRangeItem::class);
+    $value->expects($this->any())
+      ->method('getValue')
+      ->willReturn([
+        'minimum' => $minimum,
+        'currency_code' => $currency_code,
+      ]);
+
+    $supportedCurrency = $this->createMock(SupportedCurrency::class);
+    $supportedCurrency->expects($this->any())
+      ->method('getMinimumTopUpAmount')
+      ->willReturn(11.00);
+
+    $monetization = $this->createMock(Monetization::class);
+    $monetization->expects($this->any())
+      ->method('getSupportedCurrencies')
+      ->willReturn([
+        'usd' => $supportedCurrency,
+      ]);
+
+    $currencyFormatter = $this->createMock(CurrencyFormatter::class);
+    $currencyFormatter->expects($this->any())
+      ->method('format')
+      ->willReturn('USD11.00');
+
+    $validator = new PriceRangeMinimumTopUpAmountConstraintValidator($monetization, $currencyFormatter);
 
     $context = $this->createMock(ExecutionContextInterface::class);
     $context->expects($valid ? $this->never() : $this->once())
@@ -71,7 +94,7 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
   /**
    * Provides data for self::testValidate().
    */
-  public function providerValidate() {
+  public static function providerValidate() {
     $data = [];
 
     $cases = [
@@ -80,32 +103,8 @@ class PriceRangeMinimumTopUpAmountConstraintValidatorTest extends UnitTestCase {
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceRangeItem::class);
-      $value->expects($this->any())
-        ->method('getValue')
-        ->willReturn([
-          'minimum' => $case['minimum'],
-          'currency_code' => $case['currency_code'],
-        ]);
-
-      $supportedCurrency = $this->createMock(SupportedCurrency::class);
-      $supportedCurrency->expects($this->any())
-        ->method('getMinimumTopUpAmount')
-        ->willReturn(11.00);
-
-      $monetization = $this->createMock(Monetization::class);
-      $monetization->expects($this->any())
-        ->method('getSupportedCurrencies')
-        ->willReturn([
-          'usd' => $supportedCurrency,
-        ]);
-
-      $currencyFormatter = $this->createMock(CurrencyFormatter::class);
-      $currencyFormatter->expects($this->any())
-        ->method('format')
-        ->willReturn('USD11.00');
-
-      $data[] = [$value, $case['valid'], $monetization, $currencyFormatter];
+      // Pass only primitive values to the test method.
+      $data[] = [$case['minimum'], $case['currency_code'], $case['valid']];
     }
 
     return $data;

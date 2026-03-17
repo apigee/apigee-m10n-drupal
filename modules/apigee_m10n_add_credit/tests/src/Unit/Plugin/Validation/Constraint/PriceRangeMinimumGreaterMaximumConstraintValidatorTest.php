@@ -40,16 +40,27 @@ class PriceRangeMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCas
   /**
    * Tests PriceRangeMinimumGreaterMaximumConstraintValidator::validate().
    *
-   * @param \Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem $value
-   *   The price range field instance.
+   * @param float $minimum
+   *   The minimum price range value.
+   * @param float $maximum
+   *   The maximum price range value.
    * @param bool $valid
    *   TRUE if valid is expected.
    *
    * @dataProvider providerValidate
    */
-  public function testValidate(PriceRangeItem $value, bool $valid) {
+  public function testValidate(float $minimum, float $maximum, bool $valid) {
     $constraint = new PriceRangeMinimumGreaterMaximumConstraint();
     $validator = new PriceRangeMinimumGreaterMaximumConstraintValidator();
+
+    // Mocks are instantiated here instead of in the data provider.
+    $value = $this->createMock(PriceRangeItem::class);
+    $value->expects($this->any())
+      ->method('getValue')
+      ->willReturn([
+        'minimum' => $minimum,
+        'maximum' => $maximum,
+      ]);
 
     $context = $this->createMock(ExecutionContextInterface::class);
     $context->expects($valid ? $this->never() : $this->once())
@@ -62,7 +73,7 @@ class PriceRangeMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCas
   /**
    * Provides data for self::testValidate().
    */
-  public function providerValidate() {
+  public static function providerValidate() {
     $data = [];
 
     $cases = [
@@ -72,15 +83,8 @@ class PriceRangeMinimumGreaterMaximumConstraintValidatorTest extends UnitTestCas
     ];
 
     foreach ($cases as $case) {
-      $value = $this->createMock(PriceRangeItem::class);
-      $value->expects($this->any())
-        ->method('getValue')
-        ->willReturn([
-          'minimum' => $case['minimum'],
-          'maximum' => $case['maximum'],
-        ]);
-
-      $data[] = [$value, $case['valid']];
+      // Only pass the raw float and boolean values back to the test method.
+      $data[] = [$case['minimum'], $case['maximum'], $case['valid']];
     }
 
     return $data;

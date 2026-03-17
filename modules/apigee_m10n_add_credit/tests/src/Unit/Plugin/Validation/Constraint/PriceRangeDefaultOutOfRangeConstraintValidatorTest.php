@@ -19,7 +19,6 @@
 
 namespace Drupal\Tests\apigee_m10n_add_credit\Unit\Plugin\Validation\Constraint;
 
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\apigee_m10n_add_credit\Plugin\Field\FieldType\PriceRangeItem;
 use Drupal\apigee_m10n_add_credit\Plugin\Validation\Constraint\PriceRangeDefaultOutOfRangeConstraint;
@@ -42,21 +41,27 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
   /**
    * Tests PriceRangeDefaultOutOfRangeConstraintValidator::validate().
    *
-   * @param mixed $value
-   *   The price range field instance.
-   * @param bool $valid
-   *   TRUE if valid is expected.
-   * @param \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter
-   *   The currency formatter service.
+   * @param array $case
+   *   The test case data, containing 'range' and 'valid' keys.
    *
    * @dataProvider providerValidate
    */
-  public function testValidate($value, bool $valid, CurrencyFormatterInterface $currency_formatter) {
+  public function testValidate(array $case) {
     $constraint = new PriceRangeDefaultOutOfRangeConstraint();
-    $validator = new PriceRangeDefaultOutOfRangeConstraintValidator($currency_formatter);
+    $value = $this->createMock(PriceRangeItem::class);
+    $value->expects($this->any())
+      ->method('getValue')
+      ->willReturn($case['range']);
+
+    $currencyFormatter = $this->createMock(CurrencyFormatter::class);
+    $currencyFormatter->expects($this->any())
+      ->method('format')
+      ->willReturn('USD10.00');
+
+    $validator = new PriceRangeDefaultOutOfRangeConstraintValidator($currencyFormatter);
 
     $context = $this->createMock(ExecutionContextInterface::class);
-    $context->expects($valid ? $this->never() : $this->once())
+    $context->expects($case['valid'] ? $this->never() : $this->once())
       ->method('addViolation');
     $validator->initialize($context);
 
@@ -66,89 +71,83 @@ class PriceRangeDefaultOutOfRangeConstraintValidatorTest extends UnitTestCase {
   /**
    * Provides data for self::testValidate().
    */
-  public function providerValidate() {
-    $data = [];
-
+  public static function providerValidate() {
     $constraint = new PriceRangeDefaultOutOfRangeConstraint();
 
-    $cases = [
-      [
-        'range' => [
-          'minimum' => 5.00,
-          'maximum' => 10.00,
-          'default' => 6.00,
-          'currency_code' => 'USD',
+    return [
+      'valid' => [
+        [
+          'range' => [
+            'minimum' => 5.00,
+            'maximum' => 10.00,
+            'default' => 6.00,
+            'currency_code' => 'USD',
+          ],
+          'message' => NULL,
+          'valid' => TRUE,
         ],
-        'message' => NULL,
-        'valid' => TRUE,
       ],
-      [
-        'range' => [
-          'minimum' => 20.00,
-          'maximum' => 30.00,
-          'default' => 10.00,
-          'currency_code' => 'USD',
+      'default lower than range' => [
+        [
+          'range' => [
+            'minimum' => 20.00,
+            'maximum' => 30.00,
+            'default' => 10.00,
+            'currency_code' => 'USD',
+          ],
+          'message' => $constraint->rangeMessage,
+          'valid' => FALSE,
         ],
-        'message' => $constraint->rangeMessage,
-        'valid' => FALSE,
       ],
-      [
-        'range' => [
-          'minimum' => 5.00,
-          'maximum' => NULL,
-          'default' => 3.00,
-          'currency_code' => 'USD',
+      'default lower than min' => [
+        [
+          'range' => [
+            'minimum' => 5.00,
+            'maximum' => NULL,
+            'default' => 3.00,
+            'currency_code' => 'USD',
+          ],
+          'message' => $constraint->minMessage,
+          'valid' => FALSE,
         ],
-        'message' => $constraint->minMessage,
-        'valid' => FALSE,
       ],
-      [
-        'range' => [
-          'minimum' => '5,00',
-          'maximum' => NULL,
-          'default' => 13.00,
-          'currency_code' => 'USD',
+      'min has comma' => [
+        [
+          'range' => [
+            'minimum' => '5,00',
+            'maximum' => NULL,
+            'default' => 13.00,
+            'currency_code' => 'USD',
+          ],
+          'message' => $constraint->formatMessage,
+          'valid' => FALSE,
         ],
-        'message' => $constraint->formatMessage,
-        'valid' => FALSE,
       ],
-      [
-        'range' => [
-          'minimum' => 5.00,
-          'maximum' => '13,00',
-          'default' => 13.00,
-          'currency_code' => 'USD',
+      'max has comma' => [
+        [
+          'range' => [
+            'minimum' => 5.00,
+            'maximum' => '13,00',
+            'default' => 13.00,
+            'currency_code' => 'USD',
+          ],
+          'message' => $constraint->formatMessage,
+          'valid' => FALSE,
         ],
-        'message' => $constraint->formatMessage,
-        'valid' => FALSE,
       ],
-      [
-        'range' => [
-          'minimum' => 5.00,
-          'maximum' => 35.00,
-          'default' => 'Word',
-          'currency_code' => 'USD',
+      'default is not a number' => [
+        [
+          'range' => [
+            'minimum' => 5.00,
+            'maximum' => 35.00,
+            'default' => 'Word',
+            'currency_code' => 'USD',
+          ],
+          'message' => $constraint->formatMessage,
+          'valid' => FALSE,
         ],
-        'message' => $constraint->formatMessage,
-        'valid' => FALSE,
       ],
     ];
-
-    foreach ($cases as $case) {
-      $value = $this->createMock(PriceRangeItem::class);
-      $value->expects($this->any())
-        ->method('getValue')
-        ->willReturn($case['range']);
-
-      $currencyFormatter = $this->createMock(CurrencyFormatter::class);
-      $currencyFormatter->expects($this->any())
-        ->method('format')
-        ->willReturn('USD10.00');
-
-      $data[] = [$value, $case['valid'], $currencyFormatter];
-    }
-
-    return $data;
   }
 
 }
