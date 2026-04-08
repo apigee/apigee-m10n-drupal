@@ -599,12 +599,10 @@ class RatePlan extends FieldableEdgeEntityBase implements RatePlanInterface {
    * {@inheritdoc}
    */
   public function getProducts() {
-    return $this
-      ->get('productBundle')
-      ->first()
-      ->get('entity')
-      ->getValue()
-      ->getApiProducts();
+    if (($product_bundle_field = $this->get('productBundle')->first()) && ($product_bundle_entity = $product_bundle_field->get('entity')->getValue())) {
+      return $product_bundle_entity->getApiProducts();
+    }
+    return [];
   }
 
   /**

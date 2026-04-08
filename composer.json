@@ -15,7 +15,7 @@
         "apigee/apigee-client-php": "^3.0.9 || ^4.0.1"
     },
     "require-dev": {
-        "apigee/apigee-mock-client-php": "^1.1.1",
+        "apigee/apigee-mock-client-php": "^1.1.3",
         "drupal/drupal-extension": "~5",
         "drupal/core-dev": "^10.5 || ^11.2",
         "drush/drush": "^12.4.3 || ^13.3",
