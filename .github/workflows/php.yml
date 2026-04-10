@@ -128,6 +128,9 @@ jobs:
         rm -f drupal/composer.lock
 
     - name: "Allow plugins and dev dependencies"
+      env:
+        # This built-in token bypasses GitHub API rate limits for Composer
+        COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
       run: |
         cd drupal
         composer require "justinrainbow/json-schema:^6.5.1" --no-update
