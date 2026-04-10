@@ -32,7 +32,7 @@
     "repositories": {
         "forked-apigee_edge": {
             "type": "vcs",
-            "url": "https://github.com/shailesh-google/apigee-edge"
+            "url": "https://github.com/shailesh-google/apigee-edge-drupal"
         },
         "forked-apigee_mock_client_php": {
             "type": "vcs",
