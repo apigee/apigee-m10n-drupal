@@ -40,7 +40,8 @@
         },
         "forked-apigee_client_php": {
             "type": "vcs",
-            "url": "https://github.com/shailesh-google/apigee-client-php"
+            "url": "https://github.com/shailesh-google/apigee-client-php",
+            "canonical": false
         }
     }
 }
