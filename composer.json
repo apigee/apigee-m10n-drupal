@@ -12,7 +12,7 @@
         "drupal/core": "^10.5 || ^11.2",
         "drupal/requirement": "^1.3",
         "drupal/jquery_ui_dialog": "^2.1",
-        "apigee/apigee-client-php": "^3.0.9 || dev-newer-php-version"
+        "apigee/apigee-client-php": "dev-issue-newer-php-3.x || dev-issue-newer-php-4.x"
     },
     "require-dev": {
         "apigee/apigee-mock-client-php": "dev-issue-14",
@@ -40,8 +40,7 @@
         },
         "forked-apigee_client_php": {
             "type": "vcs",
-            "url": "https://github.com/shailesh-google/apigee-client-php",
-            "canonical": false
+            "url": "https://github.com/shailesh-google/apigee-client-php"
         }
     }
 }
