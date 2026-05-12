@@ -266,16 +266,18 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'unit_price[0][amount][number]' => $amount_1,
     ], 'Add to cart');
 
-    $text = !$valid ?? 'This amount cannot be less than USD10.00.';
-    $this->assertSession()->pageTextContains($text);
+    if (!$valid) {
+      $this->assertSession()->pageTextContains('This amount cannot be less than USD10.00.');
+    }
 
     $this->drupalGet('product/1');
     $this->submitForm([
       'unit_price[0][amount][number]' => $amount_2,
     ], 'Add to cart');
 
-    $text = !$valid ?? 'This amount cannot be less than USD10.00.';
-    $this->assertSession()->pageTextContains($text);
+    if (!$valid) {
+      $this->assertSession()->pageTextContains('This amount cannot be less than USD10.00.');
+    }
 
     if ($valid) {
       // Go to the cart page.
