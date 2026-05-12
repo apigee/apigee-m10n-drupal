@@ -153,7 +153,7 @@ class PurchasePlanFormFormatter extends FormatterBase implements ContainerFactor
       $developer_id = $value['user']->getEmail();
       $start_date = new \DateTimeImmutable();
       $org_timezone = $rate_plan->getOrganization()->getTimezone();
-      $start_date->setTimezone($org_timezone);
+      $start_date = $start_date->setTimezone($org_timezone);
       $purchased_plan = PurchasedPlan::create([
         'ratePlan' => $rate_plan,
         // @todo User a controller proxy that caches the developer entity.

@@ -142,7 +142,7 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
     $values = $form_state->getValues();
     $end_type = $values['end_type'] ?? 'now';
     $end_date = $end_type == 'on_date' ? new \DateTimeImmutable($values['endDate']) : $this->purchasedPlan->getStartDate();
-    $end_date->setTimezone($this->purchasedPlan->getRatePlan()->getOrganization()->getTimezone());
+    $end_date = $end_date->setTimezone($this->purchasedPlan->getRatePlan()->getOrganization()->getTimezone());
     $this->purchasedPlan->setEndDate($end_date);
     return $this->purchasedPlan;
   }
