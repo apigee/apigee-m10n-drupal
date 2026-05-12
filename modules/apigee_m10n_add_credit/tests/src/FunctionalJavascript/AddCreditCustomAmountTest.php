@@ -123,7 +123,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'variations[form][0][apigee_price_range][0][price_range][fields][default]' => $default,
     ], 'Create variation');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains($message);
+    $this->assertTrue($this->assertSession()->waitForText($message));
   }
 
   /**
@@ -168,7 +168,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'unit_price[0][amount][number]' => $amount,
     ], 'Add to cart');
-    $this->assertSession()->pageTextContains($message);
+    $this->assertTrue($this->assertSession()->waitForText($message));
   }
 
   /**
@@ -269,7 +269,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([], 'Pay and complete purchase');
 
     $text = $valid ? 'Complete' : 'The minimum top up amount is $10.00 USD.';
-    $this->assertSession()->pageTextContains($text);
+    $this->assertTrue($this->assertSession()->waitForText($text));
   }
 
   /**
@@ -296,9 +296,9 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'variations[form][0][price][0][number]' => $value,
     ], 'Save');
 
-    $this->assertSession()->pageTextContains(t($message, [
+    $this->assertTrue($this->assertSession()->waitForText(t($message, [
       '@title' => $title,
-    ]));
+    ])));
   }
 
   /**
