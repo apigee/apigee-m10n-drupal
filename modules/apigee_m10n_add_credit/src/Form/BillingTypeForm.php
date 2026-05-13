@@ -164,7 +164,7 @@ class BillingTypeForm extends FormBase {
       '#button_type' => 'primary',
       '#states' => [
         'disabled' => [
-          ':input[name="billingtype"]' => ['value' => strtolower($developer_billingtype)],
+          ':input[name="billingtype"]' => ['value' => $developer_billingtype ? strtolower($developer_billingtype) : 'postpaid'],
         ],
       ],
     ];
