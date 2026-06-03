@@ -1,0 +1,53 @@
+# 1. MemoryBackend constructor
+%Calling Drupal\\Core\\Cache\\MemoryBackend::__construct\(\) without the \$time argument is deprecated%
+
+# 2. FileSystem::saveData() integer argument
+%Passing the \$fileExists argument as an integer to Drupal\\Core\\File\\FileSystem::saveData\(\) is deprecated%
+
+# 3. Key module storage_method
+%The key provider 'storage_method' definition entry is deprecated%
+
+# 4. Timestamp formatter plugin settings (Note the double spaces)
+%Using the 'timestamp' formatter plugin  without the 'tooltip' and 'time_diff' settings is deprecated%
+
+# 5. FormElement::preRenderAjaxForm()
+%\\Drupal\\Core\\Render\\Element\\FormElement::preRenderAjaxForm\(\) is deprecated%
+
+# 6. Yaml parser class setting
+%The "yaml_parser_class" setting is deprecated%
+
+# 7. Tabbable jQuery shim asset library
+%The core/tabbable.jquery.shim asset library is deprecated%
+
+# 8. Behat Mink ElementInterface return types (getText and waitFor)
+%Method "Behat\\Mink\\Element\\ElementInterface::.*" might add ".*" as a native return type declaration%
+
+# 9. FormElement methods (valueCallback, processAjaxForm, processGroup, preRenderGroup, setAttributes)
+%\\Drupal\\Core\\Render\\Element\\FormElement::(valueCallback|processAjaxForm|processGroup|preRenderGroup|setAttributes)\(\) is deprecated%
+
+# 10. Commerce views numeric to entity_target_id updates
+%The update to convert "numeric" arguments to "entity_target_id" for entity reference fields for view%
+
+# 11. Twig 3.12 spaceless filter deprecations across all templates
+%Since twig/twig 3.12: Twig Filter "spaceless" is deprecated%
+
+# 12. RenderElement::preRenderGroup()
+%\\Drupal\\Core\\Render\\Element\\RenderElement::preRenderGroup\(\) is deprecated%
+
+# 13. PHPUnit DefaultResultPrinter internal class warning
+%The "PHPUnit\\TextUI\\DefaultResultPrinter" class is considered internal%
+
+# 14. DrupalListener interface / trait deprecations
+%The "Drupal\\Tests\\Listeners\\DrupalListener" class (implements|uses) "PHPUnit\\Framework\\TestListener.*" that is deprecated%
+
+# 15. PHPUnit TestCase::addWarning() internal method warning
+%The "PHPUnit\\Framework\\TestCase::addWarning\(\)" method is considered internal%
+
+# 16. Symfony ContainerAwareTrait deprecation
+%Since symfony/dependency-injection 6.4: "Symfony\\Component\\DependencyInjection\\ContainerAwareTrait" is deprecated%
+
+# 17. IteratorAggregate native return type warnings (Map, ContentEntityBase, etc.)
+%Method "IteratorAggregate::getIterator\(\)" might add ".*" as a native return type declaration%
+
+# 18. ModuleHandler::getName() deprecation
+%Drupal\\Core\\Extension\\ModuleHandler::getName\(\) is deprecated%

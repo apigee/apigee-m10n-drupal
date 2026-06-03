@@ -5,6 +5,7 @@
 !/.editorconfig
 !.gitkeep
 !/.circleci
+!/.deprecation-ignore.txt
 
 ## Ignore working copies of dist files ##
 phpcs.xml
