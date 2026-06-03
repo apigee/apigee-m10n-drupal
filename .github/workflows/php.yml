@@ -53,11 +53,15 @@ jobs:
 
     steps:
 
-    - name: Disable deprecations check for PR
-      if: github.event_name != 'schedule'
+    - name: Configure Deprecations Check
       run: |
-        echo "Disable deprecations check"
-        echo "SYMFONY_DEPRECATIONS_HELPER=disabled" >> $GITHUB_ENV
+        if [ "${{ github.event_name }}" = "schedule" ]; then
+          echo "Scheduled cron run: Using precision deprecation filters"
+          echo "SYMFONY_DEPRECATIONS_HELPER=ignoreFile=./modules/contrib/apigee_m10n/.deprecation-ignore.txt" >> $GITHUB_ENV
+        else
+          echo "Completely disabling deprecation check"
+          echo "SYMFONY_DEPRECATIONS_HELPER=disabled" >> $GITHUB_ENV
+        fi
 
     - name: "Install PHP"
       uses: "shivammathur/setup-php@v2"
