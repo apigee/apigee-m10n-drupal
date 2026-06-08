@@ -129,7 +129,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'variations[form][0][apigee_price_range][0][price_range][fields][default]' => $default,
     ], 'Create variation');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $this->assertSession()->pageTextContains($message);
+    $this->assertTrue($this->assertSession()->waitForText((string) $message));
   }
 
   /**
@@ -174,7 +174,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $this->submitForm([
       'unit_price[0][amount][number]' => $amount,
     ], 'Add to cart');
-    $this->assertSession()->pageTextContains($message);
+    $this->assertTrue($this->assertSession()->waitForText((string) $message));
   }
 
   /**
@@ -266,16 +266,18 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'unit_price[0][amount][number]' => $amount_1,
     ], 'Add to cart');
 
-    $text = !$valid ?? 'This amount cannot be less than USD10.00.';
-    $this->assertSession()->pageTextContains($text);
+    if (!$valid) {
+      $this->assertTrue($this->assertSession()->waitForText('This amount cannot be less than USD10.00.'));
+    }
 
     $this->drupalGet('product/1');
     $this->submitForm([
       'unit_price[0][amount][number]' => $amount_2,
     ], 'Add to cart');
 
-    $text = !$valid ?? 'This amount cannot be less than USD10.00.';
-    $this->assertSession()->pageTextContains($text);
+    if (!$valid) {
+      $this->assertTrue($this->assertSession()->waitForText('This amount cannot be less than USD10.00.'));
+    }
 
     if ($valid) {
       // Go to the cart page.
@@ -309,7 +311,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       $this->submitForm([], 'Pay and complete purchase');
 
       $text = 'Complete';
-      $this->assertSession()->pageTextContains($text);
+      $this->assertTrue($this->assertSession()->waitForText((string) $text));
 
     }
   }
