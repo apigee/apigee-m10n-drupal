@@ -178,7 +178,7 @@ jobs:
       run: |
         cd drupal
         cp modules/contrib/apigee_m10n/phpunit.core.xml.dist core/phpunit.xml
-        // Force-disable deprecation checking for codecov test
+        # Force-disable deprecation checking for codecov test
         SYMFONY_DEPRECATIONS_HELPER=disabled vendor/bin/phpunit -c core --color --group apigee_m10n --testsuite unit,kernel,functional,functional-javascript --coverage-clover /tmp/coverage_${{ matrix.instance-type }}.xml modules/contrib/apigee_m10n
         
     - name: Artifacts
