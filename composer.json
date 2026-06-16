@@ -8,14 +8,14 @@
         "ext-bcmath": "*",
         "cweagans/composer-patches": "~1.6",
         "commerceguys/intl": "^2.0",
-        "drupal/apigee_edge": "dev-issue-1262 || dev-php-8.4-4.x",
+        "drupal/apigee_edge": "^3.0.16 || ^4.0.7",
         "drupal/core": "^10.6 || ^11.3",
         "drupal/requirement": "^1.3",
         "drupal/jquery_ui_dialog": "^2.1",
-        "apigee/apigee-client-php": "dev-issue-newer-php-3.x || dev-issue-newer-php-4.x"
+        "apigee/apigee-client-php": "^3.1.0 || ^4.1.0"
     },
     "require-dev": {
-        "apigee/apigee-mock-client-php": "dev-issue-14",
+        "apigee/apigee-mock-client-php": "^1.1.4",
         "drupal/drupal-extension": "~5",
         "drupal/core-dev": "^10.6 || ^11.3",
         "drush/drush": "^12.4.3 || ^13.3",
@@ -28,19 +28,5 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": {
-        "forked-apigee_edge": {
-            "type": "vcs",
-            "url": "https://github.com/shailesh-google/apigee-edge-drupal"
-        },
-        "forked-apigee_mock_client_php": {
-            "type": "vcs",
-            "url": "https://github.com/shailesh-google/apigee-mock-client-php"
-        },
-        "forked-apigee_client_php": {
-            "type": "vcs",
-            "url": "https://github.com/shailesh-google/apigee-client-php"
-        }
-    }
+    "prefer-stable": true
 }
