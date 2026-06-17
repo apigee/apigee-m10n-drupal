@@ -423,7 +423,7 @@ class BalanceAdjustmentJob extends EdgeJob {
     $monetization = \Drupal::service('apigee_m10n.monetization');
     $id = $this->isDeveloperAdjustment() ? $this->developer->getEmail() : $this->company->id();
     $report = $monetization->getPrepaidBalanceReport($id, $transaction_time, $currency_code);
-    $csv = array_map('str_getcsv', explode("\r\n", $report));
+    $csv = array_map(fn($line) => str_getcsv($line, escape: '\\'), explode("\r\n", $report));
 
     // This assumes the last transaction is the one we just performed.
     // @todo Find a better way to retrieve the transaction ID.

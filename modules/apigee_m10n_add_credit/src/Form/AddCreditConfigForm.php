@@ -346,7 +346,7 @@ class AddCreditConfigForm extends ConfigFormBase {
     $products = $this->storage->loadMultiple(array_filter($ids));
 
     foreach ($config as $currency_code => $currency_config) {
-      $config[$currency_code] = $products[$currency_config['product_id']] ?? NULL;
+      $config[$currency_code] = $products[$currency_config['product_id'] ?? ''] ?? NULL;
     }
 
     return $config;

@@ -111,7 +111,7 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
 
     // Ending the plan by setting the end date as today.
     $end_date = $purchased_plan->getStartDate();
-    $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
+    $end_date = $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
     $this->stack
@@ -204,7 +204,7 @@ class PurchasedPlanStatusTest extends MonetizationFunctionalTestBase {
 
     // Ending the plan by setting the end date as today.
     $end_date = $purchased_plan->getStartDate();
-    $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
+    $end_date = $end_date->setTimezone($purchased_plan->getRatePlan()->getOrganization()->getTimezone());
     $purchased_plan->setEndDate($end_date);
 
     $this->stack

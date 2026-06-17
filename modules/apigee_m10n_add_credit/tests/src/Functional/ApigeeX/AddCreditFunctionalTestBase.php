@@ -141,7 +141,7 @@ class AddCreditFunctionalTestBase extends MonetizationFunctionalTestBase {
     $new_balance = \Drupal::service('apigee_m10n.sdk_controller_factory')
       ->developerBalancexController($developer);
 
-    static::assertSame((double) $amount, $new_balance->getAmount());
+    static::assertSame((float) $amount, $new_balance->getAmount());
   }
 
 }

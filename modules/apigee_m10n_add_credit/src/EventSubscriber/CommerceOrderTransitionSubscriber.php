@@ -101,7 +101,7 @@ class CommerceOrderTransitionSubscriber implements EventSubscriberInterface {
     $totals = $this->getCreditTotalsForOrder($order);
 
     foreach ($totals as ['target' => $target, 'amount' => $amount]) {
-      if (!empty((double) $amount->getNumber())) {
+      if (!empty((float) $amount->getNumber())) {
         if (\Drupal::service('apigee_m10n.monetization')->isOrganizationApigeeXorHybrid()) {
           // Use a custom adjustment type because it can support a credit or a debit.
           $job = new BalanceAdjustmentJobX($target, new Adjustment([
