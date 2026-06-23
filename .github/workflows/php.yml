@@ -18,7 +18,7 @@ env:
 
 on:
   push:
-  pull_request_target:
+  pull_request:
   schedule:
     - cron: '00 01 * * *'
 
@@ -72,7 +72,7 @@ jobs:
         fi
 
     - name: "Install PHP"
-      uses: "shivammathur/setup-php@v2"
+      uses: "shivammathur/setup-php@8358ee0e2e8afe63c2fb8253d1d52085811ab1e5"
       with:
         coverage: "pcov"
         php-version: "${{ matrix.php-version }}"
@@ -93,14 +93,14 @@ jobs:
         echo "::set-output name=dir::$(composer config cache-files-dir)"
 
     - name: Cache composer dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
       with:
         path: ${{ steps.composercache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Checkout apigee_m10n module
-      uses: actions/checkout@v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       with:
         path: drupal/modules/contrib/apigee_m10n
 
@@ -147,7 +147,7 @@ jobs:
         composer show > composer-show.txt
  
     - name: Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba
       with:
         name: composer-${{ matrix.php-version }}-${{ matrix.drupal-core }}-${{ matrix.instance-type }}-artifact
         path: drupal/composer.*
@@ -159,7 +159,7 @@ jobs:
         php -d sendmail_path=$(which true); vendor/bin/drush --yes -v site-install minimal --db-url="$SIMPLETEST_DB"
         vendor/bin/drush rs 8000 &
 
-    - uses: nanasess/setup-chromedriver@v2
+    - uses: nanasess/setup-chromedriver@ef5c64a93512d266b23b80bae95e46a67f30e703
 
     - name: Start Xvfb and ChromeDriver
       run: |
@@ -191,14 +191,14 @@ jobs:
         
     - name: Artifacts
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba
       with:
         name: browser-output-${{ matrix.php-version }}-${{ matrix.drupal-core }}-${{ matrix.instance-type }}-artifact
         path: drupal/sites/simpletest/browser_output/*
 
     - name: Upload coverage to Codecov
       if: ${{ matrix.drupal-core == '10.6.x' && matrix.php-version == '8.2' }}
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: /tmp/coverage_${{ matrix.instance-type }}.xml
