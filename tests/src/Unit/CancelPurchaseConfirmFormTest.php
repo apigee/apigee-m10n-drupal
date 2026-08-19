@@ -21,6 +21,7 @@ namespace Drupal\Tests\apigee_m10n\Unit;
 
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -104,12 +105,9 @@ class CancelPurchaseConfirmFormTest extends UnitTestCase {
    * @covers ::getCancelUrl
    */
   public function testGetCancelUrlWithTeamObject(): void {
-    $team = new class {
-      public function id() {
-        return 'team-abc';
-      }
-    };
-    $this->routeMatch->getParameter('team')->willReturn($team);
+    $team = $this->prophesize(EntityInterface::class);
+    $team->id()->willReturn('team-abc');
+    $this->routeMatch->getParameter('team')->willReturn($team->reveal());
     $this->routeMatch->getParameter('user')->willReturn(NULL);
 
     $form = new CancelPurchaseConfirmForm(
