@@ -196,7 +196,7 @@ jobs:
         name: browser-output-${{ matrix.php-version }}-${{ matrix.drupal-core }}-${{ matrix.instance-type }}-artifact
         path: drupal/sites/simpletest/browser_output/*
 
-    - name: Upload coverage to Codecov
+    - name: Upload coverage to Codecov.
       if: ${{ matrix.drupal-core == '10.6.x' && matrix.php-version == '8.2' }}
       uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
       with:
