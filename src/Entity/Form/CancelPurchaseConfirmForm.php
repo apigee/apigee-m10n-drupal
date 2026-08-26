@@ -24,7 +24,9 @@ use Drupal\Core\Entity\EntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\apigee_m10n\ApigeeSdkControllerFactory;
+use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -106,7 +108,17 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return $this->entity->toUrl('collection');
+    $team = $this->routeMatch->getParameter('team');
+    if (!empty($team)) {
+      $team_id = is_object($team) && method_exists($team, 'id') ? $team->id() : $team;
+      return Url::fromRoute('entity.purchased_plan.team_collection', ['team' => $team_id]);
+    }
+    $user = $this->routeMatch->getParameter('user');
+    $user_id = $user instanceof UserInterface ? $user->id() : $user;
+    if (empty($user_id)) {
+      $user_id = $this->entity->getOwnerId() ?: \Drupal::currentUser()->id();
+    }
+    return Url::fromRoute('entity.purchased_plan.developer_collection', ['user' => $user_id]);
   }
 
   /**
@@ -157,7 +169,20 @@ class CancelPurchaseConfirmForm extends EntityConfirmFormBase {
           '%label' => $this->entity->getRatePlan()->getDisplayName(),
         ]));
         Cache::invalidateTags([PurchasedPlanForm::MY_PURCHASES_CACHE_TAG]);
-        $form_state->setRedirect('entity.purchased_plan.developer_collection', ['user' => $this->entity->getOwnerId()]);
+
+        $team = $this->routeMatch->getParameter('team');
+        if (!empty($team)) {
+          $team_id = is_object($team) && method_exists($team, 'id') ? $team->id() : $team;
+          $form_state->setRedirect('entity.purchased_plan.team_collection', ['team' => $team_id]);
+          return;
+        }
+
+        $user = $this->routeMatch->getParameter('user');
+        $user_id = $user instanceof UserInterface ? $user->id() : $user;
+        if (empty($user_id)) {
+          $user_id = $this->entity->getOwnerId() ?: \Drupal::currentUser()->id();
+        }
+        $form_state->setRedirect('entity.purchased_plan.developer_collection', ['user' => $user_id]);
       }
     }
     // @todo Check to see if `EntityStorageException` is the only type of error
