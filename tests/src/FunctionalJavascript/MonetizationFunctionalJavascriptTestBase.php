@@ -19,6 +19,7 @@
 
 namespace Drupal\Tests\apigee_m10n\FunctionalJavascript;
 
+use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\Tests\apigee_m10n\Traits\ApigeeMonetizationTestTrait;
 
@@ -53,6 +54,38 @@ class MonetizationFunctionalJavascriptTestBase extends WebDriverTestBase {
 
     // Create new Apigee Edge basic auth key.
     $this->baseSetUp();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function drupalLogout() {
+    $assert_session = $this->assertSession();
+    $destination = Url::fromRoute('user.page')->toString();
+    $this->drupalGet(Url::fromRoute('user.logout.confirm', options: ['query' => ['destination' => $destination]]));
+    $this->submitForm([], 'op', 'user-logout-confirm');
+    $assert_session->waitForField('name');
+    $assert_session->waitForField('pass');
+    $assert_session->fieldExists('name');
+    $assert_session->fieldExists('pass');
+
+    $this->drupalResetSession();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function assertCssElementContains($selector, $text) {
+    $this->getSession()->getPage()->waitFor(10, function ($page) use ($selector, $text) {
+      try {
+        $element = $page->find('css', $selector);
+        return $element !== NULL && str_contains($element->getText(), (string) $text);
+      }
+      catch (\Throwable $e) {
+        return FALSE;
+      }
+    });
+    $this->assertSession()->elementTextContains('css', $selector, $text);
   }
 
 }

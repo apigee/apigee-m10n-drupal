@@ -68,6 +68,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     // Enable apigee add credit for default product.
     $this->drupalGet('admin/commerce/config/product-types/default/edit');
     $this->submitForm(['apigee_m10n_enable_add_credit' => 1], 'Save');
+    $this->assertTrue($this->assertSession()->waitForText('The product type Default has been successfully saved.'));
 
     // Disable the price field and enable the price range field.
     $this->drupalGet('admin/commerce/config/product-variation-types/default/edit/form-display');
@@ -78,6 +79,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
     $page->selectFieldOption('fields[apigee_price_range][region]', 'content');
     $this->assertSession()->waitForField('fields[apigee_price_range][region]');
     $this->submitForm([], 'Save');
+    $this->assertTrue($this->assertSession()->waitForText('Your settings have been saved.'));
 
     // Check if price field is disabled and all price range fields are visible.
     $this->drupalGet('product/add/default');
@@ -159,6 +161,7 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => $maximum,
       'variations[form][0][apigee_price_range][0][price_range][fields][default]' => $default,
     ], 'Save');
+    $this->assertTrue($this->assertSession()->waitForText('has been successfully saved.'));
 
     // Check if default value is set.
     $this->assertSession()
@@ -189,10 +192,12 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'variations[form][0][apigee_price_range][0][price_range][fields][maximum]' => '500',
       'variations[form][0][apigee_price_range][0][price_range][fields][default]' => '40',
     ], 'Save');
+    $this->assertTrue($this->assertSession()->waitForText('has been successfully saved.'));
 
     $this->submitForm([
       'unit_price[0][amount][number]' => '50',
     ], 'Add to cart');
+    $this->assertTrue($this->assertSession()->waitForText('added to your cart.'));
 
     $this->drupalGet('checkout/1');
     $this->assertCssElementContains('.order-total-line .order-total-line-value', '$50.00');
@@ -228,16 +233,19 @@ class AddCreditCustomAmountTest extends AddCreditFunctionalJavascriptTestBase {
       'variations[form][0][sku][0][value]' => 'SKU-ADD-CREDIT-10',
       'variations[form][0][price][0][number]' => '1',
     ], 'Save');
+    $this->assertTrue($this->assertSession()->waitForText('has been successfully saved.'));
 
     $this->drupalGet('product/1');
     $this->submitForm([
       'unit_price[0][amount][number]' => $amount_1,
     ], 'Add to cart');
+    $this->assertTrue($this->assertSession()->waitForText('added to your cart.'));
 
     $this->drupalGet('product/1');
     $this->submitForm([
       'unit_price[0][amount][number]' => $amount_2,
     ], 'Add to cart');
+    $this->assertTrue($this->assertSession()->waitForText('added to your cart.'));
 
     // Go to the cart page.
     $this->drupalGet('cart');
