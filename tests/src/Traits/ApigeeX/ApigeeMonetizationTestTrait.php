@@ -99,22 +99,7 @@ trait ApigeeMonetizationTestTrait {
       $this->markTestSkipped('This test suite is expecting a HYBRID instance type.');
     }
 
-    $restore_gcp_hosted = FALSE;
-    if ($instance_type === EdgeKeyTypeInterface::INSTANCE_TYPE_HYBRID
-      && empty(getenv('APIGEE_EDGE_ACCOUNT_JSON_KEY'))
-      && empty(getenv('APIGEE_EDGE_GCP_HOSTED'))) {
-      putenv('APIGEE_EDGE_GCP_HOSTED=1');
-      $restore_gcp_hosted = TRUE;
-    }
-
-    try {
-      $this->apigeeTestHelperSetup();
-    }
-    finally {
-      if ($restore_gcp_hosted) {
-        putenv('APIGEE_EDGE_GCP_HOSTED');
-      }
-    }
+    $this->apigeeTestHelperSetup();
     $this->sdk_connector = $this->sdkConnector;
 
     // `::initAuth` in above has to happen before getting the controller factory.
