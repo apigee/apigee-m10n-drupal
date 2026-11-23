@@ -18,7 +18,6 @@ env:
 
 on:
   push:
-  # zizmor: ignore[dangerous-triggers] - Checks out trusted base branch ref; required for integration test secrets.
   pull_request:
   schedule:
     - cron: '00 01 * * *'
