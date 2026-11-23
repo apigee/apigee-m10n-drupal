@@ -194,10 +194,10 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: ${{ matrix.drupal-core == '10.6.x' && matrix.php-version == '8.2' }}
-      uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b
+      uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: /tmp/coverage_${{ matrix.instance-type }}.xml
         name: codecov-umbrella
-        fail_ci_if_error: true
+        fail_ci_if_error: ${{ github.event_name != 'pull_request' }}
         verbose: true
