@@ -40,6 +40,7 @@
     <env name="APIGEE_EDGE_ORGANIZATION" value='foo'/>
     <env name="APIGEE_EDGE_USERNAME" value='foo@@example.com'/>
     <env name="APIGEE_EDGE_PASSWORD" value='****************'/>
+    <env name="APIGEE_EDGE_INSTANCE_TYPE" value='public'/>
   </php>
   <testsuites>
     <testsuite name="unit">
