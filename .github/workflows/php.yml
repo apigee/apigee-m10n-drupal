@@ -131,6 +131,7 @@ jobs:
         vendor/bin/phpcs --standard=./phpcs.xml.dist modules/contrib/apigee_m10n -p -s -n --colors
         # Setting environment variables to run Apigee X tests
         echo "APIGEE_EDGE_INSTANCE_TYPE=hybrid" >> $GITHUB_ENV
+        echo "APIGEE_EDGE_GCP_HOSTED=1" >> $GITHUB_ENV
         composer show > composer-show.txt
  
     - name: Artifacts
